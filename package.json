@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
+    "prestart": "yarn type-check && next build",
     "start": "next start",
     "type-check": "tsc"
   },
