@@ -5,7 +5,13 @@ const withTypescript = require('@zeit/next-typescript')
 
 module.exports = withTypescript({
     webpack: config => {
-        config.plugins.push(new webpack.EnvironmentPlugin(process.env))
+        
+        // Environment variables exposed to the UI 
+        config.plugins.push(new webpack.EnvironmentPlugin([
+            'NODE_ENV', 
+            'MAGENTO_BACKEND_URL'
+        ]))
+        
         return config
     }
 })
