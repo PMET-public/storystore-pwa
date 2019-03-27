@@ -1,5 +1,4 @@
 import App from '../components/App'
-import { NextFunctionComponent } from 'next'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
@@ -27,25 +26,28 @@ const query = gql`
     }
 `
 
-const Index: NextFunctionComponent = () => (
+const Index = () => (
     <Query query={query} variables={{ id: 2 }}>
         {({ loading, error, data: { category: { children } } }) => (
             <App>
-                <div>Hello World! <span className="wave">👋</span></div>
-                
+                <div className="title">Hello World! <span className="wave">👋</span></div>
+
                 <div>Error: {(error || false).toString()}</div>
                 <div>Loading: {(loading || false).toString()}</div>
                 <div>Count: {children.length}</div>
-                
+
                 <ul>
-                    {children.map((category: { id: string, name: string, url_path: string }) => (
+                    {children.map((category) => (
                         <li key={category.id}>{category.name} | {category.url_path}</li>
                     ))}
                 </ul>
 
                 <style jsx>{`
+                    .title {
+                        font-size: 3em;
+                    }
                     .wave {
-                        font-size: 2em;
+                        font-size: 200%;
                     }
                 `}</style>
             </App>

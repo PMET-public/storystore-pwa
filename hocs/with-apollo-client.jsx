@@ -1,18 +1,14 @@
-declare var process: any
-
 import { Component } from 'react'
-import initApollo from './init-apollo'
+import initApollo from '../lib/init-apollo'
 import Head from 'next/head'
 import { getDataFromTree } from 'react-apollo'
 import { ApolloClient } from 'apollo-boost';
 
-export default (App: any) => class Apollo extends Component {
-
-  apolloClient: ApolloClient<any>
+export default (App) => class Apollo extends Component {
 
   static displayName = 'withApollo(App)'
 
-  static async getInitialProps(ctx: any) {
+  static async getInitialProps(ctx) {
     const { Component, router } = ctx
 
     let appProps = {}
@@ -55,7 +51,7 @@ export default (App: any) => class Apollo extends Component {
     }
   }
 
-  constructor(props: any) {
+  constructor(props) {
     super(props)
     this.apolloClient = initApollo(props.apolloState)
   }

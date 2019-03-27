@@ -1,8 +1,4 @@
-type Props = {
-    children: any
-}
-
-const App = (props: Props) => (
+const App = (props) => (
     <main>
         {props.children}
     </main>
