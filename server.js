@@ -18,11 +18,6 @@ app.prepare().then(() => {
     //     return app.render(req, res, '/posts', { id: req.params.id })
     // })
 
-    server.get('/service-worker.js', (req, res) => {
-        const filePath = join(__dirname, '.next', '/service-worker.js')
-        app.serveStatic(req, res, filePath)
-    });
-
     server.get('*', (req, res) => {
         return handle(req, res)
     })

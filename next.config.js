@@ -7,11 +7,32 @@ const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 module.exports = withOffline({
-
-    generateSw: false,
+    generateSw: true,
     workboxOpts: {
-        swSrc: 'lib/service-worker.workbox.js',
-        swDest: 'service-worker.js'
+        swDest: 'static/service-worker.js',
+        clientsClaim: true,
+        skipWaiting: true,
+        globPatterns: ['.next/static/*', '.next/static/commons/*'],
+        modifyUrlPrefix: { '.next': '/_next' },
+        runtimeCaching: [
+            {
+                urlPattern: '/',
+                handler: 'networkFirst',
+                options: {
+                    cacheName: 'html-cache',
+                }
+            },
+            {
+                urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif)/,
+                handler: 'cacheFirst',
+                options: {
+                    cacheName: 'image-cache',
+                    cacheableResponse: {
+                        statuses: [0, 200],
+                    }
+                }
+            }
+        ]
     },
 
     webpack: (config) => {
@@ -28,6 +49,8 @@ module.exports = withOffline({
          * https://www.npmjs.com/package/webpack-pwa-manifest
          */
         config.plugins.push(new WebpackPwaManifest({
+            // inject: false,
+            fingerprints: false,
             filename: 'static/manifest.json',
             name: 'Luma',
             short_name: 'Luma',
@@ -39,9 +62,15 @@ module.exports = withOffline({
             publicPath: "../",
             icons: [
                 {
-                    src: path.resolve('./static/images/logo-icon.png'),
+                    src: path.resolve('./static/images/app-icon.png'),
                     sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
-                    destination: path.join('static', 'images')
+                    destination: path.join('static', 'images'),
+                },
+                {
+                    src: path.resolve('./static/images/app-icon-ios.png'),
+                    sizes: [120, 152, 167, 180],
+                    destination: path.join('static', 'images'),
+                    ios: true
                 }
             ]
 
