@@ -1,8 +1,8 @@
 import App from '../components/App'
-import { Query } from 'react-apollo'
+import { Query, ApolloConsumer } from 'react-apollo'
 import gql from 'graphql-tag'
 
-const query = gql`
+const GET_CATEGORY_LIST_QUERY = gql`
     query categoryList($id: Int!) {
         category(id: $id) {
             id
@@ -27,32 +27,20 @@ const query = gql`
 `
 
 const Index = () => (
-    <Query query={query} variables={{ id: 2 }}>
-        {({ loading, error, data: { category: { children } } }) => (
-            <App>
-                <div className="title">Hello World! <span className="wave">👋</span></div>
+    <App>
+        <div className="title">
+            <span className="wave">👋🌍</span>
+        </div>
 
-                <div>Error: {(error || false).toString()}</div>
-                <div>Loading: {(loading || false).toString()}</div>
-                <div>Count: {children.length}</div>
-
-                <ul>
-                    {children.map((category) => (
-                        <li key={category.id}>{category.name} | {category.url_path}</li>
-                    ))}
-                </ul>
-
-                <style jsx>{`
-                    .title {
-                        font-size: 3em;
-                    }
-                    .wave {
-                        font-size: 200%;
-                    }
-                `}</style>
-            </App>
-        )}
-    </Query>
+        <style jsx>{`
+            .title {
+                font-size: 20vw;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        `}</style>
+    </App>
 )
 
 export default Index
