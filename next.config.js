@@ -51,7 +51,7 @@ module.exports = withOffline({
         config.plugins.push(new WebpackPwaManifest({
             // inject: false,
             fingerprints: false,
-            filename: 'static/manifest.json',
+            filename: 'static/manifest.webmanifest',
             name: 'Luma',
             short_name: 'Luma',
             description: 'With more than 230 stores spanning 43 states and growing, Luma is a nationally recognized active wear manufacturer and retailer. We’re passionate about active lifestyles – and it goes way beyond apparel.',
@@ -64,12 +64,12 @@ module.exports = withOffline({
                 {
                     src: path.resolve('./static/images/app-icon.png'),
                     sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
-                    destination: path.join('static', 'images'),
+                    destination: path.join('static', 'icons'),
                 },
                 {
                     src: path.resolve('./static/images/app-icon-ios.png'),
                     sizes: [120, 152, 167, 180],
-                    destination: path.join('static', 'images'),
+                    destination: path.join('static', 'icons'),
                     ios: true
                 }
             ]
