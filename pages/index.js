@@ -1,5 +1,4 @@
 import App from '../components/App'
-import { Query, ApolloConsumer } from 'react-apollo'
 import gql from 'graphql-tag'
 
 const GET_CATEGORY_LIST_QUERY = gql`
