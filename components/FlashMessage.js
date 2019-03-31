@@ -1,9 +1,9 @@
 import { getClassNamesWithModifier } from '../lib/helpers'
 
 
-const FlashMessage = ({ text, type, onClose = () => {}, isActive = false }) => (
-    <div className={getClassNamesWithModifier('app-flash-message', type, isActive && 'active')}>
-        {text}
+const FlashMessage = ({ message, type, onClose = () => {} }) => (
+    <div className={getClassNamesWithModifier('app-flash-message', type)}>
+        {message}
 
         <button type="button" onClick={onClose}>Close</button>
 
@@ -17,7 +17,6 @@ const FlashMessage = ({ text, type, onClose = () => {}, isActive = false }) => (
                 position: fixed;
                 right: 0;
                 top: 0;
-                transform: translateY(-100%);
             }
 
             .app-flash-message--error {
@@ -28,10 +27,6 @@ const FlashMessage = ({ text, type, onClose = () => {}, isActive = false }) => (
             .app-flash-message--warning {
                 background-color: var(--color-warning);
                 color: var(--color-warning--contrast);
-            }
-
-            .app-flash-message--active {
-                transform: translateY(0);
             }
         `}</style>
     </div>

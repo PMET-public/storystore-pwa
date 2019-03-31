@@ -1,31 +1,24 @@
 import gql from 'graphql-tag'
-import { Query, Mutation } from 'react-apollo'
 import DocumentMetadata from './DocumentMetadata'
 import { getFullPageTitle } from '../lib/helpers'
 import FlashMessage from './FlashMessage'
+import Query from './Query'
 
 const GET_STORE_CONFIG_QUERY = gql`
     query {
-        ui @client {
-            isNavOpen
-            isLoggedIn
-            flashMessage {
-                text
-                type
-                isActive
-            }
+    
+        flashMessage @client {
+            message
+            type
         }
-
-        storeConfig {
-            cms_home_page            
+    
+        storeConfig {            
             copyright
             default_description
             default_display_currency_code
             default_keywords
             default_title
-            head_includes
             header_logo_src
-            locale
             logo_alt
             secure_base_link_url
             secure_base_media_url
@@ -45,6 +38,7 @@ const GET_STORE_CONFIG_QUERY = gql`
 const FLASH_MESSAGE_MUTATION = gql`
     mutation {
         clearFlashMessage @client
+        setFlashMessage @client
     }
 `;
 
@@ -52,41 +46,30 @@ const FLASH_MESSAGE_MUTATION = gql`
 const App = ({ children }) => (
     <Query query={GET_STORE_CONFIG_QUERY} fetchPolicy="cache-first">
         {({
-            loading,
-            error,
-            data: {
-                ui: {
-                    flashMessage
-                },
-                storeConfig: {
-                    default_title: title,
-                    default_description: description,
-                    default_keywords: keywords,
-                    title_prefix: titlePrefix,
-                    title_suffix: titleSuffix
-                }
+            flashMessage,
+
+            storeConfig: {
+                default_title: title,
+                default_description: description,
+                default_keywords: keywords,
+                title_prefix: titlePrefix,
+                title_suffix: titleSuffix
             }
-        }) => (
-                <>
-                    <DocumentMetadata
-                        title={getFullPageTitle([titlePrefix, title, titleSuffix])}
-                        description={description}
-                        keywords={keywords} />
+        }) => <>
+                <DocumentMetadata
+                    title={getFullPageTitle([titlePrefix, title, titleSuffix])}
+                    description={description}
+                    keywords={keywords} />
 
-                    <Mutation mutation={FLASH_MESSAGE_MUTATION}>
-                        {(clearFlashMessage) => (
-                            <FlashMessage
-                                text={flashMessage.text}
-                                type={flashMessage.type}
-                                onClose={clearFlashMessage}
-                                isActive={flashMessage.isActive} />
-                        )}
-                    </Mutation>
+                <FlashMessage
+                    message={flashMessage.message}
+                    type={flashMessage.type}
+                     />
 
 
-                    <main>{children}</main>
+                <main>{children}</main>
 
-                    <style global jsx>{`
+                <style global jsx>{`
                         :root {
                             --color-primary: blue;
                             --color-primary--contrast: white;
@@ -104,9 +87,8 @@ const App = ({ children }) => (
                             font-size: 1.6rem;
                         }
                 `}</style>
-                </>
-
-            )}
+            </>
+        }
     </Query>
 )
 
