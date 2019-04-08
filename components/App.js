@@ -1,73 +1,54 @@
-import gql from 'graphql-tag'
-import DocumentMetadata from './DocumentMetadata'
+// import gql from 'graphql-tag'
 import { getFullPageTitle } from '../lib/helpers'
-import FlashMessage from './FlashMessage'
-import Query from './Query'
+import { gql } from 'apollo-boost'
+// import { Query } from 'react-apollo'
 
-const GET_STORE_CONFIG_QUERY = gql`
-    query {
-    
-        flashMessage @client {
-            message
+import Query from './Query'
+import DocumentMetadata from './DocumentMetadata'
+import FlashMessage from './FlashMessage'
+
+const APP_SHELL_QUERY = gql`
+    query AppShell {
+        flashMessage @client { 
             type
+            message 
         }
-    
-        storeConfig {            
-            copyright
+
+        storeConfig {
             default_description
-            default_display_currency_code
             default_keywords
             default_title
-            header_logo_src
-            logo_alt
-            secure_base_link_url
-            secure_base_media_url
-            secure_base_static_url
-            secure_base_url
-            show_cms_breadcrumbs
-            timezone
             title_prefix
             title_suffix
-            website_id
-            weight_unit
-            welcome
         }
     }
 `
 
-const FLASH_MESSAGE_MUTATION = gql`
-    mutation {
-        clearFlashMessage @client
-        setFlashMessage @client
-    }
-`;
-
-
 const App = ({ children }) => (
-    <Query query={GET_STORE_CONFIG_QUERY} fetchPolicy="cache-first">
-        {({
+    <Query query={APP_SHELL_QUERY} fetchPolicy="cache-first">
+        {({ 
             flashMessage,
 
             storeConfig: {
-                default_title: title,
                 default_description: description,
                 default_keywords: keywords,
+                default_title: title,
                 title_prefix: titlePrefix,
-                title_suffix: titleSuffix
-            }
+                title_suffix: titleSuffix,
+            } 
         }) => <>
+
                 <DocumentMetadata
                     title={getFullPageTitle([titlePrefix, title, titleSuffix])}
                     description={description}
                     keywords={keywords} />
+        
+                { flashMessage && <FlashMessage {...flashMessage} /> }
 
-                <FlashMessage
-                    message={flashMessage.message}
-                    type={flashMessage.type}
-                     />
-
-
-                <main>{children}</main>
+                <main>
+                    <h2>{description}</h2>
+                    {children}
+                </main>
 
                 <style global jsx>{`
                         :root {
@@ -89,6 +70,7 @@ const App = ({ children }) => (
                 `}</style>
             </>
         }
+
     </Query>
 )
 
