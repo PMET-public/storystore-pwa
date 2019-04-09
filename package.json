@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
-    "storybook": "start-storybook -s ./",
+    "storybook": "start-storybook",
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
@@ -26,8 +26,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
+    "@storybook/addon-a11y": "^5.0.6",
     "@storybook/addon-actions": "^5.0.6",
+    "@storybook/addon-info": "^5.0.6",
     "@storybook/addon-knobs": "^5.0.6",
+    "@storybook/addon-viewport": "^5.0.6",
     "@storybook/react": "^5.0.6",
     "babel-loader": "^8.0.5",
     "webpack": "^4.29.6",

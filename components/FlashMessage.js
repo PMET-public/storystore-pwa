@@ -1,6 +1,7 @@
 import React from 'react'
 import { getClassNamesWithModifier } from '../lib/helpers'
 
+
 const FlashMessage = ({ message, type, onClose = () => {} }) => (
     <div className={getClassNamesWithModifier('app-flash-message', type)}>
         {message}
