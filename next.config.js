@@ -3,10 +3,11 @@ require('dotenv').config()
 const path = require('path')
 const webpack = require('webpack')
 
+const withTypescript = require('@zeit/next-typescript')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
-module.exports = withOffline({
+module.exports = withOffline(withTypescript({
     generateSw: true,
     workboxOpts: {
         swDest: 'static/service-worker.js',
@@ -79,4 +80,4 @@ module.exports = withOffline({
 
         return config
     }
-})
+}))

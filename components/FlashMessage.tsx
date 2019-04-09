@@ -1,8 +1,13 @@
 import React from 'react'
 import { getClassNamesWithModifier } from '../lib/helpers'
 
+type Props = {
+    message: string
+    type: 'error' | 'notice' | 'warning'
+    onClose: () => void
+}
 
-const FlashMessage = ({ message, type, onClose = () => {} }) => (
+const FlashMessage = ({ message, type, onClose }: Props) => (
     <div className={getClassNamesWithModifier('app-flash-message', type)}>
         {message}
 
@@ -23,6 +28,11 @@ const FlashMessage = ({ message, type, onClose = () => {} }) => (
             .app-flash-message--error {
                 background-color: var(--color-error);
                 color: var(--color-error--contrast);
+            }
+
+            .app-flash-message--info {
+                background-color: var(--color-info);
+                color: var(--color-info--contrast);
             }
 
             .app-flash-message--warning {

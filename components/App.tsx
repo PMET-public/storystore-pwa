@@ -37,7 +37,6 @@ const App = ({ children }) => (
                 title_suffix: titleSuffix,
             } 
         }) => <>
-
                 <DocumentMetadata
                     title={getFullPageTitle([titlePrefix, title, titleSuffix])}
                     description={description}

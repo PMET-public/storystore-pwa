@@ -7,10 +7,12 @@
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
-    "storybook": "start-storybook",
-    "start": "NODE_ENV=production node server.js"
+    "storybook": "start-storybook -p 5001",
+    "start": "NODE_ENV=production node server.js",
+    "type-check": "tsc"
   },
   "dependencies": {
+    "@zeit/next-typescript": "^1.1.1",
     "apollo-boost": "^0.3.1",
     "apollo-client": "^2.5.1",
     "dotenv": "^7.0.0",
@@ -32,7 +34,14 @@
     "@storybook/addon-knobs": "^5.0.6",
     "@storybook/addon-viewport": "^5.0.6",
     "@storybook/react": "^5.0.6",
+    "@types/next": "^8.0.3",
+    "@types/node": "^11.13.2",
+    "@types/react": "^16.8.13",
+    "@types/react-dom": "^16.8.3",
+    "@types/storybook__react": "^4.0.1",
+    "@types/styled-jsx": "^2.2.8",
     "babel-loader": "^8.0.5",
+    "typescript": "^3.4.2",
     "webpack": "^4.29.6",
     "webpack-pwa-manifest": "^4.0.0"
   }
