@@ -4,12 +4,13 @@ import { defaults, typeDefs, resolvers } from './apollo-link-state'
 import { ApolloLink } from 'apollo-link'
 import { onError } from 'apollo-link-error'
 
-declare const process: any
-declare const global: any
-declare const window: any
+declare var global: any
+declare var window: any
+
+const isBrowser = typeof window !== 'undefined'
 
 // Polyfill fetch() on the server (used by apollo-client)
-if (!process.browser) {
+if (!isBrowser) {
     global.fetch = fetch
 }
 
@@ -25,16 +26,15 @@ function create(initialState: any) {
     // Check out https://github.com/zeit/next.js/pull/4611 if you want to use the AWSAppSyncClient
     const client = new ApolloClient({
         cache,
-        ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-        connectToDevTools: process.browser,
+        ssrMode: !isBrowser, // Disables forceFetch on the server (so queries are only run once)
+        connectToDevTools: isBrowser,
         link: ApolloLink.from([
             onError(({ graphQLErrors, networkError }) => {
-                if (graphQLErrors)
-                    graphQLErrors.map(({ message, locations, path }) =>
-                        console.log(
-                            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-                        ),
-                    )
+                if (graphQLErrors) {
+                    graphQLErrors.forEach(({ message, locations, path }) => {
+                        console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+                    })
+                }
 
                 if (networkError) console.log(`[Network error]: ${networkError}`)
             }),
@@ -58,7 +58,7 @@ function create(initialState: any) {
 export default function initApollo(initialState?: any) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
-    if (!process.browser) return create(initialState)
+    if (!isBrowser) return create(initialState)
 
     // Reuse client on the client-side
     if (!apolloClient) {

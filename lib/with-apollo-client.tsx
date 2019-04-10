@@ -2,11 +2,10 @@ import { Component } from 'react'
 import initApollo from './init-apollo'
 import Head from 'next/head'
 import { getDataFromTree } from 'react-apollo'
-import { NextComponentClass } from 'next'
 
-declare const process: any
+const isBrowser = typeof window !== 'undefined'
 
-export default (App: NextComponentClass<any>) => class Apollo extends Component {
+export default (App: any) => class Apollo extends Component {
 
   static displayName = 'withApollo(App)'
     apolloClient: any;
@@ -22,7 +21,7 @@ export default (App: NextComponentClass<any>) => class Apollo extends Component 
     // Run all GraphQL queries in the component tree
     // and extract the resulting data
     const apollo = initApollo()
-    if (process.browser) {
+    if (!isBrowser) {
       try {
         // Run all GraphQL queries
         await getDataFromTree(
