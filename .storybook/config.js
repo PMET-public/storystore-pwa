@@ -7,7 +7,7 @@ addDecorator(withKnobs)
 addDecorator(withA11y)
 
 
-const req = require.context('../stories', true, /\.stories\.tsx$/)
+const req = require.context('../components', true, /\.(story|stories)\.tsx$/)
 
 function loadStories() {
     req.keys().forEach(req)

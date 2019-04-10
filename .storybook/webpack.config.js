@@ -9,5 +9,10 @@ module.exports = ({ config }) => {
 
     config.resolve.extensions.push('.ts', '.tsx')
 
+    config.resolve.alias = {
+        ...config.resolve.alias,
+        ...require('../next.config').aliases
+    }
+
     return config
 }

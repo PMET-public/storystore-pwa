@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import initApollo from './init-apollo'
+import initApollo from '@luma/lib/init-apollo'
 import Head from 'next/head'
 import { getDataFromTree } from 'react-apollo'
 

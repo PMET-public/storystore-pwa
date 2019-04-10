@@ -1,9 +1,9 @@
-import { getFullPageTitle } from '../lib/helpers'
+import { getFullPageTitle } from '@luma/lib/helpers'
 import { gql } from 'apollo-boost'
 import { Query } from 'react-apollo'
 
-import DocumentMetadata from './DocumentMetadata'
-import FlashMessage from './FlashMessage'
+import DocumentMetadata from '@luma/components/DocumentMetadata'
+import FlashMessage from '@luma/components/FlashMessage'
 import { NextFunctionComponent } from 'next'
 import { Fragment } from 'react'
 
@@ -27,7 +27,7 @@ const APP_SHELL_QUERY = gql`
 
 const App: NextFunctionComponent = ({ children }) => (
     <Query query={APP_SHELL_QUERY} fetchPolicy="cache-first" errorPolicy="all">
-        {({ loading, error, data: { flashMessage, storeConfig } }: any) => {
+        {({ loading, data: { flashMessage, storeConfig } }: any) => {
 
             if (loading) return '⏲Loading...'
 

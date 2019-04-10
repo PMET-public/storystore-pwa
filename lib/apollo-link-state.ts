@@ -58,14 +58,12 @@ type Resolvers = {
 
 export const resolvers: Resolvers = {
     Mutation: {
-        updateNetworkStatus: (_, { isConnected }, { cache }) => {
-            const networkStatus = { isConnected }
+        updateNetworkStatus: (_, networkStatus: { isConnected: boolean }, { cache }) => {
             cache.writeData({ data: networkStatus })
             return null
         },
 
-        setFlashMessage: (_, { message, type }, { cache }) => {
-            const flashMessage = { message, type }
+        setFlashMessage: (_, flashMessage: { message: string, type: string } | null, { cache }) => {
             cache.writeData({ data: flashMessage })
             return null
         }

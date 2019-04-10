@@ -11,7 +11,7 @@ module.exports = {
         clientSchemaDirectives: ['client', 'rest'],
         includes: [
             './components/**/*.tsx',
-            './lib/apollo-link-state.tsx'
+            './lib/apollo-link-state.ts'
         ]
     }
 }

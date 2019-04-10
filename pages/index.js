@@ -1,4 +1,4 @@
-import App from '../components/App'
+import App from '@luma/components/App'
 
 const Index = () => (
     <App>

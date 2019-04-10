@@ -7,7 +7,13 @@ const withTypescript = require('@zeit/next-typescript')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
-module.exports = withOffline(withTypescript({
+const aliases = {
+    '@luma/components': path.join(__dirname, 'components'),
+    '@luma/lib': path.join(__dirname, 'lib'),
+    '@luma/hocs': path.join(__dirname, 'hocs'),
+}
+
+const _default = withOffline(withTypescript({
     generateSw: true,
     workboxOpts: {
         swDest: 'static/service-worker.js',
@@ -32,18 +38,26 @@ module.exports = withOffline(withTypescript({
                         statuses: [0, 200],
                     }
                 }
-            }
-        ]
+            },
+        ],
     },
 
     webpack: (config) => {
+
+        /**
+         * Aliases
+         */
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            ...aliases
+        }
 
         /** 
          * Environment variables exposed to the UI 
          */
         config.plugins.push(new webpack.EnvironmentPlugin([
-            'MAGENTO_BACKEND_URL'
-        ]));
+            'MAGENTO_BACKEND_URL',
+        ]))
 
         /**
          * PWA Manifest
@@ -57,10 +71,10 @@ module.exports = withOffline(withTypescript({
             short_name: 'Luma',
             description: 'With more than 230 stores spanning 43 states and growing, Luma is a nationally recognized active wear manufacturer and retailer. We’re passionate about active lifestyles – and it goes way beyond apparel.',
             background_color: '#ffffff',
-            orientation: "portrait",
+            orientation: 'portrait',
             display: "standalone",
-            start_url: ".",
-            publicPath: "../",
+            start_url: '.',
+            publicPath: '../',
             icons: [
                 {
                     src: path.resolve('./static/images/app-icon.png'),
@@ -72,8 +86,8 @@ module.exports = withOffline(withTypescript({
                     sizes: [120, 152, 167, 180],
                     destination: path.join('static', 'icons'),
                     ios: true
-                }
-            ]
+                },
+            ],
 
 
         }))
@@ -81,3 +95,8 @@ module.exports = withOffline(withTypescript({
         return config
     }
 }))
+
+module.exports = {
+    default: _default,
+    aliases
+}
