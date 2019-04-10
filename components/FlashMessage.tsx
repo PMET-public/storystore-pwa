@@ -4,10 +4,10 @@ import { getClassNamesWithModifier } from '../lib/helpers'
 type Props = {
     message: string
     type: 'error' | 'notice' | 'warning'
-    onClose: () => void
+    onClose?: () => void
 }
 
-const FlashMessage = ({ message, type, onClose }: Props) => (
+const FlashMessage = ({ message, type, onClose = () => {} }: Props) => (
     <div className={getClassNamesWithModifier('app-flash-message', type)}>
         {message}
 

@@ -21,6 +21,6 @@ storiesOf('FlashMessage', module)
     .add('Notice', () => (
         <FlashMessage 
             type="notice" 
-            message={text('message', 'Hello. Is this me you\'re looking for?')} 
+            message={text('message', 'Hello. Is this me you`re looking for?')} 
             onClose={action('onClose')}/>
     ))

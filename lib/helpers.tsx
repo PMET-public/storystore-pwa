@@ -2,7 +2,7 @@
  * Returns full page title
  * @param {*} arr 
  */
-export const getFullPageTitle = (arr) => arr.filter(x => !!x).join(' | ')
+export const getFullPageTitle = (arr: string[]) => arr.filter(x => !!x).join(' | ')
 
  /**
   * Returns a string with all classes
@@ -11,7 +11,7 @@ export const getFullPageTitle = (arr) => arr.filter(x => !!x).join(' | ')
   * @param  {...any} modifiers 
   */
 
-export const getClassNamesWithModifier = (className, ...modifiers) => {
+export const getClassNamesWithModifier = (className: string, ...modifiers: string[]) => {
     const _modifiers= modifiers
         .filter(m =>!!m)
         .map(m => `${className}--${m}`)

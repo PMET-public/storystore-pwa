@@ -1,75 +1,73 @@
 // import gql from 'graphql-tag'
 import { getFullPageTitle } from '../lib/helpers'
 import { gql } from 'apollo-boost'
-// import { Query } from 'react-apollo'
+import { Query } from 'react-apollo'
 
-import Query from './Query'
 import DocumentMetadata from './DocumentMetadata'
 import FlashMessage from './FlashMessage'
+import { NextFunctionComponent } from 'next'
+import { Fragment } from 'react'
 
 const APP_SHELL_QUERY = gql`
-    query AppShell {
-        flashMessage @client { 
-            type
-            message 
-        }
-
+    query AppShellQuery {
+        # flashMessage @client {
+        #     type
+        #     message
+        # }
         storeConfig {
-            default_description
-            default_keywords
+            __typename
             default_title
-            title_prefix
-            title_suffix
         }
     }
+    
 `
 
-const App = ({ children }) => (
-    <Query query={APP_SHELL_QUERY} fetchPolicy="cache-first">
-        {({ 
-            flashMessage,
+const App: NextFunctionComponent = ({ children }) => (
+    <Query query={APP_SHELL_QUERY} fetchPolicy="cache-first" errorPolicy="all">
+        {({
+            loading,
+            error,
+            data
+        }: any) => {
+            if (loading) return '⏲Loading...'
+            if (error) return `⚠️ ${error.message}`
+            console.log({ loading, error, data })
+            return null
+            return (
+                <Fragment>
+                    <DocumentMetadata
+                        title={getFullPageTitle([title_prefix, default_title, title_suffix])}
+                        description={default_description}
+                        keywords={default_keywords} />
 
-            storeConfig: {
-                default_description: description,
-                default_keywords: keywords,
-                default_title: title,
-                title_prefix: titlePrefix,
-                title_suffix: titleSuffix,
-            } 
-        }) => <>
-                <DocumentMetadata
-                    title={getFullPageTitle([titlePrefix, title, titleSuffix])}
-                    description={description}
-                    keywords={keywords} />
-        
-                { flashMessage && <FlashMessage {...flashMessage} /> }
+                    {flashMessage && <FlashMessage type={flashMessage.type} message={flashMessage.message} />}
 
-                <main>
-                    <h2>{description}</h2>
-                    {children}
-                </main>
+                    <main>
+                        <h2>{default_description}</h2>
+                        {children}
 
-                <style global jsx>{`
-                        :root {
-                            --color-primary: blue;
-                            --color-primary--contrast: white;
-                            --color-error: red;
-                            --color-error--contrast: white;
-                            --color-warning: yellow;
-                            --color-warning--contrast: black;
-                        }
-                        html {
-                            font-size: 10px;
-                            font-height: 1
-                        }
+                        <style global jsx>{`
+                            :root {
+                                --color-primary: blue;
+                                --color-primary--contrast: white;
+                                --color-error: red;
+                                --color-error--contrast: white;
+                                --color-warning: yellow;
+                                --color-warning--contrast: black;
+                            }
+                            html {
+                                font-size: 10px;
+                                font-height: 1
+                            }
 
-                        body {
-                            font-size: 1.6rem;
-                        }
-                `}</style>
-            </>
-        }
-
+                            body {
+                                font-size: 1.6rem;
+                            }
+                        `}</style>
+                    </main>
+                </Fragment>
+            )
+        }}
     </Query>
 )
 

@@ -4,8 +4,6 @@ import gql from 'graphql-tag'
  * Extending the types of our server schema
  */
 export const typeDefs = gql`
-
- 
     type NetworkStatus {
         isConnected: Boolean!
     }
@@ -50,9 +48,15 @@ export const defaults = {
 }
 
 /**
- * Mutations 
+ * Resolvers 
  */
-export const resolvers = {
+type Resolvers = {
+    Mutation: {
+        [mutation: string]: (_: any, data: any, props?: any) => null
+    }
+}
+
+export const resolvers: Resolvers = {
     Mutation: {
         updateNetworkStatus: (_, { isConnected }, { cache }) => {
             const networkStatus = { isConnected }
@@ -67,3 +71,4 @@ export const resolvers = {
         }
     }
 }
+
