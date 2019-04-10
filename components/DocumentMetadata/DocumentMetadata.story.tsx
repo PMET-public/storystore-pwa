@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react'
 import { text } from '@storybook/addon-knobs'
 import DocumentMetadata from './DocumentMetadata'
 
-storiesOf('helpers/DocumentMetadata', module)
+storiesOf('Utilities/DocumentMetadata', module)
     .add('default', () => (
         <DocumentMetadata 
             title={text('title', 'Luma Storyboard')}

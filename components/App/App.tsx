@@ -1,11 +1,10 @@
-import { getFullPageTitle } from '@luma/lib/helpers'
+import React, { Fragment } from 'react'
 import { gql } from 'apollo-boost'
 import { Query } from 'react-apollo'
-
+import { NextFunctionComponent } from 'next'
+import { getFullPageTitle } from '@luma/lib/helpers'
 import DocumentMetadata from '@luma/components/DocumentMetadata'
 import FlashMessage from '@luma/components/FlashMessage'
-import { NextFunctionComponent } from 'next'
-import { Fragment } from 'react'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
@@ -22,7 +21,6 @@ const APP_SHELL_QUERY = gql`
         }
     
     }
-    
 `
 
 const App: NextFunctionComponent = ({ children }) => (

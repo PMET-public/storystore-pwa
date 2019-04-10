@@ -2,10 +2,9 @@ import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { text } from '@storybook/addon-knobs'
 import { action } from '@storybook/addon-actions'
-
 import FlashMessage from './FlashMessage'
 
-storiesOf('molecules/FlashMessage', module)
+storiesOf('Components/FlashMessage', module)
     .add('Notice', () => (
         <FlashMessage
             type="info"
