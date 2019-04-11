@@ -1,6 +1,6 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-// import { text } from '@storybook/addon-knobs'
+import { boolean } from '@storybook/addon-knobs'
 import App from './App'
 import { FlashMessageProps } from '../FlashMessage'
 
@@ -10,6 +10,6 @@ const flashMessage: FlashMessageProps = {
 }
 
 storiesOf('Components/App', module)
-    .add('default', () => (
-        <App  flashMessage={flashMessage} />
+    .add('Default', () => (
+        <App flashMessage={boolean('Flash Message', false) ? flashMessage : undefined} />
     ))

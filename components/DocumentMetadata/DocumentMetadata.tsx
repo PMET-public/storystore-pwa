@@ -1,3 +1,5 @@
+
+import React, { FunctionComponent } from 'react';
 import Head from 'next/head'
 
 export type DocumentMetadataProps = {
@@ -6,7 +8,7 @@ export type DocumentMetadataProps = {
    keywords?: string
 }
 
-const DocumentMetadata = ({ title, description, keywords }: DocumentMetadataProps) => (
+const DocumentMetadata: FunctionComponent<DocumentMetadataProps> = ({ title, description, keywords }) => (
     <Head>
         {title && <title>{title}</title>}
         {description && <meta name="description" content={description} />}

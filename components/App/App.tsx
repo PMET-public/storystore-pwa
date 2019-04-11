@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react'
-import { NextFunctionComponent } from 'next'
+import React, { Fragment, FunctionComponent } from 'react'
 import DocumentMetadata, { DocumentMetadataProps } from '@luma/components/DocumentMetadata'
 import FlashMessage, { FlashMessageProps } from '@luma/components/FlashMessage'
 
@@ -9,7 +8,7 @@ export type AppProps = {
 }
 
 
-const App: NextFunctionComponent<AppProps> = ({ metadata, flashMessage, children }) => (
+const App: FunctionComponent<AppProps> = ({ metadata, flashMessage, children }) => (
     <Fragment>
         { metadata && <DocumentMetadata
             title={metadata.title}
