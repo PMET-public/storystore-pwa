@@ -1,13 +1,16 @@
 import { Component } from 'react'
-import initApollo from './init-apollo'
+import initApollo from '@luma/lib/init-apollo'
 import Head from 'next/head'
 import { getDataFromTree } from 'react-apollo'
 
-export default (App) => class Apollo extends Component {
+const isBrowser = typeof window !== 'undefined'
+
+export default (App: any) => class Apollo extends Component {
 
   static displayName = 'withApollo(App)'
+    apolloClient: any;
 
-  static async getInitialProps(ctx) {
+  static async getInitialProps(ctx: any) {
     const { Component, router } = ctx
 
     let appProps = {}
@@ -18,7 +21,7 @@ export default (App) => class Apollo extends Component {
     // Run all GraphQL queries in the component tree
     // and extract the resulting data
     const apollo = initApollo()
-    if (!process.browser) {
+    if (!isBrowser) {
       try {
         // Run all GraphQL queries
         await getDataFromTree(
@@ -50,7 +53,7 @@ export default (App) => class Apollo extends Component {
     }
   }
 
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.apolloClient = initApollo(props.apolloState)
   }

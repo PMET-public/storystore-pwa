@@ -1,29 +1,4 @@
-import App from '../components/App'
-import gql from 'graphql-tag'
-
-const GET_CATEGORY_LIST_QUERY = gql`
-    query categoryList($id: Int!) {
-        category(id: $id) {
-            id
-            children {
-                id
-                name
-                url_key
-                url_path
-                children_count
-                path
-                image
-                productImagePreview: products(pageSize: 1) {
-                    items {
-                        small_image {
-                            url
-                        }
-                    }
-                }
-            }
-        }
-    }
-`
+import App from '@luma/components/App'
 
 const Index = () => (
     <App>

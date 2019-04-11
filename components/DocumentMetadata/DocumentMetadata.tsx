@@ -1,6 +1,12 @@
 import Head from 'next/head'
 
-const DocumentMetadata = ({ title = null, description = null, keywords = null }) => (
+type Props = {
+   title?: string
+   description?: string
+   keywords?: string
+}
+
+const DocumentMetadata = ({ title, description, keywords }: Props) => (
     <Head>
         {title && <title>{title}</title>}
         {description && <meta name="description" content={description} />}

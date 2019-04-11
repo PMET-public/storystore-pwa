@@ -1,7 +1,13 @@
-import { getClassNamesWithModifier } from '../lib/helpers'
+import React from 'react'
+import { getClassNamesWithModifier } from '@luma/lib/helpers'
 
+type Props = {
+    message: string
+    type: 'error' | 'info' | 'warning'
+    onClose?: () => void
+}
 
-const FlashMessage = ({ message, type, onClose = () => {} }) => (
+const FlashMessage = ({ message, type, onClose = () => {} }: Props) => (
     <div className={getClassNamesWithModifier('app-flash-message', type)}>
         {message}
 
@@ -20,13 +26,18 @@ const FlashMessage = ({ message, type, onClose = () => {} }) => (
             }
 
             .app-flash-message--error {
-                background-color: var(--color-error);
-                color: var(--color-error--contrast);
+                background-color: var(--color-error, red);
+                color: var(--color-error--contrast, white);
+            }
+
+            .app-flash-message--info {
+                background-color: var(--color-info, teal);
+                color: var(--color-info--contrast, white);
             }
 
             .app-flash-message--warning {
-                background-color: var(--color-warning);
-                color: var(--color-warning--contrast);
+                background-color: var(--color-warning, yellow);
+                color: var(--color-warning--contrast, black);
             }
         `}</style>
     </div>
