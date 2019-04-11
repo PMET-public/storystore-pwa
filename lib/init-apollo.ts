@@ -3,19 +3,20 @@ import { ApolloClient, InMemoryCache, HttpLink } from 'apollo-boost'
 import { defaults, typeDefs, resolvers } from './apollo-link-state'
 import { ApolloLink } from 'apollo-link'
 import { onError } from 'apollo-link-error'
+import { graphQLUrl } from '../apollo.config'
 
 declare var global: any
 declare var window: any
 
 const isBrowser = typeof window !== 'undefined'
+const uri = isBrowser ? '/graphql' : graphQLUrl
+
+console.log(`((( 📡 ))) ${uri}`)
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (!isBrowser) {
     global.fetch = fetch
 }
-
-// Magento GraphQL endpoint
-const uri = new URL('graphql', process.env.MAGENTO_BACKEND_URL).href
 
 let apolloClient: any = null
 
@@ -39,12 +40,7 @@ function create(initialState: any) {
                 if (networkError) console.log(`[Network error]: ${networkError}`)
             }),
 
-            new HttpLink({
-                uri,
-                fetchOptions: {
-                    mode: 'no-cors',
-                }
-            })
+            new HttpLink({ uri })
         ]),
         typeDefs,
         resolvers,

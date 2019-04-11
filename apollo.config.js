@@ -1,12 +1,11 @@
-require("dotenv").config({ path: './.env' })
-
-const url = new URL('graphql', process.env.MAGENTO_BACKEND_URL).href
+const graphQLUrl = new URL('/graphql', `${process.env.MAGENTO_BACKEND_URL}`).href
 
 module.exports = {
+    graphQLUrl,
     client: {
         service: {
             name: 'magento',
-            url
+            url: graphQLUrl
         },
         clientSchemaDirectives: ['client', 'rest'],
         includes: [

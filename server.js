@@ -9,8 +9,7 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 
 const graphQlUrl = new URL('graphql', process.env.MAGENTO_BACKEND_URL).href
-const port = process.env.PORT = process.env.PORT || 3000
-
+const port = process.env.PORT || 3000
 
 app.prepare().then(() => {
     const server = express()
@@ -32,6 +31,6 @@ app.prepare().then(() => {
 
     server.listen(port, err => {
         if (err) throw err
-        console.log(`> Ready on http://localhost:${port}`)
+        console.log(`\nReady on http://localhost:${port} → ${graphQlUrl}\n...`)
     })
 })
