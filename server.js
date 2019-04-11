@@ -10,6 +10,7 @@ const handle = app.getRequestHandler()
 
 const graphQlUrl = new URL('graphql', process.env.MAGENTO_BACKEND_URL).href
 const port = process.env.PORT || 3000
+const url = `http://localhost:${port}`
 
 app.prepare().then(() => {
     const server = express()
@@ -31,6 +32,13 @@ app.prepare().then(() => {
 
     server.listen(port, err => {
         if (err) throw err
-        console.log(`\nReady on http://localhost:${port} → ${graphQlUrl}\n...`)
+        console.log('Server started...')
+
+        // Launch in browser
+        if (process.env.LAUNCH_IN_BROWSER) {
+            const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+            console.log(`Launching ${url}...`)
+            require('child_process').exec(start + ' ' + url);
+        }
     })
 })

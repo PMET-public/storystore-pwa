@@ -1,4 +1,6 @@
-const graphQLUrl = new URL('/graphql', `${process.env.MAGENTO_BACKEND_URL}`).href
+require('dotenv').config()
+
+const graphQLUrl = new URL('graphql', `${process.env.MAGENTO_BACKEND_URL}`).href
 
 module.exports = {
     graphQLUrl,

@@ -5,9 +5,10 @@
   "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "concurrently -n storybook,server.js -c cyan,magenta 'yarn storybook' 'yarn serve'",
+    "serve": "LAUNCH_IN_BROWSER=1 node server.js",
+    "storybook": "start-storybook -p 5001 --quiet",
     "build": "next build",
-    "storybook": "start-storybook -p 5001",
     "start": "NODE_ENV=production node server.js",
     "type-check": "tsc"
   },
@@ -43,6 +44,7 @@
     "@types/storybook__react": "^4.0.1",
     "@types/styled-jsx": "^2.2.8",
     "babel-loader": "^8.0.5",
+    "concurrently": "^4.1.0",
     "typescript": "^3.4.2",
     "webpack": "^4.29.6",
     "webpack-pwa-manifest": "^4.0.0"
