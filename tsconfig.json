@@ -22,6 +22,7 @@
         "paths": {
             "@luma/lib/*": [ "lib/*" ],
             "@luma/components/*": [ "components/*" ],
+            "@luma/containers/*": [ "containers/*" ],
             "@luma/hocs/*": [ "hocs/*"],
         },
     },

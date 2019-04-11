@@ -1,48 +1,27 @@
 import React, { Fragment } from 'react'
-import { gql } from 'apollo-boost'
-import { Query } from 'react-apollo'
 import { NextFunctionComponent } from 'next'
-import { getFullPageTitle } from '@luma/lib/helpers'
-import DocumentMetadata from '@luma/components/DocumentMetadata'
-import FlashMessage from '@luma/components/FlashMessage'
+import DocumentMetadata, { DocumentMetadataProps } from '@luma/components/DocumentMetadata'
+import FlashMessage, { FlashMessageProps } from '@luma/components/FlashMessage'
 
-const APP_SHELL_QUERY = gql`
-    query AppShellQuery {
-        flashMessage @client { 
-            type
-            message 
-        }
-        storeConfig {
-            default_description
-            default_keywords
-            default_title
-            title_prefix
-            title_suffix
-        }
-    
-    }
-`
+export type AppProps = {
+    metadata?: DocumentMetadataProps
+    flashMessage?: FlashMessageProps
+}
 
-const App: NextFunctionComponent = ({ children }) => (
-    <Query query={APP_SHELL_QUERY} fetchPolicy="cache-first" errorPolicy="all">
-        {({ loading, data: { flashMessage, storeConfig } }: any) => {
 
-            if (loading) return '⏲Loading...'
+const App: NextFunctionComponent<AppProps> = ({ metadata, flashMessage, children }) => (
+    <Fragment>
+        { metadata && <DocumentMetadata
+            title={metadata.title}
+            description={metadata.description}
+            keywords={metadata.keywords} /> }
 
-            return (
-                <Fragment>
-                    <DocumentMetadata
-                        title={getFullPageTitle([storeConfig.title_prefix, storeConfig.default_title, storeConfig.title_suffix])}
-                        description={storeConfig.default_description}
-                        keywords={storeConfig.default_keywords} />
+        { flashMessage && <FlashMessage type={flashMessage.type} message={flashMessage.message} /> }
 
-                    { flashMessage && <FlashMessage type={flashMessage.type} message={flashMessage.message} /> }
+        <main>
+            {children}
 
-                    <main>
-                        <h2>{storeConfig.default_title}</h2>
-                        {children}
-
-                        <style global jsx>{`
+            <style global jsx>{`
                             :root {
                                 --color-primary: blue;
                                 --color-primary--contrast: white;
@@ -60,11 +39,8 @@ const App: NextFunctionComponent = ({ children }) => (
                                 font-size: 1.6rem;
                             }
                         `}</style>
-                    </main>
-                </Fragment>
-            )
-        }}
-    </Query>
+        </main>
+    </Fragment>
 )
 
 export default App

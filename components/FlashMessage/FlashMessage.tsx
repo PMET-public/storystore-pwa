@@ -1,13 +1,13 @@
 import React from 'react'
 import { getClassNamesWithModifier } from '@luma/lib/helpers'
 
-type Props = {
+export type FlashMessageProps = {
     message: string
     type: 'error' | 'info' | 'warning'
     onClose?: () => void
 }
 
-const FlashMessage = ({ message, type, onClose = () => {} }: Props) => (
+const FlashMessage = ({ message, type, onClose = () => {} }: FlashMessageProps) => (
     <div className={getClassNamesWithModifier('app-flash-message', type)}>
         {message}
 

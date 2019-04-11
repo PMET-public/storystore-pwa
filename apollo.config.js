@@ -10,6 +10,7 @@ module.exports = {
         clientSchemaDirectives: ['client', 'rest'],
         includes: [
             './components/**/*.tsx',
+            './containers/**/*.tsx',
             './lib/apollo-link-state.ts'
         ]
     }

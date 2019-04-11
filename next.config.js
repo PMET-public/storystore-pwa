@@ -9,6 +9,7 @@ const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 const aliases = {
     '@luma/components': path.join(__dirname, 'components'),
+    '@luma/containers': path.join(__dirname, 'containers'),
     '@luma/lib': path.join(__dirname, 'lib'),
     '@luma/hocs': path.join(__dirname, 'hocs'),
 }
