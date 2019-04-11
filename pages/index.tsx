@@ -1,8 +1,7 @@
-import React from 'react'
-import { NextFunctionComponent } from 'next'
+import React, { FunctionComponent } from 'react'
 import App from '@luma/containers/App'
 
-const Index: NextFunctionComponent = () => (
+const Index: FunctionComponent = () => (
     <App>
         <div className="title">
             <span className="wave">👋🌍</span>
