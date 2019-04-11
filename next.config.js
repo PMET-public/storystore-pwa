@@ -46,6 +46,14 @@ const _default = withOffline(withTypescript({
     webpack: (config) => {
 
         /**
+         * Fix for missing 'fs' module not found
+         * https://github.com/webpack-contrib/css-loader/issues/447
+         */
+        config.node = {
+            fs: 'empty'
+        }
+
+        /**
          * Aliases
          */
         config.resolve.alias = {

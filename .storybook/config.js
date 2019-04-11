@@ -1,4 +1,5 @@
-import { configure, addDecorator } from '@storybook/react'
+import { configure, addDecorator, addParameters } from '@storybook/react'
+import { themes } from '@storybook/theming'
 
 import { withKnobs } from '@storybook/addon-knobs'
 import { withA11y } from '@storybook/addon-a11y'
@@ -10,6 +11,13 @@ addDecorator(withInfo({
     header: false,
     inline: true,
 }))
+
+addParameters({
+    options: {
+        name: 'Luma',
+        theme: themes.dark,
+    },
+})
 
 const req = require.context('../components', true, /\.(story|stories)\.tsx$/)
 
