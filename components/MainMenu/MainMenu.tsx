@@ -16,27 +16,30 @@ const List: FunctionComponent<{ items: Item[] }> = (({ items }) => (
         { items.map(({ name, url, items: subItems }) => (
             <li key={url} className="main-menu__list__item">
                 <Link href={url}><a>{name}</a></Link>
-                { subItems && <MainMenu items={subItems} /> }
+                { subItems && <List items={subItems} /> }
             </li>
         )) }
 
         <style jsx>{`
             .main-menu__list {
-                box-sizing: border-box;
-                width: 100%;
-                position: absolute;
-                top: 0;
-                display: flex;
-                flex-direction: column;
                 border: 1px dashed red;
+                flex-direction: column;
                 list-style: none;
                 margin: 0;
-                padding: 2rem;
+                padding: 0;
             }
 
             .main-menu__list__item {
                 display: flex;
                 flex-direction: row;
+            }
+
+            .main-menu__list__item > .main-menu__list {
+                display: none;
+            }
+
+            .main-menu__list__item:hover > .main-menu__list {
+                display: block;
             }
         `}</style>
     </ul>
