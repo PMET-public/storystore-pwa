@@ -34,6 +34,6 @@ const mockData: MainMenuProps = {
 }
 
 storiesOf('Components/MainMenu', module)
-    .add('Default', () => (
+    .add('React', () => (
         <MainMenu items={mockData.items} />
     ))
