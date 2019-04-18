@@ -1,6 +1,6 @@
 import React, { Fragment, FunctionComponent } from 'react'
-import DocumentMetadata, { DocumentMetadataProps } from '@luma/components/DocumentMetadata'
-import FlashMessage, { FlashMessageProps } from '@luma/components/FlashMessage'
+import { DocumentMetadata, DocumentMetadataProps } from '@luma/components/DocumentMetadata'
+import { FlashMessage, FlashMessageProps } from '@luma/components/FlashMessage'
 
 export type AppProps = {
     metadata?: DocumentMetadataProps
@@ -8,7 +8,7 @@ export type AppProps = {
 }
 
 
-const App: FunctionComponent<AppProps> = ({ metadata, flashMessage, children }) => (
+export const App: FunctionComponent<AppProps> = ({ metadata, flashMessage, children }) => (
     <Fragment>
         { metadata && <DocumentMetadata
             title={metadata.title}
@@ -41,5 +41,3 @@ const App: FunctionComponent<AppProps> = ({ metadata, flashMessage, children }) 
         </main>
     </Fragment>
 )
-
-export default App

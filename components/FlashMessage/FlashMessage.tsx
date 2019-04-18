@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { getClassNamesWithModifier } from '@luma/lib/helpers'
+import Button from '@luma/components/Button'
 
 export type FlashMessageProps = {
     message: string
@@ -7,14 +8,14 @@ export type FlashMessageProps = {
     onClose: () => void
 }
 
-const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onClose }) => (
-    <div className={getClassNamesWithModifier('app-flash-message', type)}>
+export const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onClose }) => (
+    <div className={getClassNamesWithModifier('flash-message', type)}>
         {message}
 
-        <button type="button" onClick={onClose}>Close</button>
+        <Button onClick={onClose}>Close</Button>
 
         <style jsx>{`
-            .app-flash-message {
+            .flash-message {
                 background-color: var(--color-primary);
                 color: var(--color-primary--text);
                 font-size: 1.5rem;
@@ -25,22 +26,20 @@ const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onC
                 top: 0;
             }
 
-            .app-flash-message--error {
+            .flash-message--error {
                 background-color: var(--color-error, red);
                 color: var(--color-error--contrast, white);
             }
 
-            .app-flash-message--info {
+            .flash-message--info {
                 background-color: var(--color-info, teal);
                 color: var(--color-info--contrast, white);
             }
 
-            .app-flash-message--warning {
+            .flash-message--warning {
                 background-color: var(--color-warning, yellow);
                 color: var(--color-warning--contrast, black);
             }
         `}</style>
     </div>
 )
-
-export default FlashMessage

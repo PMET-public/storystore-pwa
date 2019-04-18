@@ -1,2 +1,2 @@
-export { default } from './FlashMessage'
-export * from   './FlashMessage'
+export * from './FlashMessage'
+export { FlashMessage as default } from './FlashMessage'
