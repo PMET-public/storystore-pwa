@@ -7,7 +7,7 @@ type SidePanelProps = {
     onClickClose: () => void
 }
 
-const SidePanel: FunctionComponent<SidePanelProps> = ({ children, onClickClose, position = 'left', isOpen = true }) => {
+export const SidePanel: FunctionComponent<SidePanelProps> = ({ children, onClickClose, position = 'left', isOpen = true }) => {
     return (
         <Fragment>
             <button 
@@ -83,5 +83,3 @@ const SidePanel: FunctionComponent<SidePanelProps> = ({ children, onClickClose, 
 
     )
 }
-
-export default SidePanel

@@ -46,10 +46,8 @@ const List: FunctionComponent<{ items: Item[] }> = (({ items }) => (
 ))
 
 
-const MainMenu: FunctionComponent<MainMenuProps> = ({ items }) => (
+export const MainMenu: FunctionComponent<MainMenuProps> = ({ items }) => (
     <nav className="main-menu">
         { items && <List items={items} /> }
     </nav>
 )
-
-export default MainMenu

@@ -1,7 +1,7 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { boolean } from '@storybook/addon-knobs'
-import App from './App'
+import App from './'
 import { FlashMessageProps } from '../FlashMessage'
 import { action } from '@storybook/addon-actions'
 

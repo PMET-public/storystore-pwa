@@ -1,17 +1,21 @@
+const path = require('path')
+
 module.exports = ({ config }) => {
 
     config.node = {
         fs: 'empty'
     }
 
-    config.module.rules.push({
-        test: /\.(ts|tsx)$/,
-        loader: require.resolve('babel-loader'),
-        options: {
-            presets: [require.resolve('babel-preset-react-app')],
-            plugins: [require.resolve('babel-plugin-typescript-to-proptypes')],
-        },
-    })
+    config.module.rules.push(
+        {
+            test: /\.(ts|tsx)$/,
+            loader: require.resolve('babel-loader'),
+            options: {
+                presets: [require.resolve('babel-preset-react-app')],
+                plugins: [require.resolve('babel-plugin-typescript-to-proptypes')],
+            },
+        }
+    )
 
     config.resolve.extensions.push('.ts', '.tsx')
 

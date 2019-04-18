@@ -1,6 +1,6 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-import MainMenu, { MainMenuProps } from './MainMenu'
+import MainMenu, { MainMenuProps } from './'
 
 const mockData: MainMenuProps = {
     items: [

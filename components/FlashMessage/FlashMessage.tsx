@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { getClassNamesWithModifier } from '@luma/lib/helpers'
+import Button from '@luma/components/Button'
 
 export type FlashMessageProps = {
     message: string
@@ -7,11 +8,11 @@ export type FlashMessageProps = {
     onClose: () => void
 }
 
-const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onClose }) => (
+export const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onClose }) => (
     <div className={getClassNamesWithModifier('flash-message', type)}>
         {message}
 
-        <button type="button" onClick={onClose}>Close</button>
+        <Button onClick={onClose}>Close</Button>
 
         <style jsx>{`
             .flash-message {
@@ -42,5 +43,3 @@ const FlashMessage: FunctionComponent<FlashMessageProps> = ({ message, type, onC
         `}</style>
     </div>
 )
-
-export default FlashMessage

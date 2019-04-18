@@ -2,7 +2,7 @@ import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { text, select } from '@storybook/addon-knobs'
 import { action } from '@storybook/addon-actions'
-import FlashMessage from './FlashMessage'
+import FlashMessage from './'
 
 storiesOf('Components/FlashMessage', module)
     .add('React', () => (
