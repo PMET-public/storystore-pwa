@@ -1,9 +1,10 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, Fragment } from 'react'
 import { gql } from 'apollo-boost'
 import { Query } from 'react-apollo'
-import { getFullPageTitle } from '@luma/lib/helpers'
-import _App from '@luma/components/App'
-import { DocumentMetadataProps } from '@luma/components/DocumentMetadata';
+import { getFullPageTitle } from 'luma-storybook/dist/lib/helpers'
+import _App from 'luma-storybook/dist/components/App'
+import { DocumentMetadataProps } from '@app/components/DocumentMetadata'
+import DocumentMetadata from '@app/components/DocumentMetadata'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
@@ -18,7 +19,6 @@ const APP_SHELL_QUERY = gql`
             title_prefix
             title_suffix
         }
-    
     }
 `
 
@@ -42,9 +42,12 @@ const App: FunctionComponent<any> = ({ children, ...rest }) => (
 
             if (loading) return '⏲Loading...'
             return (
-                <_App metadata={metadata} flashMessage={flashMessage} {...rest}>
-                    {children}
-                </_App>
+                <Fragment>
+                    <DocumentMetadata {...metadata} />
+                    <_App flashMessage={flashMessage} {...rest}>
+                        {children}
+                    </_App>
+                </Fragment>
             )
         }}
     </Query>

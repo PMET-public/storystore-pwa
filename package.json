@@ -1,13 +1,11 @@
 {
-  "name": "luma-pwa",
+  "name": "luma-storefront",
   "version": "1.0.0",
   "main": "server.js",
   "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently -n storybook,server.js -c cyan,magenta 'yarn storybook' 'yarn serve'",
-    "serve": "LAUNCH_IN_BROWSER=1 node server.js",
-    "storybook": "start-storybook -p 5001 --quiet",
+    "dev": "LAUNCH_IN_BROWSER=1 node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "type-check": "tsc"
@@ -25,28 +23,16 @@
     "preact": "^8.4.2",
     "react": "^16.8.5",
     "react-apollo": "^2.5.3",
-    "react-dom": "^16.8.5"
+    "react-dom": "^16.8.5",
+    "luma-storybook": "1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
-    "@storybook/addon-a11y": "^5.0.9",
-    "@storybook/addon-actions": "^5.0.9",
-    "@storybook/addon-backgrounds": "^5.0.9",
-    "@storybook/addon-info": "^5.0.10",
-    "@storybook/addon-knobs": "^5.0.9",
-    "@storybook/addon-viewport": "^5.0.9",
-    "@storybook/react": "^5.0.9",
     "@types/next": "^8.0.3",
     "@types/node": "^11.13.2",
     "@types/react": "^16.8.13",
-    "@types/react-dom": "^16.8.3",
-    "@types/storybook__addon-actions": "^3.4.2",
-    "@types/storybook__addon-knobs": "^4.0.5",
-    "@types/storybook__react": "^4.0.1",
+    "@types/react-dom": "^16.8.3",    
     "@types/styled-jsx": "^2.2.8",
-    "babel-loader": "^8.0.5",
-    "babel-plugin-typescript-to-proptypes": "^0.17.1",
-    "concurrently": "^4.1.0",
     "typescript": "^3.4.2",
     "webpack": "^4.29.6",
     "webpack-pwa-manifest": "^4.0.0"

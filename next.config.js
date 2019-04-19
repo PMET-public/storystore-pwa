@@ -7,14 +7,8 @@ const withTypescript = require('@zeit/next-typescript')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
-const aliases = {
-    '@luma/components': path.join(__dirname, 'components'),
-    '@luma/containers': path.join(__dirname, 'containers'),
-    '@luma/lib': path.join(__dirname, 'lib'),
-    '@luma/hocs': path.join(__dirname, 'hocs'),
-}
 
-const _default = withOffline(withTypescript({
+module.exports = withOffline(withTypescript({
     generateSw: true,
     workboxOpts: {
         swDest: 'static/service-worker.js',
@@ -58,7 +52,10 @@ const _default = withOffline(withTypescript({
          */
         config.resolve.alias = {
             ...config.resolve.alias,
-            ...aliases
+            '@app/components': path.join(__dirname, 'components'),
+            '@app/containers': path.join(__dirname, 'containers'),
+            '@app/lib': path.join(__dirname, 'lib'),
+            '@app/hocs': path.join(__dirname, 'hocs'),
         }
 
         /** 
@@ -104,8 +101,3 @@ const _default = withOffline(withTypescript({
         return config
     }
 }))
-
-module.exports = {
-    default: _default,
-    aliases
-}

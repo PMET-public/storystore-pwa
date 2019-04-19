@@ -20,10 +20,10 @@
         "target": "esnext",
         "baseUrl": "./",
         "paths": {
-            "@luma/lib/*": [ "lib/*" ],
-            "@luma/components/*": [ "components/*" ],
-            "@luma/containers/*": [ "containers/*" ],
-            "@luma/hocs/*": [ "hocs/*"],
+            "@app/lib/*": [ "lib/*" ],
+            "@app/components/*": [ "components/*" ],
+            "@app/containers/*": [ "containers/*" ],
+            "@app/hocs/*": [ "hocs/*"],
         },
     },
 }

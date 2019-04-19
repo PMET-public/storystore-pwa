@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import App from '@luma/containers/App'
+import App from '@app/containers/App'
 
 const Index: FunctionComponent = () => (
     <App>
