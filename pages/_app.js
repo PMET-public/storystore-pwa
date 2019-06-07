@@ -2,6 +2,7 @@ import React from 'react'
 import App, { Container } from 'next/app'
 import { ApolloProvider } from 'react-apollo'
 import withApolloClient from '@app/hocs/withApolloClient'
+import ThemeProvider from 'luma-storybook/dist/lib/theme'
 
 class MyApp extends App {
 
@@ -10,7 +11,9 @@ class MyApp extends App {
         return (
             <Container>
                 <ApolloProvider client={apolloClient}>
-                    <Component {...pageProps} />
+                    <ThemeProvider>
+                        <Component {...pageProps} />
+                    </ThemeProvider>
                 </ApolloProvider>
             </Container>
         )

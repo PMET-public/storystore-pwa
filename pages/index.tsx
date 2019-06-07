@@ -9,10 +9,7 @@ const Index: FunctionComponent = () => (
 
         <style jsx>{`
             .title {
-                font-size: 20vw;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                font-size: 4rem;
             }
         `}</style>
     </App>
