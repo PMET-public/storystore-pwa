@@ -94,9 +94,15 @@ module.exports = withOffline(withTypescript({
                     ios: true
                 },
             ],
-
-
         }))
+
+        /** 
+         * SVG Inline
+         */
+        config.module.rules.push({
+            test: /\.svg$/,
+            use: 'react-svg-loader',
+        });
 
         return config
     }

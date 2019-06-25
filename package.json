@@ -1,5 +1,5 @@
 {
-  "name": "luma-storefront",
+  "name": "luma-pwa",
   "version": "1.0.0",
   "main": "server.js",
   "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
@@ -33,8 +33,10 @@
     "@types/react-dom": "^16.8.3",
     "@types/styled-jsx": "^2.2.8",
     "@zeit/next-typescript": "^1.1.1",
+    "eva-icons": "^1.1.1",
+    "react-svg-loader": "^3.0.3",
     "typescript": "^3.4.2",
-    "webpack": "^4.29.6",
+    "webpack": "^4.34.0",
     "webpack-pwa-manifest": "^4.0.0"
   }
 }

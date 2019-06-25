@@ -3,10 +3,7 @@
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "jsx": "preserve",
-        "lib": [
-            "dom",
-            "es2017"
-        ],
+        "lib": ["dom", "es2017"],
         "module": "esnext",
         "moduleResolution": "node",
         "noEmit": true,
@@ -20,10 +17,14 @@
         "target": "esnext",
         "baseUrl": "./",
         "paths": {
-            "@app/lib/*": [ "lib/*" ],
-            "@app/components/*": [ "components/*" ],
-            "@app/containers/*": [ "containers/*" ],
-            "@app/hocs/*": [ "hocs/*"],
+            "@app/lib/*": ["lib/*"],
+            "@app/components/*": ["components/*"],
+            "@app/containers/*": ["containers/*"],
+            "@app/hocs/*": ["hocs/*"],
         },
+        "typeRoots": [
+            "./node_modules/@types",
+            "./@types"
+        ],
     },
 }

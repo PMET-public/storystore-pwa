@@ -2,10 +2,10 @@ import Document, { Head, Main, NextScript } from 'next/document'
 import flush from 'styled-jsx/server'
 
 export default class extends Document {
-    static getInitialProps({ renderPage }) {
-        const { html, head, errorHtml, chunks } = renderPage()
-        const styles = flush()
-        return { html, head, errorHtml, chunks, styles }
+    static async getInitialProps(ctx) {
+        const initialProps = await Document.getInitialProps(ctx)
+        initialProps.styles = flush()
+        return { ...initialProps }
     }
 
     render() {
@@ -18,8 +18,8 @@ export default class extends Document {
 
                     {/* Web App Manifest  */}
                     <link rel="apple-touch-startup-image" />
-                    <link rel="manifest" 
-                        href="/_next/static/manifest.webmanifest" 
+                    <link rel="manifest"
+                        href="/_next/static/manifest.webmanifest"
                         crossOrigin="use-credentials" />
 
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
