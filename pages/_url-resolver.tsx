@@ -12,27 +12,24 @@ const QUERY = gql`
         }
     }
 `
-type ResolverProps = {}
+type ResolverProps = { }
 
 const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
     const router = useRouter()
-
-    if (!router) return null
-
+    
     const { url } = router.query
 
-    if (!url) throw new Error('Missing "url" param in query')
-
-    const { error, data: { urlResolver } } = useQuery<any>(QUERY, {
+    const { loading, error, data: { urlResolver } } = useQuery<any>(QUERY, {
         variables: { url },
-        ssr: true,
+        fetchPolicy: 'cache-first',
     })
 
-    // if (loading) return <div>Loading...</div>
+    if (loading) {
+        return <div>Loading</div>
+    }
 
     if (error) {
-        router.push({ pathname: '/_404' })
-        return null
+        throw new Error(error.message)
     }
 
     if (!urlResolver) {

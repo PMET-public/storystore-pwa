@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { gql } from 'apollo-boost'
+import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
 
@@ -35,7 +35,9 @@ const APP_SHELL_QUERY = gql`
 `
 
 export const App: FunctionComponent = ({ children }) => {
-    const { data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first', ssr: true })
+    const { loading, data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first' })
+
+    if (loading) return <div>Loading</div>
 
     const {
         // flashMessage,
@@ -67,7 +69,7 @@ export const App: FunctionComponent = ({ children }) => {
             <AppTemplate
                 logo={{
                     as: Link,
-                    href: '/no',
+                    href: '/',
                     title: logo_alt,
                 }}
 

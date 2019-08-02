@@ -3,17 +3,21 @@ require('dotenv').config()
 import express from 'express'
 import request from 'request'
 import next from 'next'
-import { uri as graphQLUri } from './lib/apollo-client'
 
-const dev = process.env.NODE_ENV !== 'production'
+const {
+    NODE_ENV = 'development',
+    PORT = 3000,
+    MAGENTO_GRAPHQL_URL = ``,
+    LAUNCH_IN_BROWSER = false,
+} = process.env
+
+const dev = NODE_ENV !== 'production'
 
 const app = next({ dev })
 
 const handle = app.getRequestHandler()
 
-const port = process.env.PORT || 3000
-
-const url = `http://localhost:${port}`
+const url = `http://localhost:${PORT}`
 
 app.prepare().then(() => {
     const server = express()
@@ -22,13 +26,13 @@ app.prepare().then(() => {
      * GraphQL Proxy
      */
     server.post('/graphql', (req, res) => {
-        req.pipe(request(graphQLUri)).pipe(res)
+        req.pipe(request(MAGENTO_GRAPHQL_URL)).pipe(res)
     })
 
     /**
      * Static Files
      */
-    server.get('_next/*', (req, res) => {
+    server.get('/_next/*', (req, res) => {
         return handle(req, res)
     })
 
@@ -39,11 +43,11 @@ app.prepare().then(() => {
         return app.render(req, res, '/_url-resolver', { url: req.url })
     })
 
-    server.listen(port, () => {
+    server.listen(PORT, () => {
         console.info('Server started...')
 
         // Launch in browser
-        if (process.env.LAUNCH_IN_BROWSER) {
+        if (LAUNCH_IN_BROWSER) {
             const start = (process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open')
             console.info(`Launching ${url}...`)
             require('child_process').exec(start + ' ' + url)
