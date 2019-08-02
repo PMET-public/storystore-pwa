@@ -1,10 +1,15 @@
 import React, { FunctionComponent } from 'react'
 import gql from 'graphql-tag'
+import dynamic from 'next/dynamic'
 
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/react-hooks'
 
 import Error from 'next/error'
+
+const CMSPage = dynamic(() => import('../templates/cms_page'))
+const Category = dynamic(() => import('../templates/category'))
+const Product = dynamic(() => import('../templates/product'))
 
 const QUERY = gql`
     query urlResolver($url: String!){
@@ -40,14 +45,16 @@ const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
 
     const { type, id } = urlResolver
 
-    return (
-        <React.Fragment>
-            <h2>URL Resolver</h2>
-            url: {url}<br />
-            type: {type} <br />
-            id: {id}
-        </React.Fragment>
-    )
+    switch (type) {
+        case 'CMS_PAGE':
+            return <CMSPage id={id} />
+        case 'CATEGORY':
+            return <Category id={id} />
+        case 'PRODUCT':
+            return <Product id={id} />
+        default:
+            return <Error statusCode={500} />
+    }
 }
 
 export default Resolver
