@@ -1,10 +1,9 @@
 import Document, { Head, Main, NextScript } from 'next/document'
-import flush from 'styled-jsx/server'
 
 export default class extends Document {
-    static async getInitialProps(ctx: any) {
+
+    static async getInitialProps(ctx) {
         const initialProps = await Document.getInitialProps(ctx)
-        initialProps.styles = flush()
         return { ...initialProps }
     }
 
