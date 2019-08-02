@@ -5,13 +5,11 @@
   "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
   "license": "MIT",
   "scripts": {
-    "predev": "rimraf dist",
-    "dev": "yarn server:build && node dist/server.js",
+    "dev": "rimraf dist && yarn server:build && node dist/server.js",
     "prebuild": "rimraf dist",
     "build": "yarn server:build && yarn next:build",
     "next:build": "next build",
     "server:build": "tsc --outDir dist --esModuleInterop server.ts",
-    "server:watch": "tsc --outDir dist --esModuleInterop --watch --preserveWatchOutput server.ts",
     "start": "NODE_ENV=production node dist/server.js"
   },
   "dependencies": {
@@ -42,6 +40,7 @@
     "@types/node": "^12.6.8",
     "@types/node-fetch": "^2.5.0",
     "@types/request": "^2.48.2",
+    "nodemon": "^1.19.1",
     "rimraf": "^2.6.3",
     "webpack": "^4.38.0",
     "webpack-pwa-manifest": "^4.0.0"

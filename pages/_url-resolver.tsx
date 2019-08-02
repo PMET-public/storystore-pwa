@@ -4,6 +4,8 @@ import gql from 'graphql-tag'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/react-hooks'
 
+import Error from 'next/error'
+
 const QUERY = gql`
     query urlResolver($url: String!){
         urlResolver(url:$url) {
@@ -29,12 +31,11 @@ const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
     }
 
     if (error) {
-        throw new Error(error.message)
+        return <Error statusCode={500} />
     }
 
     if (!urlResolver) {
-        router.push({ pathname: '/_404' })
-        return null
+        return <Error statusCode={404} />
     }
 
     const { type, id } = urlResolver

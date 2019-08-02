@@ -45,7 +45,6 @@ app.prepare().then(() => {
 
     server.listen(PORT, () => {
         console.info('Server started...')
-
         // Launch in browser
         if (LAUNCH_IN_BROWSER) {
             const start = (process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open')
