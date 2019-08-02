@@ -36,14 +36,14 @@ export const defaults = {
 
     networkStatus: {
         __typename: 'NetworkStatus',
-        isConnected: false
+        isConnected: false,
     },
 
     flashMessage: {
         __typename: 'FlashMessage',
         type: 'warning',
         message: 'This is drill. I repeat, this is a drill.',
-    }
+    },
 
 }
 
@@ -66,7 +66,6 @@ export const resolvers: Resolvers = {
         setFlashMessage: (_, flashMessage: { message: string, type: string } | null, { cache }) => {
             cache.writeData({ data: flashMessage })
             return null
-        }
-    }
+        },
+    },
 }
-

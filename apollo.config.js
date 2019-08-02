@@ -1,19 +1,21 @@
-require('dotenv').config()
+const fs = require('fs')
+const path = require('path')
 
-const graphQLUrl = new URL('graphql', `${process.env.MAGENTO_BACKEND_URL}`).href
+const dotenvPath = path.resolve(__dirname + '/.env')
+const { MAGENTO_GRAPHQL_URL } = require('dotenv').parse(fs.readFileSync(dotenvPath))
 
 module.exports = {
-    graphQLUrl,
-    client: {
-        service: {
-            name: 'magento',
-            url: graphQLUrl
-        },
-        clientSchemaDirectives: ['client', 'rest'],
-        includes: [
-            './components/**/*.tsx',
-            './containers/**/*.tsx',
-            './lib/apollo-link-state.ts'
-        ]
+        client: {
+            service: {
+                name: 'magento',
+                url: MAGENTO_GRAPHQL_URL
+            },
+            clientSchemaDirectives: ['client', 'rest'],
+            includes: [
+                './components/**/*.tsx',
+                './pages/**/*.tsx',
+                './templates/**/*.tsx',
+                './lib/apollo-link-state.ts',
+            ]
+        }
     }
-}

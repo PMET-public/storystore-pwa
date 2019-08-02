@@ -1,14 +1,12 @@
 require('dotenv').config()
 
 const path = require('path')
-const webpack = require('webpack')
 
-const withTypescript = require('@zeit/next-typescript')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 
-module.exports = withOffline(withTypescript({
+module.exports = withOffline({
     generateSw: true,
     workboxOpts: {
         swDest: 'static/service-worker.js',
@@ -46,24 +44,6 @@ module.exports = withOffline(withTypescript({
         config.node = {
             fs: 'empty'
         }
-
-        /**
-         * Aliases
-         */
-        config.resolve.alias = {
-            ...config.resolve.alias,
-            '@app/components': path.join(__dirname, 'components'),
-            '@app/containers': path.join(__dirname, 'containers'),
-            '@app/lib': path.join(__dirname, 'lib'),
-            '@app/hocs': path.join(__dirname, 'hocs'),
-        }
-
-        /** 
-         * Environment variables exposed to the UI 
-         */
-        config.plugins.push(new webpack.EnvironmentPlugin([
-            'MAGENTO_BACKEND_URL',
-        ]))
 
         /**
          * PWA Manifest
@@ -105,5 +85,5 @@ module.exports = withOffline(withTypescript({
         });
 
         return config
-    }
-}))
+    },
+})
