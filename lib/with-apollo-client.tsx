@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import initApollo from '@app/lib/init-apollo'
+import initApollo from './apollo-client'
 import Head from 'next/head'
 import { getDataFromTree } from 'react-apollo'
 
@@ -8,7 +8,7 @@ const isBrowser = typeof window !== 'undefined'
 export default (App: any) => class Apollo extends Component {
 
   static displayName = 'withApollo(App)'
-    apolloClient: any;
+    apolloClient: any
 
   static async getInitialProps(ctx: any) {
     const { Component, router } = ctx
@@ -49,7 +49,7 @@ export default (App: any) => class Apollo extends Component {
 
     return {
       ...appProps,
-      apolloState
+      apolloState,
     }
   }
 

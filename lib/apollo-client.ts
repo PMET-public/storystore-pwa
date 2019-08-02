@@ -3,22 +3,19 @@ import { ApolloClient, InMemoryCache, HttpLink } from 'apollo-boost'
 import { defaults, typeDefs, resolvers } from './apollo-link-state'
 import { ApolloLink } from 'apollo-link'
 import { onError } from 'apollo-link-error'
-import { graphQLUrl } from '../apollo.config'
 
 declare var global: any
 declare var window: any
 
 const isBrowser = typeof window !== 'undefined'
-const uri = isBrowser ? '/graphql' : graphQLUrl
-
-console.log(`((( 📡 ))) ${uri}`)
+export const uri = isBrowser ? '/graphql' : (process.env.MAGENTO_GRAPHQL_URL || '')
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (!isBrowser) {
     global.fetch = fetch
 }
 
-let apolloClient: any = null
+export let apolloClient: any = null
 
 function create(initialState: any) {
 
@@ -33,14 +30,14 @@ function create(initialState: any) {
             onError(({ graphQLErrors, networkError }) => {
                 if (graphQLErrors) {
                     graphQLErrors.forEach(({ message, locations, path }) => {
-                        console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+                        console.info(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
                     })
                 }
 
-                if (networkError) console.log(`[Network error]: ${networkError}`)
+                if (networkError) console.info(`[Network error]: ${networkError}`)
             }),
 
-            new HttpLink({ uri })
+            new HttpLink({ uri }),
         ]),
         typeDefs,
         resolvers,

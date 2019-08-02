@@ -1,26 +1,27 @@
 import React from 'react'
 import App, { Container } from 'next/app'
-import { ApolloProvider } from 'react-apollo'
-import withApolloClient from '@app/hocs/withApolloClient'
+import { ApolloProvider } from '@apollo/react-hooks'
+import withApolloClient from '../lib/with-apollo-client'
 import { ThemeProvider } from 'luma-storybook/dist/theme'
+
+import AppShell from '../components/App'
 
 class MyApp extends App {
     render() {
         const { Component, pageProps, apolloClient }: any = this.props
+
         return (
             <Container>
                 <ApolloProvider client={apolloClient}>
                     <ThemeProvider
                         typography={{
-                            body: {
-                                family: 'source-sans pro, sans-serif',
-                            },
-                            headings: {
-                                family: 'rucksack, sans-serif',          
-                            },
+                            bodyFamily: 'source-sans pro, sans-serif',
+                            headingFamily: 'rucksack, sans-serif',
                         }}
                     >
-                        <Component {...pageProps} />
+                        <AppShell>
+                            <Component {...pageProps} />
+                        </AppShell>
                     </ThemeProvider>
                 </ApolloProvider>
             </Container>

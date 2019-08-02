@@ -2,7 +2,7 @@ import Document, { Head, Main, NextScript } from 'next/document'
 import flush from 'styled-jsx/server'
 
 export default class extends Document {
-    static async getInitialProps(ctx) {
+    static async getInitialProps(ctx: any) {
         const initialProps = await Document.getInitialProps(ctx)
         initialProps.styles = flush()
         return { ...initialProps }
@@ -29,7 +29,10 @@ export default class extends Document {
                         crossOrigin="anonymous" />
 
                     {/* Say hi! to our store back-end */}
-                    <link rel="preconnect" href="{process.env.MAGENTO_BACKEND_URL}" />
+                    <link rel="preconnect" href="/graphql" />
+
+                    {/* Adobe Fonts */}
+                    <link rel="stylesheet" href="https://use.typekit.net/ssh7gal.css" />
                 </Head>
                 <body className="custom_class">
                     <Main />
