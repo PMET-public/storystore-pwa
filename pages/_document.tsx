@@ -31,7 +31,7 @@ export default class extends Document {
                     <link rel="preconnect" href="/graphql" />
 
                     {/* Adobe Fonts */}
-                    <link rel="stylesheet" href="https://use.typekit.net/ssh7gal.css" />
+                    <link rel="prefetch" as ="style" href="https://use.typekit.net/ssh7gal.css" />
                 </Head>
                 <body className="custom_class">
                     <Main />
