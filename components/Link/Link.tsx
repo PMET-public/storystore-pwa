@@ -1,8 +1,14 @@
-import NextLink, { LinkProps } from 'next/link'
+import NextLink, { LinkProps as _LinkProps } from 'next/link'
 import { FunctionComponent } from 'react'
+import { useRouter } from 'next/router'
+import { Props, classes } from 'luma-storybook/dist/lib'
+
+export type LinkProps = Props<_LinkProps>
+
+const pathname = (pathname: string) => pathname.replace(/^(\/)/, '')
 
 export const Link: FunctionComponent<LinkProps> = ({
-    href,
+    href: _href,
     as,
     replace,
     scroll,
@@ -10,11 +16,16 @@ export const Link: FunctionComponent<LinkProps> = ({
     passHref,
     prefetch,
     ...props
-}) => (
-        <NextLink 
+}) => {
+    const { query: { url: _url } } = useRouter()
+    const href = pathname(_href.toString())
+    const url = pathname(_url.toString())
+
+    return (
+        <NextLink
             {...{
                 href: `/_url-resolver?url=${href}`,
-                as: href,
+                as: _href,
                 replace,
                 scroll,
                 shallow,
@@ -22,6 +33,8 @@ export const Link: FunctionComponent<LinkProps> = ({
                 prefetch,
             }}
         >
-            <a {...props} />
+            <a {...props} className={classes(props.className || '', ['--active', url === href])} />
         </NextLink>
     )
+
+}
