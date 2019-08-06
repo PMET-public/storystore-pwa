@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks'
 import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
+import { useRouter } from 'next/router'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
@@ -28,7 +29,7 @@ const APP_SHELL_QUERY = gql`
         category(id: 2) {
             children {
                 name
-                url_key
+                url_path
             }
         }
     }
@@ -57,6 +58,8 @@ export const App: FunctionComponent = ({ children }) => {
         },
 
     } = data 
+
+    const { query: { url } } = useRouter()
     
     return (
         <React.Fragment>
@@ -69,7 +72,7 @@ export const App: FunctionComponent = ({ children }) => {
             <AppTemplate
                 logo={{
                     as: Link,
-                    href: '/',
+                    href: cms_home_page,
                     title: logo_alt,
                 }}
 
@@ -77,42 +80,42 @@ export const App: FunctionComponent = ({ children }) => {
                     as: Link,
                     href: cms_home_page,
                     text: 'Home',
-                    active: true,
+                    active: url === cms_home_page,
                 }}
 
                 menu={categories.map(({
                     name,
-                    url_key,
+                    url_path,                    
                 }: any) => ({
                     text: name,
                     as: Link,
-                    href: url_key + '.html',
+                    href:  url_path + '.html',
                 }))}
 
-                help={{
-                    as: 'a',
-                    href: '#',
-                    text: 'Help',
-                }}
+                // help={{
+                //     as: 'a',
+                //     href: '#',
+                //     text: 'Help',
+                // }}
 
-                myAccount={{
-                    as: 'a',
-                    href: '#',
-                    text: 'My Account',
-                }}
+                // myAccount={{
+                //     as: 'a',
+                //     href: '#',
+                //     text: 'My Account',
+                // }}
 
-                search={{
-                    as: 'a',
-                    href: '#',
-                    text: 'Search',
-                }}
+                // search={{
+                //     as: 'a',
+                //     href: '#',
+                //     text: 'Search',
+                // }}
 
-                cart={{
-                    as: 'a',
-                    count: 2,
-                    href: '#',
-                    text: 'My Bag',
-                }}
+                // cart={{
+                //     as: 'a',
+                //     count: 2,
+                //     href: '#',
+                //     text: 'My Bag',
+                // }}
 
                 footer={{
                     copyright,
