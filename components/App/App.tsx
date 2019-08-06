@@ -2,20 +2,15 @@ import React, { FunctionComponent } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
+import { useRouter } from 'next/router'
 
 import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
-import { useRouter } from 'next/router'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
-        # flashMessage @client { 
-        #     type
-        #     message
-        # }
-
         storeConfig {
             logo_alt
             default_description
@@ -42,9 +37,7 @@ export const App: FunctionComponent = ({ children }) => {
     if (loading) return <ViewLoader />
 
     const {
-        // flashMessage,
         storeConfig: {
-            // header_logo_src,
             logo_alt,
             title_prefix,
             title_suffix,
@@ -61,6 +54,8 @@ export const App: FunctionComponent = ({ children }) => {
     } = data 
 
     const { query: { url } } = useRouter()
+
+    const isUrlActive = (href: string) => url === href || undefined
     
     return (
         <React.Fragment>
@@ -81,7 +76,7 @@ export const App: FunctionComponent = ({ children }) => {
                     as: Link,
                     href: cms_home_page,
                     text: 'Home',
-                    active: url === cms_home_page,
+                    active: isUrlActive(cms_home_page),
                 }}
 
                 menu={categories.map(({
@@ -93,42 +88,41 @@ export const App: FunctionComponent = ({ children }) => {
                     href:  url_path + '.html',
                 }))}
 
-                // help={{
-                //     as: 'a',
-                //     href: '#',
-                //     text: 'Help',
-                // }}
+                help={{
+                    as: Link,
+                    href: '/customer-service',
+                    text: 'Help',
+                    active: isUrlActive('/customer-service'),
+                }}
 
-                // myAccount={{
-                //     as: 'a',
-                //     href: '#',
-                //     text: 'My Account',
-                // }}
+                myAccount={{
+                    // as: Link,
+                    // href: '/account',
+                    text: 'My Account',
+                    active: isUrlActive('/account'),
+                }}
 
-                // search={{
-                //     as: 'a',
-                //     href: '#',
-                //     text: 'Search',
-                // }}
+                search={{
+                    // as: Link,
+                    // href: '/search',
+                    text: 'Search',
+                    // active: isUrlActive('/search'),
+                }}
 
-                // cart={{
-                //     as: 'a',
-                //     count: 2,
-                //     href: '#',
-                //     text: 'My Bag',
-                // }}
+                cart={{
+                    // as: Link,
+                    // href: '/cart',
+                    text: 'My Bag',
+                    // active: isUrlActive('/cart'),
+                }}
 
                 footer={{
                     copyright,
-                    menu: [
-                        { text: 'Blog', as: 'a', href: '#' },
-                        { text: 'About', as: 'a', href: '#' },
-                        { text: 'Orders & Returns', as: 'a', href: '#' },
-                        { text: 'Customer Service', as: 'a', href: '#' },
-                        { text: 'Contact', as: 'a', href: '#' },
-                        { text: 'Privacy Policy', as: 'a', href: '#' },
-                        { text: 'Terms of Use', as: 'a', href: '#' },
-                    ],
+                    // menu: [
+                    //     { text: 'About', as: Link, href: '/about-us' },
+                    //     { text: 'Customer Service', as: Link, href: '/customer-service' },
+                    //     { text: 'Privacy Policy', as: Link, href: '/privacy-policy-cookie-restriction-mode' },
+                    // ],
                     social: {
                         facebook: { title: 'Facebook', as: 'a', href: 'https://facebook.com', target: 'blank' },
                         twitter: { title: 'Twitter', as: 'a', href: 'https://twitter.com', target: 'blank' },
