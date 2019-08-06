@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/react-hooks'
 
 import Error from 'next/error'
+import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
 const CMSPage = dynamic(() => import('../templates/cms_page'))
 const Category = dynamic(() => import('../templates/category'))
@@ -32,7 +33,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
     })
 
     if (loading) {
-        return <div>Loading</div>
+        return <ViewLoader />
     }
 
     if (error) {

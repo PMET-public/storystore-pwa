@@ -7,6 +7,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
 import { useRouter } from 'next/router'
+import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
@@ -38,7 +39,7 @@ const APP_SHELL_QUERY = gql`
 export const App: FunctionComponent = ({ children }) => {
     const { loading, data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first' })
 
-    if (loading) return <div>Loading</div>
+    if (loading) return <ViewLoader />
 
     const {
         // flashMessage,

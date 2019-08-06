@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks'
 import Page from 'luma-storybook/dist/templates/Page'
 import Error from 'next/error'
 import DocumentMetadata from '../components/DocumentMetadata'
+import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
 const QUERY = gql`
     query PageQuery($id: Int!) {
@@ -28,7 +29,7 @@ const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
         fetchPolicy: 'cache-first',
     })
 
-    if (loading) return <div>Loading...</div>
+    if (loading) return <ViewLoader />
 
     if (!data.cmsPage) return <Error statusCode={404} />
 
