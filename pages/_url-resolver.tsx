@@ -15,8 +15,9 @@ const Product = dynamic(() => import('../templates/product'))
 const QUERY = gql`
     query urlResolver($url: String!){
         urlResolver(url:$url) {
+            content_id: id # Apollo Client Cache uses id to index its cache. Id is not unique across multiple types
+            id: canonical_url # <- This is 
             type
-            id
         }
     }
 `
@@ -44,15 +45,15 @@ const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
         return <Error statusCode={404} />
     }
 
-    const { type, id } = urlResolver
+    const { type, content_id } = urlResolver
 
     switch (type) {
         case 'CMS_PAGE':
-            return <CMSPage id={id} />
+            return <CMSPage id={content_id} />
         case 'CATEGORY':
-            return <Category id={id} />
+            return <Category id={content_id} />
         case 'PRODUCT':
-            return <Product id={id} />
+            return <Product id={content_id} />
         default:
             return <Error statusCode={500} />
     }
