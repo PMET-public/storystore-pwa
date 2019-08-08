@@ -82,7 +82,7 @@ module.exports = withOffline({
         config.module.rules.push({
             test: /\.svg$/,
             use: 'react-svg-loader',
-        });
+        })
 
         return config
     },

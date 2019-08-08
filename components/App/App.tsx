@@ -4,29 +4,32 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
-import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
+import DocumentMetadata from '../DocumentMetadata'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
-        storeConfig {
-            logo_alt
-            default_description
-            default_keywords
-            default_title
-            title_prefix
-            title_suffix
-            cms_home_page
+        store: storeConfig {
+            logoAlt: logo_alt
+            homePath: cms_home_page
             copyright
         }
 
-        category(id: 2) {
+        categories: category(id: 2) {
             children {
-                name
-                url_path
+                text: name
+                href: url_path
             }
+        }
+
+        meta: storeConfig {
+            title: default_title
+            titlePrefix: title_prefix
+            titleSuffix: title_suffix
+            description: default_description
+            keywords: default_keywords
         }
     }
 `
@@ -37,55 +40,36 @@ export const App: FunctionComponent = ({ children }) => {
     if (loading) return <ViewLoader />
 
     const {
-        storeConfig: {
-            logo_alt,
-            title_prefix,
-            title_suffix,
-            default_title,
-            default_description,
-            default_keywords,
-            cms_home_page,
-            copyright,
-        },
-        category: {
-            children: categories,
-        },
-
+       store,
+       categories,
+       meta,
     } = data 
 
     const { query: { url } } = useRouter()
 
-    const isUrlActive = (href: string) => url === href || undefined
+    const isUrlActive = (href: string) => url === href ? true : undefined
     
     return (
         <React.Fragment>
-            <DocumentMetadata
-                title={[title_prefix, default_title, title_suffix]}
-                description={default_description}
-                keywords={default_keywords}
-            />
-
+            <DocumentMetadata {...meta} />
             <AppTemplate
-                logo={{
-                    as: Link,
-                    href: cms_home_page,
-                    title: logo_alt,
+                logo={{ 
+                    as: Link, 
+                    href: '/' + store.homePath,
+                    title: store.logoAlt,
                 }}
 
                 home={{
+                    active: isUrlActive(store.homePath),
                     as: Link,
-                    href: cms_home_page,
+                    href: '/' + store.homePath,
                     text: 'Home',
-                    active: isUrlActive(cms_home_page),
                 }}
 
-                menu={categories.map(({
-                    name,
-                    url_path,                    
-                }: any) => ({
-                    text: name,
+                menu={categories.children.map(({ text, href }: any) => ({
                     as: Link,
-                    href:  url_path + '.html',
+                    text,
+                    href: '/' + href,
                 }))}
 
                 help={{
@@ -117,12 +101,12 @@ export const App: FunctionComponent = ({ children }) => {
                 }}
 
                 footer={{
-                    copyright,
-                    // menu: [
-                    //     { text: 'About', as: Link, href: '/about-us' },
-                    //     { text: 'Customer Service', as: Link, href: '/customer-service' },
-                    //     { text: 'Privacy Policy', as: Link, href: '/privacy-policy-cookie-restriction-mode' },
-                    // ],
+                    copyright: store.copyright,
+                    menu: [
+                        { text: 'About', as: Link, href: '/about-us' },
+                        { text: 'Customer Service', as: Link, href: '/customer-service' },
+                        { text: 'Privacy Policy', as: Link, href: '/privacy-policy-cookie-restriction-mode' },
+                    ],
                     social: {
                         facebook: { title: 'Facebook', as: 'a', href: 'https://facebook.com', target: 'blank' },
                         twitter: { title: 'Twitter', as: 'a', href: 'https://twitter.com', target: 'blank' },

@@ -3,19 +3,29 @@ import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
 
+import DocumentMetadata from '../components/DocumentMetadata'
 import Page from 'luma-storybook/dist/templates/Page'
 import Error from 'next/error'
-import DocumentMetadata from '../components/DocumentMetadata'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
 const QUERY = gql`
     query PageQuery($id: Int!) {
-        cmsPage(id: $id) {
-            meta_description
-            meta_keywords
+        page: cmsPage(id: $id) {
             title
             content
         }
+
+        meta: cmsPage(id: $id) {
+            description: meta_description
+            keywords: meta_keywords
+            title: meta_title
+        }
+
+        store: storeConfig {
+            titlePrefix:  title_prefix
+            titleSuffix: title_suffix
+        }
+
     }
 `
 
@@ -31,36 +41,29 @@ const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
 
     if (loading) return <ViewLoader />
 
-    if (!data.cmsPage) return <Error statusCode={404} />
+    if (!data.page) return <Error statusCode={404} />
 
-    const {
-        meta_description,
-        meta_keywords,
-        title,
-        content,
-    } = data.cmsPage
+    const {  page, meta, store  } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                description={meta_description}
-                keywords={meta_keywords}
-                title={title}
+            <DocumentMetadata 
+                title={[store.titlePrefix, (meta.title || page.title), store.titleSuffix]}
+                description={meta.description}
+                keywords={meta.keywords}
             />
-
             <Page
                 assembler={{
                     components: [
                         {
                             name: 'Html',
                             props: {
-                                source: content,
+                                source: page.content,
                             },
                         },
-                    ]
+                    ],
                 }}
             />
-
         </React.Fragment>
     )
 }
