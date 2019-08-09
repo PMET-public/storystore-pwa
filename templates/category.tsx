@@ -2,12 +2,15 @@ import React, { FunctionComponent, useState, useEffect } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
+import { useScroll } from 'luma-storybook/dist/hooks/useScroll'
+import { useResize } from 'luma-storybook/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
+import Link from '../components/Link'
 import ProductList from 'luma-storybook/dist/templates/ProductList'
 import Error from 'next/error'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
-import Link from '../components/Link'
+import Loader from 'luma-storybook/dist/components/Loader'
 
 type CategoryProps = {
     id: number
@@ -19,13 +22,8 @@ type FilterValues = {
     }
 }
 
-const QUERY = gql`
-    query CategoryQuery(
-        $id: Int!, 
-        $filters: ProductFilterInput!
-        $pageSize: Int = 10,
-        $currentPage: Int = 1
-    ) {
+const CATEGORY_QUERY = gql`
+    query CategoryQuery($id: Int!) {
         page: category(id: $id) {
             id
             title: name
@@ -42,7 +40,32 @@ const QUERY = gql`
             }
         }
 
+        meta: category(id: $id) {
+            id
+            description: meta_description
+            keywords: meta_keywords
+            title: meta_title
+        }
+
+        store: storeConfig {
+            id
+            titlePrefix:  title_prefix
+            titleSuffix: title_suffix
+        }
+    }
+`
+
+const PRODUCTS_QUERY = gql`
+    query ProductsQuery(
+        $filters: ProductFilterInput!
+        $pageSize: Int = 10,
+        $currentPage: Int = 1
+    ) {
         products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
+            pagination: page_info {
+                current: current_page
+                total: total_pages
+            }
             filters {
                 name
                 key: request_var
@@ -69,35 +92,37 @@ const QUERY = gql`
                 title: name
             }
         }
-
-        meta: category(id: $id) {
-            id
-            description: meta_description
-            keywords: meta_keywords
-            title: meta_title
-        }
-
-        store: storeConfig {
-            id
-            titlePrefix:  title_prefix
-            titleSuffix: title_suffix
-        }
     }
 `
 
 const Category: FunctionComponent<CategoryProps> = ({ id }) => {
+    const { scrollY, scrollHeight } = useScroll()
 
-    const [filterValues, setFilterValues] = useState<FilterValues>({ })
+    const { height } = useResize()
 
-    const { loading, error, data } = useQuery(QUERY, {
-        variables: { 
-            id, 
-            filters: 
-            filterValues, 
+    const [filterValues, setFilterValues] = useState<FilterValues>({
+        category_id: {
+            eq: id.toString(),
         },
+    })
+
+    const categoryQuery = useQuery(CATEGORY_QUERY, {
+        variables: { id },
         fetchPolicy: 'cache-first',
     })
 
+    const productsQuery = useQuery(PRODUCTS_QUERY, {
+        variables: { filters: filterValues },
+        fetchPolicy: 'cache-first',
+        notifyOnNetworkStatusChange: true,
+    })
+
+    const { store, meta, page } = categoryQuery.data
+    const { products } = productsQuery.data
+
+    /**
+     * Update filters on ID change
+     */
     useEffect(() => {
         setFilterValues({
             category_id: {
@@ -106,20 +131,54 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         })
     }, [id])
 
-    if (loading) {
+    /**
+     * Infinite Scroll Effect
+     */
+    useEffect(() => {
+        // ignore if it is loading or has no pagination
+        if (productsQuery.loading || !products.pagination) return
+
+        // don't run if it's in the last page
+        if (!(products.pagination.current < products.pagination.total)) return
+
+        // load more products when the scroll reach half of the viewport height
+        if ((scrollY + height) > scrollHeight / 2) {
+            productsQuery.fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [
+                                ...prev.products.items,
+                                ...fetchMoreResult.products.items,
+                            ],
+                        },
+                    }
+                },
+            })
+        }
+    }, [scrollY])
+
+    if (categoryQuery.loading) {
         return <ViewLoader />
     }
 
-    if (error) {
-        console.error(error.message)
+    if (categoryQuery.error) {
+        console.error(categoryQuery.error.message)
         return <Error statusCode={500} />
     }
 
-    if (!data.page) {
+    if (!categoryQuery.data.page) {
         return <Error statusCode={404} />
     }
 
-    const triggerOnClickFilterValue = (key: string, value: string) => {
+    function handleOnClickFilterValue(key: string, value: string) {
         setFilterValues({
             ...filterValues,
             [key]: {
@@ -127,13 +186,6 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             },
         })
     }
-
-    const {
-        store,
-        meta,
-        page,
-        products,
-    } = data
 
     return (
         <React.Fragment>
@@ -182,31 +234,37 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                 text: label,
                                 onClick: (e: Event) => {
                                     e.preventDefault()
-                                    triggerOnClickFilterValue(key, value)
+                                    handleOnClickFilterValue(key, value)
                                 },
                             })),
                         })),
                     },
                 }}
-                products={products && products.items && products.items.map(({
-                    _id,
-                    image,
-                    price,
-                    title,
-                }: any) => ({
-                    _id,
-                    image,
-                    price: {
-                        price: price.regularPrice.amount.value.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: price.regularPrice.amount.currency,
-                        }),
-                    },
-                    title: {
-                        text: title,
-                    },
-                }))}
+                products={products && {
+                    items: products.items && products.items.map(({
+                        _id,
+                        image,
+                        price,
+                        title,
+                    }: any) => ({
+                        _id,
+                        image,
+                        price: {
+                            price: price.regularPrice.amount.value.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: price.regularPrice.amount.currency,
+                            }),
+                        },
+                        title: {
+                            text: title,
+                        },
+                    })),
+                }}
             />
+
+            {productsQuery.loading && (
+                <Loader label="Loading" style={{ padding: '2rem 0' }} />
+            )}
         </React.Fragment>
     )
 }
