@@ -23,10 +23,11 @@ const QUERY = gql`
     query CategoryQuery(
         $id: Int!, 
         $filters: ProductFilterInput!
-        $pageSize: Int = 20,
+        $pageSize: Int = 10,
         $currentPage: Int = 1
     ) {
         page: category(id: $id) {
+            id
             title: name
             breadcrumbs {
                 _id: category_url_key
@@ -77,6 +78,7 @@ const QUERY = gql`
         }
 
         store: storeConfig {
+            id
             titlePrefix:  title_prefix
             titleSuffix: title_suffix
         }
@@ -87,8 +89,12 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const [filterValues, setFilterValues] = useState<FilterValues>({ })
 
-    const { loading, data } = useQuery(QUERY, {
-        variables: { id, filters: filterValues },
+    const { loading, error, data } = useQuery(QUERY, {
+        variables: { 
+            id, 
+            filters: 
+            filterValues, 
+        },
         fetchPolicy: 'cache-first',
     })
 
@@ -100,9 +106,18 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         })
     }, [id])
 
-    if (loading) return <ViewLoader />
+    if (loading) {
+        return <ViewLoader />
+    }
 
-    if (!data.page) return <Error statusCode={404} />
+    if (error) {
+        console.error(error.message)
+        return <Error statusCode={500} />
+    }
+
+    if (!data.page) {
+        return <Error statusCode={404} />
+    }
 
     const triggerOnClickFilterValue = (key: string, value: string) => {
         setFilterValues({
@@ -150,7 +165,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         href: '/' + href,
                     })),
                 }}
-                filters={products.filters && {
+                filters={products && products.filters && {
                     label: 'Filters',
                     closeButton: {
                         text: 'Done',
@@ -173,7 +188,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         })),
                     },
                 }}
-                products={products.items && products.items.map(({
+                products={products && products.items && products.items.map(({
                     _id,
                     image,
                     price,

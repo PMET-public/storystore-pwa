@@ -8,16 +8,19 @@ import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
+import Error from 'next/error';
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
         store: storeConfig {
+            id
             logoAlt: logo_alt
             homePath: cms_home_page
             copyright
         }
 
         categories: category(id: 2) {
+            id
             children {
                 text: name
                 href: url_path
@@ -25,6 +28,7 @@ const APP_SHELL_QUERY = gql`
         }
 
         meta: storeConfig {
+            id
             title: default_title
             titlePrefix: title_prefix
             titleSuffix: title_suffix
@@ -35,9 +39,16 @@ const APP_SHELL_QUERY = gql`
 `
 
 export const App: FunctionComponent = ({ children }) => {
-    const { loading, data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first' })
+    const { loading, error, data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first' })
 
-    if (loading) return <ViewLoader />
+    if (loading) {
+        return <ViewLoader />
+    }
+
+    if (error) {
+        console.error(error.message)
+        return <Error statusCode={500} />
+    }
 
     const {
        store,

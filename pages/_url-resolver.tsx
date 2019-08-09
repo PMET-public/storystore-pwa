@@ -38,6 +38,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({ }) => {
     }
 
     if (error) {
+        console.error(error.message)
         return <Error statusCode={500} />
     }
 

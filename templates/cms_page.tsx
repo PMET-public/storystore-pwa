@@ -22,6 +22,7 @@ const QUERY = gql`
         }
 
         store: storeConfig {
+            id
             titlePrefix:  title_prefix
             titleSuffix: title_suffix
         }
@@ -34,15 +35,24 @@ type CMSPageProps = {
 }
 
 const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
-    const { loading, data } = useQuery(QUERY, {
+    const { loading, error, data } = useQuery(QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
     })
 
-    if (loading) return <ViewLoader />
+    if (loading) {
+        return <ViewLoader />
+    }
 
-    if (!data.page) return <Error statusCode={404} />
+    if (error) {
+        console.error(error.message)
+        return <Error statusCode={500} />
+    }
 
+    if (!data.page) {
+        return <Error statusCode={404} />
+    }
+    
     const {  page, meta, store  } = data
 
     return (
