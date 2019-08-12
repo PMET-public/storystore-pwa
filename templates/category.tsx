@@ -7,10 +7,9 @@ import { useResize } from 'luma-storybook/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
 import Link from '../components/Link'
-import ProductList from 'luma-storybook/dist/templates/ProductList'
+import CategoryTemplate from 'luma-storybook/dist/templates/Category'
 import Error from 'next/error'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
-import Loader from 'luma-storybook/dist/components/Loader'
 
 type CategoryProps = {
     id: number
@@ -118,6 +117,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     })
 
     const { store, meta, page } = categoryQuery.data
+    
     const { products } = productsQuery.data
 
     /**
@@ -195,7 +195,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 keywords={meta.keywords}
             />
 
-            <ProductList
+            <CategoryTemplate
                 title={{
                     as: 'h2',
                     text: page.title,
@@ -240,8 +240,9 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         })),
                     },
                 }}
-                products={products && {
-                    items: products.items && products.items.map(({
+                products={{
+                    loading: productsQuery.loading ? 10 : undefined,
+                    items: products && products.items.map(({
                         _id,
                         image,
                         price,
@@ -250,10 +251,8 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         _id,
                         image,
                         price: {
-                            price: price.regularPrice.amount.value.toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: price.regularPrice.amount.currency,
-                            }),
+                            regular: price.regularPrice.amount.value,
+                            currency: price.regularPrice.amount.currency,
                         },
                         title: {
                             text: title,
@@ -261,10 +260,6 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     })),
                 }}
             />
-
-            {productsQuery.loading && (
-                <Loader label="Loading" style={{ padding: '2rem 0' }} />
-            )}
         </React.Fragment>
     )
 }
