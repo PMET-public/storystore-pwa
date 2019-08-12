@@ -8,7 +8,7 @@ import Link from '../Link'
 import AppTemplate from 'luma-storybook/dist/templates/App'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
-import Error from 'next/error';
+import Error from 'next/error'
 
 const APP_SHELL_QUERY = gql`
     query AppShellQuery {
