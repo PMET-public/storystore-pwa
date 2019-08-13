@@ -58,7 +58,7 @@ export const App: FunctionComponent = ({ children }) => {
 
     const { query: { url } } = useRouter()
 
-    const isUrlActive = (href: string) => url === href ? true : undefined
+    const isUrlActive = (href: string) => url === href
     
     return (
         <React.Fragment>
@@ -71,44 +71,45 @@ export const App: FunctionComponent = ({ children }) => {
                 }}
 
                 home={{
-                    active: isUrlActive(store.homePath),
+                    active: isUrlActive('/' + store.homePath),
                     as: Link,
                     href: '/' + store.homePath,
                     text: 'Home',
                 }}
 
                 menu={categories.children.map(({ text, href }: any) => ({
+                    active: isUrlActive('/' + href),
                     as: Link,
-                    text,
                     href: '/' + href,
+                    text,
                 }))}
 
                 help={{
+                    active: isUrlActive('/customer-service'),
                     as: Link,
                     href: '/customer-service',
                     text: 'Help',
-                    active: isUrlActive('/customer-service'),
                 }}
 
                 myAccount={{
+                    // active: isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
                     text: 'My Account',
-                    active: isUrlActive('/account'),
                 }}
 
                 search={{
+                    // active: isUrlActive('/search'),
                     // as: Link,
                     // href: '/search',
                     text: 'Search',
-                    // active: isUrlActive('/search'),
                 }}
 
                 cart={{
+                    // active: isUrlActive('/cart'),
                     // as: Link,
                     // href: '/cart',
                     text: 'My Bag',
-                    // active: isUrlActive('/cart'),
                 }}
 
                 footer={{

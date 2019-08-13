@@ -4,7 +4,7 @@ import { Props } from 'luma-storybook/dist/lib'
 
 export type LinkProps = Props<_LinkProps>
 
-const pathname = (pathname: string) => pathname.replace(/^(\/)/, '')
+// const pathname = (pathname: string) => pathname // .replace(/^(\/)/, '')
 
 export const Link: FunctionComponent<LinkProps> = ({
     href: _href,
@@ -16,7 +16,7 @@ export const Link: FunctionComponent<LinkProps> = ({
     prefetch,
     ...props
 }) => {
-    const href = pathname(_href.toString())
+    const href = _href.toString()
 
     const linkProps = {
         href: `/_url-resolver?url=${href}`,
