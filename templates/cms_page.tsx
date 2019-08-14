@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 
 import DocumentMetadata from '../components/DocumentMetadata'
-import Page from 'luma-storybook/dist/templates/Page'
+import Page from 'luma-storybook/dist/pages/Page'
 import Error from 'next/error'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 

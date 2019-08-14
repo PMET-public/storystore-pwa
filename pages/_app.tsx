@@ -15,12 +15,7 @@ class MyApp extends App {
         return (
             <Container>
                 <ApolloProvider client={apolloClient}>
-                    <ThemeProvider
-                        typography={{
-                            bodyFamily: 'source-sans pro, sans-serif',
-                            headingFamily: 'rucksack, sans-serif',
-                        }}
-                    >
+                    <ThemeProvider>
                         <AppShell>
                             <Component {...pageProps} />
                         </AppShell>

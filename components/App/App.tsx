@@ -5,7 +5,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
 import Link from '../Link'
-import AppTemplate from 'luma-storybook/dist/templates/App'
+import AppTemplate from 'luma-storybook/dist/pages/App'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'

@@ -7,7 +7,7 @@ import { useResize } from 'luma-storybook/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
 import Link from '../components/Link'
-import CategoryTemplate from 'luma-storybook/dist/templates/Category'
+import CategoryTemplate from 'luma-storybook/dist/pages/Category'
 import Error from 'next/error'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 
