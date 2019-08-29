@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from 'react'
 import NextLink, { LinkProps as _LinkProps } from 'next/link'
+import styled from 'styled-components'
 import { Props } from 'luma-storybook/dist/lib'
 
 export type LinkProps = Props<_LinkProps>
 
+const ATag = styled.a``
 // const pathname = (pathname: string) => pathname // .replace(/^(\/)/, '')
 
 export const Link: FunctionComponent<LinkProps> = ({
@@ -30,7 +32,7 @@ export const Link: FunctionComponent<LinkProps> = ({
 
     return (
         <NextLink {...linkProps}>
-            <a {...props} />
+            <ATag href={_href as string} {...props} />
         </NextLink>
     )
 }

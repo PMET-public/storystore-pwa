@@ -89,7 +89,7 @@ export const App: FunctionComponent = ({ children }) => {
                     // active: isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
-                    text: 'My Account',
+                    text: 'Likes',
                 }}
                 search={{
                     // active: isUrlActive('/search'),
@@ -101,7 +101,7 @@ export const App: FunctionComponent = ({ children }) => {
                     // active: isUrlActive('/cart'),
                     // as: Link,
                     // href: '/cart',
-                    text: 'My Bag',
+                    text: 'Bag',
                 }}
                 footer={{
                     copyright: store.copyright,
