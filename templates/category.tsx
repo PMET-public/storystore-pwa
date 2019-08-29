@@ -48,18 +48,14 @@ const CATEGORY_QUERY = gql`
 
         store: storeConfig {
             id
-            titlePrefix:  title_prefix
+            titlePrefix: title_prefix
             titleSuffix: title_suffix
         }
     }
 `
 
 const PRODUCTS_QUERY = gql`
-    query ProductsQuery(
-        $filters: ProductFilterInput!
-        $pageSize: Int = 10,
-        $currentPage: Int = 1
-    ) {
+    query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
         products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
             pagination: page_info {
                 current: current_page
@@ -117,7 +113,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     })
 
     const { store, meta, page } = categoryQuery.data
-    
+
     const { products } = productsQuery.data
 
     /**
@@ -142,7 +138,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         if (!(products.pagination.current < products.pagination.total)) return
 
         // load more products when the scroll reach half of the viewport height
-        if ((scrollY + height) > scrollHeight / 2) {
+        if (scrollY + height > scrollHeight / 2) {
             productsQuery.fetchMore({
                 variables: {
                     currentPage: products.pagination.current + 1, // next page
@@ -154,10 +150,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         products: {
                             ...prev.products,
                             ...fetchMoreResult.products,
-                            items: [
-                                ...prev.products.items,
-                                ...fetchMoreResult.products.items,
-                            ],
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
                         },
                     }
                 },
@@ -190,7 +183,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     return (
         <React.Fragment>
             <DocumentMetadata
-                title={[store.titlePrefix, (meta.title || page.title), store.titleSuffix]}
+                title={[store.titlePrefix, meta.title || page.title, store.titleSuffix]}
                 description={meta.description}
                 keywords={meta.keywords}
             />
@@ -200,33 +193,36 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     as: 'h2',
                     text: page.title,
                 }}
-                breadcrumbs={page.breadcrumbs && {
-                    items: page.breadcrumbs.map(({ _id, text, href }: any) => ({
-                        _id,
-                        as: Link,
-                        href: '/' + href,
-                        text,
-                    })),
-                }}
-                categories={page.categories && {
-                    items: page.categories.map(({ _id, text, count, href }: any) => ({
-                        _id,
-                        as: Link,
-                        count,
-                        text,
-                        href: '/' + href,
-                    })),
-                }}
-                filters={products && products.filters && {
-                    label: 'Filters',
-                    closeButton: {
-                        text: 'Done',
-                    },
-                    props: {
+                breadcrumbs={
+                    page.breadcrumbs && {
+                        items: page.breadcrumbs.map(({ _id, text, href }: any) => ({
+                            _id,
+                            as: Link,
+                            href: '/' + href,
+                            text,
+                        })),
+                    }
+                }
+                categories={
+                    page.categories && {
+                        items: page.categories.map(({ _id, text, count, href }: any) => ({
+                            _id,
+                            as: Link,
+                            count,
+                            text,
+                            href: '/' + href,
+                        })),
+                    }
+                }
+                filters={
+                    products &&
+                    products.filters && {
+                        label: 'Filters',
+                        closeButton: {
+                            text: 'Done',
+                        },
                         groups: products.filters.map(({ name, key, items }: any) => ({
-                            title: {
-                                text: name,
-                            },
+                            title: name,
                             items: items.map(({ label, count, value }: any) => ({
                                 as: 'a',
                                 count,
@@ -238,26 +234,23 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                 },
                             })),
                         })),
-                    },
-                }}
+                    }
+                }
                 products={{
                     loading: productsQuery.loading ? 10 : undefined,
-                    items: products && products.items.map(({
-                        _id,
-                        image,
-                        price,
-                        title,
-                    }: any) => ({
-                        _id,
-                        image,
-                        price: {
-                            regular: price.regularPrice.amount.value,
-                            currency: price.regularPrice.amount.currency,
-                        },
-                        title: {
-                            text: title,
-                        },
-                    })),
+                    items:
+                        products &&
+                        products.items.map(({ _id, image, price, title }: any) => ({
+                            _id,
+                            image,
+                            price: {
+                                regular: price.regularPrice.amount.value,
+                                currency: price.regularPrice.amount.currency,
+                            },
+                            title: {
+                                text: title,
+                            },
+                        })),
                 }}
             />
         </React.Fragment>

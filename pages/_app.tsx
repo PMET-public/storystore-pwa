@@ -1,5 +1,5 @@
 import React from 'react'
-import App, { Container } from 'next/app'
+import App from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { getDataFromTree } from '@apollo/react-ssr'
@@ -13,22 +13,20 @@ class MyApp extends App {
         const { Component, pageProps, apolloClient }: any = this.props
 
         return (
-            <Container>
-                <ApolloProvider client={apolloClient}>
-                    <ThemeProvider>
-                        <AppShell>
-                            <Component {...pageProps} />
-                        </AppShell>
-                    </ThemeProvider>
-                </ApolloProvider>
-            </Container>
+            <ApolloProvider client={apolloClient}>
+                <ThemeProvider>
+                    <AppShell>
+                        <Component {...pageProps} />
+                    </AppShell>
+                </ThemeProvider>
+            </ApolloProvider>
         )
     }
 }
 
 /**
  * Apollo Wrapper
- * @param App 
+ * @param App
  */
 const withApollo: any = (App: any) => {
     return class Apollo extends React.Component {

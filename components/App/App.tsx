@@ -5,7 +5,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
 import Link from '../Link'
-import AppTemplate from 'luma-storybook/dist/pages/App'
+import AppTemplate from 'luma-storybook/dist/components/App'
 import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
@@ -50,68 +50,59 @@ export const App: FunctionComponent = ({ children }) => {
         return <Error statusCode={500} />
     }
 
-    const {
-       store,
-       categories,
-       meta,
-    } = data 
+    const { store, categories, meta } = data
 
-    const { query: { url } } = useRouter()
+    const {
+        query: { url },
+    } = useRouter()
 
     const isUrlActive = (href: string) => url === href
-    
+
     return (
         <React.Fragment>
             <DocumentMetadata {...meta} />
             <AppTemplate
-                logo={{ 
-                    as: Link, 
+                logo={{
+                    as: Link,
                     href: '/' + store.homePath,
                     title: store.logoAlt,
                 }}
-
                 home={{
                     active: isUrlActive('/' + store.homePath),
                     as: Link,
                     href: '/' + store.homePath,
                     text: 'Home',
                 }}
-
                 menu={categories.children.map(({ text, href }: any) => ({
                     active: isUrlActive('/' + href),
                     as: Link,
                     href: '/' + href,
                     text,
                 }))}
-
                 help={{
                     active: isUrlActive('/customer-service'),
                     as: Link,
                     href: '/customer-service',
                     text: 'Help',
                 }}
-
                 myAccount={{
                     // active: isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
                     text: 'My Account',
                 }}
-
                 search={{
                     // active: isUrlActive('/search'),
                     // as: Link,
                     // href: '/search',
                     text: 'Search',
                 }}
-
                 cart={{
                     // active: isUrlActive('/cart'),
                     // as: Link,
                     // href: '/cart',
                     text: 'My Bag',
                 }}
-
                 footer={{
                     copyright: store.copyright,
                     menu: [
