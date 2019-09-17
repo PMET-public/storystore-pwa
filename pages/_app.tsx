@@ -3,7 +3,7 @@ import App from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { getDataFromTree } from '@apollo/react-ssr'
-import { ThemeProvider } from 'luma-storybook/dist/theme'
+import { ThemeProvider } from 'luma-ui/dist/theme'
 import initApollo from '../lib/init-apollo-client'
 
 import AppShell from '../components/App'

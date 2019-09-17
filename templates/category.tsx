@@ -2,14 +2,14 @@ import React, { FunctionComponent, useState, useEffect } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
-import { useScroll } from 'luma-storybook/dist/hooks/useScroll'
-import { useResize } from 'luma-storybook/dist/hooks/useResize'
+import { useScroll } from 'luma-ui/dist/hooks/useScroll'
+import { useResize } from 'luma-ui/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
 import Link from '../components/Link'
-import CategoryTemplate from 'luma-storybook/dist/pages/Category'
+import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from 'next/error'
-import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
+import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
 type CategoryProps = {
     id: number

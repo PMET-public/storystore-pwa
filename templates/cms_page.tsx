@@ -3,10 +3,10 @@ import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
 
-import DocumentMetadata from '../components/DocumentMetadata'
-import Page from 'luma-storybook/dist/pages/Page'
 import Error from 'next/error'
-import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
+import DocumentMetadata from '../components/DocumentMetadata'
+import Page from 'luma-ui/dist/templates/Page'
+import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
 const QUERY = gql`
     query PageQuery($id: Int!) {
@@ -23,10 +23,9 @@ const QUERY = gql`
 
         store: storeConfig {
             id
-            titlePrefix:  title_prefix
+            titlePrefix: title_prefix
             titleSuffix: title_suffix
         }
-
     }
 `
 
@@ -52,26 +51,19 @@ const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
     if (!data.page) {
         return <Error statusCode={404} />
     }
-    
-    const {  page, meta, store  } = data
+
+    const { page, meta, store } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata 
-                title={[store.titlePrefix, (meta.title || page.title), store.titleSuffix]}
+            <DocumentMetadata
+                title={[store.titlePrefix, meta.title || page.title, store.titleSuffix]}
                 description={meta.description}
                 keywords={meta.keywords}
             />
             <Page
-                assembler={{
-                    components: [
-                        {
-                            name: 'Html',
-                            props: {
-                                source: page.content,
-                            },
-                        },
-                    ],
+                pageBuilder={{
+                    html: page.content,
                 }}
             />
         </React.Fragment>

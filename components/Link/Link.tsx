@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import NextLink, { LinkProps as _LinkProps } from 'next/link'
 import styled from 'styled-components'
-import { Props } from 'luma-storybook/dist/lib'
+import { Props } from 'luma-ui/dist/lib'
 
 export type LinkProps = Props<_LinkProps>
 

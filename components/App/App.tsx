@@ -5,8 +5,8 @@ import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
 import Link from '../Link'
-import AppTemplate from 'luma-storybook/dist/components/App'
-import ViewLoader from 'luma-storybook/dist/components/ViewLoader'
+import AppTemplate from 'luma-ui/dist/components/App'
+import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
@@ -79,13 +79,13 @@ export const App: FunctionComponent = ({ children }) => {
                     href: '/' + href,
                     text,
                 }))}
-                help={{
-                    active: isUrlActive('/customer-service'),
-                    as: Link,
-                    href: '/customer-service',
-                    text: 'Help',
-                }}
                 myAccount={{
+                    // active: isUrlActive('/account'),
+                    // as: Link,
+                    // href: '/account',
+                    text: 'My Account',
+                }}
+                favorites={{
                     // active: isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
