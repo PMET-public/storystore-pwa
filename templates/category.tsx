@@ -112,10 +112,6 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         notifyOnNetworkStatusChange: true,
     })
 
-    const { store, meta, page } = categoryQuery.data
-
-    const { products } = productsQuery.data
-
     /**
      * Update filters on ID change
      */
@@ -131,8 +127,12 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
      * Infinite Scroll Effect
      */
     useEffect(() => {
+        if (productsQuery.loading) return
+
+        const { products } = productsQuery.data
+
         // ignore if it is loading or has no pagination
-        if (productsQuery.loading || !products.pagination) return
+        if (!products.pagination) return
 
         // don't run if it's in the last page
         if (!(products.pagination.current < products.pagination.total)) return
@@ -170,6 +170,10 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     if (!categoryQuery.data.page) {
         return <Error statusCode={404} />
     }
+
+    const { store, meta, page } = categoryQuery.data
+
+    const products = productsQuery.data && productsQuery.data.products
 
     function handleOnClickFilterValue(key: string, value: string) {
         setFilterValues({
