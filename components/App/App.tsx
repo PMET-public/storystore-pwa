@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
-import Link from '../Link'
+import Link, { LinkResolver } from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
@@ -53,48 +53,51 @@ export const App: FunctionComponent = ({ children }) => {
     const { store, categories, meta } = data
 
     const {
+        route,
         query: { url },
     } = useRouter()
 
-    const isUrlActive = (href: string) => url === href
+    const isUrlActive = (href: string) => {
+        return href === (url || route)
+    }
 
     return (
         <React.Fragment>
             <DocumentMetadata {...meta} />
             <AppTemplate
                 logo={{
-                    as: Link,
-                    href: '/' + store.homePath,
+                    as: LinkResolver,
+                    href: '/',
                     title: store.logoAlt,
                 }}
                 home={{
-                    active: isUrlActive('/' + store.homePath),
-                    as: Link,
-                    href: '/' + store.homePath,
+                    active: isUrlActive('/'),
+                    as: LinkResolver,
+                    href: '/',
                     text: 'Home',
                 }}
                 menu={categories.children.map(({ text, href }: any) => ({
                     active: isUrlActive('/' + href),
-                    as: Link,
+                    as: LinkResolver,
                     href: '/' + href,
                     text,
                 }))}
                 myAccount={{
                     // active: isUrlActive('/account'),
-                    // as: Link,
+                    // as: LinkResolver,
                     // href: '/account',
                     text: 'My Account',
                 }}
                 favorites={{
                     // active: isUrlActive('/account'),
-                    // as: Link,
+                    // as: LinkResolver,
                     // href: '/account',
                     text: 'Likes',
                 }}
                 search={{
-                    // active: isUrlActive('/search'),
-                    // as: Link,
-                    // href: '/search',
+                    active: isUrlActive('/search'),
+                    as: Link,
+                    href: '/search',
                     text: 'Search',
                 }}
                 cart={{
@@ -106,9 +109,9 @@ export const App: FunctionComponent = ({ children }) => {
                 footer={{
                     copyright: store.copyright,
                     menu: [
-                        { text: 'About', as: Link, href: '/about-us' },
-                        { text: 'Customer Service', as: Link, href: '/customer-service' },
-                        { text: 'Privacy Policy', as: Link, href: '/privacy-policy-cookie-restriction-mode' },
+                        { text: 'About', as: LinkResolver, href: '/about-us' },
+                        { text: 'Customer Service', as: LinkResolver, href: '/customer-service' },
+                        { text: 'Privacy Policy', as: LinkResolver, href: '/privacy-policy-cookie-restriction-mode' },
                     ],
                     social: {
                         facebook: { title: 'Facebook', as: 'a', href: 'https://facebook.com', target: 'blank' },

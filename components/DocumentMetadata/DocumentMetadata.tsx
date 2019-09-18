@@ -10,7 +10,6 @@ export type DocumentMetadataProps = {
 export const getFullPageTitle = (arr: string[]) => arr.filter(x => !!x).join(' | ')
 
 export const DocumentMetadata: FunctionComponent<DocumentMetadataProps> = ({ title, description, keywords }) => {
-
     return (
         <Head>
             {title && <title>{typeof title === 'string' ? title : getFullPageTitle(title)}</title>}

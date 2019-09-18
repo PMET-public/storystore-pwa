@@ -8,7 +8,7 @@ export type LinkProps = Props<_LinkProps>
 const ATag = styled.a``
 // const pathname = (pathname: string) => pathname // .replace(/^(\/)/, '')
 
-export const Link: FunctionComponent<LinkProps> = ({
+export const LinkResolver: FunctionComponent<LinkProps> = ({
     href: _href,
     as,
     replace,
@@ -33,6 +33,33 @@ export const Link: FunctionComponent<LinkProps> = ({
     return (
         <NextLink {...linkProps}>
             <ATag href={_href as string} {...props} />
+        </NextLink>
+    )
+}
+
+export const Link: FunctionComponent<LinkProps> = ({
+    as,
+    replace,
+    scroll,
+    href,
+    shallow,
+    passHref,
+    prefetch,
+    ...props
+}) => {
+    const linkProps = {
+        as,
+        replace,
+        scroll,
+        href,
+        shallow,
+        passHref,
+        prefetch,
+    }
+
+    return (
+        <NextLink {...linkProps}>
+            <ATag href={href as string} {...props} />
         </NextLink>
     )
 }

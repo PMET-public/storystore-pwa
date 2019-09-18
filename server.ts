@@ -4,12 +4,7 @@ import express from 'express'
 import request from 'request'
 import next from 'next'
 
-const {
-    NODE_ENV = 'development',
-    PORT = 3000,
-    MAGENTO_GRAPHQL_URL = ``,
-    LAUNCH_IN_BROWSER = false,
-} = process.env
+const { NODE_ENV = 'development', PORT = 3000, MAGENTO_GRAPHQL_URL = ``, LAUNCH_IN_BROWSER = false } = process.env
 
 const dev = NODE_ENV !== 'production'
 
@@ -37,7 +32,14 @@ app.prepare().then(() => {
     })
 
     /**
-     * Magento Routes
+     * Search Page
+     */
+    server.get('/search', (req, res) => {
+        return app.render(req, res, '/search', req.query)
+    })
+
+    /**
+     * Magento URL Resolver Routes
      */
     server.get('*', (req, res) => {
         return app.render(req, res, '/_url-resolver', { url: req.url })
@@ -47,7 +49,7 @@ app.prepare().then(() => {
         console.info('Server started...')
         // Launch in browser
         if (LAUNCH_IN_BROWSER) {
-            const start = (process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open')
+            const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open'
             console.info(`Launching ${url}...`)
             require('child_process').exec(start + ' ' + url)
         }

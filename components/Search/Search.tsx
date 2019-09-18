@@ -1,0 +1,206 @@
+import React, { FunctionComponent, useState, useEffect } from 'react'
+import gql from 'graphql-tag'
+
+import { useQuery } from '@apollo/react-hooks'
+import { useScroll } from 'luma-ui/dist/hooks/useScroll'
+import { useResize } from 'luma-ui/dist/hooks/useResize'
+
+import DocumentMetadata from '../DocumentMetadata'
+import Error from 'next/error'
+import CategoryTemplate from 'luma-ui/dist/templates/Category'
+
+type SearchProps = {
+    query?: string
+}
+
+type FilterValues = {
+    [key: string]: {
+        eq: string
+    }
+}
+
+const PRODUCTS_QUERY = gql`
+    query searchQuery($search: String, $filters: ProductFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
+        store: storeConfig {
+            id
+            titlePrefix: title_prefix
+            titleSuffix: title_suffix
+        }
+
+        meta: storeConfig {
+            id
+            titlePrefix: title_prefix
+            titleSuffix: title_suffix
+            description: default_description
+            keywords: default_keywords
+        }
+
+        products: products(search: $search, filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
+            pagination: page_info {
+                current: current_page
+                total: total_pages
+            }
+            filters {
+                name
+                key: request_var
+                items: filter_items {
+                    count: items_count
+                    label
+                    value: value_string
+                }
+            }
+            count: total_count
+            items {
+                _id: id
+                image {
+                    alt: label
+                    src: url
+                }
+                price {
+                    regularPrice {
+                        amount {
+                            currency
+                            value
+                        }
+                    }
+                }
+                title: name
+            }
+        }
+    }
+`
+
+export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
+    const { scrollY, scrollHeight } = useScroll()
+
+    const { height } = useResize()
+
+    const [filters, setFilters] = useState<FilterValues>({})
+
+    const [search, setSearch] = useState(query)
+
+    const searchQuery = useQuery(PRODUCTS_QUERY, {
+        variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
+        fetchPolicy: 'network-only', // 'cache-first',
+        notifyOnNetworkStatusChange: true,
+    })
+
+    /**
+     * Infinite Scroll Effect
+     */
+    useEffect(() => {
+        if (searchQuery.loading) return
+
+        const { products } = searchQuery.data
+
+        // ignore if it is loading or has no pagination
+        if (!products.pagination) return
+
+        // don't run if it's in the last page
+        if (!(products.pagination.current < products.pagination.total)) return
+
+        // load more products when the scroll reach half of the viewport height
+        if (scrollY + height > scrollHeight / 2) {
+            searchQuery.fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
+                        },
+                    }
+                },
+            })
+        }
+    }, [scrollY])
+
+    if (searchQuery.error) {
+        console.error(searchQuery.error.message)
+        return <Error statusCode={500} />
+    }
+
+    const { products, store, meta } = searchQuery.data || {}
+
+    function handleOnSearch(query: string) {
+        if (query.length === 0 || query.length > 2) {
+            setSearch(query)
+        }
+    }
+
+    function handleOnClickFilterValue(key: string, value: string) {
+        setFilters({
+            ...filters,
+            [key]: {
+                eq: value,
+            },
+        })
+    }
+
+    return (
+        <React.Fragment>
+            {store && meta && (
+                <DocumentMetadata
+                    title={[store.titlePrefix, 'Search', store.titleSuffix]}
+                    description={meta.description}
+                    keywords={meta.keywords}
+                />
+            )}
+
+            <CategoryTemplate
+                search={{
+                    searchBar: {
+                        label: 'Search',
+                        count: products && products.count,
+                        value: search,
+                        onUpdate: handleOnSearch,
+                    },
+                    noResult: search && products && `We couldn’t find anything for "${search}".`,
+                }}
+                filters={
+                    products &&
+                    products.filters && {
+                        label: 'Filters',
+                        closeButton: {
+                            text: 'Done',
+                        },
+                        groups: products.filters.map(({ name, key, items }: any) => ({
+                            title: name,
+                            items: items.map(({ label, count, value }: any) => ({
+                                as: 'a',
+                                count,
+                                href: '#',
+                                text: label,
+                                onClick: (e: Event) => {
+                                    e.preventDefault()
+                                    handleOnClickFilterValue(key, value)
+                                },
+                            })),
+                        })),
+                    }
+                }
+                products={{
+                    loading: searchQuery.loading && products && products.count > 0 ? 10 : undefined,
+                    items:
+                        products &&
+                        products.items.map(({ _id, image, price, title }: any) => ({
+                            _id,
+                            image,
+                            price: {
+                                regular: price.regularPrice.amount.value,
+                                currency: price.regularPrice.amount.currency,
+                            },
+                            title: {
+                                text: title,
+                            },
+                        })),
+                }}
+            />
+        </React.Fragment>
+    )
+}

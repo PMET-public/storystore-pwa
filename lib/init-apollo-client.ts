@@ -14,16 +14,17 @@ let apolloClient: any
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (!isBrowser) {
-    (global as any).fetch = fetch
+    ;(global as any).fetch = fetch
 }
 
-export const graphQlUri = isBrowser ? '/graphql' : (process.env.MAGENTO_GRAPHQL_URL || '')
+export const graphQlUri = isBrowser ? '/graphql' : process.env.MAGENTO_GRAPHQL_URL || ''
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
-        uri: graphQlUri, 
+        uri: graphQlUri,
+        // useGETForQueries: true,
     })
-    
+
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors) {
@@ -31,14 +32,14 @@ function create(initialState: any) {
                     console.info(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
                 })
             }
-    
+
             if (networkError) console.info(`[Network error]: ${networkError}`)
         }),
         httpLink,
     ])
-    
+
     const cache = new InMemoryCache().restore(initialState || {})
-        
+
     const client = new ApolloClient({
         cache,
         connectToDevTools: isBrowser,
