@@ -2,11 +2,11 @@ import React, { FunctionComponent, useState, useEffect } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
-import { useScroll } from 'luma-ui/dist/hooks/useScroll'
-import { useResize } from 'luma-ui/dist/hooks/useResize'
+// import { useScroll } from 'luma-ui/dist/hooks/useScroll'
+// import { useResize } from 'luma-ui/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
-import Link from '../components/Link'
+import { LinkResolver } from '../components/Link'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
@@ -55,7 +55,7 @@ const CATEGORY_QUERY = gql`
 `
 
 const PRODUCTS_QUERY = gql`
-    query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
+    query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 100, $currentPage: Int = 1) {
         products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
             pagination: page_info {
                 current: current_page
@@ -71,7 +71,7 @@ const PRODUCTS_QUERY = gql`
                 }
             }
             items {
-                _id: id
+                id
                 image {
                     alt: label
                     src: url
@@ -91,9 +91,9 @@ const PRODUCTS_QUERY = gql`
 `
 
 const Category: FunctionComponent<CategoryProps> = ({ id }) => {
-    const { scrollY, scrollHeight } = useScroll()
+    // const { scrollY, scrollHeight } = useScroll()
 
-    const { height } = useResize()
+    // const { height } = useResize()
 
     const [filterValues, setFilterValues] = useState<FilterValues>({
         category_id: {
@@ -126,37 +126,37 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     /**
      * Infinite Scroll Effect
      */
-    useEffect(() => {
-        if (productsQuery.loading) return
+    // useEffect(() => {
+    //     if (productsQuery.loading) return
 
-        const { products } = productsQuery.data
+    //     const { products } = productsQuery.data
 
-        // ignore if it is loading or has no pagination
-        if (!products.pagination) return
+    //     // ignore if it is loading or has no pagination
+    //     if (!products.pagination) return
 
-        // don't run if it's in the last page
-        if (!(products.pagination.current < products.pagination.total)) return
+    //     // don't run if it's in the last page
+    //     if (!(products.pagination.current < products.pagination.total)) return
 
-        // load more products when the scroll reach half of the viewport height
-        if (scrollY + height > scrollHeight / 2) {
-            productsQuery.fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            })
-        }
-    }, [scrollY])
+    //     // load more products when the scroll reach half of the viewport height
+    //     if (scrollY + height > scrollHeight / 2) {
+    //         productsQuery.fetchMore({
+    //             variables: {
+    //                 currentPage: products.pagination.current + 1, // next page
+    //             },
+    //             updateQuery: (prev: any, { fetchMoreResult }) => {
+    //                 if (!fetchMoreResult) return prev
+    //                 return {
+    //                     ...prev,
+    //                     products: {
+    //                         ...prev.products,
+    //                         ...fetchMoreResult.products,
+    //                         items: [...prev.products.items, ...fetchMoreResult.products.items],
+    //                     },
+    //                 }
+    //             },
+    //         })
+    //     }
+    // }, [scrollY])
 
     if (categoryQuery.loading) {
         return <ViewLoader />
@@ -201,7 +201,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ _id, text, href }: any) => ({
                             _id,
-                            as: Link,
+                            as: LinkResolver,
                             href: '/' + href,
                             text,
                         })),
@@ -211,7 +211,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     page.categories && {
                         items: page.categories.map(({ _id, text, count, href }: any) => ({
                             _id,
-                            as: Link,
+                            as: LinkResolver,
                             count,
                             text,
                             href: '/' + href,
@@ -241,11 +241,10 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
-                    loading: productsQuery.loading ? 10 : undefined,
                     items:
                         products &&
-                        products.items.map(({ _id, image, price, title }: any) => ({
-                            _id,
+                        products.items.map(({ id, image, price, title }: any) => ({
+                            _id: id,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

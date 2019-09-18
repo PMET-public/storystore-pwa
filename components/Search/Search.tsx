@@ -51,7 +51,7 @@ const PRODUCTS_QUERY = gql`
             }
             count: total_count
             items {
-                _id: id
+                id
                 image {
                     alt: label
                     src: url
@@ -101,22 +101,22 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            searchQuery.fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            })
+            // searchQuery.fetchMore({
+            //     variables: {
+            //         currentPage: products.pagination.current + 1, // next page
+            //     },
+            //     updateQuery: (prev: any, { fetchMoreResult }) => {
+            //         if (!fetchMoreResult) return prev
+            //         return {
+            //             ...prev,
+            //             products: {
+            //                 ...prev.products,
+            //                 ...fetchMoreResult.products,
+            //                 items: [...prev.products.items, ...fetchMoreResult.products.items],
+            //             },
+            //         }
+            //     },
+            // })
         }
     }, [scrollY])
 
@@ -126,6 +126,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     }
 
     const { products, store, meta } = searchQuery.data || {}
+
+    const notResult = !searchQuery.loading && search && products && products.count === 0
 
     function handleOnSearch(query: string) {
         if (query.length === 0 || query.length > 2) {
@@ -160,7 +162,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         value: search,
                         onUpdate: handleOnSearch,
                     },
-                    noResult: search && products && `We couldn’t find anything for "${search}".`,
+                    noResult: notResult ? `We couldn’t find anything for "${search}".` : undefined,
                 }}
                 filters={
                     products &&
@@ -185,11 +187,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     }
                 }
                 products={{
-                    loading: searchQuery.loading && products && products.count > 0 ? 10 : undefined,
                     items:
                         products &&
-                        products.items.map(({ _id, image, price, title }: any) => ({
-                            _id,
+                        products.items.map(({ id, image, price, title }: any) => ({
+                            _id: id,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,
