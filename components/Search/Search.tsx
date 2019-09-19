@@ -174,14 +174,15 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     },
                     noResult: notResult ? `We couldn’t find anything for "${search}".` : undefined,
                 }}
-                filters={
-                    products &&
-                    products.filters && {
-                        label: 'Filters',
-                        closeButton: {
-                            text: 'Done',
-                        },
-                        groups: products.filters.map(({ name, key, items }: any) => ({
+                filters={{
+                    label: 'Filters',
+                    closeButton: {
+                        text: 'Done',
+                    },
+                    groups:
+                        products &&
+                        products.filters &&
+                        products.filters.map(({ name, key, items }: any) => ({
                             title: name,
                             items: items.map(({ label, count, value }: any) => ({
                                 as: 'a',
@@ -194,8 +195,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                                 },
                             })),
                         })),
-                    }
-                }
+                }}
                 products={{
                     items:
                         products &&
