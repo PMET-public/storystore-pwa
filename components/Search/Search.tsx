@@ -9,6 +9,7 @@ import Router from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
+import { LinkResolver } from '../Link'
 
 type SearchProps = {
     query?: string
@@ -51,7 +52,7 @@ const PRODUCTS_QUERY = gql`
                 }
             }
             count: total_count
-            items {
+            items @connection(key: "items") {
                 id
                 image {
                     alt: label
@@ -66,6 +67,9 @@ const PRODUCTS_QUERY = gql`
                     }
                 }
                 title: name
+                urls: url_rewrites {
+                    url
+                }
             }
         }
     }
@@ -82,7 +86,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const searchQuery = useQuery(PRODUCTS_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
-        fetchPolicy: 'network-only', // 'cache-first',
+        fetchPolicy: 'cache-first',
         notifyOnNetworkStatusChange: true,
     })
 
@@ -209,8 +213,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     loader: searchQuery.loading && products && { label: 'fetching products ' },
                     items:
                         products &&
-                        products.items.map(({ id, image, price, title }: any, index: number) => ({
+                        products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
                             _id: `${id}--${index}`,
+                            as: LinkResolver,
+                            href: urls[urls.length - 1].url,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

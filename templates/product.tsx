@@ -5,10 +5,9 @@ type ProductProps = {
 }
 
 const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    
     return (
         <div>
-            template: product <br/>
+            template: product <br />
             id: {id}
         </div>
     )

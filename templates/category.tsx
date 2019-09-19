@@ -70,7 +70,7 @@ const PRODUCTS_QUERY = gql`
                     value: value_string
                 }
             }
-            items {
+            items @connection(key: "items") {
                 id
                 image {
                     alt: label
@@ -85,6 +85,9 @@ const PRODUCTS_QUERY = gql`
                     }
                 }
                 title: name
+                urls: url_rewrites {
+                    url
+                }
             }
         }
     }
@@ -139,6 +142,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
+            console.log(products.pagination.current)
             productsQuery.fetchMore({
                 variables: {
                     currentPage: products.pagination.current + 1, // next page
@@ -244,8 +248,10 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     loader: productsQuery.loading && products && { label: 'fetching products ' },
                     items:
                         products &&
-                        products.items.map(({ id, image, price, title }: any, index: number) => ({
+                        products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
                             _id: `${id}--${index}`,
+                            as: LinkResolver,
+                            href: urls[urls.length - 1].url,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,
