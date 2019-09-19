@@ -142,7 +142,6 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            console.log(products.pagination.current)
             productsQuery.fetchMore({
                 variables: {
                     currentPage: products.pagination.current + 1, // next page

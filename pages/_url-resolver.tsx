@@ -27,7 +27,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
 
     const { url } = router.query
 
-    const { loading, error, data } = useQuery<any>(QUERY, {
+    const { loading, error, data } = useQuery(QUERY, {
         variables: { url },
         fetchPolicy: 'cache-first',
     })
