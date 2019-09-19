@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react'
 import gql from 'graphql-tag'
-import dynamic from 'next/dynamic'
 
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/react-hooks'
@@ -8,9 +7,9 @@ import { useQuery } from '@apollo/react-hooks'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
-const CMSPage = dynamic(() => import('../templates/cms_page'))
-const Category = dynamic(() => import('../templates/category'))
-const Product = dynamic(() => import('../templates/product'))
+import CMSPage from '../templates/cms_page'
+import Category from '../templates/category'
+import Product from '../templates/product'
 
 const QUERY = gql`
     query urlResolver($url: String!) {
