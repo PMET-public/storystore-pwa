@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'
 import { useResize } from 'luma-ui/dist/hooks/useResize'
 
+import Router from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
@@ -75,9 +76,9 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const { height } = useResize()
 
-    const [filters, setFilters] = useState<FilterValues>({})
-
     const [search, setSearch] = useState(query)
+
+    const [filters, setFilters] = useState<FilterValues>({})
 
     const searchQuery = useQuery(PRODUCTS_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
@@ -101,24 +102,31 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            // searchQuery.fetchMore({
-            //     variables: {
-            //         currentPage: products.pagination.current + 1, // next page
-            //     },
-            //     updateQuery: (prev: any, { fetchMoreResult }) => {
-            //         if (!fetchMoreResult) return prev
-            //         return {
-            //             ...prev,
-            //             products: {
-            //                 ...prev.products,
-            //                 ...fetchMoreResult.products,
-            //                 items: [...prev.products.items, ...fetchMoreResult.products.items],
-            //             },
-            //         }
-            //     },
-            // })
+            searchQuery.fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
+                        },
+                    }
+                },
+            })
         }
     }, [scrollY])
+
+    /**
+     * Update query URL
+     */
+    useEffect(() => {
+        Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
+    }, [search])
 
     if (searchQuery.error) {
         console.error(searchQuery.error.message)
@@ -129,9 +137,11 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const notResult = !searchQuery.loading && search && products && products.count === 0
 
-    function handleOnSearch(query: string) {
-        if (query.length === 0 || query.length > 2) {
-            setSearch(query)
+    function handleOnNewSearch(newQuery: string) {
+        if (newQuery.length === 0 || newQuery.length > 2) {
+            setSearch(newQuery)
+            setFilters({})
+            window.scrollTo(0, 0)
         }
     }
 
@@ -160,7 +170,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         label: 'Search',
                         count: products && products.count,
                         value: search,
-                        onUpdate: handleOnSearch,
+                        onUpdate: handleOnNewSearch,
                     },
                     noResult: notResult ? `We couldn’t find anything for "${search}".` : undefined,
                 }}
@@ -189,8 +199,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                 products={{
                     items:
                         products &&
-                        products.items.map(({ id, image, price, title }: any) => ({
-                            _id: id,
+                        products.items.map(({ id, image, price, title }: any, index: number) => ({
+                            _id: `${id}--${index}`,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

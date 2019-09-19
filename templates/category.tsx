@@ -243,8 +243,8 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 products={{
                     items:
                         products &&
-                        products.items.map(({ id, image, price, title }: any) => ({
-                            _id: id,
+                        products.items.map(({ id, image, price, title }: any, index: number) => ({
+                            _id: `${id}--${index}`,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,
