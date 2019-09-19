@@ -241,6 +241,7 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
+                    loader: productsQuery.loading && products && { label: 'fetching products ' },
                     items:
                         products &&
                         products.items.map(({ id, image, price, title }: any, index: number) => ({

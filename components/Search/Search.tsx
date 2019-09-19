@@ -135,7 +135,15 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const { products, store, meta } = searchQuery.data || {}
 
-    const notResult = !searchQuery.loading && search && products && products.count === 0
+    const getProductCount = () => {
+        if (!products) return
+        const { count = 0 } = products
+        return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
+    }
+
+    const getNotResult = () => {
+        if (search && products && products.count === 0) return `We couldn’t find anything for "${search}".`
+    }
 
     function handleOnNewSearch(newQuery: string) {
         if (newQuery.length === 0 || newQuery.length > 2) {
@@ -168,11 +176,12 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                 search={{
                     searchBar: {
                         label: 'Search',
-                        count: products && products.count,
+                        count: getProductCount(),
+                        loader: searchQuery.loading ? { label: 'loading' } : undefined,
                         value: search,
                         onUpdate: handleOnNewSearch,
                     },
-                    noResult: notResult ? `We couldn’t find anything for "${search}".` : undefined,
+                    noResult: getNotResult(),
                 }}
                 filters={{
                     label: 'Filters',
@@ -197,6 +206,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         })),
                 }}
                 products={{
+                    loader: searchQuery.loading && products && { label: 'fetching products ' },
                     items:
                         products &&
                         products.items.map(({ id, image, price, title }: any, index: number) => ({
