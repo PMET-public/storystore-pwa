@@ -9,7 +9,7 @@ import Router from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
-import { LinkResolver } from '../Link'
+import Link from '../Link'
 
 type SearchProps = {
     query?: string
@@ -215,8 +215,9 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         products &&
                         products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
                             _id: `${id}--${index}`,
-                            as: LinkResolver,
+                            as: Link,
                             href: urls[urls.length - 1].url,
+                            urlResolver: true,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

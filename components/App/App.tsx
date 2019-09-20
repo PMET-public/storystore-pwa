@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 
-import Link, { LinkResolver } from '../Link'
+import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
@@ -66,31 +66,34 @@ export const App: FunctionComponent = ({ children }) => {
             <DocumentMetadata {...meta} />
             <AppTemplate
                 logo={{
-                    as: LinkResolver,
+                    as: Link,
+                    urlResolver: true,
                     href: '/',
                     title: store.logoAlt,
                 }}
                 home={{
                     active: isUrlActive('/'),
-                    as: LinkResolver,
+                    as: Link,
+                    urlResolver: true,
                     href: '/',
                     text: 'Home',
                 }}
                 menu={categories.children.map(({ text, href }: any) => ({
                     active: isUrlActive('/' + href),
-                    as: LinkResolver,
+                    as: Link,
+                    urlResolver: true,
                     href: '/' + href,
                     text,
                 }))}
                 myAccount={{
                     // active: isUrlActive('/account'),
-                    // as: LinkResolver,
+                    // as: Link,
                     // href: '/account',
                     text: 'My Account',
                 }}
                 favorites={{
                     // active: isUrlActive('/account'),
-                    // as: LinkResolver,
+                    // as: Link,
                     // href: '/account',
                     text: 'Likes',
                 }}
@@ -109,9 +112,14 @@ export const App: FunctionComponent = ({ children }) => {
                 footer={{
                     copyright: store.copyright,
                     menu: [
-                        { text: 'About', as: LinkResolver, href: '/about-us' },
-                        { text: 'Customer Service', as: LinkResolver, href: '/customer-service' },
-                        { text: 'Privacy Policy', as: LinkResolver, href: '/privacy-policy-cookie-restriction-mode' },
+                        { text: 'About', as: Link, urlResolver: true, href: '/about-us' },
+                        { text: 'Customer Service', as: Link, urlResolver: true, href: '/customer-service' },
+                        {
+                            text: 'Privacy Policy',
+                            as: Link,
+                            urlResolver: true,
+                            href: '/privacy-policy-cookie-restriction-mode',
+                        },
                     ],
                     social: {
                         facebook: { title: 'Facebook', as: 'a', href: 'https://facebook.com', target: 'blank' },

@@ -6,7 +6,7 @@ import { useScroll } from 'luma-ui/dist/hooks/useScroll'
 import { useResize } from 'luma-ui/dist/hooks/useResize'
 
 import DocumentMetadata from '../components/DocumentMetadata'
-import { LinkResolver } from '../components/Link'
+import Link from '../components/Link'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
@@ -204,7 +204,8 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ _id, text, href }: any) => ({
                             _id,
-                            as: LinkResolver,
+                            as: Link,
+                            urlResolver: true,
                             href: '/' + href,
                             text,
                         })),
@@ -214,7 +215,8 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     page.categories && {
                         items: page.categories.map(({ _id, text, count, href }: any) => ({
                             _id,
-                            as: LinkResolver,
+                            as: Link,
+                            urlResolver: true,
                             count,
                             text,
                             href: '/' + href,
@@ -249,8 +251,9 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         products &&
                         products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
                             _id: `${id}--${index}`,
-                            as: LinkResolver,
+                            as: Link,
                             href: urls[urls.length - 1].url,
+                            urlResolver: true,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,
