@@ -24,7 +24,7 @@ export const defaults = {
 }
 
 /**
- * Resolvers 
+ * Resolvers
  */
 type Resolvers = {
     Mutation: {
@@ -33,5 +33,5 @@ type Resolvers = {
 }
 
 export const resolvers: Resolvers = {
-    Mutation: { },
+    Mutation: {},
 }

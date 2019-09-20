@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -57,9 +57,12 @@ export const App: FunctionComponent = ({ children }) => {
         query: { url },
     } = useRouter()
 
-    const isUrlActive = (href: string) => {
-        return href === (url || route)
-    }
+    const isUrlActive = useCallback(
+        (href: string) => {
+            return href === (url || route)
+        },
+        [url, route]
+    )
 
     return (
         <React.Fragment>
