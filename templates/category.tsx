@@ -26,6 +26,8 @@ const CATEGORY_QUERY = gql`
         page: category(id: $id) {
             id
             title: name
+            cmsBlock: description
+            mode: display_mode
             breadcrumbs {
                 _id: category_url_key
                 text: category_name
@@ -196,6 +198,12 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             />
 
             <CategoryTemplate
+                display={page.mode}
+                cmsBlock={
+                    page.cmsBlock && {
+                        html: page.cmsBlock,
+                    }
+                }
                 title={{
                     as: 'h2',
                     text: page.title,
