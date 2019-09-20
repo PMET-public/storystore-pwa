@@ -214,8 +214,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
-                            as: (props: any) => <Link urlResolver href={urls[urls.length - 1].url} {...props} />,
                             _id: `${id}--${index}`,
+                            as: Link,
+                            href: urls[urls.length - 1].url,
+                            urlResolver: true,
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,
