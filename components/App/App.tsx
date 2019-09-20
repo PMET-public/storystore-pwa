@@ -69,59 +69,44 @@ export const App: FunctionComponent = ({ children }) => {
             <DocumentMetadata {...meta} />
             <AppTemplate
                 logo={{
-                    as: Link,
-                    urlResolver: true,
-                    href: '/',
+                    as: props => <Link urlResolver href="/" {...props} />,
                     title: store.logoAlt,
                 }}
                 home={{
+                    as: props => <Link urlResolver href="/" {...props} />,
                     active: isUrlActive('/'),
-                    as: Link,
-                    urlResolver: true,
-                    href: '/',
                     text: 'Home',
                 }}
                 menu={categories.children.map(({ text, href }: any) => ({
+                    as: (props: any) => <Link urlResolver href={'/' + href} {...props} />,
                     active: isUrlActive('/' + href),
-                    as: Link,
-                    urlResolver: true,
-                    href: '/' + href,
                     text,
                 }))}
                 myAccount={{
-                    // active: isUrlActive('/account'),
-                    // as: Link,
-                    // href: '/account',
                     text: 'My Account',
                 }}
                 favorites={{
-                    // active: isUrlActive('/account'),
-                    // as: Link,
-                    // href: '/account',
                     text: 'Likes',
                 }}
                 search={{
+                    as: props => <Link href="/search" {...props} />,
                     active: isUrlActive('/search'),
-                    as: Link,
-                    href: '/search',
                     text: 'Search',
                 }}
                 cart={{
-                    // active: isUrlActive('/cart'),
-                    // as: Link,
-                    // href: '/cart',
                     text: 'Bag',
                 }}
                 footer={{
                     copyright: store.copyright,
                     menu: [
-                        { text: 'About', as: Link, urlResolver: true, href: '/about-us' },
-                        { text: 'Customer Service', as: Link, urlResolver: true, href: '/customer-service' },
+                        { text: 'About', as: props => <Link urlResolver href="/about-us" {...props} /> },
+                        {
+                            text: 'Customer Service',
+                            as: props => <Link urlResolver href="/customer-service" {...props} />,
+                        },
                         {
                             text: 'Privacy Policy',
-                            as: Link,
-                            urlResolver: true,
-                            href: '/privacy-policy-cookie-restriction-mode',
+                            as: props => <Link urlResolver href="/privacy-policy-cookie-restriction-mode" {...props} />,
                         },
                     ],
                     social: {
