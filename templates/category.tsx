@@ -29,9 +29,9 @@ const CATEGORY_QUERY = gql`
             cmsBlock: description
             mode: display_mode
             breadcrumbs {
-                _id: category_url_key
+                id: category_url_key
                 text: category_name
-                href: category_url_key
+                href: category_url_key # TODO: Needs to be changed to url_path
             }
             categories: children {
                 _id: url_key
@@ -210,8 +210,8 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 }}
                 breadcrumbs={
                     page.breadcrumbs && {
-                        items: page.breadcrumbs.map(({ _id, text, href }: any) => ({
-                            _id,
+                        items: page.breadcrumbs.map(({ id, text, href }: any) => ({
+                            _id: id,
                             as: Link,
                             urlResolver: true,
                             href: '/' + href,
