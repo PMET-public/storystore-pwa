@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -15,7 +15,7 @@ type ProductProps = {
 
 const PRODUCT_QUERY = gql`
     query ProductQuery {
-        products(filter: { sku: { eq: "WT09" } }, pageSize: 1) {
+        products(filter: { sku: { eq: "WH12" } }, pageSize: 1) {
             items {
                 id
                 title: name
@@ -38,35 +38,34 @@ const PRODUCT_QUERY = gql`
                     options: configurable_options {
                         id
                         label
-                        # attribute_code
-                        # attribute_id
+                        code: attribute_code
                         items: values {
+                            id: value_index
                             label
-                            #     store_label
-                            #     use_default_value
                             value: value_index
                         }
                     }
-                    # variants {
-                    #     attributes {
-                    #         code
-                    #         value_index
-                    #     }
-                    #     product {
-                    #         id
-                    #         media_gallery_entries {
-                    #             disabled
-                    #             file
-                    #             label
-                    #             position
-                    #         }
-                    #         sku
-                    #         stock_status
-                    #     }
-                    # }
+                    variants {
+                        attributes {
+                            code
+                            value: value_index
+                        }
+                        product {
+                            id
+                            gallery: media_gallery_entries {
+                                id
+                                file
+                                label
+                                disabled
+                                type: media_type
+                            }
+                            sku
+                            stock: stock_status
+                        }
+                    }
                 }
 
-                images: media_gallery_entries {
+                gallery: media_gallery_entries {
                     id
                     file
                     label
@@ -74,11 +73,11 @@ const PRODUCT_QUERY = gql`
                     type: media_type
                 }
 
-                description: short_description {
+                shortDescription: short_description {
                     html
                 }
 
-                pageBuilder: description {
+                description: description {
                     html
                 }
 
@@ -101,6 +100,10 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
         variables: { id },
         fetchPolicy: 'cache-first',
     })
+
+    const [selectedVariants, setSelectedVariants] = useState({})
+
+    console.log(selectedVariants)
 
     if (loading) {
         return <ViewLoader />
@@ -148,9 +151,10 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                images={
-                    product.images &&
-                    product.images
+                gallery={
+                    product.gallery &&
+                    product.gallery
+                        .sort((x: any) => x.position)
                         .filter((x: any) => x.disabled === false && x.type === 'image')
                         .map(({ id, label, file }: any) => ({
                             _id: id,
@@ -162,27 +166,29 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
                     regular: product.price.regularPrice.amount.value,
                     currency: product.price.regularPrice.amount.currency,
                 }}
-                buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
-                description={product.description && product.description.html}
-                pageBuilder={
-                    product.pageBuilder && {
-                        html: product.pageBuilder.html,
-                    }
-                }
                 swatches={
                     product.options &&
-                    product.options.map(({ id, label, items }: any) => ({
-                        _id: id,
+                    product.options.map(({ id: optionId, label, items }: any) => ({
+                        _id: optionId,
                         type: 'text',
                         title: {
                             text: label,
                         },
                         props: {
-                            items: items.map(({ label }: any) => ({
+                            items: items.map(({ id: itemId, label, value }: any) => ({
+                                _id: itemId,
                                 text: label,
+                                onClick: () => setSelectedVariants({ [optionId]: value }),
                             })),
                         },
                     }))
+                }
+                buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
+                shortDescription={product.shortDescription && product.shortDescription.html}
+                description={
+                    product.description && {
+                        html: product.description.html,
+                    }
                 }
             />
         </React.Fragment>
