@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useReducer, Reducer, useCallback, useEffect } from 'react'
 import gql from 'graphql-tag'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -8,6 +8,7 @@ import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../components/Link'
+import { ImageProps } from 'luma-ui/dist/components/Image'
 
 type ProductProps = {
     id: number
@@ -38,6 +39,7 @@ const PRODUCT_QUERY = gql`
                     options: configurable_options {
                         id
                         label
+                        position
                         code: attribute_code
                         items: values {
                             id: value_index
@@ -95,15 +97,140 @@ const PRODUCT_QUERY = gql`
     }
 `
 
+type ProductGallery = Array<{
+    id: number
+    file: string
+    label: string
+    disabled?: boolean
+    type: 'image'
+}>
+
+type Options = {
+    [code: string]: number
+}
+
+type Variants = Array<
+    { [code: string]: number } & {
+        gallery: ProductGallery
+    }
+>
+
+type Product = {
+    gallery: ImageProps[]
+}
+
+type ReducerState = {
+    options: Options
+    variants: Variants
+    product: Product
+}
+
+type ReducerActions =
+    | {
+          type: 'setOptions'
+          payload: Options
+      }
+    | {
+          type: 'setVariants'
+          payload: Variants
+      }
+    | {
+          type: 'setProduct'
+          payload: Product
+      }
+
+const initialState: ReducerState = {
+    options: {},
+    variants: [],
+    product: {
+        gallery: [],
+    },
+}
+
+const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
+    switch (action.type) {
+        case 'setOptions':
+            return {
+                ...state,
+                options: {
+                    ...state.options,
+                    ...action.payload,
+                },
+            }
+        case 'setVariants':
+            return {
+                ...state,
+                variants: [...state.variants, ...action.payload],
+            }
+        case 'setProduct':
+            return {
+                ...state,
+                product: { ...state.product, ...action.payload },
+            }
+        default:
+            throw `Reducer action not valid.`
+    }
+}
+
 const Product: FunctionComponent<ProductProps> = ({ id }) => {
     const { loading, error, data } = useQuery(PRODUCT_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
     })
 
-    const [selectedVariants, setSelectedVariants] = useState({})
+    const [product] = (data && data.products.items) || []
 
-    console.log(selectedVariants)
+    const store = (data && data.store) || {}
+
+    const [state, dispatch] = useReducer(reducer, initialState)
+
+    const getProductGallery = useCallback(
+        (gallery: ProductGallery) => {
+            return gallery
+                .filter((x: any) => x.disabled === false && x.type === 'image')
+                .map(({ id, label, file }: any) => ({
+                    _id: id,
+                    alt: label,
+                    src: store.baseMediaUrl + 'catalog/product' + file,
+                }))
+                .sort((a: any, b: any) => a.position - b.position)
+        },
+        [store.baseMediaUrl]
+    )
+
+    useEffect(() => {
+        const payload = product.variants.reduce((accumVariants: [], currentVariant: any) => {
+            return [
+                ...accumVariants,
+                currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
+                    const { code, value } = currentAttribute
+                    return { ...accumAttributes, [code]: value, product: currentVariant.product }
+                }, {}),
+            ]
+        }, [])
+
+        dispatch({ type: 'setVariants', payload })
+    }, [product && product.id])
+
+    useEffect(() => {
+        const options = Object.keys(state.options)
+
+        const defaultVariant = { product }
+
+        const variant =
+            options.length > 0
+                ? state.variants.find(v => {
+                      return options.reduce((accum: boolean, x) => v[x] === state.options[x] && accum, true)
+                  }) || defaultVariant
+                : defaultVariant
+
+        dispatch({
+            type: 'setProduct',
+            payload: {
+                gallery: getProductGallery(variant.product.gallery),
+            },
+        })
+    }, [product && product.id, JSON.stringify(state.options)])
 
     if (loading) {
         return <ViewLoader />
@@ -114,13 +241,9 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
         return <Error statusCode={500} />
     }
 
-    if (!(data.products && data.products.items[0])) {
+    if (!product) {
         return <Error statusCode={404} />
     }
-
-    const { products, store } = data
-
-    const [product] = products.items
 
     return (
         <React.Fragment>
@@ -151,37 +274,34 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                gallery={
-                    product.gallery &&
-                    product.gallery
-                        .sort((x: any) => x.position)
-                        .filter((x: any) => x.disabled === false && x.type === 'image')
-                        .map(({ id, label, file }: any) => ({
-                            _id: id,
-                            alt: label,
-                            src: store.baseMediaUrl + 'catalog/product' + file,
-                        }))
-                }
+                gallery={state.product.gallery}
                 price={{
                     regular: product.price.regularPrice.amount.value,
                     currency: product.price.regularPrice.amount.currency,
                 }}
                 swatches={
                     product.options &&
-                    product.options.map(({ id: optionId, label, items }: any) => ({
-                        _id: optionId,
-                        type: 'text',
-                        title: {
-                            text: label,
-                        },
-                        props: {
-                            items: items.map(({ id: itemId, label, value }: any) => ({
-                                _id: itemId,
+                    product.options
+                        .sort((a: any, b: any) => b.position - a.position)
+                        .map(({ id, label, code, items }: any) => ({
+                            _id: id,
+                            type: 'text',
+                            title: {
                                 text: label,
-                                onClick: () => setSelectedVariants({ [optionId]: value }),
-                            })),
-                        },
-                    }))
+                            },
+                            props: {
+                                items: items.map(({ id, label, value }: any) => ({
+                                    _id: id,
+                                    text: label,
+                                    active: value === state.options[code],
+                                    onClick: () =>
+                                        dispatch({
+                                            type: 'setOptions',
+                                            payload: { [code]: value },
+                                        }),
+                                })),
+                            },
+                        }))
                 }
                 buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
                 shortDescription={product.shortDescription && product.shortDescription.html}
