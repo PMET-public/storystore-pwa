@@ -40,7 +40,10 @@ type Option = {
 }
 
 type OptionsSelected = {
-    [code: string]: number
+    [code: string]: {
+        label: string
+        value: number
+    }
 }
 
 type Variants = Array<
@@ -226,7 +229,10 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
         const variant =
             options.length > 0
                 ? state.variants.items.find(v => {
-                      return options.reduce((accum: boolean, x) => v[x] === state.options.selected[x] && accum, true)
+                      return options.reduce(
+                          (accum: boolean, x) => v[x] === state.options.selected[x].value && accum,
+                          true
+                      )
                   }) || defaultVariant
                 : defaultVariant
 
@@ -287,29 +293,33 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                     currency: product.price.regularPrice.amount.currency,
                 }}
                 swatches={state.options.items
-                    .map(({ id, label, code, type, items }: any) => ({
-                        _id: id,
-                        type,
-                        title: {
-                            text: label,
-                        },
-                        props: {
-                            items: items.map(({ id, label, value, image }: any) => ({
-                                _id: id,
-                                text: label,
-                                image: image && {
-                                    alt: image.label,
-                                    src: image.url,
-                                },
-                                active: value === state.options.selected[code],
-                                onClick: () =>
-                                    dispatch({
-                                        type: 'selectOption',
-                                        payload: { [code]: value },
-                                    }),
-                            })),
-                        },
-                    }))
+                    .map(({ id, label, code, type, items }: any) => {
+                        const selected = state.options.selected[code]
+
+                        return {
+                            _id: id,
+                            type,
+                            title: {
+                                text: selected ? `${label}: ${selected.label}` : label,
+                            },
+                            props: {
+                                items: items.map(({ id, label, value, image }: any) => ({
+                                    _id: id,
+                                    text: label,
+                                    image: image && {
+                                        alt: image.label,
+                                        src: image.url,
+                                    },
+                                    active: selected && value === selected.value,
+                                    onClick: () =>
+                                        dispatch({
+                                            type: 'selectOption',
+                                            payload: { [code]: { label, value } },
+                                        }),
+                                })),
+                            },
+                        }
+                    })
                     .sort((a: any, b: any) => b.position - a.position)}
                 buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
                 shortDescription={product.shortDescription && product.shortDescription.html}

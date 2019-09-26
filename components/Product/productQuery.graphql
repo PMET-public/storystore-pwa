@@ -37,6 +37,9 @@ query ProductQuery {
                     }
                     product {
                         id
+                        sku
+                        stock: stock_status
+
                         thumbnail {
                             label
                             url
@@ -49,8 +52,6 @@ query ProductQuery {
                             disabled
                             type: media_type
                         }
-                        sku
-                        stock: stock_status
                     }
                 }
             }
