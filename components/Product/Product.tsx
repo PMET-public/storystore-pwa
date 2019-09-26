@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useReducer, Reducer, useCallback, useEffect } from 'react'
+import React, { FunctionComponent, useReducer, Reducer, useEffect } from 'react'
 import PRODUCT_QUERY from './productQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -52,7 +52,17 @@ type Variants = Array<
     }
 >
 
+type Price = {
+    amount: {
+        currency?: string
+        value: number
+    }
+}
+
 type Product = {
+    price: {
+        regular: Price
+    }
     gallery: ImageProps[]
 }
 
@@ -63,7 +73,7 @@ type ReducerState = {
     }
     variants: {
         items: Variants
-        selected: Product
+        selected?: Product
     }
 }
 
@@ -84,19 +94,6 @@ type ReducerActions =
           type: 'selectVariant'
           payload: Product
       }
-
-const initialState: ReducerState = {
-    options: {
-        items: [],
-        selected: {},
-    },
-    variants: {
-        items: [],
-        selected: {
-            gallery: [],
-        },
-    },
-}
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
@@ -140,6 +137,27 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
+const initialState: ReducerState = {
+    options: {
+        selected: {},
+        items: [],
+    },
+    variants: {
+        items: [],
+    },
+}
+
+const getProductGallery = (gallery: ProductGallery, baseUrl = '') => {
+    return gallery
+        .filter((x: any) => x.disabled === false && x.type === 'image')
+        .map(({ id, label, file }: any) => ({
+            _id: id,
+            alt: label,
+            src: baseUrl + file,
+        }))
+        .sort((a: any, b: any) => a.position - b.position)
+}
+
 export const Product: FunctionComponent<ProductProps> = ({ id }) => {
     const { loading, error, data } = useQuery(PRODUCT_QUERY, {
         variables: { id },
@@ -152,20 +170,6 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
     const store = (data && data.store) || {}
 
     const [state, dispatch] = useReducer(reducer, initialState)
-
-    const getProductGallery = useCallback(
-        (gallery: ProductGallery) => {
-            return gallery
-                .filter((x: any) => x.disabled === false && x.type === 'image')
-                .map(({ id, label, file }: any) => ({
-                    _id: id,
-                    alt: label,
-                    src: store.baseMediaUrl + 'catalog/product' + file,
-                }))
-                .sort((a: any, b: any) => a.position - b.position)
-        },
-        [store.baseMediaUrl]
-    )
 
     /**
      * Set Options for Configurable Products
@@ -221,7 +225,6 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
      */
     useEffect(() => {
         if (!product) return
-
         const options = Object.keys(state.options.selected)
 
         const defaultVariant = { product }
@@ -240,10 +243,10 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
             type: 'selectVariant',
             payload: {
                 ...variant.product,
-                gallery: getProductGallery(variant.product.gallery),
+                gallery: getProductGallery(variant.product.gallery, store.baseMediaUrl + 'catalog/product'),
             },
         })
-    }, [product && product.id, JSON.stringify(state.options)])
+    }, [product && product.id, JSON.stringify(state.options.selected)])
 
     if (loading) {
         return <ViewLoader />
@@ -266,69 +269,71 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                 keywords={product.metaKeywords}
             />
 
-            <ProductTemplate
-                title={{
-                    text: product.title,
-                }}
-                sku={{
-                    text: `SKU. ${product.sku}`,
-                }}
-                categories={
-                    product.categories && {
-                        items: product.categories
-                            .slice(0, 4) // limit to 3
-                            .filter((x: any) => !!x.href)
-                            .map(({ id, text, href }: any) => ({
-                                _id: id,
-                                as: Link,
-                                urlResolver: true,
-                                href: '/' + href,
-                                text,
-                            })),
-                    }
-                }
-                gallery={state.variants.selected.gallery}
-                price={{
-                    regular: product.price.regularPrice.amount.value,
-                    currency: product.price.regularPrice.amount.currency,
-                }}
-                swatches={state.options.items
-                    .map(({ id, label, code, type, items }: any) => {
-                        const selected = state.options.selected[code]
-
-                        return {
-                            _id: id,
-                            type,
-                            title: {
-                                text: selected ? `${label}: ${selected.label}` : label,
-                            },
-                            props: {
-                                items: items.map(({ id, label, value, image }: any) => ({
+            {state.variants.selected && (
+                <ProductTemplate
+                    title={{
+                        text: product.title,
+                    }}
+                    sku={{
+                        text: `SKU. ${product.sku}`,
+                    }}
+                    categories={
+                        product.categories && {
+                            items: product.categories
+                                .slice(0, 4) // limit to 3
+                                .filter((x: any) => !!x.href)
+                                .map(({ id, text, href }: any) => ({
                                     _id: id,
-                                    text: label,
-                                    image: image && {
-                                        alt: image.label,
-                                        src: image.url,
-                                    },
-                                    active: selected && value === selected.value,
-                                    onClick: () =>
-                                        dispatch({
-                                            type: 'selectOption',
-                                            payload: { [code]: { label, value } },
-                                        }),
+                                    as: Link,
+                                    urlResolver: true,
+                                    href: '/' + href,
+                                    text,
                                 })),
-                            },
                         }
-                    })
-                    .sort((a: any, b: any) => b.position - a.position)}
-                buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
-                shortDescription={product.shortDescription && product.shortDescription.html}
-                description={
-                    product.description && {
-                        html: product.description.html,
                     }
-                }
-            />
+                    gallery={state.variants.selected.gallery}
+                    price={{
+                        regular: state.variants.selected.price.regular.amount.value,
+                        currency: state.variants.selected.price.regular.amount.currency,
+                    }}
+                    swatches={state.options.items
+                        .map(({ id, label, code, type, items }: any) => {
+                            const selected = state.options.selected[code]
+
+                            return {
+                                _id: id,
+                                type,
+                                title: {
+                                    text: selected ? `${label}: ${selected.label}` : label,
+                                },
+                                props: {
+                                    items: items.map(({ id, label, value, image }: any) => ({
+                                        _id: id,
+                                        text: label,
+                                        image: image && {
+                                            alt: image.label,
+                                            src: image.url,
+                                        },
+                                        active: selected && value === selected.value,
+                                        onClick: () =>
+                                            dispatch({
+                                                type: 'selectOption',
+                                                payload: { [code]: { label, value } },
+                                            }),
+                                    })),
+                                },
+                            }
+                        })
+                        .sort((a: any, b: any) => b.position - a.position)}
+                    buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
+                    shortDescription={product.shortDescription && product.shortDescription.html}
+                    description={
+                        product.description && {
+                            html: product.description.html,
+                        }
+                    }
+                />
+            )}
         </React.Fragment>
     )
 }

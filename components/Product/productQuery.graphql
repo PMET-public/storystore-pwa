@@ -3,19 +3,42 @@ query ProductQuery {
         items {
             id
             title: name
+
+            sku
+
             categories {
                 id
                 text: name
                 href: url_path
             }
-            sku
+
+            shortDescription: short_description {
+                html
+            }
+
+            description: description {
+                html
+            }
+
+            metaDescription: meta_description
+            metaKeywords: meta_keyword
+            metaTitle: meta_title
+
             price {
-                regularPrice {
+                regular: regularPrice {
                     amount {
                         currency
                         value
                     }
                 }
+            }
+
+            gallery: media_gallery_entries {
+                id
+                file
+                label
+                disabled
+                type: media_type
             }
 
             ... on ConfigurableProduct {
@@ -40,9 +63,13 @@ query ProductQuery {
                         sku
                         stock: stock_status
 
-                        thumbnail {
-                            label
-                            url
+                        price {
+                            regular: regularPrice {
+                                amount {
+                                    currency
+                                    value
+                                }
+                            }
                         }
 
                         gallery: media_gallery_entries {
@@ -52,29 +79,14 @@ query ProductQuery {
                             disabled
                             type: media_type
                         }
+
+                        thumbnail {
+                            label
+                            url
+                        }
                     }
                 }
             }
-
-            gallery: media_gallery_entries {
-                id
-                file
-                label
-                disabled
-                type: media_type
-            }
-
-            shortDescription: short_description {
-                html
-            }
-
-            description: description {
-                html
-            }
-
-            metaDescription: meta_description
-            metaKeywords: meta_keyword
-            metaTitle: meta_title
         }
     }
     store: storeConfig {
