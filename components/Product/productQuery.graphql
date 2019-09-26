@@ -1,0 +1,85 @@
+query ProductQuery {
+    products(filter: { sku: { eq: "WH12" } }, pageSize: 1) {
+        items {
+            id
+            title: name
+            categories {
+                id
+                text: name
+                href: url_path
+            }
+            sku
+            price {
+                regularPrice {
+                    amount {
+                        currency
+                        value
+                    }
+                }
+            }
+
+            ... on ConfigurableProduct {
+                options: configurable_options {
+                    id
+                    label
+                    position
+                    code: attribute_code
+                    items: values {
+                        id: value_index
+                        label
+                        value: value_index
+                    }
+                }
+                variants {
+                    attributes {
+                        code
+                        value: value_index
+                    }
+                    product {
+                        id
+                        thumbnail {
+                            label
+                            url
+                        }
+
+                        gallery: media_gallery_entries {
+                            id
+                            file
+                            label
+                            disabled
+                            type: media_type
+                        }
+                        sku
+                        stock: stock_status
+                    }
+                }
+            }
+
+            gallery: media_gallery_entries {
+                id
+                file
+                label
+                disabled
+                type: media_type
+            }
+
+            shortDescription: short_description {
+                html
+            }
+
+            description: description {
+                html
+            }
+
+            metaDescription: meta_description
+            metaKeywords: meta_keyword
+            metaTitle: meta_title
+        }
+    }
+    store: storeConfig {
+        id
+        titlePrefix: title_prefix
+        titleSuffix: title_suffix
+        baseMediaUrl: base_media_url
+    }
+}

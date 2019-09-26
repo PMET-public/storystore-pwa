@@ -1,40 +1,19 @@
 import React, { FunctionComponent } from 'react'
-import gql from 'graphql-tag'
+import PAGE_QUERY from './pageQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 
 import Error from 'next/error'
-import DocumentMetadata from '../components/DocumentMetadata'
-import Page from 'luma-ui/dist/templates/Page'
+import DocumentMetadata from '../DocumentMetadata'
+import PageTemplate from 'luma-ui/dist/templates/Page'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
-const QUERY = gql`
-    query PageQuery($id: Int!) {
-        page: cmsPage(id: $id) {
-            title
-            content
-        }
-
-        meta: cmsPage(id: $id) {
-            description: meta_description
-            keywords: meta_keywords
-            title: meta_title
-        }
-
-        store: storeConfig {
-            id
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-        }
-    }
-`
-
-type CMSPageProps = {
+type PageProps = {
     id: number
 }
 
-const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
-    const { loading, error, data } = useQuery(QUERY, {
+export const Page: FunctionComponent<PageProps> = ({ id }) => {
+    const { loading, error, data } = useQuery(PAGE_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
     })
@@ -61,7 +40,7 @@ const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
                 description={meta.description}
                 keywords={meta.keywords}
             />
-            <Page
+            <PageTemplate
                 pageBuilder={{
                     html: page.content,
                 }}
@@ -69,5 +48,3 @@ const CMSPage: FunctionComponent<CMSPageProps> = ({ id }) => {
         </React.Fragment>
     )
 }
-
-export default CMSPage

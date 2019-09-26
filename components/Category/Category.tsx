@@ -1,12 +1,13 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
-import gql from 'graphql-tag'
+import CATEGORY_QUERY from './categoryQuery.graphql'
+import PRODUCTS_QUERY from './productsQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'
 import { useResize } from 'luma-ui/dist/hooks/useResize'
 
-import DocumentMetadata from '../components/DocumentMetadata'
-import Link from '../components/Link'
+import DocumentMetadata from '../DocumentMetadata'
+import Link from '../Link'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
@@ -21,81 +22,7 @@ type FilterValues = {
     }
 }
 
-const CATEGORY_QUERY = gql`
-    query CategoryQuery($id: Int!) {
-        page: category(id: $id) {
-            id
-            title: name
-            cmsBlock: description
-            mode: display_mode
-            breadcrumbs {
-                id: category_url_key
-                text: category_name
-                href: category_url_key # TODO: Needs to be changed to url_path
-            }
-            categories: children {
-                _id: url_key
-                text: name
-                count: product_count
-                href: url_path
-            }
-        }
-
-        meta: category(id: $id) {
-            id
-            description: meta_description
-            keywords: meta_keywords
-            title: meta_title
-        }
-
-        store: storeConfig {
-            id
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-        }
-    }
-`
-
-const PRODUCTS_QUERY = gql`
-    query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
-        products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
-            pagination: page_info {
-                current: current_page
-                total: total_pages
-            }
-            filters {
-                name
-                key: request_var
-                items: filter_items {
-                    count: items_count
-                    label
-                    value: value_string
-                }
-            }
-            items @connection(key: "items") {
-                id
-                image {
-                    alt: label
-                    src: url
-                }
-                price {
-                    regularPrice {
-                        amount {
-                            currency
-                            value
-                        }
-                    }
-                }
-                title: name
-                urls: url_rewrites {
-                    url
-                }
-            }
-        }
-    }
-`
-
-const Category: FunctionComponent<CategoryProps> = ({ id }) => {
+export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const { scrollY, scrollHeight } = useScroll()
 
     const { height } = useResize()
@@ -276,4 +203,3 @@ const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         </React.Fragment>
     )
 }
-export default Category

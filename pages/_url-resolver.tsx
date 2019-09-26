@@ -7,9 +7,9 @@ import { useQuery } from '@apollo/react-hooks'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
-import CMSPage from '../templates/cms_page'
-import Category from '../templates/category'
-import Product from '../templates/product'
+import Page from '../components/Page'
+import Category from '../components/Category'
+import Product from '../components/Product'
 
 const QUERY = gql`
     query urlResolver($url: String!) {
@@ -49,7 +49,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
 
     switch (type) {
         case 'CMS_PAGE':
-            return <CMSPage id={content_id} />
+            return <Page id={content_id} />
         case 'CATEGORY':
             return <Category id={content_id} />
         case 'PRODUCT':

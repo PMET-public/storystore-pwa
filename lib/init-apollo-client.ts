@@ -1,6 +1,4 @@
 import { HttpLink } from 'apollo-link-http'
-// import { getMainDefinition } from 'apollo-utilities'
-// import { OperationDefinitionNode } from 'graphql'
 import fetch from 'node-fetch'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'

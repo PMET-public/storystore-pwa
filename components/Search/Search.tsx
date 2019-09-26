@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
-import gql from 'graphql-tag'
+import SEARCH_QUERY from './searchQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'
@@ -21,60 +21,6 @@ type FilterValues = {
     }
 }
 
-const PRODUCTS_QUERY = gql`
-    query searchQuery($search: String, $filters: ProductFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
-        store: storeConfig {
-            id
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-        }
-
-        meta: storeConfig {
-            id
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-            description: default_description
-            keywords: default_keywords
-        }
-
-        products: products(search: $search, filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
-            pagination: page_info {
-                current: current_page
-                total: total_pages
-            }
-            filters {
-                name
-                key: request_var
-                items: filter_items {
-                    count: items_count
-                    label
-                    value: value_string
-                }
-            }
-            count: total_count
-            items @connection(key: "items") {
-                id
-                image {
-                    alt: label
-                    src: url
-                }
-                price {
-                    regularPrice {
-                        amount {
-                            currency
-                            value
-                        }
-                    }
-                }
-                title: name
-                urls: url_rewrites {
-                    url
-                }
-            }
-        }
-    }
-`
-
 export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     const { scrollY, scrollHeight } = useScroll()
 
@@ -84,7 +30,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const [filters, setFilters] = useState<FilterValues>({})
 
-    const searchQuery = useQuery(PRODUCTS_QUERY, {
+    const searchQuery = useQuery(SEARCH_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
         fetchPolicy: 'cache-first',
         notifyOnNetworkStatusChange: true,

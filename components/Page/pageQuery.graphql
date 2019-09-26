@@ -1,0 +1,18 @@
+query PageQuery($id: Int!) {
+    page: cmsPage(id: $id) {
+        title
+        content
+    }
+
+    meta: cmsPage(id: $id) {
+        description: meta_description
+        keywords: meta_keywords
+        title: meta_title
+    }
+
+    store: storeConfig {
+        id
+        titlePrefix: title_prefix
+        titleSuffix: title_suffix
+    }
+}

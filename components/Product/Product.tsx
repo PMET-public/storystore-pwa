@@ -1,101 +1,18 @@
 import React, { FunctionComponent, useReducer, Reducer, useCallback, useEffect } from 'react'
-import gql from 'graphql-tag'
+import PRODUCT_QUERY from './productQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 
-import DocumentMetadata from '../components/DocumentMetadata'
+import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
-import Link from '../components/Link'
+import Link from '../Link'
 import { ImageProps } from 'luma-ui/dist/components/Image'
 
 type ProductProps = {
     id: number
 }
-
-const PRODUCT_QUERY = gql`
-    query ProductQuery {
-        products(filter: { sku: { eq: "WH12" } }, pageSize: 1) {
-            items {
-                id
-                title: name
-                categories {
-                    id
-                    text: name
-                    href: url_path
-                }
-                sku
-                price {
-                    regularPrice {
-                        amount {
-                            currency
-                            value
-                        }
-                    }
-                }
-
-                ... on ConfigurableProduct {
-                    options: configurable_options {
-                        id
-                        label
-                        position
-                        code: attribute_code
-                        items: values {
-                            id: value_index
-                            label
-                            value: value_index
-                        }
-                    }
-                    variants {
-                        attributes {
-                            code
-                            value: value_index
-                        }
-                        product {
-                            id
-                            gallery: media_gallery_entries {
-                                id
-                                file
-                                label
-                                disabled
-                                type: media_type
-                            }
-                            sku
-                            stock: stock_status
-                        }
-                    }
-                }
-
-                gallery: media_gallery_entries {
-                    id
-                    file
-                    label
-                    disabled
-                    type: media_type
-                }
-
-                shortDescription: short_description {
-                    html
-                }
-
-                description: description {
-                    html
-                }
-
-                metaDescription: meta_description
-                metaKeywords: meta_keyword
-                metaTitle: meta_title
-            }
-        }
-        store: storeConfig {
-            id
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-            baseMediaUrl: base_media_url
-        }
-    }
-`
 
 type ProductGallery = Array<{
     id: number
@@ -105,7 +22,24 @@ type ProductGallery = Array<{
     type: 'image'
 }>
 
-type Options = {
+type Option = {
+    id: number
+    label: string
+    code: string
+    type: 'text' | 'thumb'
+    items: Array<{
+        id: number
+        label: string
+        value: number
+        thumbnail?: {
+            label: string
+            url: string
+        }
+        disabled: boolean
+    }>
+}
+
+type OptionsSelected = {
     [code: string]: number
 }
 
@@ -120,30 +54,44 @@ type Product = {
 }
 
 type ReducerState = {
-    options: Options
-    variants: Variants
-    product: Product
+    options: {
+        items: Array<Option>
+        selected: OptionsSelected
+    }
+    variants: {
+        items: Variants
+        selected: Product
+    }
 }
 
 type ReducerActions =
     | {
           type: 'setOptions'
-          payload: Options
+          payload: Array<Option>
+      }
+    | {
+          type: 'selectOption'
+          payload: OptionsSelected
       }
     | {
           type: 'setVariants'
           payload: Variants
       }
     | {
-          type: 'setProduct'
+          type: 'selectVariant'
           payload: Product
       }
 
 const initialState: ReducerState = {
-    options: {},
-    variants: [],
-    product: {
-        gallery: [],
+    options: {
+        items: [],
+        selected: {},
+    },
+    variants: {
+        items: [],
+        selected: {
+            gallery: [],
+        },
     },
 }
 
@@ -154,31 +102,49 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
                 ...state,
                 options: {
                     ...state.options,
-                    ...action.payload,
+                    items: [...state.options.items, ...action.payload],
+                },
+            }
+        case 'selectOption':
+            return {
+                ...state,
+                options: {
+                    ...state.options,
+                    selected: {
+                        ...state.options.selected,
+                        ...action.payload,
+                    },
                 },
             }
         case 'setVariants':
             return {
                 ...state,
-                variants: [...state.variants, ...action.payload],
+                variants: {
+                    ...state.variants,
+                    items: [...state.variants.items, ...action.payload],
+                },
             }
-        case 'setProduct':
+        case 'selectVariant':
             return {
                 ...state,
-                product: { ...state.product, ...action.payload },
+                variants: {
+                    ...state.variants,
+                    selected: action.payload,
+                },
             }
         default:
             throw `Reducer action not valid.`
     }
 }
 
-const Product: FunctionComponent<ProductProps> = ({ id }) => {
+export const Product: FunctionComponent<ProductProps> = ({ id }) => {
     const { loading, error, data } = useQuery(PRODUCT_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
     })
 
-    const [product] = (data && data.products.items) || []
+    const [product] = (data && data.products && data.products.items) || []
 
     const store = (data && data.store) || {}
 
@@ -198,8 +164,13 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
         [store.baseMediaUrl]
     )
 
+    /**
+     * Set Options for Configurable Products
+     */
     useEffect(() => {
-        const payload = product.variants.reduce((accumVariants: [], currentVariant: any) => {
+        if (!product || !product.options || !product.variants) return
+
+        const variants = product.variants.reduce((accumVariants: [], currentVariant: any) => {
             return [
                 ...accumVariants,
                 currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
@@ -209,24 +180,60 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
             ]
         }, [])
 
-        dispatch({ type: 'setVariants', payload })
+        const options = product.options
+            .sort((a: any, b: any) => b.position - a.position)
+            .map((option: any) => {
+                const { id, label, code, items } = option
+                const type = code === 'color' ? 'thumb' : 'text'
+
+                return {
+                    id,
+                    type,
+                    label,
+                    code,
+                    items: items.map((item: any) => {
+                        const disabled = item.stock !== 'IN_STOCK'
+
+                        const { id, value, label } = item
+
+                        const { product } = variants.find((x: any) => x.color === value) || {}
+
+                        return {
+                            id,
+                            value,
+                            label,
+                            disabled,
+                            image: product && product.thumbnail,
+                        }
+                    }),
+                }
+            })
+
+        dispatch({ type: 'setVariants', payload: variants })
+        dispatch({ type: 'setOptions', payload: options })
     }, [product && product.id])
 
+    /**
+     * Set Product Details if an option is selected
+     */
     useEffect(() => {
-        const options = Object.keys(state.options)
+        if (!product) return
+
+        const options = Object.keys(state.options.selected)
 
         const defaultVariant = { product }
 
         const variant =
             options.length > 0
-                ? state.variants.find(v => {
-                      return options.reduce((accum: boolean, x) => v[x] === state.options[x] && accum, true)
+                ? state.variants.items.find(v => {
+                      return options.reduce((accum: boolean, x) => v[x] === state.options.selected[x] && accum, true)
                   }) || defaultVariant
                 : defaultVariant
 
         dispatch({
-            type: 'setProduct',
+            type: 'selectVariant',
             payload: {
+                ...variant.product,
                 gallery: getProductGallery(variant.product.gallery),
             },
         })
@@ -274,35 +281,36 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                gallery={state.product.gallery}
+                gallery={state.variants.selected.gallery}
                 price={{
                     regular: product.price.regularPrice.amount.value,
                     currency: product.price.regularPrice.amount.currency,
                 }}
-                swatches={
-                    product.options &&
-                    product.options
-                        .sort((a: any, b: any) => b.position - a.position)
-                        .map(({ id, label, code, items }: any) => ({
-                            _id: id,
-                            type: 'text',
-                            title: {
+                swatches={state.options.items
+                    .map(({ id, label, code, type, items }: any) => ({
+                        _id: id,
+                        type,
+                        title: {
+                            text: label,
+                        },
+                        props: {
+                            items: items.map(({ id, label, value, image }: any) => ({
+                                _id: id,
                                 text: label,
-                            },
-                            props: {
-                                items: items.map(({ id, label, value }: any) => ({
-                                    _id: id,
-                                    text: label,
-                                    active: value === state.options[code],
-                                    onClick: () =>
-                                        dispatch({
-                                            type: 'setOptions',
-                                            payload: { [code]: value },
-                                        }),
-                                })),
-                            },
-                        }))
-                }
+                                image: image && {
+                                    alt: image.label,
+                                    src: image.url,
+                                },
+                                active: value === state.options.selected[code],
+                                onClick: () =>
+                                    dispatch({
+                                        type: 'selectOption',
+                                        payload: { [code]: value },
+                                    }),
+                            })),
+                        },
+                    }))
+                    .sort((a: any, b: any) => b.position - a.position)}
                 buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
                 shortDescription={product.shortDescription && product.shortDescription.html}
                 description={
@@ -314,5 +322,3 @@ const Product: FunctionComponent<ProductProps> = ({ id }) => {
         </React.Fragment>
     )
 }
-
-export default Product

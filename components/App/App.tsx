@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback } from 'react'
-import gql from 'graphql-tag'
+import APP_QUERY from './appQuery.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
@@ -10,36 +10,8 @@ import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
-const APP_SHELL_QUERY = gql`
-    query AppShellQuery {
-        store: storeConfig {
-            id
-            logoAlt: logo_alt
-            homePath: cms_home_page
-            copyright
-        }
-
-        categories: category(id: 2) {
-            id
-            children {
-                text: name
-                href: url_path
-            }
-        }
-
-        meta: storeConfig {
-            id
-            title: default_title
-            titlePrefix: title_prefix
-            titleSuffix: title_suffix
-            description: default_description
-            keywords: default_keywords
-        }
-    }
-`
-
 export const App: FunctionComponent = ({ children }) => {
-    const { loading, error, data } = useQuery<any>(APP_SHELL_QUERY, { fetchPolicy: 'cache-first' })
+    const { loading, error, data } = useQuery(APP_QUERY, { fetchPolicy: 'cache-first' })
 
     if (loading) {
         return <ViewLoader />

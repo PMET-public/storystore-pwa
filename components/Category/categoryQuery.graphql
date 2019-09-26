@@ -1,0 +1,32 @@
+query CategoryQuery($id: Int!) {
+    page: category(id: $id) {
+        id
+        title: name
+        cmsBlock: description
+        mode: display_mode
+        breadcrumbs {
+            id: category_url_key
+            text: category_name
+            href: category_url_key # TODO: Needs to be changed to url_path
+        }
+        categories: children {
+            _id: url_key
+            text: name
+            count: product_count
+            href: url_path
+        }
+    }
+
+    meta: category(id: $id) {
+        id
+        description: meta_description
+        keywords: meta_keywords
+        title: meta_title
+    }
+
+    store: storeConfig {
+        id
+        titlePrefix: title_prefix
+        titleSuffix: title_suffix
+    }
+}
