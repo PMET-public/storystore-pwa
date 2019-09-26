@@ -171,6 +171,8 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
+    const isAddToCartReady = Object.keys(state.options.selected).length === state.options.items.length
+
     /**
      * Set Options for Configurable Products
      */
@@ -325,7 +327,14 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             }
                         })
                         .sort((a: any, b: any) => b.position - a.position)}
-                    buttons={[{ as: 'button', text: 'Add to Cart', disabled: true }]}
+                    buttons={[
+                        {
+                            as: 'button',
+                            text: 'Add to Cart',
+                            disabled: !isAddToCartReady,
+                            onClick: () => console.log('TODO: Add to Cart', state.variants.selected),
+                        },
+                    ]}
                     shortDescription={product.shortDescription && product.shortDescription.html}
                     description={
                         product.description && {
