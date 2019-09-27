@@ -1,10 +1,10 @@
 query ProductQuery {
-    products(filter: { sku: { eq: "WH12" } }, pageSize: 1) {
+    products(filter: { sku: { eq: "WT08" } }, pageSize: 1) {
         items {
             id
             title: name
-
             sku
+            stock: stock_status
 
             categories {
                 id
@@ -24,8 +24,15 @@ query ProductQuery {
             metaKeywords: meta_keyword
             metaTitle: meta_title
 
+            specialPrice: special_price
             price {
                 regular: regularPrice {
+                    amount {
+                        currency
+                        value
+                    }
+                }
+                minimal: regularPrice {
                     amount {
                         currency
                         value
@@ -63,8 +70,15 @@ query ProductQuery {
                         sku
                         stock: stock_status
 
+                        specialPrice: special_price
                         price {
                             regular: regularPrice {
+                                amount {
+                                    currency
+                                    value
+                                }
+                            }
+                            minimal: regularPrice {
                                 amount {
                                     currency
                                     value

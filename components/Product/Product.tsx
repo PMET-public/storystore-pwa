@@ -60,8 +60,11 @@ type Price = {
 }
 
 type Product = {
+    stock: string
+    specialPrice?: number
     price: {
         regular: Price
+        minimal?: Price
     }
     gallery: ImageProps[]
 }
@@ -171,7 +174,9 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const isAddToCartReady = Object.keys(state.options.selected).length === state.options.items.length
+    const isInStock = state.variants.selected && state.variants.selected.stock === 'IN_STOCK'
+
+    const isAddToCartReady = isInStock && Object.keys(state.options.selected).length === state.options.items.length
 
     /**
      * Set Options for Configurable Products
@@ -296,6 +301,7 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                     gallery={state.variants.selected.gallery}
                     price={{
                         regular: state.variants.selected.price.regular.amount.value,
+                        special: state.variants.selected.specialPrice,
                         currency: state.variants.selected.price.regular.amount.currency,
                     }}
                     swatches={state.options.items
@@ -330,7 +336,7 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                     buttons={[
                         {
                             as: 'button',
-                            text: 'Add to Cart',
+                            text: isInStock ? 'Add to Cart' : 'Sold Out',
                             disabled: !isAddToCartReady,
                             onClick: () => console.log('TODO: Add to Cart', state.variants.selected),
                         },
