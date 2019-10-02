@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import PAGE_QUERY from './pageQuery.graphql'
+import PAGE_QUERY from './page.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 

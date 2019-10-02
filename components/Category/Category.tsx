@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
-import CATEGORY_QUERY from './categoryQuery.graphql'
-import PRODUCTS_QUERY from './productsQuery.graphql'
+import CATEGORY_QUERY from './category.graphql'
+import PRODUCTS_QUERY from './products.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'

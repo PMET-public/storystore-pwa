@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useCallback, useEffect } from 'react'
-import APP_QUERY from './appQuery.graphql'
-import CREATE_CART_MUTATION from './createCartMutation.graphql'
+import APP_QUERY from './app.graphql'
+import CREATE_CART_MUTATION from './createCart.graphql'
+import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
@@ -13,22 +14,30 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
-    const { state, dispatch } = useAppContext()
+    const [appState, appDispatch] = useAppContext()
 
     const { error, loading, data } = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-first',
-        variables: { cartId: state.cartId, withCart: !!state.cartId },
+        variables: { cartId: appState.cartId, withCart: !!appState.cartId },
     })
 
-    const [createCart, { data: cart }] = useMutation(CREATE_CART_MUTATION)
+    const [createCart] = useMutation(CREATE_CART_MUTATION)
 
     useEffect(() => {
-        if (state.cartId === '') createCart()
-    }, [state.cartId])
+        if (!appState.cartId)
+            createCart().then(res => {
+                const { cartId = '' } = res.data
+                appDispatch({ type: 'setCartId', payload: cartId })
+            })
+    }, [appState.cartId])
 
     useEffect(() => {
-        if (cart) dispatch({ type: 'setCartId', payload: cart.cartId })
-    }, [cart && cart.cartId])
+        if (data && data.cart)
+            appDispatch({
+                type: 'setCartCount',
+                payload: getTotalCartQuantity(data.cart.items),
+            })
+    }, [data && data.cart && data.cart.items.length])
 
     const { route, query } = useRouter()
 
@@ -96,7 +105,6 @@ export const App: FunctionComponent = ({ children }) => {
                     // active: isUrlActive('/cart'),
                     // as: Link,
                     // href: '/cart',
-                    count: cart && cart.items && cart.items.length,
                     text: 'Bag',
                 }}
                 footer={{

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
-import SEARCH_QUERY from './searchQuery.graphql'
+import SEARCH_QUERY from './search.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'

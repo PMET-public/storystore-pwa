@@ -1,7 +1,10 @@
-import React, { FunctionComponent, useReducer, Reducer, useEffect } from 'react'
-import PRODUCT_QUERY from './productQuery.graphql'
+import React, { FunctionComponent, useReducer, Reducer, useEffect, useCallback } from 'react'
+import PRODUCT_QUERY from './product.graphql'
+import ADD_TO_CART_MUTATION from './addToCart.graphql'
+import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
@@ -62,6 +65,7 @@ type Price = {
 type Product = {
     stock: string
     specialPrice?: number
+    sku: string
     price: {
         regular: Price
         minimal?: Price
@@ -168,15 +172,31 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
         returnPartialData: true,
     })
 
+    const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION)
+
     const [product] = (data && data.products && data.products.items) || []
 
     const store = (data && data.store) || {}
+
+    const [appState, appDispatch] = useAppContext()
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const isInStock = state.variants.selected && state.variants.selected.stock === 'IN_STOCK'
 
     const isAddToCartReady = isInStock && Object.keys(state.options.selected).length === state.options.items.length
+
+    const handleAddToCart = useCallback(() => {
+        if (!state.variants.selected) return
+        const { cartId } = appState
+        const { sku } = state.variants.selected
+        const quantity = 1
+
+        addToCart({ variables: { cartId, sku, quantity } }).then(({ data }: any) => {
+            const { items } = data.addToCart.cart
+            appDispatch({ type: 'setCartCount', payload: getTotalCartQuantity(items) })
+        })
+    }, [JSON.stringify(state.variants.selected)])
 
     /**
      * Set Options for Configurable Products
@@ -338,7 +358,8 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             as: 'button',
                             text: isInStock ? 'Add to Cart' : 'Sold Out',
                             disabled: !isAddToCartReady,
-                            onClick: () => console.log('TODO: Add to Cart', state.variants.selected),
+                            onClick: handleAddToCart,
+                            loader: addToCartLoading ? { label: 'Loading' } : undefined,
                         },
                     ]}
                     shortDescription={product.shortDescription && product.shortDescription.html}
