@@ -1,0 +1,3 @@
+mutation CreateCartMutation {
+    cartId: createEmptyCart
+}

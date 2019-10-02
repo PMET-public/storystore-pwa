@@ -1,8 +1,10 @@
-import React, { FunctionComponent, useCallback } from 'react'
+import React, { FunctionComponent, useCallback, useEffect } from 'react'
 import APP_QUERY from './appQuery.graphql'
+import CREATE_CART_MUTATION from './createCartMutation.graphql'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
@@ -11,7 +13,31 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
-    const { loading, error, data } = useQuery(APP_QUERY, { fetchPolicy: 'cache-first' })
+    const { state, dispatch } = useAppContext()
+
+    const { error, loading, data } = useQuery(APP_QUERY, {
+        fetchPolicy: 'cache-first',
+        variables: { cartId: state.cartId, withCart: !!state.cartId },
+    })
+
+    const [createCart, { data: cart }] = useMutation(CREATE_CART_MUTATION)
+
+    useEffect(() => {
+        if (state.cartId === '') createCart()
+    }, [state.cartId])
+
+    useEffect(() => {
+        if (cart) dispatch({ type: 'setCartId', payload: cart.cartId })
+    }, [cart && cart.cartId])
+
+    const { route, query } = useRouter()
+
+    const isUrlActive = useCallback(
+        (href: string) => {
+            return href === (query.url || route)
+        },
+        [query.url, route]
+    )
 
     if (loading) {
         return <ViewLoader />
@@ -23,18 +49,6 @@ export const App: FunctionComponent = ({ children }) => {
     }
 
     const { store, categories, meta } = data
-
-    const {
-        route,
-        query: { url },
-    } = useRouter()
-
-    const isUrlActive = useCallback(
-        (href: string) => {
-            return href === (url || route)
-        },
-        [url, route]
-    )
 
     return (
         <React.Fragment>
@@ -82,6 +96,7 @@ export const App: FunctionComponent = ({ children }) => {
                     // active: isUrlActive('/cart'),
                     // as: Link,
                     // href: '/cart',
+                    count: cart && cart.items && cart.items.length,
                     text: 'Bag',
                 }}
                 footer={{
