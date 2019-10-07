@@ -2,6 +2,7 @@ query ProductQuery {
     products(filter: { sku: { eq: "WT08" } }, pageSize: 1) {
         items {
             id
+            type: type_id
             title: name
             sku
             stock: stock_status
