@@ -30,8 +30,6 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
 
     const { state, actions } = useProductApi(product)
 
-    // const isAddToCartReady = isInStock && Object.keys(state.options.selected).length === state.options.items.length
-
     if (loading) {
         return <ViewLoader />
     }
@@ -114,10 +112,9 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                         {
                             as: 'button',
                             text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                            disabled: state.product.stock !== 'IN_STOCK',
-                            loader: state.addToCartLoading ? { label: 'Loading' } : undefined,
+                            disabled: state.product.stock !== 'IN_STOCK' || !state.isAddToCartValid,
+                            loader: state.isAddToCartLoading ? { label: 'Loading' } : undefined,
                             onClick: () => {
-                                debugger
                                 if (state.type === 'configurable' && state.variants.selected) {
                                     actions.handleAddConfigurableProductToCart(product.sku, state.variants.selected)
                                 } else {

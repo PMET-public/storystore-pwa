@@ -78,7 +78,8 @@ type ReducerStateConfigurableProduct = {
 }
 
 type ReducerState = {
-    addToCartLoading?: boolean
+    isAddToCartLoading?: boolean
+    isAddToCartValid?: boolean
     product: Product
 } & (ReducerStateSimpleProduct | ReducerStateConfigurableProduct)
 
@@ -97,6 +98,10 @@ type ReducerActions =
       }
     | {
           type: 'setAddToCartLoading'
+          payload: boolean
+      }
+    | {
+          type: 'setAddToCartValid'
           payload: boolean
       }
 
@@ -132,7 +137,13 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
         case 'setAddToCartLoading':
             return {
                 ...state,
-                addToCartLoading: action.payload,
+                isAddToCartValid: action.payload,
+            }
+
+        case 'setAddToCartValid':
+            return {
+                ...state,
+                isAddToCartValid: action.payload,
             }
 
         default:
@@ -142,7 +153,8 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
 const initialState: ReducerState = {
     type: 'simple',
-    addToCartLoading: false,
+    isAddToCartLoading: false,
+    isAddToCartValid: false,
     product: {
         stock: '',
         price: {
@@ -237,6 +249,7 @@ export default (_product: any) => {
                 type: 'init',
                 payload: {
                     type: 'configurable',
+                    isAddToCartValid: false,
                     product,
                     options: {
                         items: options,
@@ -251,11 +264,23 @@ export default (_product: any) => {
                 type: 'init',
                 payload: {
                     type: 'simple',
+                    isAddToCartValid: true,
                     product,
                 },
             })
         }
     }, [_product && _product.id])
+
+    useEffect(() => {
+        if (state.type !== 'configurable') return
+
+        dispatch({
+            type: 'setAddToCartValid',
+            payload: state.options.selected
+                ? Object.keys(state.options.selected).length === state.options.items.length
+                : false,
+        })
+    }, [state.type === 'configurable' && JSON.stringify(state.options.selected)])
 
     return {
         state,
