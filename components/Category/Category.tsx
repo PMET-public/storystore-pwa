@@ -41,7 +41,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const productsQuery = useQuery(PRODUCTS_QUERY, {
         variables: { filters: filterValues },
         fetchPolicy: 'cache-first',
-        notifyOnNetworkStatusChange: true,
     })
 
     /**

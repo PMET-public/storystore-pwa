@@ -1,0 +1,59 @@
+query CartQuery($pageId: Int, $withPage: Boolean!, $cartId: String!) {
+    cart(cart_id: $cartId) {
+        prices {
+            subTotal: subtotal_excluding_tax {
+                currency
+                value
+            }
+            subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
+                currency
+                value
+            }
+            taxes: applied_taxes {
+                label
+                amount {
+                    currency
+                    value
+                }
+            }
+            total: grand_total {
+                currency
+                value
+            }
+        }
+        items {
+            id
+            quantity
+            product {
+                sku
+                name
+                thumbnail {
+                    label
+                    url
+                }
+                price {
+                    regular: regularPrice {
+                        amount {
+                            currency
+                            value
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    page: cmsPage(id: $pageId) @include(if: $withPage) {
+        title
+        content
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+        metaTitle: meta_title
+    }
+
+    store: storeConfig {
+        id
+        titlePrefix: title_prefix
+        titleSuffix: title_suffix
+    }
+}

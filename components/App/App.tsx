@@ -102,9 +102,9 @@ export const App: FunctionComponent = ({ children }) => {
                     text: 'Search',
                 }}
                 cart={{
-                    // active: isUrlActive('/cart'),
-                    // as: Link,
-                    // href: '/cart',
+                    active: isUrlActive('/cart'),
+                    as: Link,
+                    href: '/cart',
                     text: 'Bag',
                 }}
                 footer={{
