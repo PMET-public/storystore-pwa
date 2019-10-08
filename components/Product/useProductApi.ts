@@ -137,7 +137,7 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
         case 'setAddToCartLoading':
             return {
                 ...state,
-                isAddToCartValid: action.payload,
+                isAddToCartLoading: action.payload,
             }
 
         case 'setAddToCartValid':
@@ -169,7 +169,7 @@ const initialState: ReducerState = {
 }
 
 export default (_product: any) => {
-    const [appState, appDispatch] = useAppContext()
+    const app = useAppContext()
     const [state, dispatch] = useReducer(reducer, initialState)
     const addSimpleProductsToCartMutation = useMutation(ADD_TO_CART_MUTATION)
     const addConfigurableProductsToCartMutation = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION)
@@ -177,16 +177,13 @@ export default (_product: any) => {
     const handleAddToCart = useCallback(
         (method: (variables: any) => Promise<any>, variables) => {
             const quantity = 1
-            const { cartId } = appState
+            const { cartId } = app.state
 
             dispatch({ type: 'setAddToCartLoading', payload: true })
 
             method({ variables: { cartId, quantity, ...variables } })
                 .then(res => {
-                    appDispatch({
-                        type: 'setCartCount',
-                        payload: getTotalCartQuantity(res.data.addToCart.cart.items),
-                    })
+                    app.actions.setCartCount(getTotalCartQuantity(res.data.addToCart.cart.items))
                 })
                 .catch(error => {
                     console.error(error.message)

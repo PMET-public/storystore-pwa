@@ -14,29 +14,28 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
-    const [appState, appDispatch] = useAppContext()
+    const app = useAppContext()
 
     const { error, loading, data } = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-first',
-        variables: { cartId: appState.cartId, withCart: !!appState.cartId },
+        variables: { cartId: app.state.cartId, withCart: !!app.state.cartId },
     })
 
     const [createCart] = useMutation(CREATE_CART_MUTATION)
 
     useEffect(() => {
-        if (!appState.cartId)
+        if (!app.state.cartId)
             createCart().then(res => {
                 const { cartId = '' } = res.data
-                appDispatch({ type: 'setCartId', payload: cartId })
+                app.actions.setCartId(cartId)
             })
-    }, [appState.cartId])
+    }, [app.state.cartId])
 
     useEffect(() => {
-        if (data && data.cart)
-            appDispatch({
-                type: 'setCartCount',
-                payload: getTotalCartQuantity(data.cart.items),
-            })
+        if (data && data.cart) {
+            const count = getTotalCartQuantity(data.cart.items)
+            app.actions.setCartCount(count)
+        }
     }, [data && data.cart && data.cart.items.length])
 
     const { route, query } = useRouter()

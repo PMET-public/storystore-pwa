@@ -112,7 +112,10 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                         {
                             as: 'button',
                             text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                            disabled: state.product.stock !== 'IN_STOCK' || !state.isAddToCartValid,
+                            disabled:
+                                state.isAddToCartValid === false ||
+                                state.product.stock !== 'IN_STOCK' ||
+                                state.isAddToCartLoading === true,
                             loader: state.isAddToCartLoading ? { label: 'Loading' } : undefined,
                             onClick: () => {
                                 if (state.type === 'configurable' && state.variants.selected) {

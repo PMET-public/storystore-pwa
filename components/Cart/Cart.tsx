@@ -17,9 +17,9 @@ type CartProps = {
 }
 
 export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
-    const [appState, appDispatch] = useAppContext()
+    const app = useAppContext()
 
-    if (!appState.cartId) {
+    if (!app.state.cartId) {
         return null
     }
 
@@ -28,7 +28,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
         variables: {
             withPage: !!pageId,
             pageId: pageId,
-            cartId: appState.cartId,
+            cartId: app.state.cartId,
         },
     })
 
@@ -41,7 +41,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
     const handleUpdateCartItem = useCallback((id: number, quantity: number) => {
         updateCartItems({
             variables: {
-                cartId: appState.cartId,
+                cartId: app.state.cartId,
                 items: [{ cart_item_id: id, quantity }],
             },
         }).then(() => refetch())
@@ -50,7 +50,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
     const handleRemoveCartItem = useCallback((id: number) => {
         removeCartItem({
             variables: {
-                cartId: appState.cartId,
+                cartId: app.state.cartId,
                 itemId: id,
             },
         }).then(() => refetch())
@@ -58,8 +58,8 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
 
     useEffect(() => {
         if (!data) return
-        const payload = getTotalCartQuantity(data.cart.items)
-        appDispatch({ type: 'setCartCount', payload })
+        const count = getTotalCartQuantity(data.cart.items)
+        app.actions.setCartCount(count)
     }, [data && JSON.stringify(data.cart.items)])
 
     if (loading) {
