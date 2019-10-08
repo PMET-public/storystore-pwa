@@ -306,7 +306,10 @@ export default (_product: any) => {
                             stock,
                             specialPrice,
                             price,
-                            gallery,
+                            gallery: [
+                                gallery[0], // swap the first of the variant
+                                ..._product.gallery.slice(1, _product.gallery.length),
+                            ],
                         },
                         options,
                         variantSku: sku,
