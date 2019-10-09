@@ -3,8 +3,8 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 
 import CART_QUERY from './queries/cart.graphql'
-// import UPDATE_CART_ITEMS_MUTATION from './queries/updateCartItems.graphql'
-import REMOVE_CART_ITEM from './queries/removeCartItem.graphql'
+import UPDATE_CART_ITEMS_MUTATION from './queries/updateCartItems.graphql'
+import REMOVE_CART_ITEM_MUTATION from './queries/removeCartItem.graphql'
 import CREATE_CART_MUTATION from './queries/createCart.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './queries/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './queries/addConfigurableProductsToCart.graphql'
@@ -71,13 +71,15 @@ export const useCart = (options: { pageId?: number } = {}) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const [createCart] = useMutation(CREATE_CART_MUTATION)
-    const [removeCartItem] = useMutation(REMOVE_CART_ITEM)
+    const [updateCartItems] = useMutation(UPDATE_CART_ITEMS_MUTATION)
+    const [removeCartItem] = useMutation(REMOVE_CART_ITEM_MUTATION)
     const [addSimpleProductsToCart] = useMutation(ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION)
     const [addConfigurableProductsToCart] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION)
 
     const cartQuery = useQuery(CART_QUERY, {
         skip: !state.id,
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
         variables: {
             withPage: !!options.pageId,
             pageId: options.pageId,
@@ -102,7 +104,10 @@ export const useCart = (options: { pageId?: number } = {}) => {
      * Update Cart Count State
      */
     useEffect(() => {
-        const count = cartQuery.data && cartQuery.data.cart.items ? getTotalCartQuantity(cartQuery.data.cart.items) : 0
+        const count =
+            cartQuery.data && cartQuery.data.cart && cartQuery.data.cart.items
+                ? getTotalCartQuantity(cartQuery.data.cart.items)
+                : 0
         dispatch({ type: 'setCartCount', payload: count })
     }, [cartQuery.data && JSON.stringify(cartQuery.data)])
 
@@ -110,8 +115,14 @@ export const useCart = (options: { pageId?: number } = {}) => {
      * Handle Update Cart Item Action
      */
     const handleUpdateCartItem = useCallback(
-        (id: number, quantity: number) => {
-            console.log({ id, quantity })
+        async (id: number, quantity: number) => {
+            await updateCartItems({
+                variables: {
+                    cartId: state.id,
+                    items: [{ cart_item_id: id, quantity }],
+                },
+            })
+            cartQuery.refetch()
         },
         [state.id]
     )

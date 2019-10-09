@@ -35,7 +35,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
             {cart && cart.items.length > 0 ? (
                 <CartTemplate
                     list={{
-                        items: cart.items.map(({ id, quantity, product }: any, index: number) => ({
+                        items: cart.items.map(({ id, quantity, product, options }: any, index: number) => ({
                             _id: id || index,
                             title: {
                                 text: product.name,
@@ -57,13 +57,13 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                                 currency: product.price.regular.amount.currency,
                                 regular: product.price.regular.amount.value,
                             },
-                            // options: [
-                            //     {
-                            //         _id: '',
-                            //         label: '',
-                            //         value: '',
-                            //     },
-                            // ],
+                            options:
+                                options &&
+                                options.map(({ id, label, value }: any) => ({
+                                    _id: id,
+                                    label,
+                                    value,
+                                })),
                         })),
                     }}
                     summary={{

@@ -8,6 +8,7 @@ export const usePage = (options: { id: number }) => {
     const query = useQuery(PAGE_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
     })
 
     return {

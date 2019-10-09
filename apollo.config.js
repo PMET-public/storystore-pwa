@@ -11,6 +11,7 @@ module.exports = {
             url: MAGENTO_GRAPHQL_URL,
         },
         clientSchemaDirectives: ['client', 'rest'],
-        includes: ['./components/**/*.tsx', './pages/**/*.tsx', './templates/**/*.tsx', './lib/apollo-link-state.ts'],
+        includes: ['./**/*.graphql', './**/*.tsx', './**/*.tsx', './**/*.ts'],
+        excludes: ['./node_modules/**/*'],
     },
 }

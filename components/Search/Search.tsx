@@ -34,6 +34,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
         fetchPolicy: 'cache-first',
         notifyOnNetworkStatusChange: true,
+        returnPartialData: true,
     })
 
     /**

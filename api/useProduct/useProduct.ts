@@ -118,6 +118,10 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
                               ...action.payload.options,
                           },
                       },
+                      product: {
+                          ...state.product,
+                          ...action.payload.product,
+                      },
                   }
                 : { ...state }
 
@@ -280,7 +284,7 @@ export const useProduct = (productId: number) => {
                     price,
                     gallery: [
                         gallery[0], // swap the first of the variant
-                        // ..state.product.gallery.slice(1, _product.gallery.length),
+                        ...state.product.gallery.slice(1, state.product.gallery.length),
                     ],
                 },
                 options,

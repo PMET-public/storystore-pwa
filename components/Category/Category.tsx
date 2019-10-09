@@ -36,11 +36,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const categoryQuery = useQuery(CATEGORY_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
     })
 
     const productsQuery = useQuery(PRODUCTS_QUERY, {
         variables: { filters: filterValues },
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
     })
 
     /**
