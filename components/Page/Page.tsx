@@ -1,7 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import PAGE_QUERY from './page.graphql'
-
-import { useQuery } from '@apollo/react-hooks'
+import usePage from '../../api/usePage'
 
 import Error from 'next/error'
 import DocumentMetadata from '../DocumentMetadata'
@@ -13,25 +11,22 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, error, data } = useQuery(PAGE_QUERY, {
-        variables: { id },
-        fetchPolicy: 'cache-first',
-    })
+    const { query } = usePage({ id })
 
-    if (loading) {
+    if (query.loading) {
         return <ViewLoader />
     }
 
-    if (error) {
-        console.error(error.message)
+    if (query.error) {
+        console.error(query.error.message)
         return <Error statusCode={500} />
     }
 
-    if (!data.page) {
+    if (!query.data.page) {
         return <Error statusCode={404} />
     }
 
-    const { page, meta, store } = data
+    const { page, meta, store } = query.data
 
     return (
         <React.Fragment>
