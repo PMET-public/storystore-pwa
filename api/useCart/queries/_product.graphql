@@ -1,0 +1,16 @@
+fragment Product on ProductInterface {
+    sku
+    name
+    thumbnail {
+        label
+        url
+    }
+    price {
+        regular: regularPrice {
+            amount {
+                currency
+                value
+            }
+        }
+    }
+}

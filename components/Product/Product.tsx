@@ -5,16 +5,18 @@ import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 import useProduct from '../../api/useProduct'
-import useCartApi from '../../api/useCart'
+import useCart from '../../api/useCart'
 
 type ProductProps = {
     id: number
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const { query, state, actions } = useProduct(id)
-    const { state: cartState, actions: cartActions } = useCartApi()
+    const app = useAppContext()
+    const cart = useCart({ cartId: app.state.cartId })
+    const { query, state, actions } = useProduct({ productId: id })
 
     const { data } = query
 
@@ -99,12 +101,12 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                         as: 'button',
                         text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
                         disabled: state.isAddToCartValid === false || state.product.stock !== 'IN_STOCK',
-                        loader: cartState.isAdding ? { label: 'Loading' } : undefined,
+                        loader: cart.state.isAdding ? { label: 'Loading' } : undefined,
                         onClick: () => {
                             if (state.type === 'configurable' && state.variants.selected) {
-                                cartActions.addConfigurableProductToCart(product.sku, state.variants.selected)
+                                cart.actions.addConfigurableProductToCart(product.sku, state.variants.selected)
                             } else {
-                                cartActions.addSimpleProductToCart(product.sku)
+                                cart.actions.addSimpleProductToCart(product.sku)
                             }
                         },
                     },

@@ -1,5 +1,6 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import useCart from '../../api/useCart'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 import Error from 'next/error'
 import DocumentMetadata from '../DocumentMetadata'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
@@ -10,7 +11,15 @@ type CartProps = {
 }
 
 export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
-    const { query, state, actions } = useCart({ pageId })
+    const app = useAppContext()
+    const { query, state, actions } = useCart({ cartId: app.state.cartId, pageId })
+
+    /**
+     * Sync Count
+     */
+    useEffect(() => {
+        // app.actions.setCartCount(state.count)
+    }, [state.count])
 
     if (query.loading) {
         return <ViewLoader />
@@ -86,8 +95,8 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                                 appearance: 'bold',
                                 label: 'Bag subtotal',
                                 price: {
-                                    currency: cart.prices.subTotal.currency,
-                                    regular: cart.prices.subTotal.value,
+                                    currency: state.prices.subTotal.currency,
+                                    regular: state.prices.subTotal.value || null,
                                 },
                             },
                         ],

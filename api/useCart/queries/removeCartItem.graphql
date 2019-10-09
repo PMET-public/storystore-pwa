@@ -1,8 +1,13 @@
+#import "./_prices.graphql"
+
 mutation RemoveItemFromCart($cartId: String!, $itemId: Int!) {
     removeItemFromCart(input: { cart_id: $cartId, cart_item_id: $itemId }) {
         cart {
+            ...Prices
+
             items {
                 id
+                quantity
             }
         }
     }

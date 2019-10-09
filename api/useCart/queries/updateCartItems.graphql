@@ -1,8 +1,13 @@
+#import "./_prices.graphql"
+
 mutation UpdateCartItems($cartId: String!, $items: [CartItemUpdateInput]!) {
     updateCartItems(input: { cart_id: $cartId, cart_items: $items }) {
         cart {
+            ...Prices
+
             items {
                 id
+                quantity
             }
         }
     }

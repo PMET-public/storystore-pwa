@@ -9,9 +9,25 @@ import CREATE_CART_MUTATION from './queries/createCart.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './queries/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './queries/addConfigurableProductsToCart.graphql'
 
+type Money = {
+    currency: string
+    value: number
+}
+
+type Prices = {
+    subTotal: Money
+    subTotalWithDiscounts: Money
+    taxes: Array<{
+        label: string
+        amount: Money
+    }>
+    total: Money
+}
+
 type ReducerState = {
     id: string
     count: number
+    prices: Prices
     isUpdating?: boolean
     isAdding?: boolean
 }
@@ -32,6 +48,10 @@ type ReducerActions =
     | {
           type: 'setUpdating'
           payload: boolean
+      }
+    | {
+          type: 'updatePrices'
+          payload: Prices
       }
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
@@ -56,6 +76,11 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
                 ...state,
                 isAdding: action.payload,
             }
+        case 'updatePrices':
+            return {
+                ...state,
+                prices: { ...state.prices, ...action.payload },
+            }
 
         default:
             throw `Reducer action not valid.`
@@ -63,13 +88,29 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 }
 
 const initialState: ReducerState = {
-    id: (typeof localStorage !== 'undefined' && localStorage.getItem('luma/cart-id')) || '',
+    id: '',
     count: 0,
+    prices: {
+        subTotal: {
+            currency: 'USD',
+            value: 0,
+        },
+        subTotalWithDiscounts: {
+            currency: 'USD',
+            value: 0,
+        },
+        taxes: [],
+        total: {
+            currency: 'USD',
+            value: 0,
+        },
+    },
 }
 
-export const useCart = (options: { pageId?: number } = {}) => {
-    const [state, dispatch] = useReducer(reducer, initialState)
+export const useCart = (options: { cartId?: string; pageId?: number } = {}) => {
+    const { cartId } = options
 
+    const [state, dispatch] = useReducer(reducer, initialState)
     const [createCart] = useMutation(CREATE_CART_MUTATION)
     const [updateCartItems] = useMutation(UPDATE_CART_ITEMS_MUTATION)
     const [removeCartItem] = useMutation(REMOVE_CART_ITEM_MUTATION)
@@ -77,28 +118,20 @@ export const useCart = (options: { pageId?: number } = {}) => {
     const [addConfigurableProductsToCart] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION)
 
     const cartQuery = useQuery(CART_QUERY, {
-        skip: !state.id,
+        skip: !cartId,
         fetchPolicy: 'cache-first',
         returnPartialData: true,
         variables: {
             withPage: !!options.pageId,
             pageId: options.pageId,
-            cartId: state.id,
+            cartId: cartId,
         },
     })
 
-    /**
-     * Create New Cart
-     */
     useEffect(() => {
-        if (!state.id) {
-            createCart().then(res => {
-                const { cartId = '' } = res.data
-                localStorage.setItem('luma/cart-id', cartId)
-                dispatch({ type: 'setCartId', payload: cartId })
-            })
-        }
-    }, [])
+        if (cartId) dispatch({ type: 'setCartId', payload: cartId })
+        console.log({ cartId })
+    }, [cartId])
 
     /**
      * Update Cart Count State
@@ -112,17 +145,29 @@ export const useCart = (options: { pageId?: number } = {}) => {
     }, [cartQuery.data && JSON.stringify(cartQuery.data)])
 
     /**
+     * Handle Create Cart Action
+     */
+    const handleCreateCart = useCallback(async () => {
+        const {
+            data: { cartId },
+        } = await createCart()
+        dispatch({ type: 'setCartId', payload: cartId })
+        return cartId
+    }, [])
+
+    /**
      * Handle Update Cart Item Action
      */
     const handleUpdateCartItem = useCallback(
         async (id: number, quantity: number) => {
-            await updateCartItems({
+            const { data } = await updateCartItems({
                 variables: {
                     cartId: state.id,
                     items: [{ cart_item_id: id, quantity }],
                 },
             })
-            cartQuery.refetch()
+            dispatch({ type: 'updatePrices', payload: data.updateCartItems.cart.prices })
+            dispatch({ type: 'setCartCount', payload: getTotalCartQuantity(data.updateCartItems.cart.items) })
         },
         [state.id]
     )
@@ -132,13 +177,14 @@ export const useCart = (options: { pageId?: number } = {}) => {
      */
     const handleRemoveCartItem = useCallback(
         async (id: number) => {
-            await removeCartItem({
+            const { data } = await removeCartItem({
                 variables: {
                     cartId: state.id,
                     itemId: id,
                 },
             })
-            cartQuery.refetch()
+            dispatch({ type: 'updatePrices', payload: data.removeItemFromCart.cart.prices })
+            dispatch({ type: 'setCartCount', payload: getTotalCartQuantity(data.removeItemFromCart.cart.items) })
         },
         [state.id]
     )
@@ -149,14 +195,17 @@ export const useCart = (options: { pageId?: number } = {}) => {
      *  - Configurable
      */
     const _addToCart = useCallback(
-        (method: (variables: any) => Promise<any>, variables) => {
+        async (method: (variables: any) => Promise<any>, variables) => {
             const quantity = 1
 
             dispatch({ type: 'setAdding', payload: true })
 
             method({ variables: { cartId: state.id, quantity, ...variables } })
-                .then(() => {
-                    cartQuery.refetch()
+                .then(({ data }) => {
+                    const count = getTotalCartQuantity(data.addToCart.cart.items)
+                    const { prices } = data.addToCart.cart
+                    dispatch({ type: 'updatePrices', payload: prices })
+                    dispatch({ type: 'setCartCount', payload: count })
                 })
                 .catch(error => {
                     console.error(error.message)
@@ -182,6 +231,7 @@ export const useCart = (options: { pageId?: number } = {}) => {
         query: cartQuery,
         state,
         actions: {
+            createCart: handleCreateCart,
             updateCartItem: handleUpdateCartItem,
             removeCartItem: handleRemoveCartItem,
             addSimpleProductToCart: handleAddSimpleProductToCart,

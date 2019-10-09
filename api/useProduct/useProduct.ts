@@ -152,7 +152,9 @@ const initialState: ReducerState = {
     },
 }
 
-export const useProduct = (productId: number) => {
+export const useProduct = (options: { productId: number }) => {
+    const { productId } = options
+
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const productQuery = useQuery(PRODUCT_QUERY, {
