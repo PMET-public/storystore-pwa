@@ -1,12 +1,5 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
-import CART_QUERY from './cart.graphql'
-import UPDATE_CART_ITEMS_MUTATION from './updateCartItems.graphql'
-import REMOVE_CART_ITEM_MUTATION from './removeCartItem.graphql'
-import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
-
-import { useAppContext } from 'luma-ui/dist/AppProvider'
-import { useQuery, useMutation } from '@apollo/react-hooks'
-
+import React, { FunctionComponent } from 'react'
+import useCart from '../../api/useCart'
 import Error from 'next/error'
 import DocumentMetadata from '../DocumentMetadata'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
@@ -17,61 +10,20 @@ type CartProps = {
 }
 
 export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
-    const app = useAppContext()
+    const { query, state, actions } = useCart({ pageId })
 
-    if (!app.state.cartId) {
-        return null
-    }
-
-    const { loading, error, data, refetch } = useQuery(CART_QUERY, {
-        fetchPolicy: 'cache-first',
-        variables: {
-            withPage: !!pageId,
-            pageId: pageId,
-            cartId: app.state.cartId,
-        },
-    })
-
-    const [updateCartItems, { loading: udpateCartItemsLoading }] = useMutation(UPDATE_CART_ITEMS_MUTATION)
-
-    const [removeCartItem, { loading: removeCartItemLoading }] = useMutation(REMOVE_CART_ITEM_MUTATION)
-
-    const updatesLoading = udpateCartItemsLoading || removeCartItemLoading
-
-    const handleUpdateCartItem = useCallback((id: number, quantity: number) => {
-        updateCartItems({
-            variables: {
-                cartId: app.state.cartId,
-                items: [{ cart_item_id: id, quantity }],
-            },
-        }).then(() => refetch())
-    }, [])
-
-    const handleRemoveCartItem = useCallback((id: number) => {
-        removeCartItem({
-            variables: {
-                cartId: app.state.cartId,
-                itemId: id,
-            },
-        }).then(() => refetch())
-    }, [])
-
-    useEffect(() => {
-        if (!data) return
-        const count = getTotalCartQuantity(data.cart.items)
-        app.actions.setCartCount(count)
-    }, [data && JSON.stringify(data.cart.items)])
-
-    if (loading) {
+    if (query.loading) {
         return <ViewLoader />
     }
 
-    if (error) {
-        console.error(error.message)
+    if (query.error) {
+        console.error(query.error.message)
         return <Error statusCode={500} />
     }
 
-    const { page = {}, store, cart } = data
+    if (!query.data) return null
+
+    const { cart, store, page = {} } = query.data
 
     return (
         <React.Fragment>
@@ -98,8 +50,8 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                                 addLabel: `Add another ${product.name} from shopping bag`,
                                 substractLabel: `Remove one ${product.name} from shopping bag`,
                                 removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => handleUpdateCartItem(id, quantity),
-                                onRemove: () => handleRemoveCartItem(id),
+                                onUpdate: (quantity: number) => actions.updateCartItem(id, quantity),
+                                onRemove: () => actions.removeCartItem(id),
                             },
                             price: {
                                 currency: product.price.regular.amount.currency,
@@ -140,7 +92,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                             },
                         ],
 
-                        buttons: [{ text: 'Checkout', loader: updatesLoading ? { label: 'updating ' } : undefined }],
+                        buttons: [{ text: 'Checkout', loader: state.isUpdating ? { label: 'updating ' } : undefined }],
                     }}
                 />
             ) : (

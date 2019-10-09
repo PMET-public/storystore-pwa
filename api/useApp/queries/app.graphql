@@ -1,4 +1,4 @@
-query AppShellQuery($cartId: String!, $withCart: Boolean!) {
+query AppShellQuery($categoryId: Int!) {
     store: storeConfig {
         id
         logoAlt: logo_alt
@@ -6,7 +6,7 @@ query AppShellQuery($cartId: String!, $withCart: Boolean!) {
         copyright
     }
 
-    categories: category(id: 2) {
+    categories: category(id: $categoryId) {
         id
         children {
             text: name
@@ -21,12 +21,5 @@ query AppShellQuery($cartId: String!, $withCart: Boolean!) {
         titleSuffix: title_suffix
         description: default_description
         keywords: default_keywords
-    }
-
-    cart(cart_id: $cartId) @include(if: $withCart) {
-        items {
-            id
-            quantity
-        }
     }
 }

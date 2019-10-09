@@ -1,11 +1,7 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
-import APP_QUERY from './app.graphql'
-import CREATE_CART_MUTATION from './createCart.graphql'
-import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
-
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import React, { FunctionComponent, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
+import useApp from '../../api/useApp'
+import useCart from '../../api/useCart'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
@@ -14,49 +10,29 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
-    const app = useAppContext()
+    const { query } = useApp({ categoryId: 2 })
 
-    const { error, loading, data } = useQuery(APP_QUERY, {
-        fetchPolicy: 'cache-first',
-        variables: { cartId: app.state.cartId, withCart: !!app.state.cartId },
-    })
+    const { state: cartState } = useCart()
 
-    const [createCart] = useMutation(CREATE_CART_MUTATION)
-
-    useEffect(() => {
-        if (!app.state.cartId)
-            createCart().then(res => {
-                const { cartId = '' } = res.data
-                app.actions.setCartId(cartId)
-            })
-    }, [app.state.cartId])
-
-    useEffect(() => {
-        if (data && data.cart) {
-            const count = getTotalCartQuantity(data.cart.items)
-            app.actions.setCartCount(count)
-        }
-    }, [data && data.cart && data.cart.items.length])
-
-    const { route, query } = useRouter()
+    const { route, query: urlQuery } = useRouter()
 
     const isUrlActive = useCallback(
         (href: string) => {
-            return href === (query.url || route)
+            return href === (urlQuery.url || route)
         },
-        [query.url, route]
+        [urlQuery.url, route]
     )
 
-    if (loading) {
+    if (query.loading) {
         return <ViewLoader />
     }
 
-    if (error) {
-        console.error(error.message)
+    if (query.error) {
+        console.error(query.error.message)
         return <Error statusCode={500} />
     }
 
-    const { store, categories, meta } = data
+    const { store, categories, meta } = query.data
 
     return (
         <React.Fragment>
@@ -103,6 +79,9 @@ export const App: FunctionComponent = ({ children }) => {
                 cart={{
                     active: isUrlActive('/cart'),
                     as: Link,
+                    icon: {
+                        count: cartState.count,
+                    },
                     href: '/cart',
                     text: 'Bag',
                 }}
