@@ -1,22 +1,21 @@
 import React, { FunctionComponent } from 'react'
+import useProduct from '../../api/useProduct'
+import useCart from '../../api/useCart'
 import { getProductGallery } from '../../lib/getProductGallery'
+// import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
-import useProduct from '../../api/useProduct'
-import useCart from '../../api/useCart'
 
 type ProductProps = {
     id: number
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const app = useAppContext()
-    const cart = useCart({ cartId: app.state.cartId })
     const { query, state, actions } = useProduct({ productId: id })
+    const cart = useCart()
 
     const { data } = query
 
@@ -88,7 +87,7 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                                                   src: image.url,
                                               },
                                               active: selected && value === selected.value,
-                                              onClick: () => actions.selectOption(code, label, value),
+                                              onClick: () => actions.selectOption({ code, label, value }),
                                           })),
                                       },
                                   }
@@ -102,11 +101,14 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                         text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
                         disabled: state.isAddToCartValid === false || state.product.stock !== 'IN_STOCK',
                         loader: cart.state.isAdding ? { label: 'Loading' } : undefined,
-                        onClick: () => {
+                        onClick: async () => {
                             if (state.type === 'configurable' && state.variants.selected) {
-                                cart.actions.addConfigurableProductToCart(product.sku, state.variants.selected)
+                                cart.actions.addConfigurableProductToCart({
+                                    sku: product.sku,
+                                    variantSku: state.variants.selected,
+                                })
                             } else {
-                                cart.actions.addSimpleProductToCart(product.sku)
+                                cart.actions.addSimpleProductToCart({ sku: product.sku })
                             }
                         },
                     },

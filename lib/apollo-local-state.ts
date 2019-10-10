@@ -4,12 +4,9 @@ import gql from 'graphql-tag'
  * Extending the types of our server schema
  */
 export const typeDefs = gql`
-    type NetworkStatus {
-        isConnected: Boolean!
-    }
-
     extend type Query {
-        networkStatus: [NetworkStatus]!
+        cartCount: Int!
+        isOnline: Boolean!
     }
 `
 
@@ -17,10 +14,8 @@ export const typeDefs = gql`
  * Default values on application load
  */
 export const defaults = {
-    networkStatus: {
-        __typename: 'NetworkStatus',
-        isConnected: false,
-    },
+    cartCount: 0,
+    isOnline: true,
 }
 
 /**

@@ -152,8 +152,8 @@ const initialState: ReducerState = {
     },
 }
 
-export const useProduct = (options: { productId: number }) => {
-    const { productId } = options
+export const useProduct = (props: { productId: number }) => {
+    const { productId } = props
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -260,8 +260,10 @@ export const useProduct = (options: { productId: number }) => {
     /**
      * Handle Select Option Action
      */
-    const handleSelectOption = (code: string, label: string, value: number) => {
+    const handleSelectOption = (props: { code: string; label: string; value: number }) => {
         if (state.type !== 'configurable') return
+
+        const { code, label, value } = props
 
         const options: OptionsSelected = { ...state.options.selected, [code]: { label, value } }
 

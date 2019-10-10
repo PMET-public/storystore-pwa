@@ -1,8 +1,6 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
 import useApp from '../../api/useApp'
-import useCart from '../../api/useCart'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
@@ -11,27 +9,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
-    const app = useAppContext()
-    const cart = useCart({ cartId: app.state.cartId })
     const { query } = useApp({ categoryId: 2 })
-
-    /**
-     * No Cart No Problem
-     * Let's create one
-     */
-    useEffect(() => {
-        if (!app.state.cartId)
-            cart.actions.createCart().then(cartid => {
-                app.actions.setCartId(cartid)
-            })
-    }, [app.state.cartId])
-
-    /**
-     * Let's get the initial Cart Count
-     */
-    useEffect(() => {
-        app.actions.setCartCount(cart.state.count)
-    }, [cart.state.count])
 
     const { route, query: urlQuery } = useRouter()
 
@@ -51,7 +29,7 @@ export const App: FunctionComponent = ({ children }) => {
         return <Error statusCode={500} />
     }
 
-    const { store, categories, meta } = query.data
+    const { cartCount, store, categories, meta } = query.data
 
     return (
         <React.Fragment>
@@ -100,6 +78,9 @@ export const App: FunctionComponent = ({ children }) => {
                     as: Link,
                     href: '/cart',
                     text: 'Bag',
+                    icon: {
+                        count: cartCount,
+                    },
                 }}
                 footer={{
                     copyright: store.copyright,

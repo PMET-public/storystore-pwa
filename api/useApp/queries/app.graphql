@@ -1,4 +1,7 @@
 query AppShellQuery($categoryId: Int!) {
+    cartCount @client
+    isOnline @client
+
     store: storeConfig {
         id
         logoAlt: logo_alt

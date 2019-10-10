@@ -1,7 +1,7 @@
 #import "./_prices.graphql"
 #import "./_product.graphql"
 
-query CartQuery($pageId: Int, $withPage: Boolean!, $cartId: String!) {
+query CartQuery($cartId: String!, $pageId: Int, $withPage: Boolean!) {
     cart(cart_id: $cartId) {
         ...Prices
 
