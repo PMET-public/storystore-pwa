@@ -5,7 +5,7 @@ import useApp from '../../api/useApp'
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
-import DocumentMetadata from '../DocumentMetadata'
+// import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
 export const App: FunctionComponent = ({ children }) => {
@@ -29,11 +29,11 @@ export const App: FunctionComponent = ({ children }) => {
         return <Error statusCode={500} />
     }
 
-    const { cartCount, store, categories, meta } = query.data
+    const { store, categories } = query.data
 
     return (
         <React.Fragment>
-            <DocumentMetadata {...meta} />
+            {/* <DocumentMetadata {...meta} /> */}
             <AppTemplate
                 logo={{
                     as: Link,
@@ -78,9 +78,9 @@ export const App: FunctionComponent = ({ children }) => {
                     as: Link,
                     href: '/cart',
                     text: 'Bag',
-                    icon: {
-                        count: cartCount,
-                    },
+                    // icon: {
+                    //     count: cartCount,
+                    // },
                 }}
                 footer={{
                     copyright: store.copyright,

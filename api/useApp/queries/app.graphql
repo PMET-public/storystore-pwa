@@ -1,4 +1,6 @@
-query AppShellQuery($categoryId: Int!) {
+query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
     cartCount @client
     isOnline @client
 
@@ -15,6 +17,10 @@ query AppShellQuery($categoryId: Int!) {
             text: name
             href: url_path
         }
+    }
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        email
     }
 
     meta: storeConfig {
