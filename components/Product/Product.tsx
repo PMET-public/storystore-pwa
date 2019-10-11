@@ -12,7 +12,7 @@ type ProductProps = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const { loading, error, data, state, actions } = useProduct({ productId: id })
+    const { loading, error, data, state, api } = useProduct({ productId: id })
 
     if (loading) {
         return <ViewLoader />
@@ -84,7 +84,7 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                                                   src: image.url,
                                               },
                                               active: selected && value === selected.value,
-                                              onClick: () => actions.selectOption({ code, label, value }),
+                                              onClick: () => api.selectOption({ code, label, value }),
                                           })),
                                       },
                                   }
@@ -100,13 +100,13 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                         loader: state.isAddingToCart ? { label: 'Loading' } : undefined,
                         onClick: () => {
                             if (state.type === 'configurable' && state.variants.selected) {
-                                actions.addConfigurableProductToCart({
+                                api.addConfigurableProductToCart({
                                     sku: sku,
                                     variantSku: state.variants.selected,
                                     quantity: 1,
                                 })
                             } else {
-                                actions.addSimpleProductToCart({ sku: sku, quantity: 1 })
+                                api.addSimpleProductToCart({ sku: sku, quantity: 1 })
                             }
                         },
                     },

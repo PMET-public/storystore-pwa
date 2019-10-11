@@ -357,7 +357,7 @@ export const useProduct = (props: { productId: number }) => {
     return {
         ...query,
         state,
-        actions: {
+        api: {
             selectOption: handleSelectOption,
             addSimpleProductToCart: handleAddSimpleProductToCart,
             addConfigurableProductToCart: handleAddConfigurableProductToCart,
