@@ -1,7 +1,10 @@
-import { Reducer, useReducer, useEffect } from 'react'
-import { useQuery } from '@apollo/react-hooks'
+import { Reducer, useReducer, useEffect, useCallback } from 'react'
+import { useQuery, useMutation, MutationHookOptions } from '@apollo/react-hooks'
+import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 
-import PRODUCT_QUERY from './queries/product.graphql'
+import PRODUCT_QUERY from './graphql/product.graphql'
+import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
+import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
 
 type ProductGallery = Array<{
     id: number
@@ -74,6 +77,7 @@ type ReducerStateConfigurableProduct = {
 }
 
 type ReducerState = {
+    isAddingToCart?: boolean
     isAddToCartValid?: boolean
     product?: any
 } & (ReducerStateSimpleProduct | ReducerStateConfigurableProduct)
@@ -90,6 +94,10 @@ type ReducerActions =
               options: OptionsSelected
               variantSku: string
           }
+      }
+    | {
+          type: 'setAddingToCart'
+          payload: boolean
       }
     | {
           type: 'setAddToCartValid'
@@ -124,7 +132,11 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
                       },
                   }
                 : { ...state }
-
+        case 'setAddingToCart':
+            return {
+                ...state,
+                isAddingToCart: action.payload,
+            }
         case 'setAddToCartValid':
             return {
                 ...state,
@@ -138,6 +150,7 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
 const initialState: ReducerState = {
     type: 'simple',
+    isAddingToCart: false,
     isAddToCartValid: false,
     product: {
         stock: '',
@@ -157,7 +170,7 @@ export const useProduct = (props: { productId: number }) => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const productQuery = useQuery(PRODUCT_QUERY, {
+    const query = useQuery(PRODUCT_QUERY, {
         variables: { id: productId },
         fetchPolicy: 'cache-first',
         returnPartialData: true,
@@ -167,7 +180,7 @@ export const useProduct = (props: { productId: number }) => {
      * Update Data State
      */
     useEffect(() => {
-        const { data } = productQuery
+        const { data } = query
 
         const [_product] = (data && data.products && data.products.items) || []
 
@@ -241,7 +254,7 @@ export const useProduct = (props: { productId: number }) => {
                 },
             })
         }
-    }, [productId, JSON.stringify(productQuery.data)])
+    }, [productId, JSON.stringify(query.data)])
 
     /**
      * Set Cart Validity State
@@ -258,50 +271,96 @@ export const useProduct = (props: { productId: number }) => {
     }, [state.type === 'configurable' && JSON.stringify(state.options.selected)])
 
     /**
-     * Handle Select Option Action
+     * Handle Add To Cart
+     *  - Simple
+     *  - Configurable
      */
-    const handleSelectOption = (props: { code: string; label: string; value: number }) => {
-        if (state.type !== 'configurable') return
-
-        const { code, label, value } = props
-
-        const options: OptionsSelected = { ...state.options.selected, [code]: { label, value } }
-
-        const optionsList = Object.keys(options)
-
-        const variant = state.variants.items.find(v => {
-            return optionsList.reduce((accum: boolean, x) => {
-                return v[x] === options[x].value && accum
-            }, true)
-        })
-
-        if (!variant) return console.error('Variant not found')
-
-        const { sku, stock, specialPrice, price, gallery } = variant.product
-
-        dispatch({
-            type: 'selectOption',
-            payload: {
-                product: {
-                    stock,
-                    specialPrice,
-                    price,
-                    gallery: [
-                        gallery[0], // swap the first of the variant
-                        ...state.product.gallery.slice(1, state.product.gallery.length),
-                    ],
-                },
-                options,
-                variantSku: sku,
-            },
-        })
+    const ADD_TO_CART_HOOK_OPTIONS: MutationHookOptions = {
+        update(cache, { data: { addToCart } }) {
+            const cartCount = getTotalCartQuantity(addToCart.cart.items)
+            cache.writeData({ data: { cartCount } })
+        },
+        onCompleted() {
+            dispatch({ type: 'setAddingToCart', payload: false })
+        },
     }
 
+    const [addSimpleProductsToCart] = useMutation(ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION, ADD_TO_CART_HOOK_OPTIONS)
+
+    const handleAddSimpleProductToCart = useCallback(
+        async (variables: { sku: string; quantity: number }) => {
+            dispatch({ type: 'setAddingToCart', payload: true })
+            const { sku, quantity } = variables
+            const { data } = await addSimpleProductsToCart({ variables: { cartId: query.data.cartId, sku, quantity } })
+            return data
+        },
+        [query.data.cartId]
+    )
+
+    const [addConfigurableProductsToCart] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION, ADD_TO_CART_HOOK_OPTIONS)
+
+    const handleAddConfigurableProductToCart = useCallback(
+        async (variables: { quantity: number; sku: string; variantSku: string }) => {
+            dispatch({ type: 'setAddingToCart', payload: true })
+            const { sku, variantSku, quantity } = variables
+            const data = await addConfigurableProductsToCart({
+                variables: { cartId: query.data.cartId, parentSku: sku, sku: variantSku, quantity },
+            })
+            return data
+        },
+        [query.data.cartId]
+    )
+
+    /**
+     * Handle Select Option Action
+     */
+    const handleSelectOption = useCallback(
+        (props: { code: string; label: string; value: number }) => {
+            if (state.type !== 'configurable') return
+
+            const { code, label, value } = props
+
+            const options: OptionsSelected = { ...state.options.selected, [code]: { label, value } }
+
+            const optionsList = Object.keys(options)
+
+            const variant = state.variants.items.find(v => {
+                return optionsList.reduce((accum: boolean, x) => {
+                    return v[x] === options[x].value && accum
+                }, true)
+            })
+
+            if (!variant) return console.error('Variant not found')
+
+            const { sku, stock, specialPrice, price, gallery } = variant.product
+
+            dispatch({
+                type: 'selectOption',
+                payload: {
+                    product: {
+                        stock,
+                        specialPrice,
+                        price,
+                        gallery: [
+                            gallery[0], // swap the first of the variant
+                            ...state.product.gallery.slice(1, state.product.gallery.length),
+                        ],
+                    },
+                    options,
+                    variantSku: sku,
+                },
+            })
+        },
+        [productId, JSON.stringify(state)]
+    )
+
     return {
-        query: productQuery,
+        ...query,
         state,
         actions: {
             selectOption: handleSelectOption,
+            addSimpleProductToCart: handleAddSimpleProductToCart,
+            addConfigurableProductToCart: handleAddConfigurableProductToCart,
         },
     }
 }

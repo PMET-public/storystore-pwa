@@ -1,4 +1,6 @@
 import gql from 'graphql-tag'
+import { getFromLocalStorage } from './localStorage'
+import { getTotalCartQuantity } from './getTotalCartQuantity'
 
 /**
  * Extending the types of our server schema
@@ -7,8 +9,12 @@ export const typeDefs = gql`
     extend type Query {
         hasCart: Boolean!
         cartId: String!
-        cartCount: Int!
         isOnline: Boolean!
+    }
+
+    extend type Cart {
+        id: String!
+        totalQuantity: Number!
     }
 `
 
@@ -16,8 +22,9 @@ export const typeDefs = gql`
  * Default values on application load
  */
 export const defaults = {
-    isOnline: false,
-    cartId: '',
+    cartId: (process.browser && getFromLocalStorage('cartId')) || '',
+    hasCart: process.browser && !!getFromLocalStorage('cartId'),
+    isOnline: true,
 }
 
 /**
@@ -32,17 +39,21 @@ type Resolvers = {
 
 export const resolvers: Resolvers = {
     Query: {
-        cartCount: () => 1,
-        hasCart: (_root, _variables, { cache }) => {
-            const GET_CART_ID = gql`
-                query CartId {
-                    cartId @client
-                }
-            `
-
-            const { cartId } = cache.readQuery({ query: GET_CART_ID })
-
-            return !!cartId
+        cartId() {
+            const cartId = (process.browser && getFromLocalStorage('cartId')) || ''
+            return cartId
+        },
+        hasCart() {
+            const cartId = process.browser && getFromLocalStorage('cartId')
+            return process.browser && !!cartId
+        },
+    },
+    Cart: {
+        id() {
+            return (process.browser && getFromLocalStorage('cartId')) || ''
+        },
+        totalQuantity({ items }, _args) {
+            return items ? getTotalCartQuantity(items) : 0
         },
     },
     Mutation: {},

@@ -1,0 +1,18 @@
+#import "./_fragments.graphql"
+
+query CartQuery($hasCart: Boolean!, $cartId: String!, $hasPage: Boolean!, $pageId: Int) {
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        ...Cart
+    }
+
+    page: cmsPage(id: $pageId) @include(if: $hasPage) {
+        title
+        content
+        metaTitle: meta_title
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+    }
+}

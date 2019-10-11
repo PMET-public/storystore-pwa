@@ -1,15 +1,14 @@
 import { useCallback, useEffect } from 'react'
-import { useApolloClient } from '@apollo/react-hooks'
 
-export const useNetworkUpdates = () => {
-    const client = useApolloClient()
-
+export const useNetworkUpdates = (callback: (isOnline: boolean) => any) => {
     const handleNetworkChange = useCallback(() => {
         const isOnline = navigator.onLine
-        client.writeData({ data: { isOnline } })
+        callback(isOnline)
     }, [])
 
     useEffect(() => {
+        callback(navigator.onLine)
+
         window.addEventListener('online', handleNetworkChange)
         window.addEventListener('offline', handleNetworkChange)
 

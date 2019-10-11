@@ -36,6 +36,10 @@ function create(initialState: any) {
 
     const cache = new InMemoryCache().restore(initialState || {})
 
+    cache.writeData({
+        data: { ...defaults },
+    })
+
     const client = new ApolloClient({
         cache,
         connectToDevTools: process.browser,
@@ -43,10 +47,6 @@ function create(initialState: any) {
         resolvers,
         ssrMode: !process.browser,
         typeDefs,
-    })
-
-    cache.writeData({
-        data: { ...defaults },
     })
 
     return client

@@ -115,13 +115,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     return (
         <React.Fragment>
-            {store && meta && (
-                <DocumentMetadata
-                    title={[store.titlePrefix, 'Search', store.titleSuffix]}
-                    description={meta.description}
-                    keywords={meta.keywords}
-                />
-            )}
+            {store && meta && <DocumentMetadata />}
 
             <CategoryTemplate
                 search={{

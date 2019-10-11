@@ -1,12 +1,8 @@
-#import "./_prices.graphql"
-
 mutation AddToCart($cartId: String!, $quantity: Float!, $sku: String!) {
     addToCart: addSimpleProductsToCart(
         input: { cart_id: $cartId, cart_items: [{ data: { quantity: $quantity, sku: $sku } }] }
     ) {
         cart {
-            ...Prices
-
             items {
                 id
                 quantity

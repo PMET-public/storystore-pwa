@@ -1,4 +1,7 @@
 query ProductQuery {
+    hasCart @client
+    cartId @client
+
     products(filter: { sku: { eq: "WT08" } }, pageSize: 1) {
         items {
             id
@@ -21,9 +24,9 @@ query ProductQuery {
                 html
             }
 
+            metaTitle: meta_title
             metaDescription: meta_description
             metaKeywords: meta_keyword
-            metaTitle: meta_title
 
             specialPrice: special_price
             price {
@@ -104,10 +107,8 @@ query ProductQuery {
             }
         }
     }
-    store: storeConfig {
+    storeConfig {
         id
-        titlePrefix: title_prefix
-        titleSuffix: title_suffix
         baseMediaUrl: base_media_url
     }
 }

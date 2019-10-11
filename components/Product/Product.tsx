@@ -1,8 +1,6 @@
 import React, { FunctionComponent } from 'react'
-import useProduct from '../../api/useProduct'
-import useCart from '../../api/useCart'
+import { useProduct } from './useProduct'
 import { getProductGallery } from '../../lib/getProductGallery'
-// import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
@@ -14,41 +12,40 @@ type ProductProps = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const { query, state, actions } = useProduct({ productId: id })
-    const cart = useCart()
+    const { loading, error, data, state, actions } = useProduct({ productId: id })
 
-    const { data } = query
-
-    if (query.loading) {
+    if (loading) {
         return <ViewLoader />
     }
 
-    if (query.error) {
-        console.error(query.error.message)
+    if (error) {
+        console.error(error.message)
         return <Error statusCode={500} />
     }
 
-    const [product] = (data.products && data.products.items) || []
+    if (!data) {
+        return <Error statusCode={404} />
+    }
 
-    const { store } = data
+    const { hasCart, storeConfig, products } = data
+
+    const [product] = (products && products.items) || []
+
+    const { metaTitle, metaDescription, metaKeywords, title, sku, categories } = product
 
     return product ? (
         <React.Fragment>
-            <DocumentMetadata
-                title={[store.titlePrefix, product.metaTitle || product.title, store.titleSuffix]}
-                description={product.metaDescription}
-                keywords={product.metaKeywords}
-            />
+            <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
             <ProductTemplate
                 title={{
-                    text: product.title,
+                    text: title,
                 }}
                 sku={{
-                    text: `SKU. ${product.sku}`,
+                    text: `SKU. ${sku}`,
                 }}
                 categories={
-                    product.categories && {
-                        items: product.categories
+                    categories && {
+                        items: categories
                             .slice(0, 4) // limit to 3
                             .filter((x: any) => !!x.href)
                             .map(({ id, text, href }: any) => ({
@@ -60,7 +57,7 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                gallery={getProductGallery(state.product.gallery, store.baseMediaUrl + 'catalog/product')}
+                gallery={getProductGallery(state.product.gallery, storeConfig.baseMediaUrl + 'catalog/product')}
                 price={{
                     regular: state.product.price.regular.amount.value,
                     special: state.product.specialPrice,
@@ -99,16 +96,17 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                     {
                         as: 'button',
                         text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                        disabled: state.isAddToCartValid === false || state.product.stock !== 'IN_STOCK',
-                        loader: cart.state.isAdding ? { label: 'Loading' } : undefined,
-                        onClick: async () => {
+                        disabled: !hasCart || !state.isAddToCartValid || state.product.stock !== 'IN_STOCK',
+                        loader: state.isAddingToCart ? { label: 'Loading' } : undefined,
+                        onClick: () => {
                             if (state.type === 'configurable' && state.variants.selected) {
-                                cart.actions.addConfigurableProductToCart({
-                                    sku: product.sku,
+                                actions.addConfigurableProductToCart({
+                                    sku: sku,
                                     variantSku: state.variants.selected,
+                                    quantity: 1,
                                 })
                             } else {
-                                cart.actions.addSimpleProductToCart({ sku: product.sku })
+                                actions.addSimpleProductToCart({ sku: sku, quantity: 1 })
                             }
                         },
                     },

@@ -104,7 +104,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         return <Error statusCode={404} />
     }
 
-    const { store, meta, page } = categoryQuery.data
+    const { page } = categoryQuery.data
 
     const products = productsQuery.data && productsQuery.data.products
 
@@ -119,11 +119,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                title={[store.titlePrefix, meta.title || page.title, store.titleSuffix]}
-                description={meta.description}
-                keywords={meta.keywords}
-            />
+            <DocumentMetadata />
 
             <CategoryTemplate
                 display={page.mode}

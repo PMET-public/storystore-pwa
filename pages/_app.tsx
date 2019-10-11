@@ -15,7 +15,7 @@ class MyApp extends App {
         return (
             <ApolloProvider client={apolloClient}>
                 <AppProvider>
-                    <AppShell>
+                    <AppShell categoryId={2}>
                         <Component {...pageProps} />
                     </AppShell>
                 </AppProvider>
