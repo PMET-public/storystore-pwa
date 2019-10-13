@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import { useProduct } from './useProduct'
 import { getProductGallery } from '../../lib/getProductGallery'
 import DocumentMetadata from '../DocumentMetadata'
@@ -7,12 +7,28 @@ import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
 
-type ProductProps = {
-    id: number
+export type ProductProps = {
+    // TO-DO: Pending
 }
 
-export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const { loading, error, data, state, api } = useProduct({ productId: id })
+type SelectedOptions = {
+    [code: string]: number
+}
+
+export const Product: FunctionComponent<ProductProps> = ({}) => {
+    const { loading, error, addingToCart, data, api } = useProduct({ sku: '24-WB07' })
+
+    const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
+
+    const handleSelectOption = useCallback(
+        (selection: { code: string; value: number }) => {
+            const { code, value } = selection
+            const newSelections = { ...selectedOptions, [code]: value }
+            setSelectedOptions(newSelections)
+            api.selectVariant(newSelections)
+        },
+        [JSON.stringify(selectedOptions)]
+    )
 
     if (loading) {
         return <ViewLoader />
@@ -23,15 +39,28 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
         return <Error statusCode={500} />
     }
 
-    if (!data) {
+    if (!data || !data.product) {
         return <Error statusCode={404} />
     }
+    const { storeConfig, hasCart, product } = data
 
-    const { hasCart, storeConfig, products } = data
-
-    const [product] = (products && products.items) || []
-
-    const { metaTitle, metaDescription, metaKeywords, title, sku, categories } = product
+    const {
+        categories,
+        description,
+        gallery,
+        metaDescription,
+        metaKeywords,
+        metaTitle,
+        options,
+        price,
+        shortDescription,
+        sku,
+        variantSku,
+        specialPrice,
+        stock,
+        title,
+        type,
+    } = product
 
     return product ? (
         <React.Fragment>
@@ -57,68 +86,62 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                gallery={getProductGallery(state.product.gallery, storeConfig.baseMediaUrl + 'catalog/product')}
+                gallery={getProductGallery(gallery, storeConfig.baseMediaUrl + 'catalog/product')}
                 price={{
-                    regular: state.product.price.regular.amount.value,
-                    special: state.product.specialPrice,
-                    currency: state.product.price.regular.amount.currency,
+                    regular: price.regular.amount.value,
+                    special: specialPrice,
+                    currency: price.regular.amount.currency,
                 }}
                 swatches={
-                    state.type === 'configurable'
-                        ? state.options.items
-                              .map(({ id, label, code, type, items }: any) => {
-                                  const selected = state.options.selected && state.options.selected[code]
+                    options &&
+                    options
+                        .map(({ id, type, label, code, items }: any) => {
+                            const selected = false //state.options.selected && state.options.selected[code]
 
-                                  return {
-                                      _id: id,
-                                      type,
-                                      title: {
-                                          text: selected ? `${label}: ${selected.label}` : label,
-                                      },
-                                      props: {
-                                          items: items.map(({ id, label, value, image }: any) => ({
-                                              _id: id,
-                                              text: label,
-                                              image: image && {
-                                                  alt: image.label,
-                                                  src: image.url,
-                                              },
-                                              active: selected && value === selected.value,
-                                              onClick: () => api.selectOption({ code, label, value }),
-                                          })),
-                                      },
-                                  }
-                              })
-                              .sort((a: any, b: any) => b.position - a.position)
-                        : undefined
+                            return {
+                                _id: id,
+                                type,
+                                title: {
+                                    text: selected ? `${label}: missin` : label,
+                                },
+                                props: {
+                                    items: items.map(({ id, label, value, image }: any) => ({
+                                        _id: id,
+                                        text: label,
+                                        image: image && {
+                                            alt: image.label,
+                                            src: image.url,
+                                        },
+                                        active: selectedOptions[code] === value,
+                                        onClick: () => handleSelectOption({ code, value }),
+                                    })),
+                                },
+                            }
+                        })
+                        .sort((a: any, b: any) => b.position - a.position)
                 }
                 buttons={[
                     {
                         as: 'button',
-                        text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                        disabled: !hasCart || !state.isAddToCartValid || state.product.stock !== 'IN_STOCK',
-                        loader: state.isAddingToCart ? { label: 'Loading' } : undefined,
+                        text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
+                        disabled: !hasCart || stock === 'OUT_OF_STOCK',
+                        loader: addingToCart ? { label: 'Loading' } : undefined,
                         onClick: () => {
-                            if (state.type === 'configurable' && state.variants.selected) {
-                                api.addConfigurableProductToCart({
-                                    sku: sku,
-                                    variantSku: state.variants.selected,
-                                    quantity: 1,
-                                })
+                            if (type === 'configurable') {
+                                api.addConfigurableProductToCart({ sku: sku, variantSku, quantity: 1 })
                             } else {
                                 api.addSimpleProductToCart({ sku: sku, quantity: 1 })
                             }
                         },
                     },
                 ]}
-                shortDescription={product.shortDescription && product.shortDescription.html}
+                shortDescription={shortDescription && shortDescription.html}
                 description={
-                    product.description && {
-                        html: product.description.html,
+                    description && {
+                        html: description.html,
                     }
                 }
             />
-            }
         </React.Fragment>
     ) : null
 }

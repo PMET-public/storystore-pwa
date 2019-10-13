@@ -53,7 +53,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
         case 'CATEGORY':
             return <Category id={content_id} />
         case 'PRODUCT':
-            return <Product id={content_id} />
+            return <Product />
         default:
             return <Error statusCode={500} />
     }

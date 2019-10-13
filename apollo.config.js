@@ -11,6 +11,10 @@ module.exports = {
             url: MAGENTO_GRAPHQL_URL,
         },
         clientSchemaDirectives: ['client', 'rest'],
-        includes: ['./api/**/*.{graphql,ts,tsx}', './lib/**/*.{graphql,ts,tsx}'],
+        includes: [
+            './api/**/*.{graphql,ts,tsx}',
+            './components/**/graphql/**/*.graphql',
+            './lib/**/*.{graphql,ts,tsx}',
+        ],
     },
 }

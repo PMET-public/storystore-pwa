@@ -1,14 +1,17 @@
-query ProductQuery {
+query ProductQuery($sku: String!) {
     hasCart @client
-    cartId @client
 
-    products(filter: { sku: { eq: "WT08" } }, pageSize: 1) {
+    products(filter: { sku: { eq: $sku } }, pageSize: 1) {
         items {
             id
+            metaTitle: meta_title
+            metaDescription: meta_description
+            metaKeywords: meta_keyword
             type: type_id
             title: name
             sku
             stock: stock_status
+            specialPrice: special_price
 
             categories {
                 id
@@ -16,19 +19,6 @@ query ProductQuery {
                 href: url_path
             }
 
-            shortDescription: short_description {
-                html
-            }
-
-            description: description {
-                html
-            }
-
-            metaTitle: meta_title
-            metaDescription: meta_description
-            metaKeywords: meta_keyword
-
-            specialPrice: special_price
             price {
                 regular: regularPrice {
                     amount {
@@ -52,6 +42,14 @@ query ProductQuery {
                 type: media_type
             }
 
+            shortDescription: short_description {
+                html
+            }
+
+            description: description {
+                html
+            }
+
             ... on ConfigurableProduct {
                 options: configurable_options {
                     id
@@ -66,15 +64,14 @@ query ProductQuery {
                 }
                 variants {
                     attributes {
+                        id: value_index
                         code
                         value: value_index
                     }
                     product {
                         id
-                        sku
+                        variantSku: sku
                         stock: stock_status
-
-                        specialPrice: special_price
                         price {
                             regular: regularPrice {
                                 amount {
@@ -82,14 +79,11 @@ query ProductQuery {
                                     value
                                 }
                             }
-                            minimal: regularPrice {
-                                amount {
-                                    currency
-                                    value
-                                }
-                            }
                         }
-
+                        thumbnail {
+                            label
+                            url
+                        }
                         gallery: media_gallery_entries {
                             id
                             file
@@ -97,16 +91,12 @@ query ProductQuery {
                             disabled
                             type: media_type
                         }
-
-                        thumbnail {
-                            label
-                            url
-                        }
                     }
                 }
             }
         }
     }
+
     storeConfig {
         id
         baseMediaUrl: base_media_url

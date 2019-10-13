@@ -1,197 +1,64 @@
-import { Reducer, useReducer, useEffect, useCallback } from 'react'
-import { useQuery, useMutation, MutationHookOptions } from '@apollo/react-hooks'
-import { getTotalCartQuantity } from '../../lib/getTotalCartQuantity'
+import { useCallback, useEffect, useState } from 'react'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
 
-type ProductGallery = Array<{
-    id: number
-    file: string
-    label: string
-    disabled?: boolean
-    type: 'image'
-}>
-
-type Option = {
-    id: number
-    label: string
-    code: string
-    type: 'text' | 'thumb'
-    items: Array<{
-        id: number
-        label: string
-        value: number
-        thumbnail?: {
-            label: string
-            url: string
-        }
-        disabled: boolean
-    }>
-}
-
-type OptionsSelected = {
-    [code: string]: {
-        label: string
-        value: number
-    }
-}
-
-type Variant = { [code: string]: number } & {
-    gallery: ProductGallery
-    product: Product & { sku: string }
-}
-
-type Price = {
-    amount: {
-        currency?: string
-        value: number
-    }
-}
-
-type Product = {
-    stock: string
-    specialPrice?: number
-    price: {
-        regular: Price
-        minimal?: Price
-    }
-    gallery: ProductGallery
-}
-
-type ReducerStateSimpleProduct = {
-    type: 'simple'
-}
-
-type ReducerStateConfigurableProduct = {
-    type: 'configurable'
-    options: {
-        items: Array<Option>
-        selected?: OptionsSelected
-    }
-    variants: {
-        items: Array<Variant>
-        selected?: string
-    }
-}
-
-type ReducerState = {
-    isAddingToCart?: boolean
-    isAddToCartValid?: boolean
-    product?: any
-} & (ReducerStateSimpleProduct | ReducerStateConfigurableProduct)
-
-type ReducerActions =
+type ProductVariant =
     | {
-          type: 'init'
-          payload: ReducerState
-      }
-    | {
-          type: 'selectOption'
-          payload: {
-              product: Product
-              options: OptionsSelected
-              variantSku: string
+          variantSku?: string
+          price: {
+              regular: {
+                  amount: {
+                      currency: string
+                      value: number
+                  }
+              }
+          }
+          specialPrice: number
+          stock: string
+          gallery: {
+              id: number
+              file: string
+              label: string
+              type: string
           }
       }
-    | {
-          type: 'setAddingToCart'
-          payload: boolean
-      }
-    | {
-          type: 'setAddToCartValid'
-          payload: boolean
-      }
+    | undefined
 
-const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
-    switch (action.type) {
-        case 'init':
-            return {
-                ...action.payload,
-            }
-
-        case 'selectOption':
-            return state.type === 'configurable'
-                ? {
-                      ...state,
-                      variants: {
-                          ...state.variants,
-                          selected: action.payload.variantSku,
-                      },
-                      options: {
-                          ...state.options,
-                          selected: {
-                              ...state.options.selected,
-                              ...action.payload.options,
-                          },
-                      },
-                      product: {
-                          ...state.product,
-                          ...action.payload.product,
-                      },
-                  }
-                : { ...state }
-        case 'setAddingToCart':
-            return {
-                ...state,
-                isAddingToCart: action.payload,
-            }
-        case 'setAddToCartValid':
-            return {
-                ...state,
-                isAddToCartValid: action.payload,
-            }
-
-        default:
-            throw `Reducer action not valid.`
-    }
+type OptionsAndVariants = {
+    options?: any[]
+    variants?: any[]
+    key?: number
 }
 
-const initialState: ReducerState = {
-    type: 'simple',
-    isAddingToCart: false,
-    isAddToCartValid: false,
-    product: {
-        stock: '',
-        price: {
-            regular: {
-                amount: {
-                    value: 0,
-                },
-            },
-        },
-        gallery: [],
-    },
-}
+export const useProduct = (props: { sku: string }) => {
+    const { sku } = props
 
-export const useProduct = (props: { productId: number }) => {
-    const { productId } = props
-
-    const [state, dispatch] = useReducer(reducer, initialState)
-
-    const query = useQuery(PRODUCT_QUERY, {
-        variables: { id: productId },
+    const { data, ...restQuery } = useQuery(PRODUCT_QUERY, {
+        variables: { sku },
         fetchPolicy: 'cache-first',
         returnPartialData: true,
     })
 
+    const { products, ...restData } = data || {}
+
+    const product = products && products.items[0]
+
+    const [optionsAndVariants, setOptionsAndVariants] = useState<OptionsAndVariants>({})
+
+    const [productVariant, setProductVariant] = useState<ProductVariant>()
+
     /**
-     * Update Data State
+     * Fix Options Data
      */
     useEffect(() => {
-        const { data } = query
+        if (!product) return
 
-        const [_product] = (data && data.products && data.products.items) || []
-
-        if (!_product) return
-
-        const { type, sku, stock, specialPrice, price, gallery } = _product
-
-        const product = { type, sku, stock, specialPrice, price, gallery }
-
-        if (type === 'configurable') {
-            const variants = _product.variants.reduce((accumVariants: [], currentVariant: any) => {
+        const variants =
+            product.variants &&
+            product.variants.reduce((accumVariants: [], currentVariant: any) => {
                 return [
                     ...accumVariants,
                     currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
@@ -201,7 +68,9 @@ export const useProduct = (props: { productId: number }) => {
                 ]
             }, [])
 
-            const options = _product.options
+        const options =
+            product.options &&
+            product.options
                 .sort((a: any, b: any) => b.position - a.position)
                 .map((option: any) => {
                     const { id, label, code, items } = option
@@ -230,135 +99,105 @@ export const useProduct = (props: { productId: number }) => {
                     }
                 })
 
-            dispatch({
-                type: 'init',
-                payload: {
-                    type: 'configurable',
-                    isAddToCartValid: false,
-                    product,
-                    options: {
-                        items: options,
-                    },
-                    variants: {
-                        items: variants,
-                    },
-                },
-            })
-        } else {
-            dispatch({
-                type: 'init',
-                payload: {
-                    type: 'simple',
-                    isAddToCartValid: true,
-                    product,
-                },
-            })
-        }
-    }, [productId, JSON.stringify(query.data)])
+        setOptionsAndVariants({ options, variants, key: Date.now() })
+    }, [product && product.id])
 
     /**
-     * Set Cart Validity State
+     * Handle Select Option
      */
-    useEffect(() => {
-        if (state.type !== 'configurable') return
 
-        dispatch({
-            type: 'setAddToCartValid',
-            payload: state.options.selected
-                ? Object.keys(state.options.selected).length === state.options.items.length
-                : false,
-        })
-    }, [state.type === 'configurable' && JSON.stringify(state.options.selected)])
-
-    /**
-     * Handle Add To Cart
-     *  - Simple
-     *  - Configurable
-     */
-    const ADD_TO_CART_HOOK_OPTIONS: MutationHookOptions = {
-        update(cache, { data: { addToCart } }) {
-            const cartCount = getTotalCartQuantity(addToCart.cart.items)
-            cache.writeData({ data: { cartCount } })
-        },
-        onCompleted() {
-            dispatch({ type: 'setAddingToCart', payload: false })
-        },
-    }
-
-    const [addSimpleProductsToCart] = useMutation(ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION, ADD_TO_CART_HOOK_OPTIONS)
-
-    const handleAddSimpleProductToCart = useCallback(
-        async (variables: { sku: string; quantity: number }) => {
-            dispatch({ type: 'setAddingToCart', payload: true })
-            const { sku, quantity } = variables
-            const { data } = await addSimpleProductsToCart({ variables: { cartId: query.data.cartId, sku, quantity } })
-            return data
-        },
-        [query.data.cartId]
-    )
-
-    const [addConfigurableProductsToCart] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION, ADD_TO_CART_HOOK_OPTIONS)
-
-    const handleAddConfigurableProductToCart = useCallback(
-        async (variables: { quantity: number; sku: string; variantSku: string }) => {
-            dispatch({ type: 'setAddingToCart', payload: true })
-            const { sku, variantSku, quantity } = variables
-            const data = await addConfigurableProductsToCart({
-                variables: { cartId: query.data.cartId, parentSku: sku, sku: variantSku, quantity },
-            })
-            return data
-        },
-        [query.data.cartId]
-    )
-
-    /**
-     * Handle Select Option Action
-     */
-    const handleSelectOption = useCallback(
-        (props: { code: string; label: string; value: number }) => {
-            if (state.type !== 'configurable') return
-
-            const { code, label, value } = props
-
-            const options: OptionsSelected = { ...state.options.selected, [code]: { label, value } }
+    const handleSelectVariant = useCallback(
+        (options: { [code: string]: number }) => {
+            if (!product || !optionsAndVariants.variants) return
 
             const optionsList = Object.keys(options)
 
-            const variant = state.variants.items.find(v => {
-                return optionsList.reduce((accum: boolean, x) => {
-                    return v[x] === options[x].value && accum
+            const variant = optionsAndVariants.variants.find(v => {
+                return optionsList.reduce((accum: boolean, code) => {
+                    return v[code] === options[code] && accum
                 }, true)
             })
 
-            if (!variant) return console.error('Variant not found')
+            if (variant) {
+                const { variantSku, price, gallery, specialPrice, stock } = variant.product
+                setProductVariant({ variantSku, price, gallery, specialPrice, stock })
+            }
+        },
+        [product && product.sku, optionsAndVariants.key]
+    )
 
-            const { sku, stock, specialPrice, price, gallery } = variant.product
+    /**
+     * Handle Add To Cart Simple Product
+     */
+    const [addSimpleProductsToCart, { loading: addingSimpleProductToCart }] = useMutation(
+        ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION,
+        {
+            update(cache, { data: { addToCart } }) {
+                const { cart } = addToCart
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
 
-            dispatch({
-                type: 'selectOption',
-                payload: {
-                    product: {
-                        stock,
-                        specialPrice,
-                        price,
-                        gallery: [
-                            gallery[0], // swap the first of the variant
-                            ...state.product.gallery.slice(1, state.product.gallery.length),
-                        ],
-                    },
-                    options,
-                    variantSku: sku,
+    const handleAddSimpleProductToCart = useCallback(async (variables: { sku: string; quantity: number }) => {
+        const { sku, quantity } = variables
+        const { data } = await addSimpleProductsToCart({
+            variables: {
+                cartId: '', // @client
+                sku,
+                quantity,
+            },
+        })
+        return data
+    }, [])
+
+    /**
+     * Handle Add To Cart Configurable Product
+     */
+    const [addConfigurableProductsToCart, { loading: addingConfigurableProductsToCart }] = useMutation(
+        ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION,
+        {
+            update(cache, { data: { addToCart } }) {
+                const { cart } = addToCart
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
+
+    const handleAddConfigurableProductToCart = useCallback(
+        async (variables: { quantity: number; sku: string; variantSku: string }) => {
+            const { sku, variantSku, quantity } = variables
+            const data = await addConfigurableProductsToCart({
+                variables: {
+                    cartId: '', // @client
+                    parentSku: sku,
+                    sku: variantSku,
+                    quantity,
                 },
             })
+            return data
         },
-        [productId, JSON.stringify(state)]
+        []
     )
 
     return {
-        ...query,
-        state,
+        ...restQuery,
+        data: {
+            ...restData,
+            product: {
+                ...product,
+                ...productVariant,
+                options: optionsAndVariants.options,
+                variants: optionsAndVariants.variants,
+            },
+        },
+        addingToCart: addingSimpleProductToCart || addingConfigurableProductsToCart,
         api: {
-            selectOption: handleSelectOption,
+            selectVariant: handleSelectVariant,
             addSimpleProductToCart: handleAddSimpleProductToCart,
             addConfigurableProductToCart: handleAddConfigurableProductToCart,
         },

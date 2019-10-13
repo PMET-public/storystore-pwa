@@ -52,7 +52,8 @@ export const resolvers: Resolvers = {
         id() {
             return (process.browser && getFromLocalStorage('cartId')) || ''
         },
-        totalQuantity({ items }, _args) {
+        totalQuantity({ items }) {
+            // ☝️ TO-DO: Remove once total_quantity is released
             return items ? getTotalCartQuantity(items) : 0
         },
     },
