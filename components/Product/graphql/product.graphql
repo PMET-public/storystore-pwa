@@ -55,6 +55,7 @@ query ProductQuery($sku: String!) {
                     id
                     label
                     position
+                    # required
                     code: attribute_code
                     items: values {
                         id: value_index

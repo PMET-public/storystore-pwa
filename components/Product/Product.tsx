@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useCallback, useState } from 'react'
 import { useProduct } from './useProduct'
+import { useRouter } from 'next/router'
 import { getProductGallery } from '../../lib/getProductGallery'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
@@ -16,7 +17,9 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({}) => {
-    const { loading, error, addingToCart, data, api } = useProduct({ sku: '24-WB07' })
+    const { loading, error, addingToCart, data, api } = useProduct({ sku: 'WH05' })
+
+    const router = useRouter()
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
@@ -62,6 +65,8 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
         type,
     } = product
 
+    const isAddingToCartReady = options && Object.keys(selectedOptions).length === options.length
+
     return product ? (
         <React.Fragment>
             <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
@@ -96,13 +101,15 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
                     options &&
                     options
                         .map(({ id, type, label, code, items }: any) => {
-                            const selected = false //state.options.selected && state.options.selected[code]
+                            const selected = items.find((x: any) => {
+                                return code === x.code, x.value === selectedOptions[code]
+                            })
 
                             return {
                                 _id: id,
                                 type,
                                 title: {
-                                    text: selected ? `${label}: missin` : label,
+                                    text: selected ? `${label}: ${selected.label}` : label,
                                 },
                                 props: {
                                     items: items.map(({ id, label, value, image }: any) => ({
@@ -124,13 +131,19 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
                     {
                         as: 'button',
                         text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                        disabled: !hasCart || stock === 'OUT_OF_STOCK',
+                        disabled: !hasCart || !isAddingToCartReady || stock === 'OUT_OF_STOCK',
                         loader: addingToCart ? { label: 'Loading' } : undefined,
-                        onClick: () => {
-                            if (type === 'configurable') {
-                                api.addConfigurableProductToCart({ sku: sku, variantSku, quantity: 1 })
-                            } else {
-                                api.addSimpleProductToCart({ sku: sku, quantity: 1 })
+                        onClick: async () => {
+                            try {
+                                if (type === 'configurable') {
+                                    await api.addConfigurableProductToCart({ sku: sku, variantSku, quantity: 1 })
+                                    router.push('/cart')
+                                } else {
+                                    await api.addSimpleProductToCart({ sku: sku, quantity: 1 })
+                                    router.push('/cart')
+                                }
+                            } catch (error) {
+                                console.error(error)
                             }
                         },
                     },
