@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
@@ -18,12 +18,12 @@ type ProductVariant =
           }
           specialPrice: number
           stock: string
-          gallery: {
+          gallery: Array<{
               id: number
               file: string
               label: string
               type: string
-          }
+          }>
       }
     | undefined
 
@@ -46,15 +46,13 @@ export const useProduct = (props: { sku: string }) => {
 
     const product = products && products.items[0]
 
-    const [optionsAndVariants, setOptionsAndVariants] = useState<OptionsAndVariants>({})
-
     const [productVariant, setProductVariant] = useState<ProductVariant>()
 
     /**
      * Fix Options Data
      */
-    useEffect(() => {
-        if (!product) return
+    const optionsAndVariants: OptionsAndVariants = useMemo(() => {
+        if (!product) return {}
 
         const variants =
             product.variants &&
@@ -99,13 +97,12 @@ export const useProduct = (props: { sku: string }) => {
                     }
                 })
 
-        setOptionsAndVariants({ options, variants, key: Date.now() })
+        return { options, variants, key: Date.now() }
     }, [product && product.id])
 
     /**
      * Handle Select Option
      */
-
     const handleSelectVariant = useCallback(
         (options: { [code: string]: number }) => {
             if (!product || !optionsAndVariants.variants) return
@@ -120,7 +117,20 @@ export const useProduct = (props: { sku: string }) => {
 
             if (variant) {
                 const { variantSku, price, gallery, specialPrice, stock } = variant.product
-                setProductVariant({ variantSku, price, gallery, specialPrice, stock })
+
+                setProductVariant({
+                    variantSku,
+                    price,
+                    gallery:
+                        gallery.length === 1 // if only one variant image
+                            ? [
+                                  gallery[0], // add first variant pic
+                                  ...product.gallery.slice(1), // but keep showing the rest
+                              ]
+                            : [...gallery], // otherwise replace by variant image
+                    specialPrice,
+                    stock,
+                })
             }
         },
         [product && product.sku, optionsAndVariants.key]
