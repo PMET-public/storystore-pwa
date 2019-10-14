@@ -1,6 +1,6 @@
-#import "./_prices.graphql"
-
 mutation AddConfigurableProducstToCart($cartId: String!, $quantity: Float!, $parentSku: String!, $sku: String!) {
+    cartId @client @export(as: "cartId")
+
     addToCart: addConfigurableProductsToCart(
         input: {
             cart_id: $cartId
@@ -8,8 +8,8 @@ mutation AddConfigurableProducstToCart($cartId: String!, $quantity: Float!, $par
         }
     ) {
         cart {
-            ...Prices
-
+            id @client
+            totalQuantity @client
             items {
                 id
                 quantity

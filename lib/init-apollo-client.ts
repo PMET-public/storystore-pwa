@@ -4,18 +4,16 @@ import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
-import { defaults, typeDefs, resolvers } from './apollo-link-state'
-
-const isBrowser = typeof window !== 'undefined'
+import { defaults, typeDefs, resolvers } from './apollo-local-state'
 
 let apolloClient: any
 
 // Polyfill fetch() on the server (used by apollo-client)
-if (!isBrowser) {
+if (!process.browser) {
     ;(global as any).fetch = fetch
 }
 
-export const graphQlUri = isBrowser ? '/graphql' : process.env.MAGENTO_GRAPHQL_URL || ''
+export const graphQlUri = process.browser ? '/graphql' : process.env.MAGENTO_GRAPHQL_URL || ''
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
@@ -38,16 +36,18 @@ function create(initialState: any) {
 
     const cache = new InMemoryCache().restore(initialState || {})
 
-    const client = new ApolloClient({
-        cache,
-        connectToDevTools: isBrowser,
-        link,
-        resolvers,
-        ssrMode: !isBrowser,
-        typeDefs,
+    cache.writeData({
+        data: { ...defaults },
     })
 
-    cache.writeData({ data: { ...defaults } })
+    const client = new ApolloClient({
+        cache,
+        connectToDevTools: process.browser,
+        link,
+        resolvers,
+        ssrMode: !process.browser,
+        typeDefs,
+    })
 
     return client
 }
@@ -55,7 +55,7 @@ function create(initialState: any) {
 export default function initApollo(initialState?: any) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
-    if (!isBrowser) return create(initialState)
+    if (!process.browser) return create(initialState)
 
     // Reuse client on the client-side
     if (!apolloClient) {

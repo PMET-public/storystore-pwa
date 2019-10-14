@@ -1,55 +1,85 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
+import { useProduct } from './useProduct'
+import { useRouter } from 'next/router'
 import { getProductGallery } from '../../lib/getProductGallery'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
-import useProduct from '../../api/useProduct'
-import useCart from '../../api/useCart'
 
-type ProductProps = {
-    id: number
+export type ProductProps = {
+    // TO-DO: Pending
 }
 
-export const Product: FunctionComponent<ProductProps> = ({ id }) => {
-    const app = useAppContext()
-    const cart = useCart({ cartId: app.state.cartId })
-    const { query, state, actions } = useProduct({ productId: id })
+type SelectedOptions = {
+    [code: string]: number
+}
 
-    const { data } = query
+export const Product: FunctionComponent<ProductProps> = ({}) => {
+    const { loading, error, addingToCart, data, api } = useProduct({ sku: 'WH05' })
 
-    if (query.loading) {
+    const router = useRouter()
+
+    const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
+
+    const handleSelectOption = useCallback(
+        (selection: { code: string; value: number }) => {
+            const { code, value } = selection
+            const newSelections = { ...selectedOptions, [code]: value }
+            setSelectedOptions(newSelections)
+            api.selectVariant(newSelections)
+        },
+        [JSON.stringify(selectedOptions)]
+    )
+
+    if (loading) {
         return <ViewLoader />
     }
 
-    if (query.error) {
-        console.error(query.error.message)
+    if (error) {
+        console.error(error.message)
         return <Error statusCode={500} />
     }
 
-    const [product] = (data.products && data.products.items) || []
+    if (!data || !data.product) {
+        return <Error statusCode={404} />
+    }
+    const { storeConfig, hasCart, product } = data
 
-    const { store } = data
+    const {
+        categories,
+        description,
+        gallery,
+        metaDescription,
+        metaKeywords,
+        metaTitle,
+        options,
+        price,
+        shortDescription,
+        sku,
+        variantSku,
+        specialPrice,
+        stock,
+        title,
+        type,
+    } = product
+
+    const isAddingToCartReady = options && Object.keys(selectedOptions).length === options.length
 
     return product ? (
         <React.Fragment>
-            <DocumentMetadata
-                title={[store.titlePrefix, product.metaTitle || product.title, store.titleSuffix]}
-                description={product.metaDescription}
-                keywords={product.metaKeywords}
-            />
+            <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
             <ProductTemplate
                 title={{
-                    text: product.title,
+                    text: title,
                 }}
                 sku={{
-                    text: `SKU. ${product.sku}`,
+                    text: `SKU. ${sku}`,
                 }}
                 categories={
-                    product.categories && {
-                        items: product.categories
+                    categories && {
+                        items: categories
                             .slice(0, 4) // limit to 3
                             .filter((x: any) => !!x.href)
                             .map(({ id, text, href }: any) => ({
@@ -61,64 +91,70 @@ export const Product: FunctionComponent<ProductProps> = ({ id }) => {
                             })),
                     }
                 }
-                gallery={getProductGallery(state.product.gallery, store.baseMediaUrl + 'catalog/product')}
+                gallery={getProductGallery(gallery, storeConfig.baseMediaUrl + 'catalog/product')}
                 price={{
-                    regular: state.product.price.regular.amount.value,
-                    special: state.product.specialPrice,
-                    currency: state.product.price.regular.amount.currency,
+                    regular: price.regular.amount.value,
+                    special: specialPrice,
+                    currency: price.regular.amount.currency,
                 }}
                 swatches={
-                    state.type === 'configurable'
-                        ? state.options.items
-                              .map(({ id, label, code, type, items }: any) => {
-                                  const selected = state.options.selected && state.options.selected[code]
+                    options &&
+                    options
+                        .map(({ id, type, label, code, items }: any) => {
+                            const selected = items.find((x: any) => {
+                                return code === x.code, x.value === selectedOptions[code]
+                            })
 
-                                  return {
-                                      _id: id,
-                                      type,
-                                      title: {
-                                          text: selected ? `${label}: ${selected.label}` : label,
-                                      },
-                                      props: {
-                                          items: items.map(({ id, label, value, image }: any) => ({
-                                              _id: id,
-                                              text: label,
-                                              image: image && {
-                                                  alt: image.label,
-                                                  src: image.url,
-                                              },
-                                              active: selected && value === selected.value,
-                                              onClick: () => actions.selectOption(code, label, value),
-                                          })),
-                                      },
-                                  }
-                              })
-                              .sort((a: any, b: any) => b.position - a.position)
-                        : undefined
+                            return {
+                                _id: id,
+                                type,
+                                title: {
+                                    text: selected ? `${label}: ${selected.label}` : label,
+                                },
+                                props: {
+                                    items: items.map(({ id, label, value, image }: any) => ({
+                                        _id: id,
+                                        text: label,
+                                        image: image && {
+                                            alt: image.label,
+                                            src: image.url,
+                                        },
+                                        active: selectedOptions[code] === value,
+                                        onClick: () => handleSelectOption({ code, value }),
+                                    })),
+                                },
+                            }
+                        })
+                        .sort((a: any, b: any) => b.position - a.position)
                 }
                 buttons={[
                     {
                         as: 'button',
-                        text: state.product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                        disabled: state.isAddToCartValid === false || state.product.stock !== 'IN_STOCK',
-                        loader: cart.state.isAdding ? { label: 'Loading' } : undefined,
-                        onClick: () => {
-                            if (state.type === 'configurable' && state.variants.selected) {
-                                cart.actions.addConfigurableProductToCart(product.sku, state.variants.selected)
-                            } else {
-                                cart.actions.addSimpleProductToCart(product.sku)
+                        text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
+                        disabled: !hasCart || !isAddingToCartReady || stock === 'OUT_OF_STOCK',
+                        loader: addingToCart ? { label: 'Loading' } : undefined,
+                        onClick: async () => {
+                            try {
+                                if (type === 'configurable') {
+                                    await api.addConfigurableProductToCart({ sku: sku, variantSku, quantity: 1 })
+                                    router.push('/cart')
+                                } else {
+                                    await api.addSimpleProductToCart({ sku: sku, quantity: 1 })
+                                    router.push('/cart')
+                                }
+                            } catch (error) {
+                                console.error(error)
                             }
                         },
                     },
                 ]}
-                shortDescription={product.shortDescription && product.shortDescription.html}
+                shortDescription={shortDescription && shortDescription.html}
                 description={
-                    product.description && {
-                        html: product.description.html,
+                    description && {
+                        html: description.html,
                     }
                 }
             />
-            }
         </React.Fragment>
     ) : null
 }

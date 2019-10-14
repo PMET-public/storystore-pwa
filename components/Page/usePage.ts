@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 
-import PAGE_QUERY from './queries/page.graphql'
+import PAGE_QUERY from './graphql/page.graphql'
 
-export const usePage = (options: { id: number }) => {
-    const { id } = options
+export const usePage = (props: { id: number }) => {
+    const { id } = props
 
     const query = useQuery(PAGE_QUERY, {
         variables: { id },
@@ -12,6 +12,6 @@ export const usePage = (options: { id: number }) => {
     })
 
     return {
-        query,
+        ...query,
     }
 }

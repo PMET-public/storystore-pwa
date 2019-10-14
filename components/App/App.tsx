@@ -1,8 +1,5 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
-import useApp from '../../api/useApp'
-import useCart from '../../api/useCart'
+import React, { FunctionComponent } from 'react'
+import { useApp } from './useApp'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
@@ -10,52 +7,35 @@ import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
-export const App: FunctionComponent = ({ children }) => {
-    const app = useAppContext()
-    const cart = useCart({ cartId: app.state.cartId })
-    const { query } = useApp({ categoryId: 2 })
+type AppProps = {
+    categoryId: number
+}
 
-    /**
-     * No Cart No Problem
-     * Let's create one
-     */
-    useEffect(() => {
-        if (!app.state.cartId)
-            cart.actions.createCart().then(cartid => {
-                app.actions.setCartId(cartid)
-            })
-    }, [app.state.cartId])
+export const App: FunctionComponent<AppProps> = ({ categoryId, children }) => {
+    const { loading, error, data, api } = useApp({ categoryId })
 
-    /**
-     * Let's get the initial Cart Count
-     */
-    useEffect(() => {
-        app.actions.setCartCount(cart.state.count)
-    }, [cart.state.count])
-
-    const { route, query: urlQuery } = useRouter()
-
-    const isUrlActive = useCallback(
-        (href: string) => {
-            return href === (urlQuery.url || route)
-        },
-        [urlQuery.url, route]
-    )
-
-    if (query.loading) {
+    if (loading) {
         return <ViewLoader />
     }
 
-    if (query.error) {
-        console.error(query.error.message)
+    if (error) {
+        console.error(error.message)
         return <Error statusCode={500} />
     }
 
-    const { store, categories, meta } = query.data
+    const { store, categories, cart } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata {...meta} />
+            <DocumentMetadata
+                defaults={{
+                    title: store.metaTitle,
+                    titlePrefix: store.metaTitlePrefix,
+                    titleSuffix: store.metaTitleSuffix,
+                    description: store.metaDescription,
+                    keywords: store.metaKeywords,
+                }}
+            />
             <AppTemplate
                 logo={{
                     as: Link,
@@ -64,42 +44,45 @@ export const App: FunctionComponent = ({ children }) => {
                     title: store.logoAlt,
                 }}
                 home={{
-                    active: isUrlActive('/'),
+                    active: api.isUrlActive('/'),
                     as: Link,
                     urlResolver: true,
                     href: '/',
                     text: 'Home',
                 }}
                 menu={categories.children.map(({ text, href }: any) => ({
-                    active: isUrlActive('/' + href),
+                    active: api.isUrlActive('/' + href),
                     as: Link,
                     urlResolver: true,
                     href: '/' + href,
                     text,
                 }))}
                 myAccount={{
-                    // active: isUrlActive('/account'),
+                    // active: api.isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
                     text: 'My Account',
                 }}
                 favorites={{
-                    // active: isUrlActive('/account'),
+                    // active: api.isUrlActive('/account'),
                     // as: Link,
                     // href: '/account',
                     text: 'Likes',
                 }}
                 search={{
-                    active: isUrlActive('/search'),
+                    active: api.isUrlActive('/search'),
                     as: Link,
                     href: '/search',
                     text: 'Search',
                 }}
                 cart={{
-                    active: isUrlActive('/cart'),
+                    active: api.isUrlActive('/cart'),
                     as: Link,
                     href: '/cart',
                     text: 'Bag',
+                    icon: {
+                        count: cart ? cart.totalQuantity : 0,
+                    },
                 }}
                 footer={{
                     copyright: store.copyright,

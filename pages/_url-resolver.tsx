@@ -14,8 +14,8 @@ import Product from '../components/Product'
 const QUERY = gql`
     query urlResolver($url: String!) {
         urlResolver(url: $url) {
-            content_id: id # Apollo Client Cache uses id to index its cache. Id is not unique across multiple types
             id: canonical_url # <- This is
+            content_id: id # Apollo Client Cache uses id to index its cache. Id is not unique across multiple types
             type
         }
     }
@@ -29,7 +29,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
 
     const { loading, error, data } = useQuery(QUERY, {
         variables: { url },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
     })
 
     if (loading) {
@@ -53,7 +53,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
         case 'CATEGORY':
             return <Category id={content_id} />
         case 'PRODUCT':
-            return <Product id={content_id} />
+            return <Product />
         default:
             return <Error statusCode={500} />
     }

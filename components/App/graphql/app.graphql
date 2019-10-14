@@ -1,0 +1,34 @@
+query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
+    isOnline @client
+
+    store: storeConfig {
+        id
+        metaTitle: default_title
+        metaTitlePrefix: title_prefix
+        metaTitleSuffix: title_suffix
+        metaDescription: default_description
+        metaKeywords: default_keywords
+        logoAlt: logo_alt
+        homePath: cms_home_page
+        copyright
+    }
+
+    categories: category(id: $categoryId) {
+        id
+        children {
+            text: name
+            href: url_path
+        }
+    }
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        id @client
+        totalQuantity @client
+        items {
+            id
+            quantity
+        }
+    }
+}

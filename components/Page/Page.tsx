@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react'
-import usePage from '../../api/usePage'
+import { usePage } from './usePage'
 
+import DocumentMetadata from '../../components/DocumentMetadata'
 import Error from 'next/error'
-import DocumentMetadata from '../DocumentMetadata'
 import PageTemplate from 'luma-ui/dist/templates/Page'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
@@ -11,30 +11,31 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { query } = usePage({ id })
+    const { loading, error, data } = usePage({ id })
 
-    if (query.loading) {
+    if (loading) {
         return <ViewLoader />
     }
 
-    if (query.error) {
-        console.error(query.error.message)
+    if (error) {
+        console.error(error.message)
         return <Error statusCode={500} />
     }
 
-    if (!query.data.page) {
+    if (!data.page) {
         return <Error statusCode={404} />
     }
 
-    const { page, meta, store } = query.data
+    const { page } = data
 
     return (
         <React.Fragment>
             <DocumentMetadata
-                title={[store.titlePrefix, meta.title || page.title, store.titleSuffix]}
-                description={meta.description}
-                keywords={meta.keywords}
+                title={page.metaTitle || page.title}
+                description={page.metaDescription}
+                keywords={page.metaKeywords}
             />
+
             <PageTemplate
                 pageBuilder={{
                     html: page.content,
