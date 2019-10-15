@@ -107,14 +107,14 @@ export const useProduct = (props: { sku: string }) => {
      */
 
     const handleSelectVariant = useCallback(
-        (options: { [code: string]: number }) => {
+        (options: { [code: string]: string }) => {
             if (!product || !optionsAndVariants.variants) return
 
             const optionsList = Object.keys(options)
 
             const variant = optionsAndVariants.variants.find(v => {
                 return optionsList.reduce((accum: boolean, code) => {
-                    return v[code] === options[code] && accum
+                    return v[code] == options[code] && accum
                 }, true)
             })
 
@@ -161,6 +161,7 @@ export const useProduct = (props: { sku: string }) => {
         {
             update(cache, { data: { addToCart } }) {
                 const { cart } = addToCart
+
                 cache.writeData({
                     data: { cart },
                 })
@@ -171,6 +172,7 @@ export const useProduct = (props: { sku: string }) => {
     const handleAddConfigurableProductToCart = useCallback(
         async (variables: { quantity: number; sku: string; variantSku: string }) => {
             const { sku, variantSku, quantity } = variables
+
             const data = await addConfigurableProductsToCart({
                 variables: {
                     cartId: '', // @client
@@ -179,7 +181,7 @@ export const useProduct = (props: { sku: string }) => {
                     quantity,
                 },
             })
-            return data
+            console.log({ data })
         },
         []
     )
