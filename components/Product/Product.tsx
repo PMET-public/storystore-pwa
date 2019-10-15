@@ -17,7 +17,7 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({}) => {
-    const { loading, error, addingToCart, data, api } = useProduct({ sku: 'WH05' })
+    const { loading, error, addingToCart, data, api } = useProduct({ sku: '24-WB03' })
 
     const router = useRouter()
 

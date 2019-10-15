@@ -2,25 +2,36 @@ fragment Cart on Cart {
     id @client
     totalQuantity @client
 
-    ...Prices
-
     items {
-        ... on SimpleCartItem {
+        id
+        quantity
+        product {
             id
-            quantity
-            ...Product
+            sku
+            name
+            thumbnail {
+                label
+                url
+            }
+            price {
+                regular: regularPrice {
+                    amount {
+                        currency
+                        value
+                    }
+                }
+            }
         }
 
         ... on ConfigurableCartItem {
-            id
-            quantity
-            ...Product
-            ...ConfigurableOptions
+            options: configurable_options {
+                id
+                label: option_label
+                value: value_label
+            }
         }
     }
-}
 
-fragment Prices on Cart {
     prices {
         subTotal: subtotal_excluding_tax {
             currency
@@ -41,33 +52,5 @@ fragment Prices on Cart {
             currency
             value
         }
-    }
-}
-
-fragment Product on CartItemInterface {
-    product {
-        id
-        sku
-        name
-        thumbnail {
-            label
-            url
-        }
-        price {
-            regular: regularPrice {
-                amount {
-                    currency
-                    value
-                }
-            }
-        }
-    }
-}
-
-fragment ConfigurableOptions on ConfigurableCartItem {
-    options: configurable_options {
-        id
-        label: option_label
-        value: value_label
     }
 }
