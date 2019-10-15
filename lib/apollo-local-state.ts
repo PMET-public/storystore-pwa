@@ -14,7 +14,7 @@ export const typeDefs = gql`
 
     extend type Cart {
         id: String!
-        totalQuantity: Number!
+        totalQuantity: Int!
     }
 `
 
