@@ -25,8 +25,17 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
 
     const handleOnChange = useCallback(
         (values: { options: { [key: string]: string } }) => {
-            setSelectedOptions(values.options)
-            api.selectVariant(values.options)
+            const options = Object.entries(values.options).reduce((accum, option) => {
+                return option[1]
+                    ? {
+                          ...accum,
+                          [option[0]]: option[1],
+                      }
+                    : { ...accum }
+            }, {})
+            console.log(options)
+            setSelectedOptions(options)
+            api.selectVariant(options)
         },
         [api.selectVariant]
     )
@@ -114,7 +123,7 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
                     options
                         .map(({ id, type, label, required = true, code, items }: any) => {
                             const selected = items.find((x: any) => {
-                                return code === x.code, x.value === selectedOptions[code]
+                                return code === x.code, x.value.toString() === selectedOptions[code]
                             })
 
                             return {
