@@ -1,5 +1,4 @@
 fragment Cart on Cart {
-    id @client
     totalQuantity @client
 
     items {

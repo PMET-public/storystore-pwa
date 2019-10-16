@@ -1,8 +1,9 @@
+import { getFromLocalStorage } from './localStorage'
 import { HttpLink } from 'apollo-link-http'
 import fetch from 'node-fetch'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './apollo-local-state'
 
@@ -34,7 +35,21 @@ function create(initialState: any) {
         httpLink,
     ])
 
-    const cache = new InMemoryCache().restore(initialState || {})
+    const cache = new InMemoryCache({
+        // https://github.com/apollographql/react-apollo/issues/2387
+        dataIdFromObject: (object: any) => {
+            switch (object.__typename) {
+                case 'Cart':
+                    console.log(object)
+                    return (process.browser && getFromLocalStorage('cartId')) || ''
+                case 'SelectedConfigurableOption':
+                    // Fixes cache
+                    return object.id ? `${object.id}:${object.value}` : defaultDataIdFromObject(object)
+                default:
+                    return defaultDataIdFromObject(object)
+            }
+        },
+    }).restore(initialState || {})
 
     cache.writeData({
         data: { ...defaults },

@@ -13,7 +13,6 @@ export const typeDefs = gql`
     }
 
     extend type Cart {
-        id: String!
         totalQuantity: Int!
     }
 `
@@ -49,9 +48,6 @@ export const resolvers: Resolvers = {
         },
     },
     Cart: {
-        id() {
-            return (process.browser && getFromLocalStorage('cartId')) || ''
-        },
         totalQuantity({ items }) {
             // ☝️ TO-DO: Remove once total_quantity is released
             return items ? getTotalCartQuantity(items) : 0
