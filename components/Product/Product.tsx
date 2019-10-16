@@ -33,7 +33,7 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
                       }
                     : { ...accum }
             }, {})
-            console.log(options)
+
             setSelectedOptions(options)
             api.selectVariant(options)
         },

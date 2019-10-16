@@ -40,7 +40,6 @@ function create(initialState: any) {
         dataIdFromObject: (object: any) => {
             switch (object.__typename) {
                 case 'Cart':
-                    console.log(object)
                     return (process.browser && getFromLocalStorage('cartId')) || ''
                 case 'SelectedConfigurableOption':
                     // Fixes cache

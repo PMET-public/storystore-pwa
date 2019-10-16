@@ -191,7 +191,6 @@ export const useProduct = (props: { sku: string }) => {
                     quantity,
                 },
             })
-            console.log({ data })
         },
         []
     )
