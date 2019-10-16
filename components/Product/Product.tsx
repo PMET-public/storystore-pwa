@@ -41,12 +41,13 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
     )
 
     const handleAddToCart = useCallback(async () => {
+        const { sku, variantSku } = data.product
         try {
             if (type === 'configurable') {
-                await api.addConfigurableProductToCart({ sku: sku, variantSku, quantity: 1 })
+                await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
                 router.push('/cart')
             } else {
-                await api.addSimpleProductToCart({ sku: sku, quantity: 1 })
+                await api.addSimpleProductToCart({ sku, quantity: 1 })
                 router.push('/cart')
             }
         } catch (error) {
@@ -79,7 +80,6 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
         price,
         shortDescription,
         sku,
-        variantSku,
         specialPrice,
         stock,
         title,

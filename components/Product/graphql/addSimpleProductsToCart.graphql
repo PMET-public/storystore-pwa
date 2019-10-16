@@ -1,13 +1,15 @@
-#import "../../Cart/graphql/_fragments.graphql"
-
-mutation AddToCart($cartId: String!, $quantity: Float!, $sku: String!) {
+mutation AddSimpleProducstToCart($cartId: String!, $quantity: Float!, $sku: String!) {
     cartId @client @export(as: "cartId")
 
     addToCart: addSimpleProductsToCart(
         input: { cart_id: $cartId, cart_items: [{ data: { quantity: $quantity, sku: $sku } }] }
     ) {
         cart {
-            ...Cart
+            totalQuantity @client
+            items {
+                id
+                quantity
+            }
         }
     }
 }

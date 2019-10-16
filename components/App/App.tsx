@@ -23,6 +23,10 @@ export const App: FunctionComponent<AppProps> = ({ categoryId, children }) => {
         return <Error statusCode={500} />
     }
 
+    if (!data) {
+        return <Error statusCode={500} />
+    }
+
     const { store, categories, cart } = data
 
     return (

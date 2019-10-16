@@ -1,5 +1,3 @@
-#import "../../Cart/graphql/_fragments.graphql"
-
 query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
@@ -26,6 +24,10 @@ query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
     }
 
     cart(cart_id: $cartId) @include(if: $hasCart) {
-        ...Cart
+        totalQuantity @client
+        items {
+            id
+            quantity
+        }
     }
 }
