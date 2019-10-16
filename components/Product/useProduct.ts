@@ -183,7 +183,7 @@ export const useProduct = (props: { sku: string }) => {
         async (variables: { quantity: number; sku: string; variantSku: string }) => {
             const { sku, variantSku, quantity } = variables
 
-            const data = await addConfigurableProductsToCart({
+            const { data } = await addConfigurableProductsToCart({
                 variables: {
                     cartId: '', // @client
                     parentSku: sku,
@@ -191,6 +191,7 @@ export const useProduct = (props: { sku: string }) => {
                     quantity,
                 },
             })
+            return data
         },
         []
     )
