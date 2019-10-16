@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { getDataFromTree } from '@apollo/react-ssr'
 import { AppProvider } from 'luma-ui/dist/AppProvider'
-import initApollo from '../lib/init-apollo-client'
+import initApollo from '../apollo/client'
 
 import AppShell from '../components/App'
 

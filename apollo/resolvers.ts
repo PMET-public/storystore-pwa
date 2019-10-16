@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
-import { getFromLocalStorage } from './localStorage'
-import { getTotalCartQuantity } from './getTotalCartQuantity'
+import { getFromLocalStorage } from '../lib/localStorage'
+import { getTotalCartQuantity } from '../lib/getTotalCartQuantity'
 
 /**
  * Extending the types of our server schema

@@ -1,11 +1,11 @@
-import { getFromLocalStorage } from './localStorage'
+import { getFromLocalStorage } from '../lib/localStorage'
 import { HttpLink } from 'apollo-link-http'
 import fetch from 'node-fetch'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
-import { defaults, typeDefs, resolvers } from './apollo-local-state'
+import { defaults, typeDefs, resolvers } from './resolvers'
 
 let apolloClient: any
 
