@@ -7,8 +7,8 @@ import { writeInLocalStorage } from '../../lib/localStorage'
 import APP_QUERY from './graphql/app.graphql'
 import CREATE_EMPTY_CART from './graphql/createEmptyCart.graphql'
 
-export const useApp = (props: { categoryId: number }) => {
-    const { categoryId } = props
+export const useApp = (props: { categoryId: number; footerId?: string }) => {
+    const { categoryId, footerId } = props
 
     const client = useApolloClient()
 
@@ -18,6 +18,8 @@ export const useApp = (props: { categoryId: number }) => {
             cartId: '', // @client
             hasCart: true, // @client
             categoryId,
+            footerId,
+            hasFooter: !!footerId,
         },
     })
 
@@ -62,6 +64,10 @@ export const useApp = (props: { categoryId: number }) => {
 
     return {
         ...query,
+        data: query.data && {
+            ...query.data,
+            footer: query.data.footer && query.data.footer.items[0],
+        },
         api: {
             isUrlActive: handleIsUrlActive,
         },

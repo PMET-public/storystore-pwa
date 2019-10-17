@@ -1,4 +1,10 @@
-query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
+query AppShellQuery(
+    $cartId: String!
+    $hasCart: Boolean!
+    $categoryId: Int!
+    $footerId: [String]
+    $hasFooter: Boolean!
+) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
     isOnline @client
@@ -28,6 +34,13 @@ query AppShellQuery($cartId: String!, $hasCart: Boolean!, $categoryId: Int!) {
         items {
             id
             quantity
+        }
+    }
+
+    footer: cmsBlocks(identifiers: $footerId) @include(if: $hasFooter) {
+        items {
+            id: identifier
+            html: content
         }
     }
 }

@@ -9,10 +9,11 @@ import Error from 'next/error'
 
 type AppProps = {
     categoryId: number
+    footerId?: string
 }
 
-export const App: FunctionComponent<AppProps> = ({ categoryId, children }) => {
-    const { loading, error, data, api } = useApp({ categoryId })
+export const App: FunctionComponent<AppProps> = ({ categoryId, footerId, children }) => {
+    const { loading, error, data, api } = useApp({ categoryId, footerId })
 
     if (loading) {
         return <ViewLoader />
@@ -27,7 +28,7 @@ export const App: FunctionComponent<AppProps> = ({ categoryId, children }) => {
         return <Error statusCode={500} />
     }
 
-    const { store, categories, cart } = data
+    const { store, categories, cart, footer } = data
 
     return (
         <React.Fragment>
@@ -88,25 +89,13 @@ export const App: FunctionComponent<AppProps> = ({ categoryId, children }) => {
                         count: cart ? cart.totalQuantity : 0,
                     },
                 }}
-                footer={{
-                    copyright: store.copyright,
-                    menu: [
-                        { text: 'About', as: Link, urlResolver: true, href: '/about-us' },
-                        { text: 'Customer Service', as: Link, urlResolver: true, href: '/customer-service' },
-                        {
-                            text: 'Privacy Policy',
-                            as: Link,
-                            urlResolver: true,
-                            href: '/privacy-policy-cookie-restriction-mode',
+                footer={
+                    footer && {
+                        pageBuilder: {
+                            html: footer.html,
                         },
-                    ],
-                    social: {
-                        facebook: { title: 'Facebook', as: 'a', href: 'https://facebook.com', target: 'blank' },
-                        twitter: { title: 'Twitter', as: 'a', href: 'https://twitter.com', target: 'blank' },
-                        pinterest: { title: 'Pinterest', as: 'a', href: 'https://pinterest.com', target: 'blank' },
-                        instragram: { title: 'Instagram', as: 'a', href: 'https://instagram.com', target: 'blank' },
-                    },
-                }}
+                    }
+                }
             >
                 {children}
             </AppTemplate>
