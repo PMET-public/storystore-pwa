@@ -27,17 +27,18 @@ type ProductVariant =
       }
     | undefined
 
-type OptionsAndVariants = {
-    options?: any[]
-    variants?: any[]
-    key?: number
-}
+type OptionsAndVariants =
+    | {
+          options: any[]
+          variants: any[]
+      }
+    | undefined
 
-export const useProduct = (props: { sku: string }) => {
-    const { sku } = props
+export const useProduct = (props: { urlKey: string }) => {
+    const { urlKey } = props
 
     const { data, ...restQuery } = useQuery(PRODUCT_QUERY, {
-        variables: { sku },
+        variables: { urlKey },
         fetchPolicy: 'cache-first',
         returnPartialData: true,
     })
@@ -52,7 +53,7 @@ export const useProduct = (props: { sku: string }) => {
      * Fix Options Data
      */
     const optionsAndVariants: OptionsAndVariants = useMemo(() => {
-        if (!product) return {}
+        if (!product) return
 
         const variants =
             product.variants &&
@@ -97,7 +98,7 @@ export const useProduct = (props: { sku: string }) => {
                     }
                 })
 
-        return { options, variants, key: Date.now() }
+        return { options, variants }
     }, [product && product.id])
 
     /**
@@ -105,7 +106,7 @@ export const useProduct = (props: { sku: string }) => {
      */
     const handleSelectVariant = useCallback(
         (options: { [code: string]: string }) => {
-            if (!product || !optionsAndVariants.variants) return
+            if (!product || !optionsAndVariants) return
 
             const optionsList = Object.keys(options)
 
@@ -133,7 +134,7 @@ export const useProduct = (props: { sku: string }) => {
                 })
             }
         },
-        [product && product.sku, optionsAndVariants.key]
+        [product && product.sku, JSON.stringify(optionsAndVariants)]
     )
 
     /**
@@ -200,12 +201,13 @@ export const useProduct = (props: { sku: string }) => {
         ...restQuery,
         data: {
             ...restData,
-            product: {
-                ...product,
-                ...productVariant,
-                options: optionsAndVariants.options,
-                variants: optionsAndVariants.variants,
-            },
+            product: product
+                ? {
+                      ...product,
+                      ...productVariant,
+                      ...optionsAndVariants,
+                  }
+                : undefined,
         },
         addingToCart: addingSimpleProductToCart || addingConfigurableProductsToCart,
         api: {

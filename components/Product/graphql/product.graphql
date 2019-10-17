@@ -1,7 +1,7 @@
-query ProductQuery($sku: String!) {
+query ProductQuery($urlKey: String!) {
     hasCart @client
 
-    products(filter: { sku: { eq: $sku } }, pageSize: 1) {
+    products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
             metaTitle: meta_title

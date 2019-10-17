@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useMemo } from 'react'
 import gql from 'graphql-tag'
 
 import { useRouter } from 'next/router'
@@ -32,6 +32,15 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
         fetchPolicy: 'cache-and-network',
     })
 
+    const urlKey = useMemo(
+        () =>
+            url
+                .toString()
+                .split('/')
+                .pop() || '',
+        [url]
+    )
+
     if (loading) {
         return <ViewLoader />
     }
@@ -53,7 +62,7 @@ const Resolver: FunctionComponent<ResolverProps> = ({}) => {
         case 'CATEGORY':
             return <Category id={content_id} />
         case 'PRODUCT':
-            return <Product />
+            return <Product urlKey={urlKey} />
         default:
             return <Error statusCode={500} />
     }

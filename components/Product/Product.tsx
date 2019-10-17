@@ -9,15 +9,15 @@ import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
 
 export type ProductProps = {
-    // TO-DO: Pending
+    urlKey: string
 }
 
 type SelectedOptions = {
     [code: string]: string
 }
 
-export const Product: FunctionComponent<ProductProps> = ({}) => {
-    const { loading, error, addingToCart, data, api } = useProduct({ sku: 'WJ12' })
+export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
+    const { loading, error, addingToCart, data, api } = useProduct({ urlKey })
 
     const router = useRouter()
 
@@ -86,7 +86,7 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
         type,
     } = product
 
-    return product ? (
+    return sku ? (
         <React.Fragment>
             <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
             <ProductTemplate
@@ -130,9 +130,7 @@ export const Product: FunctionComponent<ProductProps> = ({}) => {
                                 _id: id,
                                 type,
                                 required,
-                                label: {
-                                    text: selected ? `${label}: ${selected.label}` : label,
-                                },
+                                label: selected ? `${label}: ${selected.label}` : label,
                                 swatches: {
                                     name: `options.${code}`,
                                     items: items.map(({ id, label, value, image }: any) => ({
