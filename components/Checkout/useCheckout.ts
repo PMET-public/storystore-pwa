@@ -154,17 +154,30 @@ export const useCheckout = () => {
         }) => {
             const { address } = props
 
+            const {
+                city,
+                company,
+                countryCode,
+                firstName,
+                lastName,
+                zipCode,
+                region,
+                saveInAddressBook,
+                street,
+                phoneNumber,
+            } = address
+
             const billingAddress = {
-                city: address.city,
-                company: address.company,
-                country_code: address.countryCode,
-                firstname: address.firstName,
-                lastname: address.lastName,
-                postcode: address.zipCode,
-                region: address.region,
-                save_in_address_book: address.saveInAddressBook,
-                street: address.street,
-                telephone: address.phoneNumber,
+                city: city,
+                company: company,
+                country_code: countryCode,
+                firstname: firstName,
+                lastname: lastName,
+                postcode: zipCode,
+                region: region,
+                save_in_address_book: saveInAddressBook,
+                street: street,
+                telephone: phoneNumber,
             }
 
             return setBillingAddress({
@@ -197,13 +210,14 @@ export const useCheckout = () => {
     /**
      * TODO: Set Payment Method
      */
+
     const [setPaymentMethodAndOrder, { loading: settingPaymentMethodAndOrder }] = useMutation(
         SET_PAYMENT_METHOD_AND_ORDER_MUTATION,
         {
-            update(cache, { data: { setPaymentMethodAndPlaceOrder } }) {
-                const { order } = setPaymentMethodAndPlaceOrder
+            update(cache) {
+                // Reset Cart
                 cache.writeData({
-                    data: { order, cart: null },
+                    data: { cart: null },
                 })
             },
         }

@@ -72,36 +72,42 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      */
     const handleSetBillingAddress = useCallback(
         formData => {
-            const {
-                city,
-                company,
-                countryCode = 'US',
-                firstName,
-                lastName,
-                zipCode,
-                region,
-                saveInAddressBook = false,
-                street1,
-                street2,
-                phoneNumber,
-            } = formData
+            const { useShippingAddress } = formData
 
-            api.setBillingAddress({
-                address: {
-                    city,
-                    company,
-                    countryCode,
-                    firstName,
-                    lastName,
-                    zipCode,
-                    region,
-                    saveInAddressBook,
-                    street: [street1, street2],
-                    phoneNumber,
-                },
-            })
+            const { shippingAddresses = [] } = data.cart
+            const [shippingAddress] = shippingAddresses
+
+            const address = useShippingAddress
+                ? // Use Shipping Address Data Saved in the Cart
+                  {
+                      city: shippingAddress.city,
+                      company: shippingAddress.company,
+                      countryCode: shippingAddress.country.code,
+                      firstName: shippingAddress.firstName,
+                      lastName: shippingAddress.lastName,
+                      phoneNumber: shippingAddress.phoneNumber,
+                      region: shippingAddress.region.code,
+                      saveInAddressBook: false,
+                      street: shippingAddress.street,
+                      zipCode: shippingAddress.zipCode,
+                  }
+                : // Data from From
+                  {
+                      city: formData.city,
+                      company: formData.company,
+                      countryCode: formData.country,
+                      firstName: formData.firstName,
+                      lastName: formData.lastName,
+                      phoneNumber: formData.phoneNumber,
+                      region: formData.region,
+                      saveInAddressBook: false,
+                      street: [formData.street1, formData.street2],
+                      zipCode: formData.zipCode,
+                  }
+
+            api.setBillingAddress({ address })
         },
-        [api.setShippingAddress]
+        [api.setShippingAddress, data.cart && JSON.stringify(data.cart.shippingAddresses)]
     )
 
     /**
@@ -123,14 +129,25 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     const handleSetPaymentMethodAndOrder = useCallback(async () => {
         if (!braintreeInstance.current) return
         const { nonce } = await braintreeInstance.current.requestPaymentMethod()
-        api.setPaymentMethodAndOrder({ nonce })
+        const { data, errors } = await api.setPaymentMethodAndOrder({ nonce })
+
+        if (errors) {
+            console.error(errors)
+            return
+        }
+
+        const {
+            setPaymentMethodAndPlaceOrder: { order },
+        } = data
+
+        console.log({ order })
     }, [api.setPaymentMethodAndOrder])
 
     if (loading) return <span>loading</span>
 
     if (error) return <span>{error.message}</span>
 
-    const { cart, order } = data
+    const { cart } = data
     const { email, shippingAddresses, billingAddress, braintreeToken } = cart
     const [shippingAddress] = shippingAddresses
 
@@ -184,6 +201,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     },
                     {
                         field: 'text',
+                        label: 'Company',
+                        name: 'company',
+                        defaultValue: shippingAddress.company,
+                        rules: {
+                            required: false,
+                        },
+                    },
+                    {
+                        field: 'text',
                         label: 'Address',
                         name: 'street1',
                         defaultValue: shippingAddress.street && shippingAddress.street[0],
@@ -193,7 +219,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     },
                     {
                         field: 'text',
-                        label: 'Address',
+                        label: 'Address 2',
                         name: 'street2',
                         defaultValue: shippingAddress.street && shippingAddress.street[1],
                         rules: {},
@@ -221,6 +247,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         label: 'Zip Code',
                         name: 'zipCode',
                         defaultValue: shippingAddress.zipCode,
+                        rules: {
+                            required: true,
+                        },
+                    },
+                    {
+                        field: 'text',
+                        label: 'Country',
+                        name: 'country',
+                        defaultValue: shippingAddress.country.code,
                         rules: {
                             required: true,
                         },
@@ -281,7 +316,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 fields={[
                     {
                         field: 'selection',
-                        name: 'sameAsShipping',
+                        name: 'useShippingAddress',
                         type: 'checkbox',
 
                         items: [
@@ -310,6 +345,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     },
                     {
                         field: 'text',
+                        label: 'Company',
+                        name: 'company',
+                        defaultValue: billingAddress.company,
+                        // rules: {
+                        //     required: false,
+                        // },
+                    },
+                    {
+                        field: 'text',
                         label: 'Address',
                         name: 'street1',
                         defaultValue: billingAddress.street && billingAddress.street[0],
@@ -319,7 +363,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     },
                     {
                         field: 'text',
-                        label: 'Address',
+                        label: 'Address 2',
                         name: 'street2',
                         defaultValue: billingAddress.street && billingAddress.street[1],
                         rules: {},
@@ -353,6 +397,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     },
                     {
                         field: 'text',
+                        label: 'Country',
+                        name: 'country',
+                        defaultValue: billingAddress.country.code,
+                        // rules: {
+                        //     required: true,
+                        // },
+                    },
+                    {
+                        field: 'text',
                         label: 'Phone Number',
                         name: 'phoneNumber',
                         defaultValue: billingAddress.phoneNumber,
@@ -373,7 +426,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     <Braintree
                         options={{
                             authorization: braintreeToken,
-                            // vaultManager: true,
+                            vaultManager: true,
                             preselectVaultedPaymentMethod: true,
 
                             card: {
@@ -394,15 +447,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 </React.Fragment>
             )}
             <hr />
-            <button disabled={settingPaymentMethodAndOrder || order} onClick={handleSetPaymentMethodAndOrder}>
+            <button disabled={settingPaymentMethodAndOrder} onClick={handleSetPaymentMethodAndOrder}>
                 {settingPaymentMethodAndOrder ? 'Placing Order' : 'Place Order'}
             </button>
-
-            {order && (
-                <div>
-                    <h1>Order: {order.id}</h1>
-                </div>
-            )}
         </React.Fragment>
     )
 }

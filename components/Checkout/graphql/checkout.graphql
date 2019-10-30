@@ -7,8 +7,4 @@ query CheckoutQuery($hasCart: Boolean!, $cartId: String!) {
     cart(cart_id: $cartId) @include(if: $hasCart) {
         ...CheckoutDetails
     }
-
-    order @client {
-        id: order_id
-    }
 }
