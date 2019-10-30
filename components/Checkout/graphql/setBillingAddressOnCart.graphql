@@ -1,0 +1,11 @@
+#import "./_fragments.graphql"
+
+mutation SetBillingAddressOnCart($cartId: String!, $billingAddress: BillingAddressInput!) {
+    cartId @client @export(as: "cartId")
+
+    setBillingAddressOnCart(input: { cart_id: $cartId, billing_address: $billingAddress }) {
+        cart {
+            ...CheckoutDetails
+        }
+    }
+}

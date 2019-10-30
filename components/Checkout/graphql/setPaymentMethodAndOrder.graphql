@@ -1,0 +1,19 @@
+# Braintree Paypal!
+
+mutation SetPaymentMethodOnCart($cartId: String!, $nonce: String!) {
+    cartId @client @export(as: "cartId")
+
+    setPaymentMethodAndPlaceOrder(
+        input: {
+            cart_id: $cartId
+            payment_method: {
+                code: "braintree"
+                braintree: { payment_method_nonce: $nonce, is_active_payment_token_enabler: false }
+            }
+        }
+    ) {
+        order {
+            id: order_id
+        }
+    }
+}

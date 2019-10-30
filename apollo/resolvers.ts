@@ -10,10 +10,12 @@ export const typeDefs = gql`
         hasCart: Boolean!
         cartId: String!
         isOnline: Boolean!
+        order: [Order]!
     }
 
     extend type Cart {
         totalQuantity: Int!
+        braintreeToken: String!
     }
 `
 

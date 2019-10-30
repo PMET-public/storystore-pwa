@@ -1,0 +1,10 @@
+#import "./_fragments.graphql"
+
+mutation CreateBraintreeClientToken($cartId: String!, $emailAddress: String!) {
+    cartId @client @export(as: "cartId")
+    setGuestEmailOnCart(input: { cart_id: $cartId, email: $emailAddress }) {
+        cart {
+            ...CheckoutDetails
+        }
+    }
+}

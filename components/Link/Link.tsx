@@ -6,6 +6,7 @@ import { Props } from 'luma-ui/dist/lib'
 export type LinkProps = Props<
     {
         urlResolver?: boolean
+        linkTagAs?: 'a' | 'button'
     } & _LinkProps
 >
 
@@ -21,6 +22,7 @@ export const Link: FunctionComponent<LinkProps> = ({
     passHref,
     prefetch,
     urlResolver,
+    linkTagAs = 'a',
     ...props
 }) => {
     const href = _href.toString()
@@ -37,7 +39,7 @@ export const Link: FunctionComponent<LinkProps> = ({
 
     return (
         <NextLink {...linkProps}>
-            <ATag href={_href as string} {...props} />
+            <ATag as={linkTagAs} href={_href as string} {...props} />
         </NextLink>
     )
 }

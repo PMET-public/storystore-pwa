@@ -39,6 +39,13 @@ app.prepare().then(() => {
     })
 
     /**
+     * Cart Page
+     */
+    server.get('/checkout', (req, res) => {
+        return app.render(req, res, '/checkout', req.query)
+    })
+
+    /**
      * Search Page
      */
     server.get('/search', (req, res) => {

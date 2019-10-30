@@ -4,6 +4,7 @@ import Error from 'next/error'
 import DocumentMetadata from '../DocumentMetadata'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
+import Link from '../Link'
 
 type CartProps = {
     pageId?: number
@@ -93,7 +94,14 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                         ],
 
                         buttons: [
-                            { text: 'Checkout', loader: updating || removing ? { label: 'updating ' } : undefined },
+                            {
+                                as: Link,
+                                linkTagAs: 'button',
+                                href: '/checkout',
+                                disabled: cart.items.length === 0,
+                                text: 'Checkout',
+                                loader: updating || removing ? { label: 'updating ' } : undefined,
+                            },
                         ],
                     }}
                 />
