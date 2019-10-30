@@ -1,0 +1,10 @@
+query GetAvailableRegions($id: String!) {
+    country: country(id: $id) {
+        id
+        regions: available_regions {
+            id
+            code
+            name
+        }
+    }
+}

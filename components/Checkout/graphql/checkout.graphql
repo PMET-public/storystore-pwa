@@ -4,6 +4,12 @@ query CheckoutQuery($hasCart: Boolean!, $cartId: String!) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
+    countries {
+        id
+        code: id
+        name: full_name_locale
+    }
+
     cart(cart_id: $cartId) @include(if: $hasCart) {
         ...CheckoutDetails
     }

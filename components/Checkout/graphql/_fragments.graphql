@@ -43,11 +43,9 @@ fragment Address on CartAddressInterface {
 
     country {
         code
-        label
     }
 
     region {
         code
-        label
     }
 }

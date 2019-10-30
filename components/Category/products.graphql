@@ -4,15 +4,15 @@ query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $current
             current: current_page
             total: total_pages
         }
-        filters {
-            name
-            key: request_var
-            items: filter_items {
-                count: items_count
-                label
-                value: value_string
-            }
-        }
+        # filters {
+        #     name
+        #     key: request_var
+        #     items: filter_items {
+        #         count: items_count
+        #         label
+        #         value: value_string
+        #     }
+        # }
         items @connection(key: "items") {
             id
             image {

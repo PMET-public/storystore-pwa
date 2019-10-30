@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useCallback, useRef, ChangeEvent } from 'react'
 import FormBuilder, { patterns } from 'luma-ui/dist/components/FormBuilder'
 import Braintree, { BraintreeDropin } from 'luma-ui/dist/components/Braintree'
 import { useCheckout } from './useCheckout'
@@ -14,9 +14,22 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         settingShippingAddress,
         settingShippingMethod,
         settingBillingAddress,
-        settingPaymentMethodAndOrder,
+        settingPaymentMethod,
+        placingOrder,
         api,
     } = useCheckout()
+
+    /**
+     * Get Available Regiouns per country selected
+     */
+    const handleSelectedCountry = useCallback(
+        (event: ChangeEvent<HTMLSelectElement>) => {
+            const { options } = event.currentTarget
+            const { value } = options[options.selectedIndex]
+            api.getAvailableRegions({ countryCode: value })
+        },
+        [api.getAvailableRegions]
+    )
 
     /**
      * Contact Information
@@ -38,7 +51,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
             const {
                 city,
                 company,
-                countryCode = 'US',
+                countryCode,
                 firstName,
                 lastName,
                 zipCode,
@@ -126,29 +139,25 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      */
     const braintreeInstance = useRef<BraintreeDropin>()
 
-    const handleSetPaymentMethodAndOrder = useCallback(async () => {
+    const handleSetPaymentMethod = useCallback(async () => {
         if (!braintreeInstance.current) return
         const { nonce } = await braintreeInstance.current.requestPaymentMethod()
-        const { data, errors } = await api.setPaymentMethodAndOrder({ nonce })
+        api.setPaymentMethod({ nonce })
+    }, [api.setPaymentMethod])
 
-        if (errors) {
-            console.error(errors)
-            return
-        }
-
-        const {
-            setPaymentMethodAndPlaceOrder: { order },
-        } = data
-
-        console.log({ order })
-    }, [api.setPaymentMethodAndOrder])
+    /**
+     * Place Order
+     */
+    const handlePlaceOrder = useCallback(async () => {
+        api.placeOrder()
+    }, [api.placeOrder])
 
     if (loading) return <span>loading</span>
 
     if (error) return <span>{error.message}</span>
 
-    const { cart } = data
-    const { email, shippingAddresses, billingAddress, braintreeToken } = cart
+    const { cart, countries, availableRegions } = data
+    const { email, shippingAddresses, braintreeToken } = cart
     const [shippingAddress] = shippingAddresses
 
     return (
@@ -234,28 +243,47 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                     },
                     {
-                        field: 'text',
-                        label: 'State',
-                        name: 'region',
-                        defaultValue: shippingAddress.region.label,
+                        field: 'select',
+                        label: 'Country',
+                        name: 'countryCode',
+                        onChange: handleSelectedCountry, // TODO: it broke
+                        defaultValue: shippingAddress.country.code,
                         rules: {
                             required: true,
                         },
+                        items: countries.map((country: any) => ({
+                            text: country.name,
+                            value: country.code,
+                        })),
                     },
+                    availableRegions && availableRegions.country.regions
+                        ? {
+                              field: 'select',
+                              label: 'State',
+                              name: 'region',
+                              defaultValue: shippingAddress.region.code, // TODO: Fix default value not setting on load
+                              rules: {
+                                  required: true,
+                              },
+                              items: availableRegions.country.regions.map((region: any) => ({
+                                  text: region.name,
+                                  code: region.code,
+                              })),
+                          }
+                        : {
+                              field: 'text',
+                              label: 'State',
+                              name: 'region',
+                              defaultValue: shippingAddress.region.code,
+                              rules: {
+                                  required: true,
+                              },
+                          },
                     {
                         field: 'text',
                         label: 'Zip Code',
                         name: 'zipCode',
                         defaultValue: shippingAddress.zipCode,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Country',
-                        name: 'country',
-                        defaultValue: shippingAddress.country.code,
                         rules: {
                             required: true,
                         },
@@ -329,7 +357,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'First Name',
                         name: 'firstName',
-                        defaultValue: billingAddress.firstName,
+                        // defaultValue: billingAddress.firstName,
                         // rules: {
                         //     required: true,
                         // },
@@ -338,7 +366,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Last Name',
                         name: 'lastName',
-                        defaultValue: billingAddress.lastName,
+                        // defaultValue: billingAddress.lastName,
                         // rules: {
                         //     required: true,
                         // },
@@ -347,7 +375,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Company',
                         name: 'company',
-                        defaultValue: billingAddress.company,
+                        // defaultValue: billingAddress.company,
                         // rules: {
                         //     required: false,
                         // },
@@ -356,7 +384,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Address',
                         name: 'street1',
-                        defaultValue: billingAddress.street && billingAddress.street[0],
+                        // defaultValue: billingAddress.street && billingAddress.street[0],
                         // rules: {
                         //     required: true,
                         // },
@@ -365,14 +393,14 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Address 2',
                         name: 'street2',
-                        defaultValue: billingAddress.street && billingAddress.street[1],
+                        // defaultValue: billingAddress.street && billingAddress.street[1],
                         rules: {},
                     },
                     {
                         field: 'text',
                         label: 'City',
                         name: 'city',
-                        defaultValue: billingAddress.city,
+                        // defaultValue: billingAddress.city,
                         // rules: {
                         //     required: true,
                         // },
@@ -381,7 +409,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'State',
                         name: 'region',
-                        defaultValue: billingAddress.region.label,
+                        // defaultValue: billingAddress.region.label,
                         // rules: {
                         //     required: true,
                         // },
@@ -390,7 +418,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Zip Code',
                         name: 'zipCode',
-                        defaultValue: billingAddress.zipCode,
+                        // defaultValue: billingAddress.zipCode,
                         // rules: {
                         //     required: true,
                         // },
@@ -399,7 +427,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Country',
                         name: 'country',
-                        defaultValue: billingAddress.country.code,
+                        // defaultValue: billingAddress.country.code,
                         // rules: {
                         //     required: true,
                         // },
@@ -408,7 +436,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'text',
                         label: 'Phone Number',
                         name: 'phoneNumber',
-                        defaultValue: billingAddress.phoneNumber,
+                        // defaultValue: billingAddress.phoneNumber,
                         // rules: {
                         //     required: true,
                         // },
@@ -447,8 +475,13 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 </React.Fragment>
             )}
             <hr />
-            <button disabled={settingPaymentMethodAndOrder} onClick={handleSetPaymentMethodAndOrder}>
-                {settingPaymentMethodAndOrder ? 'Placing Order' : 'Place Order'}
+            <button disabled={settingPaymentMethod} onClick={handleSetPaymentMethod}>
+                {settingPaymentMethod ? 'Loading' : 'Save'}
+            </button>
+
+            <hr />
+            <button disabled={placingOrder} onClick={handlePlaceOrder}>
+                {placingOrder ? 'Loading' : 'Place Order'}
             </button>
         </React.Fragment>
     )

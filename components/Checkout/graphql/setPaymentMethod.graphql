@@ -1,9 +1,11 @@
-# Braintree Paypal!
+#import "./_fragments.graphql"
+
+# Braintree!
 
 mutation SetPaymentMethodOnCart($cartId: String!, $nonce: String!) {
     cartId @client @export(as: "cartId")
 
-    setPaymentMethodAndPlaceOrder(
+    setPaymentMethodOnCart(
         input: {
             cart_id: $cartId
             payment_method: {
@@ -12,8 +14,8 @@ mutation SetPaymentMethodOnCart($cartId: String!, $nonce: String!) {
             }
         }
     ) {
-        order {
-            id: order_id
+        cart {
+            ...CheckoutDetails
         }
     }
 }

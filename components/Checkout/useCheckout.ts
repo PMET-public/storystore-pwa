@@ -1,13 +1,15 @@
 import { useCallback, useEffect } from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
+import GET_AVAILABLE_REGIONS_QUERY from './graphql/getAvailableRegions.graphql'
 import SET_GUEST_EMAIL_ADDRESS_MUTATION from './graphql/setGuestEmailOnCart.graphql'
 import SET_SHIPPING_ADDRESSES_MUTATION from './graphql/setShippingAddressesOnCart.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import SET_BILLING_ADDRESS_MUTATION from './graphql/setBillingAddressOnCart.graphql'
-import SET_PAYMENT_METHOD_AND_ORDER_MUTATION from './graphql/setPaymentMethodAndOrder.graphql'
+import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
+import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
 
 export const useCheckout = () => {
     /**
@@ -21,6 +23,34 @@ export const useCheckout = () => {
             cartId: '', // @client
         },
     })
+
+    /**
+     * Get Available Regions
+     */
+    const [getAvailableRegions, { loading: gettingAvailableRegions, data: availableRegions }] = useLazyQuery(
+        GET_AVAILABLE_REGIONS_QUERY,
+        {
+            fetchPolicy: 'cache-first',
+        }
+    )
+
+    const handleGetAvailableRegions = useCallback((props: { countryCode: string }) => {
+        const { countryCode } = props
+        return getAvailableRegions({
+            variables: {
+                id: countryCode,
+            },
+        })
+    }, [])
+
+    useEffect(() => {
+        if (!query.data.cart || !query.data.cart.shippingAddresses) return
+        const [address] = query.data.cart.shippingAddresses
+        handleGetAvailableRegions({ countryCode: address.country.code })
+    }, [
+        handleGetAvailableRegions,
+        query.data.cart && query.data.cart.shippingAddresses && query.data.cart.shippingAddresses[0].country.code,
+    ])
 
     /**
      * Set Guest Email Address
@@ -210,22 +240,18 @@ export const useCheckout = () => {
     /**
      * TODO: Set Payment Method
      */
+    const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION, {
+        update(cache, { data: { setPaymentMethodOnCart } }) {
+            const { cart } = setPaymentMethodOnCart
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
 
-    const [setPaymentMethodAndOrder, { loading: settingPaymentMethodAndOrder }] = useMutation(
-        SET_PAYMENT_METHOD_AND_ORDER_MUTATION,
-        {
-            update(cache) {
-                // Reset Cart
-                cache.writeData({
-                    data: { cart: null },
-                })
-            },
-        }
-    )
-
-    const handleSetPaymentMethodAndOrder = useCallback((props: { nonce: string }) => {
+    const handleSetPaymentMethod = useCallback((props: { nonce: string }) => {
         const { nonce } = props
-        return setPaymentMethodAndOrder({
+        return setPaymentMethod({
             variables: {
                 cartId: '', // @client
                 nonce,
@@ -233,19 +259,47 @@ export const useCheckout = () => {
         })
     }, [])
 
+    /**
+     * Place Order
+     */
+    const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION, {
+        update(cache) {
+            // Reset Cart
+            cache.writeData({
+                data: { cart: null },
+            })
+        },
+    })
+
+    const handlePlaceOrder = useCallback(() => {
+        return placeOrder({
+            variables: {
+                cartId: '', // @client
+            },
+        })
+    }, [])
+
     return {
         ...query,
+        data: {
+            ...query.data,
+            availableRegions,
+        },
         settingGuestEmailAddress,
+        gettingAvailableRegions,
         settingShippingAddress,
         settingShippingMethod,
         settingBillingAddress,
-        settingPaymentMethodAndOrder,
+        settingPaymentMethod,
+        placingOrder,
         api: {
             setGuestEmailAddress: handleSetGuestEmailAddress,
+            getAvailableRegions: handleGetAvailableRegions,
             setShippingAddress: handleSetShippingAddress,
             setShippingMethod: handleSetShippingMethod,
             setBillingAddress: handleSetBillingAddress,
-            setPaymentMethodAndOrder: handleSetPaymentMethodAndOrder,
+            setPaymentMethod: handleSetPaymentMethod,
+            placeOrder: handlePlaceOrder,
         },
     }
 }
