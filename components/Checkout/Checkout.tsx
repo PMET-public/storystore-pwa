@@ -149,7 +149,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      * Place Order
      */
     const handlePlaceOrder = useCallback(async () => {
-        api.placeOrder()
+        const res = api.placeOrder()
+        console.log(res)
     }, [api.placeOrder])
 
     if (loading) return <span>loading</span>
@@ -246,7 +247,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         field: 'select',
                         label: 'Country',
                         name: 'countryCode',
-                        onChange: handleSelectedCountry, // TODO: it broke
+                        onChange: handleSelectedCountry,
                         defaultValue: shippingAddress.country.code,
                         rules: {
                             required: true,
@@ -261,13 +262,13 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                               field: 'select',
                               label: 'State',
                               name: 'region',
-                              defaultValue: shippingAddress.region.code, // TODO: Fix default value not setting on load
+                              defaultValue: shippingAddress.region.code,
                               rules: {
                                   required: true,
                               },
                               items: availableRegions.country.regions.map((region: any) => ({
                                   text: region.name,
-                                  code: region.code,
+                                  value: region.code,
                               })),
                           }
                         : {
