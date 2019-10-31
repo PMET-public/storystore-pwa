@@ -1,0 +1,12 @@
+query AppCart($cartId: String = "", $hasCart: Boolean = true) {
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        totalQuantity @client
+        items {
+            id
+            quantity
+        }
+    }
+}

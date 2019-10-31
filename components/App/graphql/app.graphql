@@ -1,13 +1,6 @@
-query AppShellQuery(
-    $cartId: String!
-    $hasCart: Boolean!
-    $categoryId: Int!
-    $footerId: [String]
-    $hasFooter: Boolean!
-) {
-    hasCart @client @export(as: "hasCart")
-    cartId @client @export(as: "cartId")
+query AppShellQuery($categoryId: Int!, $footerId: [String] = "", $hasFooter: Boolean = false) {
     isOnline @client
+    hasCart @client
 
     store: storeConfig {
         id
@@ -26,14 +19,6 @@ query AppShellQuery(
         children {
             text: name
             href: url_path
-        }
-    }
-
-    cart(cart_id: $cartId) @include(if: $hasCart) {
-        totalQuantity @client
-        items {
-            id
-            quantity
         }
     }
 

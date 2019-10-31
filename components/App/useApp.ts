@@ -5,7 +5,8 @@ import { useRouter } from 'next/router'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
-import CREATE_EMPTY_CART from './graphql/createEmptyCart.graphql'
+import CART_QUERY from './graphql/cart.graphql'
+import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useApp = (props: { categoryId: number; footerId?: string }) => {
     const { categoryId, footerId } = props
@@ -14,9 +15,8 @@ export const useApp = (props: { categoryId: number; footerId?: string }) => {
 
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
         variables: {
-            cartId: '', // @client
-            hasCart: true, // @client
             categoryId,
             footerId,
             hasFooter: !!footerId,
@@ -33,7 +33,10 @@ export const useApp = (props: { categoryId: number; footerId?: string }) => {
     /**
      * No Cart no problem. Let's create one
      */
-    const [createEmptyCart] = useMutation(CREATE_EMPTY_CART, {
+
+    const cartQuery = useQuery(CART_QUERY)
+
+    const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
             writeInLocalStorage('cartId', cartId)
 
@@ -44,11 +47,12 @@ export const useApp = (props: { categoryId: number; footerId?: string }) => {
     })
 
     useEffect(() => {
-        if (query.data) {
-            const { hasCart } = query.data
-            if (!hasCart) createEmptyCart()
+        if (cartQuery.loading || creatingEmptyCart) return
+
+        if (cartQuery.error || (cartQuery.data && cartQuery.data.hasCart === false)) {
+            createEmptyCart().then(cartQuery.refetch)
         }
-    }, [query.data && query.data.cartId])
+    }, [cartQuery.error, cartQuery.data])
 
     /**
      * Handle Active URL Check
@@ -66,6 +70,7 @@ export const useApp = (props: { categoryId: number; footerId?: string }) => {
         ...query,
         data: query.data && {
             ...query.data,
+            ...cartQuery.data,
             footer: query.data.footer && query.data.footer.items[0],
         },
         api: {

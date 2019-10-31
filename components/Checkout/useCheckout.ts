@@ -36,6 +36,7 @@ export const useCheckout = () => {
 
     const handleGetAvailableRegions = useCallback((props: { countryCode: string }) => {
         const { countryCode } = props
+
         return getAvailableRegions({
             variables: {
                 id: countryCode,
@@ -46,7 +47,8 @@ export const useCheckout = () => {
     useEffect(() => {
         if (!query.data.cart || !query.data.cart.shippingAddresses) return
         const [address] = query.data.cart.shippingAddresses
-        handleGetAvailableRegions({ countryCode: address.country.code })
+        const { code } = address.country
+        if (code) handleGetAvailableRegions({ countryCode: code })
     }, [
         handleGetAvailableRegions,
         query.data.cart && query.data.cart.shippingAddresses && query.data.cart.shippingAddresses[0].country.code,
@@ -238,7 +240,7 @@ export const useCheckout = () => {
     }, [])
 
     /**
-     * TODO: Set Payment Method
+     * Set Payment Method
      */
     const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION, {
         update(cache, { data: { setPaymentMethodOnCart } }) {
@@ -266,7 +268,7 @@ export const useCheckout = () => {
         update(cache) {
             // Reset Cart
             cache.writeData({
-                data: { cart: null },
+                data: { hasCart: false },
             })
         },
     })
