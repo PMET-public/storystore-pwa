@@ -1,10 +1,10 @@
 #import "./_fragments.graphql"
 
-query CheckoutQuery($hasCart: Boolean = false, $cartId: String = "") {
-    hasCart @client @export(as: "hasCart")
+query CheckoutQuery($cartId: String = "") {
+    # hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
-    cart(cart_id: $cartId) @include(if: $hasCart) {
+    cart(cart_id: $cartId) @connection(key: "checkout") {
         ...CheckoutDetails
     }
 
