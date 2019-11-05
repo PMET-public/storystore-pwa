@@ -15,8 +15,6 @@ export const useCart = (props?: { pageId?: number }) => {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
         variables: {
-            hasCart: true, // @client
-            cartId: '', // @client
             hasPage: !!pageId,
             pageId,
         },
@@ -38,7 +36,6 @@ export const useCart = (props?: { pageId?: number }) => {
         const { productId, quantity } = props
         return updateCartItems({
             variables: {
-                cartId: '', // @client
                 items: [{ cart_item_id: productId, quantity }],
             },
         })
@@ -60,7 +57,6 @@ export const useCart = (props?: { pageId?: number }) => {
         const { productId } = props
         return removeCartItem({
             variables: {
-                cartId: '', // @client
                 itemId: productId,
             },
         })

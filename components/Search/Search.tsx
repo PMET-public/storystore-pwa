@@ -122,7 +122,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     searchBar: {
                         label: 'Search',
                         count: getProductCount(),
-                        loader: searchQuery.loading ? { label: 'loading' } : undefined,
+                        loading: searchQuery.loading,
                         value: search,
                         onUpdate: handleOnNewSearch,
                     },
@@ -151,7 +151,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         })),
                 }}
                 products={{
-                    loader: searchQuery.loading && products && { label: 'fetching products ' },
+                    loading: searchQuery.loading,
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urls }: any, index: number) => ({

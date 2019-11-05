@@ -152,7 +152,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     as: 'button',
                     text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
                     disabled: !hasCart || stock === 'OUT_OF_STOCK',
-                    loader: addingToCart ? { label: 'Loading' } : undefined,
+                    loading: addingToCart,
                 }}
                 shortDescription={shortDescription && shortDescription.html}
                 description={

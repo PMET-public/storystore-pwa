@@ -1,15 +1,12 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import GET_AVAILABLE_REGIONS_QUERY from './graphql/getAvailableRegions.graphql'
-import SET_GUEST_EMAIL_ADDRESS_MUTATION from './graphql/setGuestEmailOnCart.graphql'
-import SET_SHIPPING_ADDRESSES_MUTATION from './graphql/setShippingAddressesOnCart.graphql'
+import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
-import SET_BILLING_ADDRESS_MUTATION from './graphql/setBillingAddressOnCart.graphql'
-import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
-import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+import SET_PAYMENT_METHOD_AND_ORDER_MUTATION from './graphql/setPaymentMethodAndOrder.graphql'
 
 export const useCheckout = () => {
     /**
@@ -18,11 +15,31 @@ export const useCheckout = () => {
     const query = useQuery(CHECKOUT_QUERY, {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
-        variables: {
-            hasCart: true, // @client
-            cartId: '', // @client
-        },
     })
+
+    /**
+     * Sorted Countries
+     */
+    const sortedCountries = useMemo(() => {
+        return (
+            query.data.countries &&
+            query.data.countries
+                .filter((x: any) => !!x.name)
+                .sort(function compare(a: any, b: any) {
+                    // Use toUpperCase() to ignore character casing
+                    const genreA = a.name.toUpperCase()
+                    const genreB = b.name.toUpperCase()
+
+                    let comparison = 0
+                    if (genreA > genreB) {
+                        comparison = 1
+                    } else if (genreA < genreB) {
+                        comparison = -1
+                    }
+                    return comparison
+                })
+        )
+    }, [query.data && query.data.countries])
 
     /**
      * Get Available Regions
@@ -55,80 +72,60 @@ export const useCheckout = () => {
     ])
 
     /**
-     * Set Guest Email Address
+     * Set Contact Info
      */
-    const [setGuestEmailAddress, { loading: settingGuestEmailAddress }] = useMutation(
-        SET_GUEST_EMAIL_ADDRESS_MUTATION,
-        {
-            update(cache, { data: { setGuestEmailOnCart } }) {
-                const { cart } = setGuestEmailOnCart
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
+    const [setContactInfo, { loading: settingContactInfo }] = useMutation(SET_CONTACT_INFO_MUTATION, {
+        update(cache, { data: { email, address } }) {
+            const cart = { ...email.cart, ...address.cart }
 
-    const handleSetGuestEmailAddress = useCallback((props: { emailAddress: string }) => {
-        const { emailAddress } = props
-        return setGuestEmailAddress({
-            variables: {
-                cartId: '', // @client
-                emailAddress,
-            },
-        })
-    }, [])
-
-    /**
-     * Set Shipping Address
-     */
-    const [setShippingAddress, { loading: settingShippingAddress }] = useMutation(SET_SHIPPING_ADDRESSES_MUTATION, {
-        update(cache, { data: { setShippingAddressesOnCart } }) {
-            const { cart } = setShippingAddressesOnCart
             cache.writeData({
                 data: { cart },
             })
         },
     })
 
-    const handleSetShippingAddress = useCallback(
+    const handleSetContactInfo = useCallback(
         (props: {
-            address: {
-                city: string
-                company?: string
-                countryCode: string
-                firstName: string
-                lastName: string
-                zipCode?: string
-                region?: string
-                saveInAddressBook: boolean
-                street: string[]
-                phoneNumber: string
-            }
+            email: string
+            city: string
+            company?: string
+            country: string
+            firstName: string
+            lastName: string
+            postalCode?: string
+            region?: string
+            street: [string, string?]
+            phone: string
+            saveInAddressBook: boolean
         }) => {
-            const { address } = props
-
-            const shippingAddress = {
-                city: address.city,
-                company: address.company,
-                country_code: address.countryCode,
-                firstname: address.firstName,
-                lastname: address.lastName,
-                postcode: address.zipCode,
-                region: address.region,
-                save_in_address_book: address.saveInAddressBook,
-                street: address.street,
-                telephone: address.phoneNumber,
-            }
-
-            return setShippingAddress({
+            const {
+                email,
+                city,
+                company,
+                country,
+                firstName,
+                lastName,
+                postalCode,
+                region,
+                street,
+                phone,
+                saveInAddressBook,
+            } = props
+            return setContactInfo({
                 variables: {
-                    cartId: '', // @client
-                    shippingAddresses: [
-                        {
-                            address: shippingAddress,
-                        },
-                    ],
+                    email: email,
+                    address: {
+                        city: city,
+                        company: company,
+                        country_code: country,
+                        firstname: firstName,
+                        lastname: lastName,
+                        postcode: postalCode,
+                        region: region,
+                        save_in_address_book: saveInAddressBook,
+                        street: street,
+                        telephone: phone,
+                    },
                 },
             })
         },
@@ -151,78 +148,10 @@ export const useCheckout = () => {
         const { methodCode } = props
         return setShippingMethod({
             variables: {
-                cartId: '', // @client
                 shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
             },
         })
     }, [])
-
-    /**
-     * Set Billing Address
-     */
-    const [setBillingAddress, { loading: settingBillingAddress }] = useMutation(SET_BILLING_ADDRESS_MUTATION, {
-        update(cache, { data: { setBillingAddressOnCart } }) {
-            const { cart } = setBillingAddressOnCart
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
-
-    const handleSetBillingAddress = useCallback(
-        (props: {
-            address: {
-                city: string
-                company?: string
-                countryCode: string
-                firstName: string
-                lastName: string
-                zipCode?: string
-                region?: string
-                saveInAddressBook: boolean
-                street: string[]
-                phoneNumber: string
-            }
-        }) => {
-            const { address } = props
-
-            const {
-                city,
-                company,
-                countryCode,
-                firstName,
-                lastName,
-                zipCode,
-                region,
-                saveInAddressBook,
-                street,
-                phoneNumber,
-            } = address
-
-            const billingAddress = {
-                city: city,
-                company: company,
-                country_code: countryCode,
-                firstname: firstName,
-                lastname: lastName,
-                postcode: zipCode,
-                region: region,
-                save_in_address_book: saveInAddressBook,
-                street: street,
-                telephone: phoneNumber,
-            }
-
-            return setBillingAddress({
-                variables: {
-                    cartId: '', // @client
-                    billingAddress: {
-                        address: billingAddress,
-                    },
-                },
-            })
-        },
-        []
-    )
 
     /**
      * Create Braintree Token
@@ -242,41 +171,15 @@ export const useCheckout = () => {
     /**
      * Set Payment Method
      */
-    const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION, {
-        update(cache, { data: { setPaymentMethodOnCart } }) {
-            const { cart } = setPaymentMethodOnCart
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
+    const [setPaymentAndOrderMethod, { loading: settingPaymentAndOrderMethod }] = useMutation(
+        SET_PAYMENT_METHOD_AND_ORDER_MUTATION
+    )
 
-    const handleSetPaymentMethod = useCallback((props: { nonce: string }) => {
+    const handleSetPaymentMethodAndOrder = useCallback((props: { nonce: string }) => {
         const { nonce } = props
-        return setPaymentMethod({
+        return setPaymentAndOrderMethod({
             variables: {
-                cartId: '', // @client
                 nonce,
-            },
-        })
-    }, [])
-
-    /**
-     * Place Order
-     */
-    const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION, {
-        update(cache) {
-            // Reset Cart
-            cache.writeData({
-                data: { hasCart: false },
-            })
-        },
-    })
-
-    const handlePlaceOrder = useCallback(() => {
-        return placeOrder({
-            variables: {
-                cartId: '', // @client
             },
         })
     }, [])
@@ -286,22 +189,17 @@ export const useCheckout = () => {
         data: {
             ...query.data,
             availableRegions,
+            countries: sortedCountries,
         },
-        settingGuestEmailAddress,
         gettingAvailableRegions,
-        settingShippingAddress,
+        settingContactInfo,
         settingShippingMethod,
-        settingBillingAddress,
-        settingPaymentMethod,
-        placingOrder,
+        settingPaymentAndOrderMethod,
         api: {
-            setGuestEmailAddress: handleSetGuestEmailAddress,
             getAvailableRegions: handleGetAvailableRegions,
-            setShippingAddress: handleSetShippingAddress,
             setShippingMethod: handleSetShippingMethod,
-            setBillingAddress: handleSetBillingAddress,
-            setPaymentMethod: handleSetPaymentMethod,
-            placeOrder: handlePlaceOrder,
+            setContactInfo: handleSetContactInfo,
+            setPaymentMethodAndOrder: handleSetPaymentMethodAndOrder,
         },
     }
 }

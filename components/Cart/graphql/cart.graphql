@@ -1,6 +1,6 @@
 #import "./_fragments.graphql"
 
-query CartQuery($hasCart: Boolean!, $cartId: String!, $hasPage: Boolean!, $pageId: Int) {
+query CartQuery($hasCart: Boolean = false, $cartId: String = "", $hasPage: Boolean!, $pageId: Int) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 

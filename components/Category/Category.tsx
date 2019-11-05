@@ -178,7 +178,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
-                    loader: productsQuery.loading && products && { label: 'fetching products ' },
+                    loading: productsQuery.loading && !!products,
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urls }: any, index: number) => ({

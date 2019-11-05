@@ -33,6 +33,7 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                 description={page && page.metaDescription}
                 keywords={page && page.metakeywords}
             />
+
             {cart && (
                 <CartTemplate
                     list={{
@@ -72,38 +73,43 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
                             text: 'Shopping Bag',
                         },
                         prices: cart.prices && [
-                            cart.prices.taxes && {
-                                label: 'Estimated taxes',
-                                price: {
-                                    currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
-                                    regular:
-                                        cart.prices.taxes.reduce(
-                                            (accum: number, tax: { value: number }) => accum + tax.value,
-                                            0
-                                        ) || null,
-                                },
-                            },
-                            cart.prices.subTotal && {
-                                appearance: 'bold',
-                                label: 'Bag subtotal',
-                                price: {
-                                    currency: cart.prices.subTotal.currency,
-                                    regular: cart.prices.subTotal.value || null,
-                                },
-                            },
-                        ],
-
-                        buttons: [
                             {
-                                as: Link,
-                                linkTagAs: 'button',
-                                href: '/checkout',
-                                disabled: cart.items.length === 0,
-                                text: 'Checkout',
-                                loader: updating || removing ? { label: 'updating ' } : undefined,
+                                label: 'Subtotal',
+                                price: cart.prices.subTotal && {
+                                    currency: cart.prices.subTotal.currency,
+                                    regular: cart.prices.subTotal.value,
+                                },
+                            },
+                            {
+                                label: 'Estimated Taxes',
+                                price: cart.prices.taxes[0] && {
+                                    currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
+                                    regular: cart.prices.taxes.reduce(
+                                        (accum: number, tax: { value: number }) => accum + tax.value,
+                                        0
+                                    ),
+                                },
+                            },
+                            {
+                                appearance: 'bold',
+                                label: 'Total',
+                                price: cart.prices.total && {
+                                    currency: cart.prices.total.currency,
+                                    regular: cart.prices.total.value,
+                                },
                             },
                         ],
                     }}
+                    buttons={[
+                        {
+                            as: Link,
+                            linkTagAs: 'button',
+                            href: '/checkout',
+                            disabled: cart.items.length === 0,
+                            text: 'Checkout',
+                            loading: updating || removing,
+                        },
+                    ]}
                 />
             )}
         </React.Fragment>

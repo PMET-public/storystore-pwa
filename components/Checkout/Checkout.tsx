@@ -1,23 +1,26 @@
-import React, { FunctionComponent, useCallback, useRef, ChangeEvent } from 'react'
-import FormBuilder, { patterns } from 'luma-ui/dist/components/FormBuilder'
-import Braintree, { BraintreeDropin } from 'luma-ui/dist/components/Braintree'
+import React, { FunctionComponent, useCallback, ChangeEvent, useState, useEffect } from 'react'
 import { useCheckout } from './useCheckout'
+import CheckoutTemplate from 'luma-ui/dist/templates/Checkout'
+import ViewLoader from 'luma-ui/dist/components/ViewLoader'
+import Error from 'next/error'
+import DocumentMetadata from '../DocumentMetadata'
+import { useRouter } from 'next/router'
 
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const {
-        loading,
-        error,
-        data,
-        settingGuestEmailAddress,
-        settingShippingAddress,
-        settingShippingMethod,
-        settingBillingAddress,
-        settingPaymentMethod,
-        placingOrder,
-        api,
-    } = useCheckout()
+    const { loading, error, data, api } = useCheckout()
+
+    const router = useRouter()
+
+    const [step, setStep] = useState<1 | 2 | 3>(1)
+
+    /**
+     * Redirect to Shopping Cart if empty
+     */
+    useEffect(() => {
+        if (data && data.cart && data.cart.items.length === 0) router.push('/cart')
+    }, [data && data.cart])
 
     /**
      * Get Available Regiouns per country selected
@@ -34,456 +37,267 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     /**
      * Contact Information
      */
+
     const handleSetContactInformation = useCallback(
-        formData => {
-            const { emailAddress } = formData
-            api.setGuestEmailAddress({ emailAddress })
-        },
-        [api.setGuestEmailAddress]
-    )
-
-    /**
-     * Shipping Address
-     */
-
-    const handleSetShippingAddress = useCallback(
-        formData => {
+        async formData => {
             const {
+                email,
                 city,
                 company,
-                countryCode,
+                country,
                 firstName,
                 lastName,
-                zipCode,
+                postalCode,
                 region,
+                street,
+                phone,
                 saveInAddressBook = false,
-                street1,
-                street2,
-                phoneNumber,
             } = formData
 
-            api.setShippingAddress({
-                address: {
-                    city,
-                    company,
-                    countryCode,
-                    firstName,
-                    lastName,
-                    zipCode,
-                    region,
-                    saveInAddressBook,
-                    street: [street1, street2],
-                    phoneNumber,
-                },
+            await api.setContactInfo({
+                email,
+                city,
+                company,
+                country,
+                firstName,
+                lastName,
+                postalCode,
+                region,
+                street,
+                phone,
+                saveInAddressBook,
             })
+
+            setStep(2)
         },
-        [api.setShippingAddress]
-    )
-
-    /**
-     * Billing Address
-     */
-    const handleSetBillingAddress = useCallback(
-        formData => {
-            const { useShippingAddress } = formData
-
-            const { shippingAddresses = [] } = data.cart
-            const [shippingAddress] = shippingAddresses
-
-            const address = useShippingAddress
-                ? // Use Shipping Address Data Saved in the Cart
-                  {
-                      city: shippingAddress.city,
-                      company: shippingAddress.company,
-                      countryCode: shippingAddress.country.code,
-                      firstName: shippingAddress.firstName,
-                      lastName: shippingAddress.lastName,
-                      phoneNumber: shippingAddress.phoneNumber,
-                      region: shippingAddress.region.code,
-                      saveInAddressBook: false,
-                      street: shippingAddress.street,
-                      zipCode: shippingAddress.zipCode,
-                  }
-                : // Data from From
-                  {
-                      city: formData.city,
-                      company: formData.company,
-                      countryCode: formData.country,
-                      firstName: formData.firstName,
-                      lastName: formData.lastName,
-                      phoneNumber: formData.phoneNumber,
-                      region: formData.region,
-                      saveInAddressBook: false,
-                      street: [formData.street1, formData.street2],
-                      zipCode: formData.zipCode,
-                  }
-
-            api.setBillingAddress({ address })
-        },
-        [api.setShippingAddress, data.cart && JSON.stringify(data.cart.shippingAddresses)]
+        [api.setContactInfo]
     )
 
     /**
      * Shipping Method
      */
     const handleSetShippingMethod = useCallback(
-        formData => {
+        async formData => {
             const { shippingMethod: methodCode } = formData
-            api.setShippingMethod({ methodCode })
+
+            await api.setShippingMethod({ methodCode })
+
+            setStep(3)
         },
         [api.setShippingMethod]
     )
 
-    /**
-     * Payment Method
-     */
-    const braintreeInstance = useRef<BraintreeDropin>()
+    const handleSetPaymentMethodAndOrder = useCallback(
+        async formData => {
+            const { nonce } = formData
+            const { data } = await api.setPaymentMethodAndOrder({ nonce })
 
-    const handleSetPaymentMethod = useCallback(async () => {
-        if (!braintreeInstance.current) return
-        const { nonce } = await braintreeInstance.current.requestPaymentMethod()
-        api.setPaymentMethod({ nonce })
-    }, [api.setPaymentMethod])
+            router.push(`/checkout/confirmation?order=${data.payment.order.id}`)
+        },
+        [api.setPaymentMethodAndOrder]
+    )
 
-    /**
-     * Place Order
-     */
-    const handlePlaceOrder = useCallback(async () => {
-        const res = api.placeOrder()
-        console.log(res)
-    }, [api.placeOrder])
+    if (loading) {
+        return <ViewLoader />
+    }
 
-    if (loading) return <span>loading</span>
-
-    if (error) return <span>{error.message}</span>
+    if (error) {
+        console.error(error.message)
+        return <Error statusCode={500} />
+    }
 
     const { cart, countries, availableRegions } = data
     const { email, shippingAddresses, braintreeToken } = cart
     const [shippingAddress] = shippingAddresses
 
+    // TODO: Regions
+    console.log({ availableRegions })
+
     return (
         <React.Fragment>
-            <FormBuilder
-                title={{
-                    text: 'Contact Information',
+            <DocumentMetadata title="Checkout" />
+            <CheckoutTemplate
+                step={step}
+                contactInfo={{
+                    edit: step < 2,
+                    fields: {
+                        email: {
+                            label: 'Email',
+                            defaultValue: email,
+                        },
+                        firstName: {
+                            label: 'First Name',
+                            defaultValue: shippingAddress.firstName,
+                        },
+                        lastName: {
+                            label: 'Last Name',
+                            defaultValue: shippingAddress.lastName,
+                        },
+                        company: {
+                            label: 'Company (optional)',
+                            defaultValue: shippingAddress.company,
+                        },
+                        address1: {
+                            label: 'Address',
+                            defaultValue: shippingAddress.street[0],
+                        },
+                        address2: {
+                            label: 'Apt, Suite, Unit, etc (optional)',
+                            defaultValue: shippingAddress.street[1],
+                        },
+                        city: {
+                            label: 'City',
+                            defaultValue: shippingAddress.city,
+                        },
+                        country: {
+                            label: 'Country',
+                            defaultValue: shippingAddress.country.code || 'US',
+                            onChange: handleSelectedCountry,
+                            items: countries.map((country: { name: string; code: string }) => ({
+                                text: country.name,
+                                value: country.code,
+                            })),
+                        },
+                        region: {
+                            label: 'State',
+                            defaultValue: shippingAddress.region.code,
+                        },
+                        postalCode: {
+                            label: 'Postal Code',
+                            defaultValue: shippingAddress.postalCode,
+                        },
+                        phone: {
+                            label: 'Phone Number',
+                            defaultValue: shippingAddress.phone,
+                        },
+                    },
+                    editButton: {
+                        text: 'Edit',
+                    },
+                    submitButton: {
+                        text: 'Continue to Shipping',
+                    },
+                    onEdit: () => setStep(1),
+                    onSubmit: handleSetContactInformation,
                 }}
-                fields={[
-                    {
-                        field: 'text',
-                        label: 'Email Address',
-                        name: 'emailAddress',
-                        defaultValue: email,
-                        rules: {
-                            required: true,
-                            pattern: patterns.email,
-                        },
+                shippingMethod={{
+                    edit: step < 3,
+                    items: shippingAddress.availableShippingMethods.map(
+                        ({ methodTitle, methodCode, available, amount }: any) => ({
+                            text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: amount.currency,
+                            })}`,
+                            value: methodCode,
+                            defaultChecked: methodCode === shippingAddress.selectedShippingMethod.methodCode,
+                            disabled: !available,
+                        })
+                    ),
+                    editButton: {
+                        text: 'Edit',
                     },
-                ]}
-                onSubmit={handleSetContactInformation}
-                submitButton={{
-                    text: 'Save',
-                    loader: settingGuestEmailAddress ? { label: 'Updating' } : undefined,
+                    submitButton: {
+                        text: 'Continue to Payment',
+                    },
+                    onEdit: () => setStep(2),
+                    onSubmit: handleSetShippingMethod,
                 }}
-            />
-
-            <FormBuilder
-                title={{
-                    text: 'Shipping Address',
-                }}
-                fields={[
-                    {
-                        field: 'text',
-                        label: 'First Name',
-                        name: 'firstName',
-                        defaultValue: shippingAddress.firstName,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Last Name',
-                        name: 'lastName',
-                        defaultValue: shippingAddress.lastName,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Company',
-                        name: 'company',
-                        defaultValue: shippingAddress.company,
-                        rules: {
-                            required: false,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Address',
-                        name: 'street1',
-                        defaultValue: shippingAddress.street && shippingAddress.street[0],
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Address 2',
-                        name: 'street2',
-                        defaultValue: shippingAddress.street && shippingAddress.street[1],
-                        rules: {},
-                    },
-                    {
-                        field: 'text',
-                        label: 'City',
-                        name: 'city',
-                        defaultValue: shippingAddress.city,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'select',
-                        label: 'Country',
-                        name: 'countryCode',
-                        onChange: handleSelectedCountry,
-                        defaultValue: shippingAddress.country.code,
-                        rules: {
-                            required: true,
-                        },
-                        items: countries.map((country: any) => ({
-                            text: country.name,
-                            value: country.code,
-                        })),
-                    },
-                    availableRegions && availableRegions.country.regions
-                        ? {
-                              field: 'select',
-                              label: 'State',
-                              name: 'region',
-                              defaultValue: shippingAddress.region.code,
-                              rules: {
-                                  required: true,
-                              },
-                              items: availableRegions.country.regions.map((region: any) => ({
-                                  text: region.name,
-                                  value: region.code,
-                              })),
-                          }
-                        : {
-                              field: 'text',
-                              label: 'State',
-                              name: 'region',
-                              defaultValue: shippingAddress.region.code,
-                              rules: {
-                                  required: true,
-                              },
-                          },
-                    {
-                        field: 'text',
-                        label: 'Zip Code',
-                        name: 'zipCode',
-                        defaultValue: shippingAddress.zipCode,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Phone Number',
-                        name: 'phoneNumber',
-                        defaultValue: shippingAddress.phoneNumber,
-                        rules: {
-                            required: true,
-                        },
-                    },
-                ]}
-                onSubmit={handleSetShippingAddress}
-                submitButton={{
-                    text: 'Save',
-                    loader: settingShippingAddress ? { label: 'Updating' } : undefined,
-                }}
-            />
-
-            <FormBuilder
-                title={{
-                    text: 'Shipping Method',
-                }}
-                fields={[
-                    {
-                        field: 'selection',
-                        name: 'shippingMethod',
-                        rules: {
-                            required: true,
-                        },
-
-                        items: shippingAddress.availableShippingMethods.map(
-                            ({ methodTitle, methodCode, available, amount }: any) => ({
-                                text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: amount.currency,
-                                })}`,
-                                defaultValue: methodCode,
-                                defaultChecked: methodCode === shippingAddress.selectedShippingMethod.methodCode,
-                                disabled: !available,
-                            })
-                        ),
-                    },
-                ]}
-                onSubmit={handleSetShippingMethod}
-                submitButton={{
-                    text: 'Save',
-                    loader: settingShippingMethod ? { label: 'Updating' } : undefined,
-                }}
-            />
-
-            <FormBuilder
-                title={{
-                    text: 'Billing Address',
-                }}
-                fields={[
-                    {
-                        field: 'selection',
-                        name: 'useShippingAddress',
-                        type: 'checkbox',
-
-                        items: [
-                            {
-                                text: 'Same as shipping',
-                            },
-                        ],
-                    },
-                    {
-                        field: 'text',
-                        label: 'First Name',
-                        name: 'firstName',
-                        // defaultValue: billingAddress.firstName,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Last Name',
-                        name: 'lastName',
-                        // defaultValue: billingAddress.lastName,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Company',
-                        name: 'company',
-                        // defaultValue: billingAddress.company,
-                        // rules: {
-                        //     required: false,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Address',
-                        name: 'street1',
-                        // defaultValue: billingAddress.street && billingAddress.street[0],
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Address 2',
-                        name: 'street2',
-                        // defaultValue: billingAddress.street && billingAddress.street[1],
-                        rules: {},
-                    },
-                    {
-                        field: 'text',
-                        label: 'City',
-                        name: 'city',
-                        // defaultValue: billingAddress.city,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'State',
-                        name: 'region',
-                        // defaultValue: billingAddress.region.label,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Zip Code',
-                        name: 'zipCode',
-                        // defaultValue: billingAddress.zipCode,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Country',
-                        name: 'country',
-                        // defaultValue: billingAddress.country.code,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                    {
-                        field: 'text',
-                        label: 'Phone Number',
-                        name: 'phoneNumber',
-                        // defaultValue: billingAddress.phoneNumber,
-                        // rules: {
-                        //     required: true,
-                        // },
-                    },
-                ]}
-                onSubmit={handleSetBillingAddress}
-                submitButton={{
-                    text: 'Save',
-                    loader: settingBillingAddress ? { label: 'Updating' } : undefined,
-                }}
-            />
-
-            {braintreeToken && (
-                <React.Fragment>
-                    <Braintree
-                        options={{
-                            authorization: braintreeToken,
-                            vaultManager: true,
-                            preselectVaultedPaymentMethod: true,
-
-                            card: {
-                                overrides: {
-                                    fields: {
-                                        number: {
-                                            maskInput: {
-                                                // Only show last four digits on blur.
-                                                showLastFour: true,
-                                            },
+                paymentMethod={{
+                    braintree: {
+                        authorization: braintreeToken,
+                        vaultManager: true,
+                        preselectVaultedPaymentMethod: true,
+                        card: {
+                            overrides: {
+                                fields: {
+                                    number: {
+                                        maskInput: {
+                                            showLastFour: true, // Only show last four digits on blur.
                                         },
                                     },
                                 },
                             },
-                        }}
-                        onLoad={x => (braintreeInstance.current = x)}
-                    />
-                </React.Fragment>
-            )}
-            <hr />
-            <button disabled={settingPaymentMethod} onClick={handleSetPaymentMethod}>
-                {settingPaymentMethod ? 'Loading' : 'Save'}
-            </button>
-
-            <hr />
-            <button disabled={placingOrder} onClick={handlePlaceOrder}>
-                {placingOrder ? 'Loading' : 'Place Order'}
-            </button>
+                        },
+                    },
+                    submitButton: {
+                        text: 'Place Order',
+                    },
+                    onSubmit: handleSetPaymentMethodAndOrder,
+                }}
+                list={{
+                    items:
+                        cart.items &&
+                        cart.items.map(({ id, quantity, product, options }: any, index: number) => ({
+                            _id: id || index,
+                            title: {
+                                text: product.name,
+                            },
+                            sku: `SKU. ${product.sku}`,
+                            thumbnail: {
+                                alt: product.thumbnail.label,
+                                src: product.thumbnail.url,
+                            },
+                            quantity: {
+                                value: quantity,
+                                addLabel: `Add another ${product.name} from shopping bag`,
+                                substractLabel: `Remove one ${product.name} from shopping bag`,
+                                removeLabel: `Remove all ${product.name} from shopping bag`,
+                                // onUpdate: (quantity: number) => api.updateCartItem({ productId: id, quantity }),
+                                // onRemove: () => api.removeCartItem({ productId: id }),
+                            },
+                            price: {
+                                currency: product.price.regular.amount.currency,
+                                regular: product.price.regular.amount.value,
+                            },
+                            options:
+                                options &&
+                                options.map(({ id, label, value }: any) => ({
+                                    _id: id,
+                                    label,
+                                    value,
+                                })),
+                        })),
+                }}
+                summary={{
+                    title: {
+                        text: 'Shopping Bag',
+                    },
+                    prices: cart.prices && [
+                        {
+                            label: 'Subtotal',
+                            price: cart.prices.subTotal && {
+                                currency: cart.prices.subTotal.currency,
+                                regular: cart.prices.subTotal.value,
+                            },
+                        },
+                        {
+                            label: 'Shipping',
+                            price: shippingAddress.selectedShippingMethod.amount && {
+                                currency: shippingAddress.selectedShippingMethod.amount.currency,
+                                regular: shippingAddress.selectedShippingMethod.amount.value,
+                            },
+                        },
+                        {
+                            label: 'Taxes',
+                            price: cart.prices.taxes[0] && {
+                                currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
+                                regular: cart.prices.taxes.reduce(
+                                    (accum: number, tax: { value: number }) => accum + tax.value,
+                                    0
+                                ),
+                            },
+                        },
+                        {
+                            appearance: 'bold',
+                            label: 'Total',
+                            price: cart.prices.total && {
+                                currency: cart.prices.total.currency,
+                                regular: cart.prices.total.value,
+                            },
+                        },
+                    ],
+                }}
+            />
         </React.Fragment>
     )
 }

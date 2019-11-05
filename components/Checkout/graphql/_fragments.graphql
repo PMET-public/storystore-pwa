@@ -24,20 +24,76 @@ fragment CheckoutDetails on Cart {
         selectedShippingMethod: selected_shipping_method {
             methodCode: method_code
             carrierCode: carrier_code
+            amount {
+                currency
+                value
+            }
         }
     }
 
     selectedPaymentMethod: selected_payment_method {
         code
     }
+
+    items {
+        id
+        quantity
+        product {
+            id
+            sku
+            name
+            thumbnail {
+                label
+                url
+            }
+            price {
+                regular: regularPrice {
+                    amount {
+                        currency
+                        value
+                    }
+                }
+            }
+        }
+
+        ... on ConfigurableCartItem {
+            options: configurable_options {
+                id
+                label: option_label
+                value: value_label
+            }
+        }
+    }
+
+    prices {
+        subTotal: subtotal_excluding_tax {
+            currency
+            value
+        }
+        subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
+            currency
+            value
+        }
+        taxes: applied_taxes {
+            label
+            amount {
+                currency
+                value
+            }
+        }
+        total: grand_total {
+            currency
+            value
+        }
+    }
 }
 
 fragment Address on CartAddressInterface {
     firstName: firstname
     lastName: lastname
-    zipCode: postcode
+    postalCode: postcode
     street
-    phoneNumber: telephone
+    phone: telephone
     city
     company
 

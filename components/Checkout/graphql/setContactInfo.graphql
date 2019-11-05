@@ -1,0 +1,21 @@
+#import "./_fragments.graphql"
+
+mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAddressInput!) {
+    cartId @client @export(as: "cartId")
+
+    # Set Email Address
+    email: setGuestEmailOnCart(input: { cart_id: $cartId, email: $email }) {
+        cart {
+            email
+        }
+    }
+
+    # Set Billing and Shipping Address
+    address: setBillingAddressOnCart(
+        input: { cart_id: $cartId, billing_address: { address: $address, use_for_shipping: true } }
+    ) {
+        cart {
+            ...CheckoutDetails
+        }
+    }
+}

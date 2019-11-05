@@ -1,6 +1,6 @@
 #import "./_fragments.graphql"
 
-mutation UpdateCartItems($cartId: String!, $items: [CartItemUpdateInput]!) {
+mutation UpdateCartItems($cartId: String = "", $items: [CartItemUpdateInput]!) {
     cartId @client @export(as: "cartId")
 
     updateCartItems(input: { cart_id: $cartId, cart_items: $items }) {
