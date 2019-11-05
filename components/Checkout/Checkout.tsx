@@ -87,6 +87,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         [api.setShippingMethod]
     )
 
+    /**
+     * Payment Method
+     */
     const handleSetPaymentMethodAndOrder = useCallback(
         async formData => {
             const { nonce } = formData
@@ -106,12 +109,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         return <Error statusCode={500} />
     }
 
-    const { cart, countries, availableRegions } = data
+    const { cart, countries } = data
     const { email, shippingAddresses, braintreeToken } = cart
     const [shippingAddress] = shippingAddresses
 
     // TODO: Regions
-    console.log({ availableRegions })
+    // console.log({ availableRegions })
 
     return (
         <React.Fragment>

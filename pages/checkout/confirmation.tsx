@@ -12,14 +12,12 @@ export const Confirmation = () => {
     return (
         <ConfirmationTemplate
             title={{
-                text: 'Thank you for your purchase',
+                text: 'Thank you for your order!',
             }}
             children={
                 <div>
                     {order && <p>Your order # is: {order}.</p>}
-
-                    <p>We'll email you an order confirmation with details and tracking info.</p>
-
+                    <p>We'll email you details and tracking info.</p>
                     <Button as={Link} urlResolver href="/" style={{ marginTop: '2rem' }}>
                         Continue Shopping
                     </Button>
