@@ -94,8 +94,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         async formData => {
             const { nonce } = formData
             const { data } = await api.setPaymentMethodAndOrder({ nonce })
-
-            router.push(`/checkout/confirmation?order=${data.payment.order.id}`)
+            await router.push(`/checkout/confirmation?order=${data.payment.order.id}`)
         },
         [api.setPaymentMethodAndOrder]
     )

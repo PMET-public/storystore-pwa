@@ -172,7 +172,15 @@ export const useCheckout = () => {
      * Set Payment Method
      */
     const [setPaymentAndOrderMethod, { loading: settingPaymentAndOrderMethod }] = useMutation(
-        SET_PAYMENT_METHOD_AND_ORDER_MUTATION
+        SET_PAYMENT_METHOD_AND_ORDER_MUTATION,
+        {
+            update(cache) {
+                // Reset Cart
+                cache.writeData({
+                    data: { cart: null },
+                })
+            },
+        }
     )
 
     const handleSetPaymentMethodAndOrder = useCallback((props: { nonce: string }) => {
