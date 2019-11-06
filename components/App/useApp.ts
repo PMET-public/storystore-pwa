@@ -8,9 +8,10 @@ import APP_QUERY from './graphql/app.graphql'
 import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-export const useApp = (props: { categoryId: number; footerId?: string }) => {
-    const { categoryId, footerId } = props
+const categoryId = process.env.PARENT_CATEGORIES_ID
+const footerBlockId = process.env.FOOTER_BLOCK_ID
 
+export const useApp = () => {
     const client = useApolloClient()
 
     const query = useQuery(APP_QUERY, {
@@ -18,8 +19,8 @@ export const useApp = (props: { categoryId: number; footerId?: string }) => {
         returnPartialData: true,
         variables: {
             categoryId,
-            footerId,
-            hasFooter: !!footerId,
+            footerBlockId,
+            hasFooter: !!footerBlockId,
         },
     })
 

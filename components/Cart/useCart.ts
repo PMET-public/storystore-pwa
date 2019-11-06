@@ -5,19 +5,13 @@ import CART_QUERY from './graphql/cart.graphql'
 import UPDATE_CART_ITEMS_MUTATION from './graphql/updateCartItems.graphql'
 import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 
-export const useCart = (props?: { pageId?: number }) => {
-    const { pageId } = props || {}
-
+export const useCart = () => {
     /**
      * Data Query
      */
     const query = useQuery(CART_QUERY, {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
-        variables: {
-            hasPage: !!pageId,
-            pageId,
-        },
     })
 
     /**

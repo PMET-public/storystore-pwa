@@ -7,13 +7,10 @@ import HomeTemplate from 'luma-ui/dist/templates/Home'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
 
-type HomeProps = {
-    id: number
-    categoryId: number
-}
+type HomeProps = {}
 
-export const Home: FunctionComponent<HomeProps> = ({ id, categoryId }) => {
-    const { loading, error, data } = useHome({ id, categoryId })
+export const Home: FunctionComponent<HomeProps> = ({}) => {
+    const { loading, error, data } = useHome()
 
     if (loading) {
         return <ViewLoader />

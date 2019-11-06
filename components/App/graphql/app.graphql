@@ -1,4 +1,4 @@
-query AppShellQuery($categoryId: Int!, $footerId: [String] = "", $hasFooter: Boolean = false) {
+query AppShellQuery($categoryId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
     isOnline @client
     hasCart @client
 
@@ -22,7 +22,7 @@ query AppShellQuery($categoryId: Int!, $footerId: [String] = "", $hasFooter: Boo
         }
     }
 
-    footer: cmsBlocks(identifiers: $footerId) @include(if: $hasFooter) {
+    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
         items {
             id: identifier
             html: content

@@ -7,13 +7,10 @@ import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from 'next/error'
 
-type AppProps = {
-    categoryId: number
-    footerId?: string
-}
+type AppProps = {}
 
-export const App: FunctionComponent<AppProps> = ({ categoryId, footerId, children }) => {
-    const { loading, error, data, api } = useApp({ categoryId, footerId })
+export const App: FunctionComponent<AppProps> = ({ children }) => {
+    const { loading, error, data, api } = useApp()
 
     if (loading) {
         return <ViewLoader />

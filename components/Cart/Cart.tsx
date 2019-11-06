@@ -6,12 +6,10 @@ import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
 
-type CartProps = {
-    pageId?: number
-}
+type CartProps = {}
 
-export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
-    const { loading, updating, removing, error, data, api } = useCart({ pageId })
+export const Cart: FunctionComponent<CartProps> = ({}) => {
+    const { loading, updating, removing, error, data, api } = useCart()
 
     if (loading) {
         return <ViewLoader />
@@ -24,15 +22,11 @@ export const Cart: FunctionComponent<CartProps> = ({ pageId }) => {
 
     if (!data) return null
 
-    const { cart, page } = data
+    const { cart } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                title={(page && (page.metaTitle || page.title)) || 'Shopping Bag'}
-                description={page && page.metaDescription}
-                keywords={page && page.metakeywords}
-            />
+            <DocumentMetadata title="Shopping Bag" />
 
             {cart && (
                 <CartTemplate

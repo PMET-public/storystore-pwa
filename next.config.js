@@ -1,5 +1,5 @@
 require('dotenv').config()
-
+const webpack = require('webpack')
 const path = require('path')
 
 const withOffline = require('next-offline')
@@ -36,12 +36,17 @@ module.exports = withOffline({
 
     webpack: config => {
         /**
-         * Fix for missing 'fs' module not found
-         * https://github.com/webpack-contrib/css-loader/issues/447
+         * Environment Variable
          */
-        config.node = {
-            fs: 'empty',
-        }
+        config.plugins.push(
+            new webpack.DefinePlugin({
+                'process.env': {
+                    HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
+                    PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
+                    FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),
+                },
+            })
+        )
 
         /**
          * PWA Manifest
@@ -92,6 +97,14 @@ module.exports = withOffline({
             exclude: /node_modules/,
             loader: 'graphql-tag/loader',
         })
+
+        /**
+         * Fix for missing 'fs' module not found
+         * https://github.com/webpack-contrib/css-loader/issues/447
+         */
+        config.node = {
+            fs: 'empty',
+        }
 
         return config
     },
