@@ -44,14 +44,12 @@ export const App: FunctionComponent<AppProps> = ({ categoryId, footerId, childre
             <AppTemplate
                 logo={{
                     as: Link,
-                    urlResolver: true,
                     href: '/',
                     title: store.logoAlt,
                 }}
                 home={{
                     active: api.isUrlActive('/'),
                     as: Link,
-                    urlResolver: true,
                     href: '/',
                     text: 'Home',
                 }}

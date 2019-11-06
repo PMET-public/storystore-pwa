@@ -32,6 +32,13 @@ app.prepare().then(() => {
     })
 
     /**
+     * Home Page
+     */
+    server.get('/', (req, res) => {
+        return app.render(req, res, '/index', req.query)
+    })
+
+    /**
      * Cart Page
      */
     server.get('/cart', (req, res) => {

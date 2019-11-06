@@ -1,0 +1,19 @@
+query HomeQuery($id: Int!, $categoryId: Int!) {
+    categories: category(id: $categoryId) {
+        id
+        children {
+            text: name
+            href: url_path
+            image
+        }
+    }
+
+    page: cmsPage(id: $id) {
+        id: url_key
+        title
+        content
+        metaTitle: meta_title
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+    }
+}
