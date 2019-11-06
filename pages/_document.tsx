@@ -42,10 +42,10 @@ export default class extends Document {
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
                     <script
                         async
-                        src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.6/pwacompat.min.js"
-                        integrity="sha384-GOaSLecPIMCJksN83HLuYf9FToOiQ2Df0+0ntv7ey8zjUHESXhthwvq9hXAZTifA"
+                        src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.9/pwacompat.min.js"
+                        integrity="sha384-VcI6S+HIsE80FVM1jgbd6WDFhzKYA0PecD/LcIyMQpT4fMJdijBh0I7Iblaacawc"
                         crossOrigin="anonymous"
-                    />
+                    ></script>
 
                     {/* Say hi! to our store back-end */}
                     <link rel="preconnect" href="/graphql" />

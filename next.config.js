@@ -11,7 +11,7 @@ module.exports = withOffline({
         swDest: 'static/service-worker.js',
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['.next/static/*', '.next/static/commons/*'],
+        globPatterns: ['.next/*', '.next/commons/*'],
         modifyUrlPrefix: { '.next': '/_next' },
         runtimeCaching: [
             {
@@ -36,11 +36,11 @@ module.exports = withOffline({
 
     webpack: config => {
         /**
-         * Environment Variable
+         * Luma PWA Variable
          */
         config.plugins.push(
             new webpack.DefinePlugin({
-                'process.env': {
+                'LUMA_ENV': {
                     HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
                     PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
                     FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),
@@ -54,7 +54,6 @@ module.exports = withOffline({
          */
         config.plugins.push(
             new WebpackPwaManifest({
-                // inject: false,
                 fingerprints: false,
                 filename: 'static/manifest.webmanifest',
                 name: 'Luma',
@@ -67,14 +66,14 @@ module.exports = withOffline({
                 publicPath: '../',
                 icons: [
                     {
-                        src: path.resolve('./static/images/app-icon.png'),
+                        src: path.resolve('./public/app-icon.png'),
                         sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
-                        destination: path.join('static', 'icons'),
+                        destination: 'static/icons',
                     },
                     {
-                        src: path.resolve('./static/images/app-icon-ios.png'),
+                        src: path.resolve('./public/app-icon-ios.png'),
                         sizes: [120, 152, 167, 180],
-                        destination: path.join('static', 'icons'),
+                        destination: 'static/icons',
                         ios: true,
                     },
                 ],

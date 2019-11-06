@@ -31,6 +31,8 @@ app.prepare().then(() => {
         return handle(req, res)
     })
 
+    server.use('/static', express.static('public/static'))
+
     /**
      * Home Page
      */

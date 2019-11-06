@@ -8,8 +8,8 @@ import APP_QUERY from './graphql/app.graphql'
 import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-const categoryId = process.env.PARENT_CATEGORIES_ID
-const footerBlockId = process.env.FOOTER_BLOCK_ID
+const categoryId = LUMA_ENV.PARENT_CATEGORIES_ID
+const footerBlockId = LUMA_ENV.FOOTER_BLOCK_ID
 
 export const useApp = () => {
     const client = useApolloClient()
