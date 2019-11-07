@@ -42,7 +42,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                 logo={{
                     as: Link,
                     href: '/',
-                    title: store.logoAlt,
+                    title: store.logoAlt || 'Luma',
                 }}
                 home={{
                     active: api.isUrlActive('/'),

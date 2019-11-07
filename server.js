@@ -1,8 +1,10 @@
 require('dotenv').config()
 
-import express from 'express'
-import request from 'request'
-import next from 'next'
+const express = require('express')
+const request = require('request')
+const next = require('next')
+const { join } = require('path')
+const bodyParser = require('body-parser')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_GRAPHQL_URL = ``, LAUNCH_IN_BROWSER = false } = process.env
 
@@ -14,14 +16,25 @@ const handle = app.getRequestHandler()
 
 const url = `http://localhost:${PORT}`
 
-app.prepare().then(() => {
+app.prepare().then(async () => {
     const server = express()
+
+    // server.use(bodyParser.raw())
 
     /**
      * GraphQL Proxy
      */
+    server.get('/graphql', (req, res) => {
+        req.pipe(
+            request.get({
+                qs: req.query,
+                url: MAGENTO_GRAPHQL_URL,
+            })
+        ).pipe(res)
+    })
+
     server.post('/graphql', (req, res) => {
-        req.pipe(request(MAGENTO_GRAPHQL_URL)).pipe(res)
+        req.pipe(request.post(MAGENTO_GRAPHQL_URL)).pipe(res)
     })
 
     /**
@@ -32,6 +45,30 @@ app.prepare().then(() => {
     })
 
     server.use('/static', express.static('public/static'))
+
+    /**
+     * 🤖
+     */
+    server.get('/robots.txt', (req, res) => {
+        const filePath = join(__dirname, 'public', 'robot.txt')
+        app.serveStatic(req, res, filePath)
+    })
+
+    /**
+     * Web Manifest
+     */
+    server.get('/manifest.webmanifest', (req, res) => {
+        const filePath = join(__dirname, '.next', 'manifest.webmanifest')
+        app.serveStatic(req, res, filePath)
+    })
+
+    /**
+     * Service Worker
+     */
+    server.get('/service-worker.js', (req, res) => {
+        const filePath = join(__dirname, '.next', 'service-worker.js')
+        app.serveStatic(req, res, filePath)
+    })
 
     /**
      * Home Page

@@ -5,30 +5,59 @@ const path = require('path')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
+const thirtyDays = 30 * 24 * 60 * 60
+
 module.exports = withOffline({
     generateSw: true,
+    generateInDevMode: true,
     workboxOpts: {
-        swDest: 'static/service-worker.js',
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['.next/*', '.next/commons/*'],
-        modifyUrlPrefix: { '.next': '/_next' },
         runtimeCaching: [
             {
                 urlPattern: '/',
-                handler: 'networkFirst',
+                handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'html-cache',
-                },
+                    cacheName: 'home',
+
+                }
             },
             {
-                urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif)/,
-                handler: 'cacheFirst',
+                urlPattern: '/\/.\\.js$/',
+                handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'image-cache',
+                    cacheName: 'js',
+                    expiration: {
+                        maxEntries: 200,
+                        maxAgeSeconds: thirtyDays
+                    }
+                }
+            },
+            {
+                urlPattern: /graphql\/.*/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'graphql',
                     cacheableResponse: {
                         statuses: [0, 200],
                     },
+                    expiration: {
+                        maxAgeSeconds: thirtyDays
+                    }
+                }
+            },
+            {
+                urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif)/,
+                handler: 'CacheFirst',
+                options: {
+                    cacheName: 'images',
+                    cacheableResponse: {
+                        statuses: [0, 200],
+                    },
+                    expiration: {
+                        maxEntries: 60,
+                        maxAgeSeconds: thirtyDays
+                    }
                 },
             },
         ],
@@ -55,15 +84,16 @@ module.exports = withOffline({
         config.plugins.push(
             new WebpackPwaManifest({
                 fingerprints: false,
-                filename: 'static/manifest.webmanifest',
+                filename: 'manifest.webmanifest',
                 name: 'Luma',
                 short_name: 'Luma',
                 description: 'We’re passionate about active lifestyles – and it goes way beyond apparel.',
                 background_color: '#ffffff',
-                orientation: 'portrait',
+                theme_color: '#a14a24',
+                orientation: 'landscape-primary',
                 display: 'standalone',
                 start_url: '.',
-                publicPath: '../',
+                publicPath: '/_next/',
                 icons: [
                     {
                         src: path.resolve('./public/app-icon.png'),

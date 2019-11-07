@@ -19,7 +19,7 @@ export const graphQlUri = process.browser ? '/graphql' : process.env.MAGENTO_GRA
 function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: graphQlUri,
-        // useGETForQueries: true,
+        useGETForQueries: true,
     })
 
     const link = ApolloLink.from([

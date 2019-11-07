@@ -31,13 +31,16 @@ export default class extends Document {
         return (
             <html lang="en">
                 <Head>
+                    <noscript>Enable javascript to run this web app.</noscript>
+
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
                     <link rel="icon" href="/static/favicon.ico" />
 
                     {/* Web App Manifest  */}
                     <link rel="apple-touch-startup-image" />
-                    <link rel="manifest" href="/_next/static/manifest.webmanifest" crossOrigin="use-credentials" />
+                    <link rel="apple-touch-icon" href="/_next/static/icons/icon_180x180.png" />
+                    <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
                     <script
@@ -48,7 +51,7 @@ export default class extends Document {
                     ></script>
 
                     {/* Say hi! to our store back-end */}
-                    <link rel="preconnect" href="/graphql" />
+                    {/* <link rel="preconnect" href="/graphql" /> */}
 
                     {/* Adobe Fonts */}
                     <link rel="prefetch" as="style" href="https://use.typekit.net/ssh7gal.css" />
