@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { useCart } from './useCart'
-import Error from 'next/error'
 import DocumentMetadata from '../DocumentMetadata'
+import Error from '../Error'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
@@ -9,16 +9,13 @@ import Link from '../Link'
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const { loading, updating, removing, error, data, api } = useCart()
+    const { loading, updating, removing, error, offline, data, api } = useCart()
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    if (error && offline) return <Error type="Offline" />
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500">{error.message}</Error>
+
+    if (loading) return <ViewLoader />
 
     if (!data) return null
 

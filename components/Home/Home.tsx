@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { useHome } from './useHome'
 
 import DocumentMetadata from '../DocumentMetadata'
-import Error from 'next/error'
+import Error from '../Error'
 import HomeTemplate from 'luma-ui/dist/templates/Home'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
@@ -10,20 +10,15 @@ import Link from '../Link'
 type HomeProps = {}
 
 export const Home: FunctionComponent<HomeProps> = ({}) => {
-    const { loading, error, data } = useHome()
+    const { loading, error, data, offline } = useHome()
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    if (error && offline) return <Error type="Offline" />
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500" />
 
-    if (!data.page) {
-        return <Error statusCode={404} />
-    }
+    if (loading) return <ViewLoader />
+
+    if (!data.page) return <Error type="404" />
 
     const { page, categories } = data
 

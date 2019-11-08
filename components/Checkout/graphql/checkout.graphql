@@ -1,6 +1,7 @@
 #import "./_fragments.graphql"
 
 query CheckoutQuery($cartId: String = "") {
+    offline @client
     cartId @client @export(as: "cartId")
 
     cart(cart_id: $cartId) {

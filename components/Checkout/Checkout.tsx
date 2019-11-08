@@ -2,14 +2,14 @@ import React, { FunctionComponent, useCallback, ChangeEvent, useState, useEffect
 import { useCheckout } from './useCheckout'
 import CheckoutTemplate from 'luma-ui/dist/templates/Checkout'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
-import Error from 'next/error'
+import Error from '../Error'
 import DocumentMetadata from '../DocumentMetadata'
 import { useRouter } from 'next/router'
 
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const { loading, error, data, api } = useCheckout()
+    const { loading, error, data, api, offline } = useCheckout()
 
     const router = useRouter()
 
@@ -99,14 +99,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         [api.setPaymentMethodAndOrder]
     )
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    if (error && offline) return <Error type="Offline" />
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500" />
+
+    if (loading) return <ViewLoader />
 
     const { cart, countries } = data
     const { email, shippingAddresses, braintreeToken } = cart

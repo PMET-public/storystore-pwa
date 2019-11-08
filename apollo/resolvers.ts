@@ -9,7 +9,7 @@ export const typeDefs = gql`
     extend type Query {
         hasCart: Boolean!
         cartId: String!
-        isOnline: Boolean!
+        offline: Boolean!
     }
 
     extend type Cart {
@@ -24,7 +24,7 @@ export const typeDefs = gql`
 export const defaults = {
     cartId: (process.browser && getFromLocalStorage('cartId')) || '',
     hasCart: process.browser && !!getFromLocalStorage('cartId'),
-    isOnline: true,
+    offline: false,
 }
 
 /**

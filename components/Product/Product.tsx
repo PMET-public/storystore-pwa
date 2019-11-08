@@ -3,7 +3,7 @@ import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
 import { getProductGallery } from '../../lib/getProductGallery'
 import DocumentMetadata from '../DocumentMetadata'
-import Error from 'next/error'
+import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
@@ -17,7 +17,7 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, error, addingToCart, data, api } = useProduct({ urlKey })
+    const { loading, error, addingToCart, data, api, offline } = useProduct({ urlKey })
 
     const router = useRouter()
 
@@ -55,18 +55,14 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    if (error && offline) return <Error type="Offline" />
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500" />
 
-    if (!data || !data.product) {
-        return <Error statusCode={404} />
-    }
+    if (loading) return <ViewLoader />
+
+    if (!data || !data.product) return <Error type="404" />
+
     const { storeConfig, hasCart, product } = data
 
     const {

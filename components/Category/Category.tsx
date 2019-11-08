@@ -5,11 +5,12 @@ import PRODUCTS_QUERY from './products.graphql'
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'
 import { useResize } from 'luma-ui/dist/hooks/useResize'
+import useValueUpdated from '../../hooks/useValueUpdated'
 
 import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
-import Error from 'next/error'
+import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
 type CategoryProps = {
@@ -35,15 +36,22 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const categoryQuery = useQuery(CATEGORY_QUERY, {
         variables: { id },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
 
     const productsQuery = useQuery(PRODUCTS_QUERY, {
         variables: { filters: filterValues },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
+
+    /**
+     * Refetch when back online
+     */
+    useValueUpdated(() => {
+        if (categoryQuery.error && categoryQuery.data.offline === false) categoryQuery.refetch()
+    }, categoryQuery.data.offline)
 
     /**
      * Update filters on ID change
@@ -91,18 +99,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (categoryQuery.loading) {
-        return <ViewLoader />
-    }
+    if (categoryQuery.error && categoryQuery.data.offline) return <Error type="Offline" />
 
-    if (categoryQuery.error) {
-        console.error(categoryQuery.error.message)
-        return <Error statusCode={500} />
-    }
+    if (categoryQuery.error) return <Error type="500">{categoryQuery.error.message}</Error>
 
-    if (!categoryQuery.data.page) {
-        return <Error statusCode={404} />
-    }
+    if (categoryQuery.loading) return <ViewLoader />
+
+    if (!categoryQuery.data.page) return <Error type="404" />
 
     const { page } = categoryQuery.data
 

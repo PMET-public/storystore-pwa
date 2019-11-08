@@ -27,8 +27,8 @@ export const useApp = () => {
     /**
      * Update Network State
      */
-    useNetworkUpdates(isOnline => {
-        client.writeData({ data: { isOnline } })
+    useNetworkUpdates(online => {
+        client.writeData({ data: { offline: !online } })
     })
 
     /**

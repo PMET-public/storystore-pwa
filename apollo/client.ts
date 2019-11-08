@@ -4,6 +4,7 @@ import fetch from 'node-fetch'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
+import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
 
@@ -22,6 +23,18 @@ function create(initialState: any) {
         useGETForQueries: true,
     })
 
+    const retryLink = new RetryLink({
+        delay: {
+            initial: 300,
+            max: Infinity,
+            jitter: true,
+        },
+        attempts: {
+            max: 5,
+            retryIf: error => !!error && (process.browser ? navigator.onLine : true),
+        },
+    })
+
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors) {
@@ -32,6 +45,7 @@ function create(initialState: any) {
 
             if (networkError) console.info(`[Network error]: ${networkError}`)
         }),
+        retryLink,
         httpLink,
     ])
 

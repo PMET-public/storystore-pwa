@@ -1,4 +1,5 @@
 query ProductQuery($urlKey: String!) {
+    offline @client
     hasCart @client
 
     products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {

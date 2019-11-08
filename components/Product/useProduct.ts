@@ -1,5 +1,6 @@
 import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useValueUpdated } from '../../hooks/useValueUpdated'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
@@ -39,9 +40,16 @@ export const useProduct = (props: { urlKey: string }) => {
 
     const { data, ...restQuery } = useQuery(PRODUCT_QUERY, {
         variables: { urlKey },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
+
+    /**
+     * Refetch when back online
+     */
+    useValueUpdated(() => {
+        if (restQuery.error && data.offline === false) restQuery.refetch()
+    }, data.offline)
 
     const { products, ...restData } = data || {}
 
@@ -199,6 +207,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
     return {
         ...restQuery,
+        offline: data.offline,
         data: {
             ...restData,
             product: product

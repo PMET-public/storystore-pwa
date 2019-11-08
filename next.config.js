@@ -5,59 +5,24 @@ const path = require('path')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
-const thirtyDays = 30 * 24 * 60 * 60
-
 module.exports = withOffline({
+    dontAutoRegisterSw: true,
     generateSw: true,
-    generateInDevMode: true,
     workboxOpts: {
         clientsClaim: true,
         skipWaiting: true,
+        globPatterns: ['static/**/*'],
+        globDirectory: '.',
+
         runtimeCaching: [
             {
-                urlPattern: '/',
+                urlPattern: /^https?.*/,
                 handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'home',
-
-                }
-            },
-            {
-                urlPattern: '/\/.\\.js$/',
-                handler: 'StaleWhileRevalidate',
-                options: {
-                    cacheName: 'js',
+                    cacheName: 'offlineCache',
                     expiration: {
                         maxEntries: 200,
-                        maxAgeSeconds: thirtyDays
-                    }
-                }
-            },
-            {
-                urlPattern: /graphql\/.*/,
-                handler: 'NetworkFirst',
-                options: {
-                    cacheName: 'graphql',
-                    cacheableResponse: {
-                        statuses: [0, 200],
                     },
-                    expiration: {
-                        maxAgeSeconds: thirtyDays
-                    }
-                }
-            },
-            {
-                urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif)/,
-                handler: 'CacheFirst',
-                options: {
-                    cacheName: 'images',
-                    cacheableResponse: {
-                        statuses: [0, 200],
-                    },
-                    expiration: {
-                        maxEntries: 60,
-                        maxAgeSeconds: thirtyDays
-                    }
                 },
             },
         ],
@@ -69,7 +34,7 @@ module.exports = withOffline({
          */
         config.plugins.push(
             new webpack.DefinePlugin({
-                'LUMA_ENV': {
+                LUMA_ENV: {
                     HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
                     PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
                     FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),

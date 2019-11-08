@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks'
+import { useValueUpdated } from './../../hooks/useValueUpdated'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import GET_AVAILABLE_REGIONS_QUERY from './graphql/getAvailableRegions.graphql'
@@ -16,6 +17,13 @@ export const useCheckout = () => {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
+
+    /**
+     * Refetch when back online
+     */
+    useValueUpdated(() => {
+        if (query.error && query.data.offline === false) query.refetch()
+    }, query.data.offline)
 
     /**
      * Sorted Countries
@@ -194,6 +202,7 @@ export const useCheckout = () => {
 
     return {
         ...query,
+        offline: query.data.offline,
         data: {
             ...query.data,
             availableRegions,

@@ -1,4 +1,6 @@
 query searchQuery($search: String, $filters: ProductFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
+    offline @client
+
     store: storeConfig {
         id
         titlePrefix: title_prefix

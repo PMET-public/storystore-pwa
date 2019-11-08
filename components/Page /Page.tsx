@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { usePage } from './usePage'
 
 import DocumentMetadata from '../../components/DocumentMetadata'
-import Error from 'next/error'
+import Error from '../Error'
 import PageTemplate from 'luma-ui/dist/templates/Page'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
@@ -11,20 +11,13 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, error, data } = usePage({ id })
+    const { loading, error, data, offline } = usePage({ id })
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    if (error || offline) <Error type="Offline" />
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500">{error.message}</Error>
 
-    if (!data.page) {
-        return <Error statusCode={404} />
-    }
+    if (loading) return <ViewLoader />
 
     const { page } = data
 

@@ -1,3 +1,4 @@
+import { useValueUpdated } from '../../hooks/useValueUpdated'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -13,6 +14,13 @@ export const useCart = () => {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
+
+    /**
+     * Refetch when back online
+     */
+    useValueUpdated(() => {
+        if (query.error && query.data.offline === false) query.refetch()
+    }, query.data.offline)
 
     /**
      * Handle Update Cart Item Action
@@ -60,6 +68,7 @@ export const useCart = () => {
         ...query,
         updating,
         removing,
+        offline: query.data.offline,
         api: {
             updateCartItem: handleUpdateCartItem,
             removeCartItem: handleRemoveCartItem,

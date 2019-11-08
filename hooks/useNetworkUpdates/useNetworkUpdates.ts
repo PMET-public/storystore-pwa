@@ -1,13 +1,16 @@
 import { useCallback, useEffect } from 'react'
 
-export const useNetworkUpdates = (callback: (isOnline: boolean) => any) => {
+export const useNetworkUpdates = (callback: (online: boolean) => any) => {
     const handleNetworkChange = useCallback(() => {
-        const isOnline = navigator.onLine
-        callback(isOnline)
+        const { onLine } = navigator
+
+        callback(onLine)
     }, [])
 
     useEffect(() => {
-        callback(navigator.onLine)
+        const { onLine } = navigator
+
+        callback(onLine)
 
         window.addEventListener('online', handleNetworkChange)
         window.addEventListener('offline', handleNetworkChange)

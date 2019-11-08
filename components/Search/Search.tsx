@@ -4,10 +4,11 @@ import SEARCH_QUERY from './search.graphql'
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from 'luma-ui/dist/hooks/useScroll'
 import { useResize } from 'luma-ui/dist/hooks/useResize'
+import useValueUpdated from '../../hooks/useValueUpdated'
 
 import Router from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
-import Error from 'next/error'
+import Error from '../Error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Link from '../Link'
 
@@ -32,10 +33,16 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const searchQuery = useQuery(SEARCH_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
-        fetchPolicy: 'cache-first',
-        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
+
+    /**
+     * Refetch when back online
+     */
+    useValueUpdated(() => {
+        if (searchQuery.error && searchQuery.data.offline === false) searchQuery.refetch()
+    }, searchQuery.data.offline)
 
     /**
      * Infinite Scroll Effect
@@ -79,10 +86,9 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
     }, [search])
 
-    if (searchQuery.error) {
-        console.error(searchQuery.error.message)
-        return <Error statusCode={500} />
-    }
+    if (searchQuery.error && searchQuery.data.offline) return <Error type="Offline" />
+
+    if (searchQuery.error) return <Error type="500">{searchQuery.error.message}</Error>
 
     const { products, store, meta } = searchQuery.data || {}
 

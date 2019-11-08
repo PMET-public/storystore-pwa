@@ -1,29 +1,31 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import { useApp } from './useApp'
+import { register, unregister } from 'next-offline/runtime'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
-import Error from 'next/error'
+import Error from '../../components/Error'
 
 type AppProps = {}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
 
-    if (loading) {
-        return <ViewLoader />
-    }
+    /**
+     * Register Service Worker
+     */
+    useEffect(() => {
+        register()
+        return () => unregister()
+    }, [])
 
-    if (error) {
-        console.error(error.message)
-        return <Error statusCode={500} />
-    }
+    if (error) return <Error type="500">{error.message}</Error>
 
-    if (!data) {
-        return <Error statusCode={500} />
-    }
+    if (loading) return <ViewLoader />
+
+    if (!data) return <Error type="500" />
 
     const { store, categories, cart, footer } = data
 
