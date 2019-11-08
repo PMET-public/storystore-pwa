@@ -12,6 +12,7 @@ import Link from '../Link'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 type CategoryProps = {
     id: number
@@ -49,9 +50,16 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     /**
      * Refetch when back online
      */
+    /**
+     * Refetch when back online
+     */
+    const {
+        state: { online },
+    } = useAppContext()
+
     useValueUpdated(() => {
-        if (categoryQuery.error && categoryQuery.data.offline === false) categoryQuery.refetch()
-    }, categoryQuery.data.offline)
+        if (categoryQuery.error && online) categoryQuery.refetch()
+    }, online)
 
     /**
      * Update filters on ID change
@@ -99,7 +107,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (categoryQuery.error && categoryQuery.data.offline) return <Error type="Offline" />
+    if (categoryQuery.error && !online) return <Error type="Offline" />
 
     if (categoryQuery.error) return <Error type="500">{categoryQuery.error.message}</Error>
 

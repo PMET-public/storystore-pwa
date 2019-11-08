@@ -1,6 +1,4 @@
 query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
-    offline @client
-
     products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         pagination: page_info {
             current: current_page

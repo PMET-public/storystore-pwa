@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import { useValueUpdated } from '../../hooks/useValueUpdated'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 import PAGE_QUERY from './graphql/page.graphql'
 
@@ -15,12 +16,16 @@ export const usePage = (props: { id: number }) => {
     /**
      * Refetch when back online
      */
+    const {
+        state: { online },
+    } = useAppContext()
+
     useValueUpdated(() => {
-        if (query.error && query.data.offline === false) query.refetch()
-    }, query.data.offline)
+        if (query.error && online) query.refetch()
+    }, online)
 
     return {
         ...query,
-        offline: query.data.offline,
+        online,
     }
 }

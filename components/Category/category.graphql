@@ -1,6 +1,4 @@
 query CategoryQuery($id: Int!) {
-    offline @client
-
     page: category(id: $id) {
         id
         title: name

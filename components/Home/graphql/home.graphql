@@ -1,6 +1,4 @@
 query HomeQuery($id: Int!, $categoryId: Int!) {
-    offline @client
-
     categories: category(id: $categoryId) {
         id
         children {

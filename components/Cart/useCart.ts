@@ -5,6 +5,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import CART_QUERY from './graphql/cart.graphql'
 import UPDATE_CART_ITEMS_MUTATION from './graphql/updateCartItems.graphql'
 import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 export const useCart = () => {
     /**
@@ -18,9 +19,13 @@ export const useCart = () => {
     /**
      * Refetch when back online
      */
+    const {
+        state: { online },
+    } = useAppContext()
+
     useValueUpdated(() => {
-        if (query.error && query.data.offline === false) query.refetch()
-    }, query.data.offline)
+        if (query.error && online) query.refetch()
+    }, online)
 
     /**
      * Handle Update Cart Item Action
@@ -66,9 +71,9 @@ export const useCart = () => {
 
     return {
         ...query,
+        online,
         updating,
         removing,
-        offline: query.data.offline,
         api: {
             updateCartItem: handleUpdateCartItem,
             removeCartItem: handleRemoveCartItem,

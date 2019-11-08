@@ -1,6 +1,4 @@
 query PageQuery($id: Int!) {
-    offline @client
-
     page: cmsPage(id: $id) {
         id: url_key
         title

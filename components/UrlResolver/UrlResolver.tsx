@@ -17,7 +17,7 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
 
     const url = router.query.url as string
 
-    const { loading, error, offline, data } = useUrlResolver({ url })
+    const { loading, error, online, data } = useUrlResolver({ url })
 
     const urlKey = useMemo(
         () =>
@@ -28,7 +28,7 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
         [url]
     )
 
-    if (error && offline) return <Error type="Offline" />
+    if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500">{error.message}</Error>
 

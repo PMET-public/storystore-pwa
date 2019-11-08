@@ -9,9 +9,9 @@ import Link from '../Link'
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const { loading, updating, removing, error, offline, data, api } = useCart()
+    const { loading, updating, removing, error, online, data, api } = useCart()
 
-    if (error && offline) return <Error type="Offline" />
+    if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500">{error.message}</Error>
 

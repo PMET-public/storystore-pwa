@@ -17,7 +17,7 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, error, addingToCart, data, api, offline } = useProduct({ urlKey })
+    const { loading, error, addingToCart, data, api, online } = useProduct({ urlKey })
 
     const router = useRouter()
 
@@ -55,7 +55,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
-    if (error && offline) return <Error type="Offline" />
+    if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" />
 

@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const { loading, error, data, api, offline } = useCheckout()
+    const { loading, error, data, api, online } = useCheckout()
 
     const router = useRouter()
 
@@ -99,7 +99,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         [api.setPaymentMethodAndOrder]
     )
 
-    if (error && offline) return <Error type="Offline" />
+    if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" />
 

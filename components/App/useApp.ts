@@ -1,6 +1,5 @@
 import { useEffect, useCallback } from 'react'
-import useNetworkUpdates from '../../hooks/useNetworkUpdates'
-import { useApolloClient, useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useRouter } from 'next/router'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
@@ -12,8 +11,6 @@ const categoryId = LUMA_ENV.PARENT_CATEGORIES_ID
 const footerBlockId = LUMA_ENV.FOOTER_BLOCK_ID
 
 export const useApp = () => {
-    const client = useApolloClient()
-
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-first',
         returnPartialData: true,
@@ -22,13 +19,6 @@ export const useApp = () => {
             footerBlockId,
             hasFooter: !!footerBlockId,
         },
-    })
-
-    /**
-     * Update Network State
-     */
-    useNetworkUpdates(online => {
-        client.writeData({ data: { offline: !online } })
     })
 
     /**

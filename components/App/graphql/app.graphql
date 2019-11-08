@@ -1,5 +1,4 @@
 query AppShellQuery($categoryId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
-    offline @client
     hasCart @client
 
     store: storeConfig {

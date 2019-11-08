@@ -1,6 +1,7 @@
 import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from '../../hooks/useValueUpdated'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
@@ -47,9 +48,13 @@ export const useProduct = (props: { urlKey: string }) => {
     /**
      * Refetch when back online
      */
+    const {
+        state: { online },
+    } = useAppContext()
+
     useValueUpdated(() => {
-        if (restQuery.error && data.offline === false) restQuery.refetch()
-    }, data.offline)
+        if (restQuery.error && online) restQuery.refetch()
+    }, online)
 
     const { products, ...restData } = data || {}
 
@@ -207,7 +212,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
     return {
         ...restQuery,
-        offline: data.offline,
+        online,
         data: {
             ...restData,
             product: product

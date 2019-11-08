@@ -11,6 +11,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Link from '../Link'
+import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 type SearchProps = {
     query?: string
@@ -40,9 +41,13 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     /**
      * Refetch when back online
      */
+    const {
+        state: { online },
+    } = useAppContext()
+
     useValueUpdated(() => {
-        if (searchQuery.error && searchQuery.data.offline === false) searchQuery.refetch()
-    }, searchQuery.data.offline)
+        if (searchQuery.error && online) searchQuery.refetch()
+    }, online)
 
     /**
      * Infinite Scroll Effect
@@ -86,7 +91,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
     }, [search])
 
-    if (searchQuery.error && searchQuery.data.offline) return <Error type="Offline" />
+    if (searchQuery.error && !online) return <Error type="Offline" />
 
     if (searchQuery.error) return <Error type="500">{searchQuery.error.message}</Error>
 

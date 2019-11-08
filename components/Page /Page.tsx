@@ -11,9 +11,9 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, error, data, offline } = usePage({ id })
+    const { loading, error, data, online } = usePage({ id })
 
-    if (error || offline) <Error type="Offline" />
+    if (error && !online) <Error type="Offline" />
 
     if (error) return <Error type="500">{error.message}</Error>
 

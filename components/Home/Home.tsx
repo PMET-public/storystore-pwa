@@ -10,9 +10,9 @@ import Link from '../Link'
 type HomeProps = {}
 
 export const Home: FunctionComponent<HomeProps> = ({}) => {
-    const { loading, error, data, offline } = useHome()
+    const { loading, error, data, online } = useHome()
 
-    if (error && offline) return <Error type="Offline" />
+    if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" />
 
