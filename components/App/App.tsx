@@ -59,18 +59,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     href: '/' + href,
                     text,
                 }))}
-                myAccount={{
-                    // active: api.isUrlActive('/account'),
-                    // as: Link,
-                    // href: '/account',
-                    text: 'My Account',
-                }}
-                favorites={{
-                    // active: api.isUrlActive('/account'),
-                    // as: Link,
-                    // href: '/account',
-                    text: 'Likes',
-                }}
                 search={{
                     active: api.isUrlActive('/search'),
                     as: Link,
