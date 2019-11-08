@@ -1,14 +1,15 @@
 import React, { FunctionComponent, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 
 import { useUrlResolver } from './useUrlResolver'
 import { useRouter } from 'next/router'
 
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 
-import Error from '../Error'
-import Page from '../Page '
-import Category from '../Category'
-import Product from '../Product'
+const Error = dynamic(() => import('../Error'))
+const Page = dynamic(() => import('../Page '))
+const Category = dynamic(() => import('../Category'))
+const Product = dynamic(() => import('../Product'))
 
 type ResolverProps = {}
 
