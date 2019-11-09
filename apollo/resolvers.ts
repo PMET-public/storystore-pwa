@@ -52,5 +52,15 @@ export const resolvers: Resolvers = {
             return items ? getTotalCartQuantity(items) : 0
         },
     },
-    Mutation: {},
+    Mutation: {
+        resetCart: (_root, _variables, { cache }) => {
+            cache.writeData({
+                data: {
+                    hasCart: false,
+                    cartId: null,
+                    cart: null,
+                },
+            })
+        },
+    },
 }

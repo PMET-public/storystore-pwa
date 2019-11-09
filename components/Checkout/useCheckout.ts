@@ -8,6 +8,7 @@ import GET_AVAILABLE_REGIONS_QUERY from './graphql/getAvailableRegions.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
+import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_AND_ORDER_MUTATION from './graphql/setPaymentMethodAndOrder.graphql'
 
 export const useCheckout = () => {
@@ -184,25 +185,22 @@ export const useCheckout = () => {
     /**
      * Set Payment Method
      */
+    const [resetCart] = useMutation(RESET_CART_MUTATION)
+
     const [setPaymentAndOrderMethod, { loading: settingPaymentAndOrderMethod }] = useMutation(
-        SET_PAYMENT_METHOD_AND_ORDER_MUTATION,
-        {
-            update(cache) {
-                // Reset Cart
-                cache.writeData({
-                    data: { cart: null },
-                })
-            },
-        }
+        SET_PAYMENT_METHOD_AND_ORDER_MUTATION
     )
 
-    const handleSetPaymentMethodAndOrder = useCallback((props: { nonce: string }) => {
+    const handleSetPaymentMethodAndOrder = useCallback(async (props: { nonce: string }) => {
         const { nonce } = props
-        return setPaymentAndOrderMethod({
-            variables: {
-                nonce,
-            },
+
+        const res = await setPaymentAndOrderMethod({
+            variables: { nonce },
         })
+
+        await resetCart()
+
+        return res
     }, [])
 
     return {

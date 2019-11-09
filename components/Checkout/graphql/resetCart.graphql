@@ -1,0 +1,3 @@
+mutation ResetCart {
+    resetCart @client
+}
