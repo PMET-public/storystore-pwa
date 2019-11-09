@@ -2,6 +2,7 @@ import React, { FunctionComponent, useCallback, useState } from 'react'
 import { useCart } from './useCart'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
+import Link from '../Link'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import { useRouter } from 'next/router'
@@ -40,10 +41,16 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         items: cart.items.map(({ id, quantity, product, options }: any, index: number) => ({
                             _id: id || index,
                             title: {
+                                as: Link,
+                                urlResolver: true,
+                                href: `/${product.urlKey}`,
                                 text: product.name,
                             },
                             sku: `SKU. ${product.sku}`,
                             thumbnail: {
+                                as: Link,
+                                urlResolver: true,
+                                href: `/${product.urlKey}`,
                                 alt: product.thumbnail.label,
                                 src: product.thumbnail.url,
                             },

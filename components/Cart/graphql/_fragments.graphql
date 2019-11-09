@@ -8,6 +8,7 @@ fragment Cart on Cart {
             id
             sku
             name
+            urlKey: url_key
             thumbnail {
                 label
                 url
