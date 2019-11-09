@@ -1,15 +1,25 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import { useCart } from './useCart'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
-import Link from '../Link'
+import { useRouter } from 'next/router'
 
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api } = useCart()
+
+    const [loadingCheckout, setLoadingCheckout] = useState(false)
+
+    const router = useRouter()
+
+    const handleGoToCheckout = useCallback(async () => {
+        setLoadingCheckout(true)
+        await router.push('/checkout')
+        setLoadingCheckout(false)
+    }, [])
 
     if (error && !online) return <Error type="Offline" />
 
@@ -93,12 +103,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     }}
                     buttons={[
                         {
-                            as: Link,
                             linkTagAs: 'button',
-                            href: '/checkout',
+                            onClick: handleGoToCheckout,
                             disabled: cart.items.length === 0,
                             text: 'Checkout',
-                            loading: updating || removing,
+                            loading: loadingCheckout || updating || removing,
                         },
                     ]}
                 />
