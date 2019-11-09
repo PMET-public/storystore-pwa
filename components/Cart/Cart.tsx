@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
 import { useCart } from './useCart'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
@@ -12,13 +12,23 @@ type CartProps = {}
 export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api } = useCart()
 
-    const [loadingCheckout, setLoadingCheckout] = useState(false)
+    const [goingToCheckout, setGoingToCheckout] = useState(false)
 
     const router = useRouter()
 
     const handleGoToCheckout = useCallback(async () => {
-        setLoadingCheckout(true)
-        router.push('/checkout')
+        setGoingToCheckout(true)
+        try {
+            await router.push('/checkout')
+        } catch (error) {
+            setGoingToCheckout(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        ;() => {
+            setGoingToCheckout(false)
+        }
     }, [])
 
     if (error && !online) return <Error type="Offline" />
@@ -113,7 +123,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             onClick: handleGoToCheckout,
                             disabled: cart.items.length === 0,
                             text: 'Checkout',
-                            loading: loadingCheckout || updating || removing,
+                            loading: goingToCheckout || updating || removing,
                         },
                     ]}
                 />

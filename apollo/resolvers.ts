@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 import { getFromLocalStorage } from '../lib/localStorage'
-import { getTotalCartQuantity } from '../lib/getTotalCartQuantity'
 
 /**
  * Extending the types of our server schema
@@ -48,7 +47,8 @@ export const resolvers: Resolvers = {
 
         countries({ countries }) {
             /**
-             * Patch: return countries sorted by name
+             * 🩹Patch:
+             * return countries sorted by name
              * and filter empty values
              */
 
@@ -73,8 +73,12 @@ export const resolvers: Resolvers = {
     },
     Cart: {
         totalQuantity({ items }) {
-            // ☝️ TO-DO: Remove once total_quantity is released
-            return items ? getTotalCartQuantity(items) : 0
+            /**
+             * 🩹Patch:
+             * return total quantity
+             */
+
+            return items ? items.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0) : 0
         },
     },
 

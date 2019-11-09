@@ -6,7 +6,7 @@ export const useValueUpdated = (callback: (...args: any) => any, value: any) => 
     useEffect(() => {
         if (value !== ref.current) callback()
         ref.current = value
-    })
+    }, [value, callback])
 
     return ref.current
 }

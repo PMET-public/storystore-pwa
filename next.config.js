@@ -11,8 +11,8 @@ module.exports = withOffline({
     workboxOpts: {
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['static/**/*'],
-        globDirectory: '.',
+        // globPatterns: ['static/**/*'],
+        // globDirectory: '.',
 
         runtimeCaching: [
             {

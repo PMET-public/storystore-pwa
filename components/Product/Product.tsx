@@ -35,6 +35,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             }, {})
 
             setSelectedOptions(options)
+
             api.selectVariant(options)
         },
         [api.selectVariant]
@@ -42,13 +43,16 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const handleAddToCart = useCallback(async () => {
         const { sku, variantSku } = data.product
-        if (type === 'configurable') {
-            await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
-        } else {
-            await api.addSimpleProductToCart({ sku, quantity: 1 })
+        try {
+            if (type === 'configurable') {
+                await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
+            } else {
+                await api.addSimpleProductToCart({ sku, quantity: 1 })
+            }
+            return router.push('/cart')
+        } catch (error) {
+            console.error(error)
         }
-
-        return router.push('/cart')
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
     if (error && !online) return <Error type="Offline" />
