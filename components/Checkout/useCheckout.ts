@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo } from 'react'
-import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks'
+import { useCallback, useEffect } from 'react'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from './../../hooks/useValueUpdated'
 import { useAppContext } from 'luma-ui/dist/AppProvider'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
-import GET_AVAILABLE_REGIONS_QUERY from './graphql/getAvailableRegions.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
@@ -30,60 +29,6 @@ export const useCheckout = () => {
     useValueUpdated(() => {
         if (query.error && online) query.refetch()
     }, online)
-
-    /**
-     * Sorted Countries
-     */
-    const sortedCountries = useMemo(() => {
-        return (
-            query.data.countries &&
-            query.data.countries
-                .filter((x: any) => !!x.name)
-                .sort(function compare(a: any, b: any) {
-                    // Use toUpperCase() to ignore character casing
-                    const genreA = a.name.toUpperCase()
-                    const genreB = b.name.toUpperCase()
-
-                    let comparison = 0
-                    if (genreA > genreB) {
-                        comparison = 1
-                    } else if (genreA < genreB) {
-                        comparison = -1
-                    }
-                    return comparison
-                })
-        )
-    }, [query.data && query.data.countries])
-
-    /**
-     * Get Available Regions
-     */
-    const [getAvailableRegions, { loading: gettingAvailableRegions, data: availableRegions }] = useLazyQuery(
-        GET_AVAILABLE_REGIONS_QUERY,
-        {
-            fetchPolicy: 'cache-first',
-        }
-    )
-
-    const handleGetAvailableRegions = useCallback((props: { countryCode: string }) => {
-        const { countryCode } = props
-
-        return getAvailableRegions({
-            variables: {
-                id: countryCode,
-            },
-        })
-    }, [])
-
-    useEffect(() => {
-        if (!query.data.cart || !query.data.cart.shippingAddresses) return
-        const [address] = query.data.cart.shippingAddresses
-        const { code } = address.country
-        if (code) handleGetAvailableRegions({ countryCode: code })
-    }, [
-        handleGetAvailableRegions,
-        query.data.cart && query.data.cart.shippingAddresses && query.data.cart.shippingAddresses[0].country.code,
-    ])
 
     /**
      * Set Contact Info
@@ -206,17 +151,10 @@ export const useCheckout = () => {
     return {
         ...query,
         online,
-        data: {
-            ...query.data,
-            availableRegions,
-            countries: sortedCountries,
-        },
-        gettingAvailableRegions,
         settingContactInfo,
         settingShippingMethod,
         settingPaymentAndOrderMethod,
         api: {
-            getAvailableRegions: handleGetAvailableRegions,
             setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,
             setPaymentMethodAndOrder: handleSetPaymentMethodAndOrder,

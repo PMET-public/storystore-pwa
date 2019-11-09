@@ -45,6 +45,31 @@ export const resolvers: Resolvers = {
             const cartId = process.browser && getFromLocalStorage('cartId')
             return process.browser && !!cartId
         },
+
+        countries({ countries }) {
+            /**
+             * Patch: return countries sorted by name
+             * and filter empty values
+             */
+
+            if (!countries) return countries
+
+            return countries
+                .filter((x: any) => !!x.name)
+                .sort(function compare(a: any, b: any) {
+                    // Use toUpperCase() to ignore character casing
+                    const genreA = a.name.toUpperCase()
+                    const genreB = b.name.toUpperCase()
+
+                    let comparison = 0
+                    if (genreA > genreB) {
+                        comparison = 1
+                    } else if (genreA < genreB) {
+                        comparison = -1
+                    }
+                    return comparison
+                })
+        },
     },
     Cart: {
         totalQuantity({ items }) {
@@ -52,6 +77,7 @@ export const resolvers: Resolvers = {
             return items ? getTotalCartQuantity(items) : 0
         },
     },
+
     Mutation: {
         resetCart: (_root, _variables, { cache }) => {
             cache.writeData({

@@ -11,5 +11,9 @@ query CheckoutQuery($cartId: String = "") {
         id
         code: id
         name: full_name_locale
+        regions: available_regions {
+            code
+            name
+        }
     }
 }

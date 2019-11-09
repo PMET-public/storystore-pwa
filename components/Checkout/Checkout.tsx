@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, ChangeEvent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
 import { useCheckout } from './useCheckout'
 import CheckoutTemplate from 'luma-ui/dist/templates/Checkout'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
@@ -13,6 +13,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     const router = useRouter()
 
+    /**
+     * Steps
+     */
     const [step, setStep] = useState<1 | 2 | 3>(1)
 
     /**
@@ -23,15 +26,21 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     }, [data && data.cart])
 
     /**
-     * Get Available Regiouns per country selected
+     * Countries Data
      */
-    const handleSelectedCountry = useCallback(
-        (event: ChangeEvent<HTMLSelectElement>) => {
-            const { options } = event.currentTarget
-            const { value } = options[options.selectedIndex]
-            api.getAvailableRegions({ countryCode: value })
+    const getSelectedCountryRegions = useCallback(
+        (code: string) => {
+            if (!code || !data.countries) return null
+            return data.countries.find((country: { code: string }) => country.code === code).regions
         },
-        [api.getAvailableRegions]
+        [data.countries]
+    )
+
+    const selectedShippingCountryCode =
+        (data.cart && data.cart.shippingAddress && data.cart.shippingAddress.country.code) || 'US'
+
+    const [selectedShippingCountryRegions, setSelectedShippingCountryRegions] = useState(
+        getSelectedCountryRegions(selectedShippingCountryCode)
     )
 
     /**
@@ -109,9 +118,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     const { email, shippingAddresses, braintreeToken } = cart
     const [shippingAddress] = shippingAddresses
 
-    // TODO: Regions
-    // console.log({ availableRegions })
-
     return (
         <React.Fragment>
             <DocumentMetadata title="Checkout" />
@@ -150,8 +156,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                         country: {
                             label: 'Country',
-                            defaultValue: shippingAddress.country.code || 'US',
-                            onChange: handleSelectedCountry,
+
+                            defaultValue: selectedShippingCountryCode,
+                            disabled: true, // US only for now
+
+                            onChange: e => {
+                                const { value } = e.currentTarget
+                                const regions = getSelectedCountryRegions(value)
+                                setSelectedShippingCountryRegions(regions)
+                            },
                             items: countries.map((country: { name: string; code: string }) => ({
                                 text: country.name,
                                 value: country.code,
@@ -160,6 +173,20 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         region: {
                             label: 'State',
                             defaultValue: shippingAddress.region.code,
+                            type: 'text',
+                            ...(selectedShippingCountryRegions
+                                ? {
+                                      type: 'select',
+                                      items: selectedShippingCountryRegions.map(
+                                          (region: { name: string; code: string }) => ({
+                                              text: region.name,
+                                              value: region.code,
+                                          })
+                                      ),
+                                  }
+                                : {
+                                      type: 'text',
+                                  }),
                         },
                         postalCode: {
                             label: 'Postal Code',

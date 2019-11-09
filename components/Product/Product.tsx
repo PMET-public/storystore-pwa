@@ -44,13 +44,11 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         const { sku, variantSku } = data.product
         if (type === 'configurable') {
             await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
-            await router.push('/cart')
         } else {
             await api.addSimpleProductToCart({ sku, quantity: 1 })
-            await router.push('/cart')
         }
 
-        return
+        return router.push('/cart')
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
     if (error && !online) return <Error type="Offline" />

@@ -17,8 +17,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     const handleGoToCheckout = useCallback(async () => {
         setLoadingCheckout(true)
-        await router.push('/checkout')
-        setLoadingCheckout(false)
+        router.push('/checkout')
     }, [])
 
     if (error && !online) return <Error type="Offline" />
