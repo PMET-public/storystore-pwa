@@ -16,6 +16,7 @@ export const useCheckout = () => {
      */
     const query = useQuery(CHECKOUT_QUERY, {
         fetchPolicy: 'cache-and-network',
+        errorPolicy: 'all',
         returnPartialData: true,
     })
 

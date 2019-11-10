@@ -22,7 +22,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (data && data.cart && data.cart.items.length === 0) router.push('/cart')
+        if (data && data.cart && data.cart.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
     }, [data && data.cart])
 
     /**
@@ -103,20 +103,22 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         async formData => {
             const { nonce } = formData
             const { data } = await api.setPaymentMethodAndOrder({ nonce })
-            return router.push(`/checkout/confirmation?order=${data.payment.order.id}`)
+            return router
+                .push(`/checkout/confirmation?order=${data.payment.order.id}`)
+                .then(() => window.scrollTo(0, 0))
         },
         [api.setPaymentMethodAndOrder]
     )
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" />
+    if (error) <Error type="500">{error.message}</Error>
 
     if (loading) return <ViewLoader />
 
     const { cart, countries } = data
     const { email, shippingAddresses, braintreeToken } = cart
-    const [shippingAddress] = shippingAddresses
+    const shippingAddress = shippingAddresses[0]
 
     return (
         <React.Fragment>
@@ -161,8 +163,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             disabled: true, // US only for now
 
                             onChange: e => {
-                                const { value } = e.currentTarget
-                                const regions = getSelectedCountryRegions(value)
+                                const regions = getSelectedCountryRegions(e.currentTarget.value)
                                 setSelectedShippingCountryRegions(regions)
                             },
                             items: countries.map((country: { name: string; code: string }) => ({

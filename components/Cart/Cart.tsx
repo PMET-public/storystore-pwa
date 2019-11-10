@@ -47,6 +47,10 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
             {cart && (
                 <CartTemplate
+                    title={{
+                        as: 'h2',
+                        text: 'Shopping Bag',
+                    }}
                     list={{
                         items: cart.items.map(({ id, quantity, product, options }: any, index: number) => ({
                             _id: id || index,
@@ -87,7 +91,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     }}
                     summary={{
                         title: {
-                            text: 'Shopping Bag',
+                            text: 'Bag Summary',
                         },
                         prices: cart.prices && [
                             {
@@ -117,15 +121,13 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             },
                         ],
                     }}
-                    buttons={[
-                        {
-                            linkTagAs: 'button',
-                            onClick: handleGoToCheckout,
-                            disabled: cart.items.length === 0,
-                            text: 'Checkout',
-                            loading: goingToCheckout || updating || removing,
-                        },
-                    ]}
+                    button={{
+                        linkTagAs: 'button',
+                        onClick: handleGoToCheckout,
+                        disabled: cart.items.length === 0,
+                        text: 'Checkout',
+                        loading: goingToCheckout || updating || removing,
+                    }}
                 />
             )}
         </React.Fragment>
