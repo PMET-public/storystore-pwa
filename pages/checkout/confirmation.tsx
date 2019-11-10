@@ -1,6 +1,6 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import ConfirmationTemplate from 'luma-ui/dist/templates/Confirmation'
+import CartLanding from 'luma-ui/dist/templates/CartLanding'
 import Button from 'luma-ui/dist/components/Button'
 import Link from '../../components/Link'
 
@@ -10,10 +10,11 @@ export const Confirmation = () => {
     const { order } = router.query
 
     return (
-        <ConfirmationTemplate
+        <CartLanding
             title={{
                 text: 'Thank you for your order!',
             }}
+            success
             children={
                 <div>
                     {order && <p>Your order # is: {order}.</p>}

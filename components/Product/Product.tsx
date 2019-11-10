@@ -49,7 +49,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             } else {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
             }
-            return router.push('/cart')
+            return router.push('/cart').then(() => window.scrollTo(0, 0))
         } catch (error) {
             console.error(error)
         }

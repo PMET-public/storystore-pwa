@@ -124,6 +124,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         <React.Fragment>
             <DocumentMetadata title="Checkout" />
             <CheckoutTemplate
+                title={{
+                    text: 'Checkout',
+                }}
                 step={step}
                 contactInfo={{
                     edit: step < 2,
@@ -287,7 +290,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 summary={{
                     title: {
-                        text: 'Shopping Bag',
+                        text: 'Bag Summary',
                     },
                     prices: cart.prices && [
                         {
