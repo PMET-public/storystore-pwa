@@ -37,13 +37,17 @@ function create(initialState: any) {
 
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError }) => {
+            console.groupCollapsed('🚨 GraphQL Error')
             if (graphQLErrors) {
                 graphQLErrors.forEach(({ message, locations, path }) => {
-                    console.info(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+                    console.info(`Message: ${message}`)
+                    console.info('Location: ', locations)
+                    console.info('Path: ', path)
                 })
             }
 
-            if (networkError) console.info(`[Network error]: ${networkError}`)
+            if (networkError) console.info('Network error: ', networkError)
+            console.groupEnd()
         }),
         retryLink,
         httpLink,
