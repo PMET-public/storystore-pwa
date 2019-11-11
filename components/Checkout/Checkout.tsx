@@ -16,7 +16,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     /**
      * Steps
      */
-    const [step, setStep] = useState<1 | 2 | 3>(1)
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
 
     /**
      * Redirect to Shopping Cart if empty
@@ -99,16 +99,19 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     /**
      * Payment Method
      */
-    const handleSetPaymentMethodAndOrder = useCallback(
+    const handleSetPaymentMethod = useCallback(
         async formData => {
             const { nonce } = formData
-            const { data } = await api.setPaymentMethodAndOrder({ nonce })
-            return router
-                .push(`/checkout/confirmation?order=${data.payment.order.id}`)
-                .then(() => window.scrollTo(0, 0))
+            await api.setPaymentMethod({ nonce })
+            setStep(4)
         },
-        [api.setPaymentMethodAndOrder]
+        [api.setPaymentMethod]
     )
+
+    const handlePlaceOrder = useCallback(async () => {
+        const { data } = await api.placeOrder()
+        router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
+    }, [api.setPaymentMethod])
 
     if (error && !online) return <Error type="Offline" />
 
@@ -250,9 +253,15 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                     },
                     submitButton: {
+                        text: 'Save Payment Method',
+                    },
+                    onSubmit: handleSetPaymentMethod,
+                }}
+                placeOrder={{
+                    submitButton: {
                         text: 'Place Order',
                     },
-                    onSubmit: handleSetPaymentMethodAndOrder,
+                    onSubmit: handlePlaceOrder,
                 }}
                 list={{
                     items:

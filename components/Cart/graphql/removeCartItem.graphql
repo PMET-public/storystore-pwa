@@ -1,4 +1,4 @@
-#import "./_fragments.graphql"
+#import "./_Cart.graphql"
 
 mutation RemoveItemFromCart($cartId: String = "", $itemId: Int!) {
     cartId @client @export(as: "cartId")

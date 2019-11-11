@@ -1,4 +1,4 @@
-#import "./_fragments.graphql"
+#import "./_CheckoutDetails.graphql"
 
 query CheckoutQuery($cartId: String = "") {
     cartId @client @export(as: "cartId")

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 import { useCart } from './useCart'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
@@ -15,23 +15,10 @@ type CartProps = {}
 export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api } = useCart()
 
-    const [goingToCheckout, setGoingToCheckout] = useState(false)
-
     const router = useRouter()
 
     const handleGoToCheckout = useCallback(async () => {
-        setGoingToCheckout(true)
-        try {
-            await router.push('/checkout').then(() => window.scrollTo(0, 0))
-        } catch (error) {
-            setGoingToCheckout(false)
-        }
-    }, [])
-
-    useEffect(() => {
-        ;() => {
-            setGoingToCheckout(false)
-        }
+        router.push('/checkout').then(() => window.scrollTo(0, 0))
     }, [])
 
     if (error && !online) return <Error type="Offline" />
@@ -131,7 +118,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 onClick: handleGoToCheckout,
                                 disabled: cart.items.length === 0,
                                 text: 'Checkout',
-                                loading: goingToCheckout || updating || removing,
+                                loading: updating || removing,
                             }}
                         />
                     ) : (
@@ -141,7 +128,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             }}
                             children={
                                 <div>
-                                    <Button as={Link} urlResolver href="/" style={{ marginTop: '2rem' }}>
+                                    <Button as={Link} href="/" style={{ marginTop: '2rem' }}>
                                         Get Shopping
                                     </Button>
                                 </div>

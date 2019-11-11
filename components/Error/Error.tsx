@@ -13,7 +13,7 @@ const messages = {
     '404': (
         <>
             <div>Oops! The page you landed on doesn't exist.</div>
-            <Button as={Link} urlResolver href="/" style={{ marginTop: '2rem' }}>
+            <Button as={Link} href="/" style={{ marginTop: '2rem' }}>
                 Look around
             </Button>
         </>

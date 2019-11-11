@@ -1,4 +1,5 @@
-#import "./_fragments.graphql"
+#import "./_BillingAddress.graphql"
+#import "./_ShippingAddresses.graphql"
 
 mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAddressInput!) {
     cartId @client @export(as: "cartId")
@@ -10,12 +11,19 @@ mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAdd
         }
     }
 
-    # Set Billing and Shipping Address
-    address: setBillingAddressOnCart(
-        input: { cart_id: $cartId, billing_address: { address: $address, use_for_shipping: true } }
+    # Set Billing
+    billingAddress: setBillingAddressOnCart(input: { cart_id: $cartId, billing_address: { address: $address } }) {
+        cart {
+            ...BillingAddress
+        }
+    }
+
+    # and Shipping Address
+    shippingAddresses: setShippingAddressesOnCart(
+        input: { cart_id: $cartId, shipping_addresses: [{ address: $address }] }
     ) {
         cart {
-            ...CheckoutDetails
+            ...ShippingAddresses
         }
     }
 }

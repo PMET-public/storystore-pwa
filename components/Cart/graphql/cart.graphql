@@ -1,4 +1,4 @@
-#import "./_fragments.graphql"
+#import "./_Cart.graphql"
 
 query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
     hasCart @client @export(as: "hasCart")

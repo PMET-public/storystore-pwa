@@ -1,39 +1,15 @@
+#import "./_BillingAddress.graphql"
+#import "./_ShippingAddresses.graphql"
+#import "./_SelectedPaymentMethod.graphql"
+
 fragment CheckoutDetails on Cart {
     braintreeToken @client
 
     email
 
-    billingAddress: billing_address {
-        ...Address
-    }
-
-    shippingAddresses: shipping_addresses {
-        ...Address
-
-        availableShippingMethods: available_shipping_methods {
-            available
-            amount {
-                currency
-                value
-            }
-            carrierCode: carrier_code
-            methodCode: method_code
-            methodTitle: method_title
-        }
-
-        selectedShippingMethod: selected_shipping_method {
-            methodCode: method_code
-            carrierCode: carrier_code
-            amount {
-                currency
-                value
-            }
-        }
-    }
-
-    selectedPaymentMethod: selected_payment_method {
-        code
-    }
+    ...BillingAddress
+    ...ShippingAddresses
+    ...SelectedPaymentMethod
 
     items {
         id
@@ -85,23 +61,5 @@ fragment CheckoutDetails on Cart {
             currency
             value
         }
-    }
-}
-
-fragment Address on CartAddressInterface {
-    firstName: firstname
-    lastName: lastname
-    postalCode: postcode
-    street
-    phone: telephone
-    city
-    company
-
-    country {
-        code
-    }
-
-    region {
-        code
     }
 }

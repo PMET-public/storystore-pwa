@@ -8,7 +8,8 @@ import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import RESET_CART_MUTATION from './graphql/resetCart.graphql'
-import SET_PAYMENT_METHOD_AND_ORDER_MUTATION from './graphql/setPaymentMethodAndOrder.graphql'
+import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
+import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
 
 export const useCheckout = () => {
     /**
@@ -35,8 +36,8 @@ export const useCheckout = () => {
      * Set Contact Info
      */
     const [setContactInfo, { loading: settingContactInfo }] = useMutation(SET_CONTACT_INFO_MUTATION, {
-        update(cache, { data: { email, address } }) {
-            const cart = { ...email.cart, ...address.cart }
+        update(cache, { data: { email, shippingAddresses, billingAddress } }) {
+            const cart = { ...email.cart, ...shippingAddresses.cart, ...billingAddress.cart }
 
             cache.writeData({
                 data: { cart },
@@ -131,21 +132,26 @@ export const useCheckout = () => {
     /**
      * Set Payment Method
      */
-    const [resetCart] = useMutation(RESET_CART_MUTATION)
+    const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION)
 
-    const [setPaymentAndOrderMethod, { loading: settingPaymentAndOrderMethod }] = useMutation(
-        SET_PAYMENT_METHOD_AND_ORDER_MUTATION
-    )
-
-    const handleSetPaymentMethodAndOrder = useCallback(async (props: { nonce: string }) => {
+    const handleSetPaymentMethod = useCallback(async (props: { nonce: string }) => {
         const { nonce } = props
 
-        const res = await setPaymentAndOrderMethod({
+        return await setPaymentMethod({
             variables: { nonce },
         })
+    }, [])
 
+    /**
+     * Place Order
+     */
+    const [resetCart] = useMutation(RESET_CART_MUTATION)
+
+    const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION)
+
+    const handlePlaceOrder = useCallback(async () => {
+        const res = await placeOrder()
         await resetCart()
-
         return res
     }, [])
 
@@ -154,11 +160,13 @@ export const useCheckout = () => {
         online,
         settingContactInfo,
         settingShippingMethod,
-        settingPaymentAndOrderMethod,
+        settingPaymentMethod,
+        placingOrder,
         api: {
             setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,
-            setPaymentMethodAndOrder: handleSetPaymentMethodAndOrder,
+            setPaymentMethod: handleSetPaymentMethod,
+            placeOrder: handlePlaceOrder,
         },
     }
 }

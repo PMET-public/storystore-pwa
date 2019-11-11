@@ -19,7 +19,7 @@ export const Confirmation = () => {
                 <div>
                     {order && <p>Your order # is: {order}.</p>}
                     <p>We'll email you details and tracking info.</p>
-                    <Button as={Link} urlResolver href="/" style={{ marginTop: '2rem' }}>
+                    <Button as={Link} href="/" style={{ marginTop: '2rem' }}>
                         Continue Shopping
                     </Button>
                 </div>

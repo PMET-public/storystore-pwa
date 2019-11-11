@@ -1,0 +1,11 @@
+# Braintree!
+
+mutation PlaceOrder($cartId: String = "") {
+    cartId @client @export(as: "cartId")
+
+    placeOrder: placeOrder(input: { cart_id: $cartId }) {
+        order {
+            id: order_id
+        }
+    }
+}

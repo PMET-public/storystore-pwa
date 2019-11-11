@@ -1,4 +1,4 @@
-#import "./_fragments.graphql"
+#import "./_CheckoutDetails.graphql"
 
 mutation SetShippingMethodsOnCart($cartId: String!, $shippingMethods: [ShippingMethodInput]!) {
     cartId @client @export(as: "cartId")

@@ -1,0 +1,7 @@
+#import "./_Address.graphql"
+
+fragment BillingAddress on Cart {
+    billingAddress: billing_address {
+        ...Address
+    }
+}

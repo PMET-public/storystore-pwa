@@ -1,0 +1,17 @@
+fragment Address on CartAddressInterface {
+    firstName: firstname
+    lastName: lastname
+    postalCode: postcode
+    street
+    phone: telephone
+    city
+    company
+
+    country {
+        code
+    }
+
+    region {
+        code
+    }
+}
