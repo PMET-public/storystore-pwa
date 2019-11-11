@@ -24,11 +24,13 @@ app.prepare().then(async () => {
     /**
      * GraphQL Proxy
      */
+
     server.get('/graphql', (req, res) => {
         req.pipe(
             request.get({
                 qs: req.query,
                 url: MAGENTO_GRAPHQL_URL,
+                separateReqPool: { maxSockets: 20 },
             })
         ).pipe(res)
     })
