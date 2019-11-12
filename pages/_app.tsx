@@ -5,6 +5,7 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import { getDataFromTree } from '@apollo/react-ssr'
 import { AppProvider } from 'luma-ui/dist/AppProvider'
 import initApollo from '../apollo/client'
+import NextNprogress from 'nextjs-progressbar'
 
 import AppShell from '../components/App'
 
@@ -15,6 +16,13 @@ class MyApp extends App {
         return (
             <ApolloProvider client={apolloClient}>
                 <AppProvider>
+                    <NextNprogress
+                        color="#29D"
+                        startPosition={0.4}
+                        stopDelayMs={200}
+                        height={3}
+                        options={{ showSpinner: false, easing: 'ease' }}
+                    />
                     <AppShell>
                         <Component {...pageProps} />
                     </AppShell>
@@ -28,6 +36,8 @@ class MyApp extends App {
  * Apollo Wrapper
  * @param App
  */
+export const apollo = initApollo()
+
 const withApollo: any = (App: any) => {
     return class Apollo extends React.Component {
         apolloClient: any
@@ -42,7 +52,6 @@ const withApollo: any = (App: any) => {
 
             // Run all GraphQL queries in the component tree
             // and extract the resulting data
-            const apollo = initApollo()
             if (typeof window === 'undefined') {
                 try {
                     // Run all GraphQL queries

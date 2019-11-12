@@ -14,9 +14,9 @@ const Product = dynamic(() => import('../Product'))
 type ResolverProps = {}
 
 export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
-    const router = useRouter()
+    const { query } = useRouter()
 
-    const url = router.query.url as string
+    const url = query.url as string
 
     const { loading, error, online, data } = useUrlResolver({ url })
 

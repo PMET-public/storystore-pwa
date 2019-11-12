@@ -9,7 +9,7 @@ export const useUrlResolver = (props: { url: string }) => {
 
     const query = useQuery(URL_RESOLVER_QUERY, {
         variables: { url },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
 
