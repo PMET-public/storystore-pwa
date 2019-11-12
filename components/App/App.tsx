@@ -14,7 +14,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     if (error) return <Error type="500">{error.message}</Error>
 
-    if (!data.store && loading) return <ViewLoader />
+    if (loading) return <ViewLoader />
 
     if (!data) return <Error type="500" />
 

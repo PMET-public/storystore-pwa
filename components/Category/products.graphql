@@ -28,9 +28,7 @@ query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $current
                 }
             }
             title: name
-            urls: url_rewrites {
-                url
-            }
+            urlKey: url_key
         }
     }
 }

@@ -165,10 +165,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     loading: searchQuery.loading,
                     items:
                         products &&
-                        products.items.map(({ id, image, price, title, urls }: any, index: number) => ({
+                        products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
                             _id: `${id}--${index}`,
                             as: Link,
-                            href: urls[urls.length - 1].url,
+                            href: `/${urlKey}`,
                             urlResolver: true,
                             image,
                             price: {

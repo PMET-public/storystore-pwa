@@ -43,9 +43,7 @@ query searchQuery($search: String, $filters: ProductFilterInput, $pageSize: Int 
                 }
             }
             title: name
-            urls: url_rewrites {
-                url
-            }
+            urlKey: url_key
         }
     }
 }
