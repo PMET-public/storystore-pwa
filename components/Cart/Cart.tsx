@@ -39,9 +39,9 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                 <>
                     {cart.items.length > 0 ? (
                         <CartTemplate
-                            title={{
-                                as: 'h2',
-                                text: 'Shopping Bag',
+                            breadcrumbs={{
+                                prefix: '#',
+                                items: [{ text: 'Cart', as: Link, href: '/cart' }],
                             }}
                             list={{
                                 items: cart.items.map(({ id, quantity, product, options }: any, index: number) => ({

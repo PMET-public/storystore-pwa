@@ -5,6 +5,7 @@ import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Error from '../Error'
 import DocumentMetadata from '../DocumentMetadata'
 import { useRouter } from 'next/router'
+import Link from '../Link'
 
 type CheckoutProps = {}
 
@@ -127,8 +128,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         <React.Fragment>
             <DocumentMetadata title="Checkout" />
             <CheckoutTemplate
-                title={{
-                    text: 'Checkout',
+                breadcrumbs={{
+                    prefix: '#',
+                    items: [
+                        { text: 'Cart', as: Link, href: '/cart' },
+                        { text: 'Checkout', as: Link, href: '/checkout' },
+                    ],
                 }}
                 step={step}
                 contactInfo={{
@@ -251,6 +256,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                 },
                             },
                         },
+                    },
+                    editButton: {
+                        text: 'Edit',
                     },
                     submitButton: {
                         text: 'Save Payment Method',
