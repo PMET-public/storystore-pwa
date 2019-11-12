@@ -1,8 +1,8 @@
 import React from 'react'
-import UrlResolver from '../components/UrlResolver'
+import UrlResolverComponent from '../components/UrlResolver'
 
-const Search = () => {
-    return <UrlResolver />
+const UrlResolver = () => {
+    return <UrlResolverComponent />
 }
 
-export default Search
+export default UrlResolver

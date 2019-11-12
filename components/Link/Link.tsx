@@ -5,7 +5,10 @@ import { Props } from 'luma-ui/dist/lib'
 
 export type LinkProps = Props<
     {
-        urlResolver?: boolean
+        urlResolver?: {
+            type: 'CMS_BLOCK' | 'PAGE' | 'PRODUCT'
+            id: number
+        }
         linkTagAs?: 'a' | 'button'
     } & _LinkProps
 >
@@ -21,14 +24,14 @@ export const Link: FunctionComponent<LinkProps> = ({
     shallow,
     passHref,
     prefetch,
-    urlResolver,
+    urlResolver = null,
     linkTagAs = 'a',
     ...props
 }) => {
     const href = _href.toString()
 
     const linkProps = {
-        href: urlResolver ? `/_url-resolver?url=${href}` : _href,
+        href: urlResolver ? `/_url-resolver?url=${href}&type=${urlResolver.type}&contentId=${urlResolver.id}` : _href,
         as: urlResolver ? _href : as,
         replace,
         scroll,

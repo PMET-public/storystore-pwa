@@ -43,10 +43,13 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     href: '/',
                     text: 'Home',
                 }}
-                menu={categories.children.map(({ text, href }: any) => ({
+                menu={categories.children.map(({ id, text, href }: any) => ({
                     active: api.isUrlActive('/' + href),
                     as: Link,
-                    urlResolver: true,
+                    urlResolver: {
+                        type: 'CATEGORY',
+                        id,
+                    },
                     href: '/' + href,
                     text,
                 }))}

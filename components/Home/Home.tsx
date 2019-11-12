@@ -32,9 +32,12 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
 
             <HomeTemplate
                 stories={{
-                    items: categories.children.map(({ text, href, image }: any) => ({
+                    items: categories.children.map(({ id, text, href, image }: any) => ({
                         as: Link,
-                        urlResolver: true,
+                        urlResolver: {
+                            type: 'CATEGORY',
+                            id,
+                        },
                         href,
                         img: {
                             src: image,

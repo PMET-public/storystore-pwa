@@ -148,7 +148,10 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         items: page.breadcrumbs.map(({ id, text, href }: any) => ({
                             _id: id,
                             as: Link,
-                            urlResolver: true,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
+                            },
                             href: '/' + href,
                             text,
                         })),
@@ -156,10 +159,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 }
                 categories={
                     page.categories && {
-                        items: page.categories.map(({ _id, text, count, href }: any) => ({
-                            _id,
+                        items: page.categories.map(({ id, text, count, href }: any) => ({
+                            _id: id,
                             as: Link,
-                            urlResolver: true,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
+                            },
                             count,
                             text,
                             href: '/' + href,
@@ -196,7 +202,10 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             _id: `${id}--${index}`,
                             as: Link,
                             href: `/${urlKey}`,
-                            urlResolver: true,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

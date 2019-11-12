@@ -5,12 +5,12 @@ query CategoryQuery($id: Int!) {
         cmsBlock: description
         mode: display_mode
         breadcrumbs {
-            id: category_url_key
+            id: category_id
             text: category_name
             href: category_url_key # TODO: Needs to be changed to url_path
         }
         categories: children {
-            _id: url_key
+            id
             text: name
             count: product_count
             href: url_path

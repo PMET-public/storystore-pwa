@@ -45,14 +45,20 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                     _id: id || index,
                                     title: {
                                         as: Link,
-                                        urlResolver: true,
+                                        urlResolver: {
+                                            type: 'PRODUCT',
+                                            id,
+                                        },
                                         href: `/${product.urlKey}`,
                                         text: product.name,
                                     },
                                     sku: `SKU. ${product.sku}`,
                                     thumbnail: {
                                         as: Link,
-                                        urlResolver: true,
+                                        urlResolver: {
+                                            type: 'PRODUCT',
+                                            id,
+                                        },
                                         href: `/${product.urlKey}`,
                                         alt: product.thumbnail.label,
                                         src: product.thumbnail.url,

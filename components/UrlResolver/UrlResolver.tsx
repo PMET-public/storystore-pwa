@@ -16,9 +16,9 @@ type ResolverProps = {}
 export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
     const { query } = useRouter()
 
-    const url = query.url as string
-
-    const { loading, error, online, data } = useUrlResolver({ url })
+    const url = query.url.toString()
+    const type = query.type
+    const contentId = Number(query.contentId)
 
     const urlKey = useMemo(
         () =>
@@ -29,21 +29,21 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
         [url]
     )
 
+    const skip = !!type
+
+    const { loading, error, online, data } = useUrlResolver({ url, skip })
+
     if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500">{error.message}</Error>
 
-    if (!data.urlResolver && loading) return <ViewLoader />
+    if (loading) return <ViewLoader />
 
-    if (!data.urlResolver) return <Error type="404" />
-
-    const { type, content_id } = data.urlResolver
-
-    switch (type) {
+    switch (type || data.urlResolver.type) {
         case 'CMS_PAGE':
-            return <Page id={content_id} />
+            return <Page id={contentId || data.urlResolver.type} />
         case 'CATEGORY':
-            return <Category id={content_id} />
+            return <Category id={contentId || data.urlResolver.content_id} />
         case 'PRODUCT':
             return <Product urlKey={urlKey} />
         default:

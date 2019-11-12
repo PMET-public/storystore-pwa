@@ -102,7 +102,10 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             .map(({ id, text, href }: any) => ({
                                 _id: id,
                                 as: Link,
-                                urlResolver: true,
+                                urlResolver: {
+                                    type: 'CATEGORY',
+                                    id,
+                                },
                                 href: '/' + href,
                                 text,
                             })),

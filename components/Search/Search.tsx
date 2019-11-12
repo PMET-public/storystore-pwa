@@ -169,7 +169,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                             _id: `${id}--${index}`,
                             as: Link,
                             href: `/${urlKey}`,
-                            urlResolver: true,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
                             image,
                             price: {
                                 regular: price.regularPrice.amount.value,

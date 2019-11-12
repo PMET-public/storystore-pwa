@@ -16,6 +16,7 @@ query AppShellQuery($categoryId: Int!, $footerBlockId: String = "", $hasFooter: 
     categories: category(id: $categoryId) {
         id
         children {
+            id
             text: name
             href: url_path
         }
