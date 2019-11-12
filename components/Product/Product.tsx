@@ -46,7 +46,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         try {
             if (type === 'configurable') {
                 await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
-            } else {
+            } else if (type === 'simple') {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
             }
             await router.push('/cart').then(() => window.scrollTo(0, 0))
@@ -82,6 +82,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         type,
     } = product
 
+    if (type !== 'configurable' && type !== 'simple') {
+        return <Error type="500">Product type: {type} not supported.</Error>
+    }
     return sku ? (
         <React.Fragment>
             <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
