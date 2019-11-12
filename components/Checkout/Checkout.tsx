@@ -137,6 +137,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 step={step}
                 contactInfo={{
+                    title: 'Contact Information',
                     edit: step < 2,
                     fields: {
                         email: {
@@ -219,6 +220,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handleSetContactInformation,
                 }}
                 shippingMethod={{
+                    title: 'Shipping Method',
                     edit: step < 3,
                     items: shippingAddress.availableShippingMethods.map(
                         ({ methodTitle, methodCode, available, amount }: any) => ({
@@ -241,6 +243,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handleSetShippingMethod,
                 }}
                 paymentMethod={{
+                    title: 'Payment',
                     braintree: {
                         authorization: braintreeToken,
                         vaultManager: true,
@@ -261,11 +264,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         text: 'Edit',
                     },
                     submitButton: {
-                        text: 'Save Payment Method',
+                        text: 'Continue and Finish',
                     },
                     onSubmit: handleSetPaymentMethod,
                 }}
                 placeOrder={{
+                    title: 'Finish',
                     submitButton: {
                         text: 'Place Order',
                     },
