@@ -17,7 +17,7 @@ class MyApp extends App {
             <ApolloProvider client={apolloClient}>
                 <AppProvider>
                     <NextNprogress
-                        color="#29D"
+                        color="rgba(161, 74, 36, 1)"
                         startPosition={0.4}
                         stopDelayMs={200}
                         height={3}

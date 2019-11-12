@@ -195,7 +195,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
-                    loading: productsQuery.loading && !!products,
+                    loading: productsQuery.loading ? 10 : 0,
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({

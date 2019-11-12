@@ -39,6 +39,8 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
 
     if (loading) return <ViewLoader />
 
+    if (!type && !data.urlResolver) return <Error type="404" />
+
     switch (type || data.urlResolver.type) {
         case 'CMS_PAGE':
             return <Page id={contentId || data.urlResolver.type} />

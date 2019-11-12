@@ -24,16 +24,24 @@ app.prepare().then(async () => {
 
     server.get('/graphql', (req, res) => {
         req.pipe(
-            request.get({
-                qs: req.query,
-                url: MAGENTO_GRAPHQL_URL,
-                separateReqPool: { maxSockets: 20 },
-            })
+            request
+                .get({
+                    qs: req.query,
+                    url: MAGENTO_GRAPHQL_URL,
+                    separateReqPool: { maxSockets: 20 },
+                })
+                .on('error', error => {
+                    console.error(error)
+                })
         ).pipe(res)
     })
 
     server.post('/graphql', (req, res) => {
-        req.pipe(request.post(MAGENTO_GRAPHQL_URL)).pipe(res)
+        req.pipe(request.post(MAGENTO_GRAPHQL_URL))
+            .on('error', error => {
+                console.error(error)
+            })
+            .pipe(res)
     })
 
     /**

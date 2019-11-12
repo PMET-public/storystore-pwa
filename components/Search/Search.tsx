@@ -104,7 +104,16 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     }
 
     const getNotResult = () => {
-        if (search && products && products.count === 0) return `We couldn’t find anything for "${search}".`
+        if (search && products && products.count === 0) {
+            return (
+                <Error type="404">
+                    We couldn’t find any results for "{search}". <br />
+                    Please try the field above to search again.
+                </Error>
+            )
+        } else {
+            return null
+        }
     }
 
     function handleOnNewSearch(newQuery: string) {
@@ -162,7 +171,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         })),
                 }}
                 products={{
-                    loading: searchQuery.loading,
+                    loading: searchQuery.loading ? 10 : 0,
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
