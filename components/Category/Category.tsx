@@ -111,7 +111,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     if (categoryQuery.error) return <Error type="500">{categoryQuery.error.message}</Error>
 
-    if (categoryQuery.loading) return <ViewLoader />
+    if (!categoryQuery.data.page && categoryQuery.loading) return <ViewLoader />
 
     if (!categoryQuery.data.page) return <Error type="404" />
 

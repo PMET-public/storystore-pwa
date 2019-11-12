@@ -49,7 +49,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             } else {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
             }
-            return await router.push('/cart').then(() => window.scrollTo(0, 0))
+            await router.push('/cart').then(() => window.scrollTo(0, 0))
         } catch (error) {
             console.error(error)
         }
@@ -59,7 +59,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     if (error) return <Error type="500" />
 
-    if (loading) return <ViewLoader />
+    if (!data.product && loading) return <ViewLoader />
 
     if (!data || !data.product) return <Error type="404" />
 

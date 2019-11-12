@@ -1,6 +1,5 @@
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent } from 'react'
 import { useApp } from './useApp'
-import { register, unregister } from 'next-offline/runtime'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
@@ -13,17 +12,9 @@ type AppProps = {}
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
 
-    /**
-     * Register Service Worker
-     */
-    useEffect(() => {
-        register()
-        return () => unregister()
-    }, [])
-
     if (error) return <Error type="500">{error.message}</Error>
 
-    if (loading) return <ViewLoader />
+    if (!data.store && loading) return <ViewLoader />
 
     if (!data) return <Error type="500" />
 

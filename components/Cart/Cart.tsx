@@ -27,14 +27,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     if (loading) return <ViewLoader />
 
-    if (!data) return null
-
     const { cart } = data
 
     return (
         <React.Fragment>
             <DocumentMetadata title="Shopping Bag" />
-
             {cart && (
                 <>
                     {cart.items.length > 0 ? (

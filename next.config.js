@@ -5,23 +5,39 @@ const path = require('path')
 const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 
+const cacheExpiration = {
+    maxAgeSeconds: 30 * 24 * 60 * 60,
+    maxEntries: 200,
+}
+
 module.exports = withOffline({
-    dontAutoRegisterSw: true,
-    generateSw: true,
     workboxOpts: {
         clientsClaim: true,
         skipWaiting: true,
-        // globPatterns: ['static/**/*'],
-        // globDirectory: '.',
-
+        modifyURLPrefix: {
+            'static/': '_next/static/',
+        },
+        exclude: ['react-loadable-manifest.json', 'build-manifest.json'],
+        inlineWorkboxRuntime: true,
         runtimeCaching: [
             {
-                urlPattern: /^https?.*/,
+                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
                 handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'offlineCache',
                     expiration: {
-                        maxEntries: 200,
+                        ...cacheExpiration,
+                    },
+                },
+            },
+
+            {
+                urlPattern: /\/graphql/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'graphql',
+                    expiration: {
+                        ...cacheExpiration,
                     },
                 },
             },

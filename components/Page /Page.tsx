@@ -15,9 +15,9 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
 
     if (error && !online) <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (!data.page && loading) return <ViewLoader />
 
-    if (loading) return <ViewLoader />
+    if (error) return <Error type="500">{error.message}</Error>
 
     const { page } = data
 

@@ -5,9 +5,7 @@
   "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
   "license": "MIT",
   "scripts": {
-    "predev": "rimraf dist",
     "dev": "node server.js",
-    "prebuild": "rimraf dist",
     "build": "yarn next:build",
     "next:build": "next build",
     "start": "NODE_ENV=production node server.js"
@@ -29,7 +27,7 @@
     "isomorphic-unfetch": "^3.0.0",
     "luma-ui": "https://github.com/PMET-public/luma-ui#develop",
     "next": "^9.1.2",
-    "next-offline": "s",
+    "next-offline": "5.0.0-beta.8",
     "node-fetch": "^2.6.0",
     "preact": "^10.0.4",
     "react": "^16.11.0",

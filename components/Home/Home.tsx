@@ -16,7 +16,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
 
     if (error) return <Error type="500" />
 
-    if (loading) return <ViewLoader />
+    if (!data.page && loading) return <ViewLoader />
 
     if (!data.page) return <Error type="404" />
 
