@@ -35,7 +35,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         },
     })
 
-    const categoryQuery = useQuery(CATEGORY_QUERY, {
+    const { loading, error, data, refetch } = useQuery(CATEGORY_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
@@ -50,15 +50,12 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     /**
      * Refetch when back online
      */
-    /**
-     * Refetch when back online
-     */
     const {
         state: { online },
     } = useAppContext()
 
     useValueUpdated(() => {
-        if (categoryQuery.error && online) categoryQuery.refetch()
+        if (error && online) refetch()
     }, online)
 
     /**
@@ -107,15 +104,17 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (categoryQuery.error && !online) return <Error type="Offline" />
+    if (!data) return null
 
-    if (categoryQuery.error) return <Error type="500">{categoryQuery.error.message}</Error>
+    if (error && !online) return <Error type="Offline" />
 
-    if (!categoryQuery.data.page && categoryQuery.loading) return <ViewLoader />
+    if (error) return <Error type="500">{error.message}</Error>
 
-    if (!categoryQuery.data.page) return <Error type="404" />
+    if (!data.page && loading) return <ViewLoader />
 
-    const { page } = categoryQuery.data
+    if (!data.page) return <Error type="404" />
+
+    const { page } = data
 
     const products = productsQuery.data && productsQuery.data.products
 

@@ -21,7 +21,6 @@ app.prepare().then(async () => {
     /**
      * GraphQL Proxy
      */
-
     server.get('/graphql', (req, res) => {
         req.pipe(
             request

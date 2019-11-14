@@ -12,9 +12,11 @@ type HomeProps = {}
 export const Home: FunctionComponent<HomeProps> = ({}) => {
     const { loading, error, data, online } = useHome()
 
+    if (!data) return null
+
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" />
+    if (error) return <Error type="500">{error.message}</Error>
 
     if (!data.page && loading) return <ViewLoader />
 

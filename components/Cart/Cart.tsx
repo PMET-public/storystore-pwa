@@ -21,6 +21,8 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))
     }, [])
 
+    if (!data) return null
+
     if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500">{error.message}</Error>

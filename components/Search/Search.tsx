@@ -32,7 +32,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const [filters, setFilters] = useState<FilterValues>({})
 
-    const searchQuery = useQuery(SEARCH_QUERY, {
+    const { loading, error, data, refetch } = useQuery(SEARCH_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
@@ -46,16 +46,16 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     } = useAppContext()
 
     useValueUpdated(() => {
-        if (searchQuery.error && online) searchQuery.refetch()
+        if (error && online) refetch()
     }, online)
 
     /**
      * Infinite Scroll Effect
      */
     useEffect(() => {
-        if (searchQuery.loading) return
+        if (loading) return
 
-        const { products } = searchQuery.data
+        const { products } = data
 
         // ignore if it is loading or has no pagination
         if (!products.pagination) return
@@ -65,7 +65,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            searchQuery.fetchMore({
+            fetchMore({
                 variables: {
                     currentPage: products.pagination.current + 1, // next page
                 },
@@ -91,11 +91,13 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
     }, [search])
 
-    if (searchQuery.error && !online) return <Error type="Offline" />
+    if (!data) return null
 
-    if (searchQuery.error) return <Error type="500">{searchQuery.error.message}</Error>
+    if (error && !online) return <Error type="Offline" />
 
-    const { products, store, meta } = searchQuery.data || {}
+    if (error) return <Error type="500">{error.message}</Error>
+
+    const { products, store, meta } = data
 
     const getProductCount = () => {
         if (!products) return
@@ -142,7 +144,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     searchBar: {
                         label: 'Search',
                         count: getProductCount(),
-                        loading: searchQuery.loading,
+                        loading: loading,
                         value: search,
                         onUpdate: handleOnNewSearch,
                     },
@@ -171,7 +173,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         })),
                 }}
                 products={{
-                    loading: searchQuery.loading ? 10 : 0,
+                    loading: loading ? 10 : 0,
                     items:
                         products &&
                         products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({

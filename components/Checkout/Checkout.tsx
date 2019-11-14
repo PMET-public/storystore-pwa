@@ -114,6 +114,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
     }, [api.setPaymentMethod])
 
+    if (!data) return null
+
     if (error && !online) return <Error type="Offline" />
 
     if (error) <Error type="500">{error.message}</Error>

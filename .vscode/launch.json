@@ -6,24 +6,11 @@
     "configurations": [
         {
             "type": "node",
-            "request": "attach",
-            "name": "Attach: Server",
-            "port": 9229
-        },
-        {
-            "type": "chrome",
             "request": "launch",
-            "name": "Attach: Chrome",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}"
-        },
-    ],
-    "compounds": [
-        {
-            "name": "Attach: Full",
-            "configurations": [
-                "Attach: Server",
-                "Attach: Chrome"
+            "name": "Launch ProgServerram",
+            "program": "${workspaceFolder}/server.js",
+            "skipFiles": [
+                "<node_internals>/**"
             ]
         }
     ]

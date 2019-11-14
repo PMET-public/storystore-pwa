@@ -43,7 +43,7 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
 
     switch (type || data.urlResolver.type) {
         case 'CMS_PAGE':
-            return <Page id={contentId || data.urlResolver.type} />
+            return <Page id={contentId || data.urlResolver.content_id} />
         case 'CATEGORY':
             return <Category id={contentId || data.urlResolver.content_id} />
         case 'PRODUCT':

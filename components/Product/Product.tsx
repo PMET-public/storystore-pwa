@@ -55,6 +55,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
+    if (!data) return null
+
     if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" />
