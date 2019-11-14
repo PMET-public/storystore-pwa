@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react'
+import React, { FunctionComponent, useCallback, useEffect } from 'react'
 import { useCart } from './useCart'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
@@ -16,6 +16,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api } = useCart()
 
     const router = useRouter()
+
+    useEffect(() => {
+        /** Prefetch Checkout Page */
+        router.prefetch('/checkout')
+    }, [])
 
     const handleGoToCheckout = useCallback(async () => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))

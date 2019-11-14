@@ -19,6 +19,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      */
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
 
+    useEffect(() => {
+        /** Prefetch Confirmation Page */
+        router.prefetch('/checkout/confirmation')
+    }, [])
+
     /**
      * Redirect to Shopping Cart if empty
      */
@@ -114,7 +119,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
     }, [api.setPaymentMethod])
 
-    if (!data) return null
+    if (!data || !data.cart) return null
 
     if (error && !online) return <Error type="Offline" />
 

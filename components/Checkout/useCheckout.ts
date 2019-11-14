@@ -36,8 +36,8 @@ export const useCheckout = () => {
      * Set Contact Info
      */
     const [setContactInfo, { loading: settingContactInfo }] = useMutation(SET_CONTACT_INFO_MUTATION, {
-        update(cache, { data: { email, shippingAddresses, billingAddress } }) {
-            const cart = { ...email.cart, ...shippingAddresses.cart, ...billingAddress.cart }
+        update(cache, { data: { email, billingAddress } }) {
+            const cart = { ...email.cart, ...billingAddress.cart }
 
             cache.writeData({
                 data: { cart },

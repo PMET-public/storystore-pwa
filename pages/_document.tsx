@@ -51,7 +51,7 @@ export default class extends Document {
                     ></script>
 
                     {/* Say hi! to our store back-end */}
-                    {/* <link rel="preconnect" href="/graphql" /> */}
+                    <link rel="preconnect" href="/graphql" />
 
                     {/* Adobe Fonts */}
                     <link rel="stylesheet" href="https://use.typekit.net/ssh7gal.css" />
