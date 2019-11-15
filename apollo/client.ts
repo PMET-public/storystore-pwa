@@ -15,7 +15,7 @@ if (!process.browser) {
     ;(global as any).fetch = fetch
 }
 
-export const graphQlUri = process.browser ? '/graphql' : process.env.MAGENTO_GRAPHQL_URL
+export const graphQlUri = process.browser ? '/graphql' : new URL('graphql', process.env.MAGENTO_URL).href
 
 function create(initialState: any) {
     const httpLink = new HttpLink({

@@ -6,6 +6,7 @@ import Error from '../Error'
 import DocumentMetadata from '../DocumentMetadata'
 import { useRouter } from 'next/router'
 import Link from '../Link'
+import { resolveImage } from '../../lib/resolveImage'
 
 type CheckoutProps = {}
 
@@ -293,7 +294,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             sku: `SKU. ${product.sku}`,
                             thumbnail: {
                                 alt: product.thumbnail.label,
-                                src: product.thumbnail.url,
+                                src: resolveImage(product.thumbnail.url, { width: 250 }),
                             },
                             quantity: {
                                 value: quantity,

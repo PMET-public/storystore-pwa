@@ -12,6 +12,7 @@ import Error from '../Error'
 import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Link from '../Link'
 import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { resolveImage } from '../../lib/resolveImage'
 
 type SearchProps = {
     query?: string
@@ -184,7 +185,13 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                                 type: 'PRODUCT',
                                 id,
                             },
-                            image,
+                            image: {
+                                alt: image.alt,
+                                src: {
+                                    desktop: resolveImage(image.src, { width: 1000 }),
+                                    mobile: resolveImage(image.src, { width: 600 }),
+                                },
+                            },
                             price: {
                                 regular: price.regularPrice.amount.value,
                                 currency: price.regularPrice.amount.currency,

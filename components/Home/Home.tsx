@@ -42,6 +42,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                         },
                         href,
                         img: {
+                            alt: text,
                             src: image,
                         },
                         text,

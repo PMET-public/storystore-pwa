@@ -9,6 +9,7 @@ import Button from 'luma-ui/dist/components/Button'
 import CartTemplate from 'luma-ui/dist/templates/Cart'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import { useRouter } from 'next/router'
+import { resolveImage } from '../../lib/resolveImage'
 
 type CartProps = {}
 
@@ -68,7 +69,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                         },
                                         href: `/${product.urlKey}`,
                                         alt: product.thumbnail.label,
-                                        src: product.thumbnail.url,
+                                        src: resolveImage(product.thumbnail.url, { width: 250 }),
                                     },
                                     quantity: {
                                         value: quantity,

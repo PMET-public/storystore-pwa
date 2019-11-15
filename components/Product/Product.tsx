@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useCallback, useState } from 'react'
 import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
-import { getProductGallery } from '../../lib/getProductGallery'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import ProductTemplate from 'luma-ui/dist/templates/Product'
 import Link from '../Link'
+import { resolveImage } from '../../lib/resolveImage'
 
 export type ProductProps = {
     urlKey: string
@@ -116,7 +116,19 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             })),
                     }
                 }
-                gallery={getProductGallery(gallery, storeConfig.baseMediaUrl + 'catalog/product')}
+                gallery={gallery
+                    .filter((x: any) => x.disabled === false && x.type === 'image')
+                    .map(({ id, label, file }: any) => ({
+                        _id: id,
+                        alt: label,
+                        src: {
+                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
+                                width: 1200,
+                            }),
+                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, { width: 600 }),
+                        },
+                    }))
+                    .sort((a: any, b: any) => a.position - b.position)}
                 price={{
                     regular: price.regular.amount.value,
                     special: specialPrice,
@@ -144,7 +156,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                         value,
                                         image: image && {
                                             alt: image.label,
-                                            src: image.url,
+                                            src: resolveImage(image.url, { width: 240 }),
                                         },
                                     })),
                                 },

@@ -13,6 +13,7 @@ import CategoryTemplate from 'luma-ui/dist/templates/Category'
 import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { resolveImage } from '../../lib/resolveImage'
 
 type CategoryProps = {
     id: number
@@ -205,7 +206,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                 type: 'PRODUCT',
                                 id,
                             },
-                            image,
+                            image: {
+                                alt: image.alt,
+                                src: {
+                                    desktop: resolveImage(image.src, { width: 1000 }),
+                                    mobile: resolveImage(image.src, { width: 600 }),
+                                },
+                            },
                             price: {
                                 regular: price.regularPrice.amount.value,
                                 currency: price.regularPrice.amount.currency,
