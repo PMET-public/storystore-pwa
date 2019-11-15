@@ -44,9 +44,11 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                         href,
                         image: {
                             alt: text,
-                            src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
-                                width: 150,
-                            }),
+                            src:
+                                image &&
+                                resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
+                                    width: 150,
+                                }),
                         },
                         text,
                     })),
