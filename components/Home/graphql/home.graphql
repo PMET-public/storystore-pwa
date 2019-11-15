@@ -1,4 +1,9 @@
 query HomeQuery($id: Int!, $categoryId: Int!) {
+    storeConfig {
+        id
+        baseMediaUrl: secure_base_media_url
+    }
+
     categories: category(id: $categoryId) {
         id
         children {

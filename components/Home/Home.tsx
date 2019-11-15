@@ -6,6 +6,7 @@ import Error from '../Error'
 import HomeTemplate from 'luma-ui/dist/templates/Home'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
+import { resolveImage } from '../../lib/resolveImage'
 
 type HomeProps = {}
 
@@ -22,7 +23,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
 
     if (!data.page) return <Error type="404" />
 
-    const { page, categories } = data
+    const { page, categories, storeConfig } = data
 
     return (
         <React.Fragment>
@@ -41,9 +42,11 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                             id,
                         },
                         href,
-                        img: {
+                        image: {
                             alt: text,
-                            src: image,
+                            src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
+                                width: 150,
+                            }),
                         },
                         text,
                     })),

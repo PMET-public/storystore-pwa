@@ -33,7 +33,7 @@ export const resolveImage = (
     const path = url.match(/^(?:[^\/]*(?:\/(?:\/[^\/]*\/?)?)?([^?]+)(?:\??.+)?)$/)
 
     if (path) {
-        const result = [`images/resize/${width}`]
+        const result = [`/images/resize/${width}`]
         if (height) result.push(height.toString())
         result.push(
             `?format=${format}&quality=${quality}&progressive=${progressive}&gravity=${gravity}&crop=${crop}&url=${path[1]}`
