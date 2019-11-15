@@ -3,6 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const request = require('request')
 const next = require('next')
+const compression = require('compression')
 const { join } = require('path')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_GRAPHQL_URL = ``, LAUNCH_IN_BROWSER = false } = process.env
@@ -17,6 +18,11 @@ const url = `http://localhost:${PORT}`
 
 app.prepare().then(async () => {
     const server = express()
+
+    /**
+     * Compression
+     */
+    server.use(compression())
 
     /**
      * GraphQL Proxy

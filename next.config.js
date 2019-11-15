@@ -16,6 +16,7 @@ module.exports = withOffline({
         skipWaiting: true,
         modifyURLPrefix: {
             'static/': '_next/static/',
+            'public/': '_next/public/',
         },
         exclude: ['react-loadable-manifest.json', 'build-manifest.json'],
         inlineWorkboxRuntime: true,
@@ -25,6 +26,17 @@ module.exports = withOffline({
                 handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'offlineCache',
+                    expiration: {
+                        ...cacheExpiration,
+                    },
+                },
+            },
+
+            {
+                urlPattern: '/',
+                handler: 'StaleWhileRevalidate',
+                options: {
+                    cacheName: 'html',
                     expiration: {
                         ...cacheExpiration,
                     },
@@ -51,6 +63,7 @@ module.exports = withOffline({
         config.plugins.push(
             new webpack.DefinePlugin({
                 LUMA_ENV: {
+                    MAGENTO_URL: JSON.stringify(process.env.MAGENTO_URL),
                     HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
                     PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
                     FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),
