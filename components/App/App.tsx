@@ -6,6 +6,7 @@ import AppTemplate from 'luma-ui/dist/components/App'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../../components/Error'
+import PageBuilder from '../../components/PageBuilder'
 
 type AppProps = {}
 
@@ -70,9 +71,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                 }}
                 footer={
                     footer && {
-                        pageBuilder: {
-                            html: footer.html,
-                        },
+                        children: <PageBuilder html={footer.html} />,
                     }
                 }
             >

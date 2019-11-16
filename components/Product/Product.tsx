@@ -171,11 +171,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     loading: addingToCart,
                 }}
                 shortDescription={shortDescription && shortDescription.html}
-                description={
-                    description && {
-                        html: description.html,
-                    }
-                }
+                description={description.html}
             />
         </React.Fragment>
     ) : null

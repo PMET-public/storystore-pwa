@@ -134,11 +134,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
             <CategoryTemplate
                 display={page.mode}
-                cmsBlock={
-                    page.cmsBlock && {
-                        html: page.cmsBlock,
-                    }
-                }
                 title={{
                     as: 'h2',
                     text: page.title,
@@ -222,7 +217,9 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             },
                         })),
                 }}
-            />
+            >
+                {page.cmsBlock}
+            </CategoryTemplate>
         </React.Fragment>
     )
 }

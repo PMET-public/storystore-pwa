@@ -16,7 +16,7 @@ type ResolverProps = {}
 export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
     const { query } = useRouter()
 
-    const url = query.url.toString()
+    const [url] = query.url.toString().split('?')
     const type = query.type
     const contentId = Number(query.contentId)
 

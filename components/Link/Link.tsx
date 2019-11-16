@@ -3,15 +3,15 @@ import NextLink, { LinkProps as _LinkProps } from 'next/link'
 import styled from 'styled-components'
 import { Props } from 'luma-ui/dist/lib'
 
-export type LinkProps = Props<
-    {
-        urlResolver?: {
-            type: 'CMS_BLOCK' | 'PAGE' | 'PRODUCT'
-            id: number
-        }
-        linkTagAs?: 'a' | 'button'
-    } & _LinkProps
->
+export type LinkProps = Props<{
+    urlResolver?:
+        | {
+              type: 'CMS_BLOCK' | 'PAGE' | 'PRODUCT'
+              id: number
+          }
+        | boolean
+    linkTagAs?: 'a' | 'button'
+}>
 
 const ATag = styled.a``
 // const pathname = (pathname: string) => pathname // .replace(/^(\/)/, '')
@@ -24,14 +24,16 @@ export const Link: FunctionComponent<LinkProps> = ({
     shallow,
     passHref,
     prefetch,
-    urlResolver = null,
+    urlResolver = false,
     linkTagAs = 'a',
     ...props
 }) => {
     const href = _href.toString()
 
+    const query = typeof urlResolver === 'object' ? `type=${urlResolver.type}&contentId=${urlResolver.id}` : ''
+
     const linkProps = {
-        href: urlResolver ? `/_url-resolver?url=${href}&type=${urlResolver.type}&contentId=${urlResolver.id}` : _href,
+        href: urlResolver ? `/_url-resolver?url=${href}&${query}` : _href,
         as: urlResolver ? _href : as,
         replace,
         scroll,

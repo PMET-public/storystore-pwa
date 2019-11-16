@@ -7,6 +7,7 @@ import HomeTemplate from 'luma-ui/dist/templates/Home'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
 import { resolveImage } from '../../lib/resolveImage'
+import PageBuilder from '../PageBuilder'
 
 type HomeProps = {}
 
@@ -53,10 +54,9 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                         text,
                     })),
                 }}
-                pageBuilder={{
-                    html: page.content,
-                }}
-            />
+            >
+                <PageBuilder html={page.content} />
+            </HomeTemplate>
         </React.Fragment>
     )
 }
