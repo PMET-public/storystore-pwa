@@ -1,10 +1,10 @@
-import { lazy } from 'react'
+import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 import { resolveLink } from './../../../../lib/resolveLink'
 import { LinkProps } from '../../../../components/Link'
 import { ButtonProps } from 'luma-ui/dist/components/Button'
 
-const component = lazy(() => import('./'))
+const component = dynamic(() => import('./'))
 
 const props = (elem: HTMLElement) => {
     const buttonElem = elem.childNodes[0] as HTMLElement

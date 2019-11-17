@@ -3,7 +3,7 @@
  */
 
 import { Root, RichText } from './PageBuilder.styled'
-import React, { Suspense, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Component } from 'luma-ui/dist/lib'
 import { ErrorBoundary } from 'luma-ui/dist/lib'
 import { htmlToProps } from './lib/parser'
@@ -32,11 +32,7 @@ const renderComponent = (Component: React.ComponentType<any>, props: any, items:
 }
 
 const PageBuilderFactory: Component<PageBuilderFactoryProps> = ({ component, items, props }) => {
-    return component ? (
-        <Suspense fallback>
-            <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary>
-        </Suspense>
-    ) : null
+    return component ? <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary> : null
 }
 
 export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => {

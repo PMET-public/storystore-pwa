@@ -3,7 +3,6 @@ import { useApp } from './useApp'
 
 import Link from '../Link'
 import AppTemplate from 'luma-ui/dist/components/App'
-import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../../components/Error'
 import PageBuilder from '../../components/PageBuilder'
@@ -15,7 +14,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     if (error) return <Error type="500">{error.message}</Error>
 
-    if (loading) return <ViewLoader />
+    if (!data && loading) return null
 
     if (!data) return <Error type="500" />
 

@@ -37,7 +37,7 @@ export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
 
     if (error) return <Error type="500">{error.message}</Error>
 
-    if (loading) return <ViewLoader />
+    if (!data && loading) return <ViewLoader />
 
     if (!type && !data.urlResolver) return <Error type="404" />
 
