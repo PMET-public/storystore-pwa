@@ -10,7 +10,7 @@ export const useUrlResolver = (props: { skip?: boolean; url: string }) => {
     const query = useQuery(URL_RESOLVER_QUERY, {
         variables: { url },
         fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
+        // returnPartialData: true,
         skip,
     })
 

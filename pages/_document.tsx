@@ -53,8 +53,8 @@ export default class extends Document {
                     {/* Say hi! to our store back-end */}
                     <link rel="preconnect" href={LUMA_ENV.MAGENTO_URL} />
 
-                    {/* Adobe Fonts */}
-                    <link rel="stylesheet" href="https://use.typekit.net/ssh7gal.css" />
+                    {/* Fonts */}
+                    <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>
                 <body className="custom_class">
                     <Main />
