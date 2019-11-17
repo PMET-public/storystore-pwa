@@ -14,6 +14,7 @@ import Error from '../Error'
 import ViewLoader from 'luma-ui/dist/components/ViewLoader'
 import { useAppContext } from 'luma-ui/dist/AppProvider'
 import { resolveImage } from '../../lib/resolveImage'
+import PageBuilder from '../PageBuilder'
 
 type CategoryProps = {
     id: number
@@ -218,7 +219,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         })),
                 }}
             >
-                {page.cmsBlock}
+                <PageBuilder html={page.cmsBlock} />
             </CategoryTemplate>
         </React.Fragment>
     )
