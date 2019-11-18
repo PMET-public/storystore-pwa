@@ -1,7 +1,0 @@
-query UrlResolverQuery($url: String!) {
-    urlResolver(url: $url) {
-        id: canonical_url # <- This is
-        content_id: id # Apollo Client Cache uses id to index its cache. Id is not unique across multiple types
-        type
-    }
-}
