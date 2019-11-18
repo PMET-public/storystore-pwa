@@ -57,7 +57,10 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     } = useAppContext()
 
     useValueUpdated(() => {
-        if (error && online) refetch()
+        if (error && online) {
+            refetch()
+            productsQuery.refetch()
+        }
     }, online)
 
     /**

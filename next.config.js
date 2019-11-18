@@ -14,12 +14,7 @@ module.exports = withOffline({
     workboxOpts: {
         clientsClaim: true,
         skipWaiting: true,
-        modifyURLPrefix: {
-            'static/': '_next/static/',
-            'public/': '_next/public/',
-        },
-        exclude: ['react-loadable-manifest.json', 'build-manifest.json'],
-        inlineWorkboxRuntime: true,
+
         runtimeCaching: [
             {
                 urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
