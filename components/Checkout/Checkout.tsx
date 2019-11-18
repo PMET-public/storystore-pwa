@@ -301,8 +301,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                 addLabel: `Add another ${product.name} from shopping bag`,
                                 substractLabel: `Remove one ${product.name} from shopping bag`,
                                 removeLabel: `Remove all ${product.name} from shopping bag`,
-                                // onUpdate: (quantity: number) => api.updateCartItem({ productId: id, quantity }),
-                                // onRemove: () => api.removeCartItem({ productId: id }),
                             },
                             price: {
                                 currency: product.price.regular.amount.currency,

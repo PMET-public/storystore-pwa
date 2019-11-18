@@ -33,17 +33,6 @@ module.exports = withOffline({
             },
 
             {
-                urlPattern: '/',
-                handler: 'StaleWhileRevalidate',
-                options: {
-                    cacheName: 'html',
-                    expiration: {
-                        ...cacheExpiration,
-                    },
-                },
-            },
-
-            {
                 urlPattern: /\/graphql/,
                 handler: 'NetworkFirst',
                 options: {
