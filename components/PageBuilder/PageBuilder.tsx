@@ -2,8 +2,8 @@
  * ☢️ Experimental
  */
 
+import React, { useState, useEffect, useMemo } from 'react'
 import { Root, RichText } from './PageBuilder.styled'
-import React, { useState, useEffect } from 'react'
 import { Component } from 'luma-ui/dist/lib'
 import { ErrorBoundary } from 'luma-ui/dist/lib'
 import { htmlToProps } from './lib/parser'
@@ -36,15 +36,18 @@ const PageBuilderFactory: Component<PageBuilderFactoryProps> = ({ component, ite
 }
 
 export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => {
-    const [items, setItems] = useState<Array<any> | null>(null)
+    const usePageBuilder = useMemo(() => isPageBuilderHtml(html), [html])
+
+    const [items, setItems] = useState([])
 
     useEffect(() => {
-        setItems(isPageBuilderHtml(html) ? htmlToProps(html).items : null)
+        if (!usePageBuilder) return
+        setItems(htmlToProps(html).items)
     }, [html])
 
     return (
         <Root {...props}>
-            {items ? (
+            {usePageBuilder ? (
                 items.map((contentType, index) => <PageBuilderFactory key={index} {...contentType} />)
             ) : (
                 <RichText dangerouslySetInnerHTML={{ __html: html }} />
