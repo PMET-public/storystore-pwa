@@ -56,6 +56,7 @@ module.exports = withOffline({
                     HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
                     PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
                     FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),
+                    DEVELOPMENT: process.env.NODE_ENV !== 'production',
                 },
             })
         )

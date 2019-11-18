@@ -11,10 +11,10 @@ const Product = dynamic(() => import('../components/Product'))
 export type ResolverProps = {
     contentId: number
     url: string
-    type: 'CMS_PAGE' | 'CATEGORY' | 'PRODUCT'
+    type: 'CMS_PAGE' | 'CATEGORY' | 'PRODUCT' | '404'
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ contentId, type, url }) => {
+const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ url, type, contentId }) => {
     const urlKey = useMemo(
         () =>
             url
@@ -31,6 +31,8 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ contentId, ty
             return <Category id={contentId} />
         case 'PRODUCT':
             return <Product urlKey={urlKey} />
+        case '404':
+            return <Error type="404" />
         default:
             return <Error type="500">`Internal Error: ${type} is not valid`</Error>
     }
@@ -38,9 +40,9 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ contentId, ty
 
 UrlResolver.getInitialProps = async ({ query }) => {
     const [url] = query.url.toString().split('?')
-    const type = query.type
 
-    if (type) {
+    if (query.type) {
+        const type = query.type
         const contentId = Number(query.contentId)
         return { url, type, contentId }
     }
@@ -49,15 +51,11 @@ UrlResolver.getInitialProps = async ({ query }) => {
 
     const res = await fetch(`${graphQlUri}?query=${graphQlQuery}`)
 
-    const {
-        data: { urlResolver },
-    } = await res.json()
+    const { data = {} } = await res.json()
 
-    return {
-        url,
-        type: urlResolver.type,
-        contentId: urlResolver.contentId,
-    }
+    const { type = '404', contentId } = data.urlResolver || {}
+
+    return { url, type, contentId }
 }
 
 export default UrlResolver

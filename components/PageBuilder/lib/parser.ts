@@ -72,7 +72,12 @@ export const htmlToProps = (htmlStr: string) => {
     const container = new DOMParser().parseFromString(htmlStr, 'text/html')
     const stageContentType = getComponentData('root-container')
     const result = walk(container.body, stageContentType)
-    console.log('🏗 PageBuilder ContentTypes', result)
+
+    if (LUMA_ENV.DEVELOPMENT) {
+        console.group('🏗 PageBuilder')
+        console.log('Content Types', result)
+        console.groupEnd()
+    }
 
     return result
 }
