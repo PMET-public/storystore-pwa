@@ -11,14 +11,18 @@ const Page = dynamic(() => import('../Page '))
 const Category = dynamic(() => import('../Category'))
 const Product = dynamic(() => import('../Product'))
 
-type ResolverProps = {}
+export type ResolverProps = {
+    contentId: number
+    url: string
+    type: 'CMS_PAGE' | 'CATEGORY' | 'PRODUCT'
+}
 
-export const UrlResolver: FunctionComponent<ResolverProps> = ({}) => {
+export const UrlResolver: FunctionComponent<ResolverProps> = ({ type: _type, url: _url, contentId: _contentId }) => {
     const { query } = useRouter()
 
-    const [url] = query.url.toString().split('?')
-    const type = query.type
-    const contentId = Number(query.contentId)
+    const url = _url || query.url.toString().split('?')[0]
+    const type = _type || query.type
+    const contentId = _contentId || Number(query.contentId)
 
     const urlKey = useMemo(
         () =>
