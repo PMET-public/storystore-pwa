@@ -50,9 +50,6 @@ export default class extends Document {
                         crossOrigin="anonymous"
                     ></script>
 
-                    {/* Say hi! to our store back-end */}
-                    <link rel="preconnect" href={LUMA_ENV.MAGENTO_URL} />
-
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>
