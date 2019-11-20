@@ -36,7 +36,8 @@
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "request": "^2.88.0",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "webpack-pwa-manifest": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.0",
@@ -55,7 +56,6 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.7.2",
-    "webpack": "^4.41.2",
-    "webpack-pwa-manifest": "^4.1.1"
+    "webpack": "^4.41.2"
   }
 }
