@@ -11,6 +11,7 @@ web:
 
 hooks:
     build: |
+        printenv
         yarn install
         yarn build
 build:
