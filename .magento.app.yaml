@@ -19,6 +19,5 @@ build:
 variables:
     env:
         PORT: 80
-        NODE_ENV: 'production'
 
 disk: 512
