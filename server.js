@@ -17,7 +17,6 @@ const app = next({ dev })
 
 const handle = app.getRequestHandler()
 
-const url = `http://localhost:${PORT}`
 
 app.prepare().then(async () => {
     const server = express()
@@ -131,9 +130,10 @@ app.prepare().then(async () => {
     })
 
     server.listen(PORT, () => {
-        console.info('Server started...')
+        console.info(`Server started on port ${PORT}...`)
         // Launch in browser
         if (LAUNCH_IN_BROWSER) {
+            const url = `http://localhost:${PORT}`
             const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open'
             console.info(`Launching ${url}...`)
             require('child_process').exec(start + ' ' + url)
