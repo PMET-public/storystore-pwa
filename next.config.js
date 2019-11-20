@@ -47,10 +47,10 @@ module.exports = withOffline({
         config.plugins.push(
             new webpack.DefinePlugin({
                 LUMA_ENV: {
-                    MAGENTO_URL: JSON.stringify(process.env.MAGENTO_URL),
-                    HOME_PAGE_ID: Number(process.env.HOME_PAGE_ID),
-                    PARENT_CATEGORIES_ID: Number(process.env.PARENT_CATEGORIES_ID),
-                    FOOTER_BLOCK_ID: JSON.stringify(process.env.FOOTER_BLOCK_ID),
+                    MAGENTO_CLOUD_URL: JSON.stringify(process.env.MAGENTO_CLOUD_URL),
+                    MAGENTO_CLOUD_HOME_PAGE_ID: Number(process.env.MAGENTO_CLOUD_HOME_PAGE_ID),
+                    MAGENTO_CLOUD_PARENT_CATEGORIES_ID: Number(process.env.MAGENTO_CLOUD_PARENT_CATEGORIES_ID),
+                    MAGENTO_CLOUD_FOOTER_BLOCK_ID: JSON.stringify(process.env.MAGENTO_CLOUD_FOOTER_BLOCK_ID),
                     DEVELOPMENT: process.env.NODE_ENV !== 'production',
                 },
             })
