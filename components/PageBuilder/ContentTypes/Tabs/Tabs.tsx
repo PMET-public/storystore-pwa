@@ -1,8 +1,8 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root } from './Tabs.styled'
 
-import Accordion from 'luma-ui/dist/components/Accordion'
+import Accordion from '@pmet-public/luma-ui/dist/components/Accordion'
 
 export type TabsProps = {
     appearance: string

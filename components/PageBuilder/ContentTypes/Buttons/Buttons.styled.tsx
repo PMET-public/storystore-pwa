@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 import { Root as RootButton } from '../ButtonItem/ButtonItem.styled'
-import { Root as RootButtonComponent } from 'luma-ui/dist/components/Button/Button.styled'
+import { Root as RootButtonComponent } from '@pmet-public/luma-ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div<{ $appearance: 'inline' | 'stacked'; $sameWidth: boolean }>`
     display: inline-flex;

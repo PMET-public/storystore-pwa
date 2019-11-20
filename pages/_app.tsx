@@ -3,7 +3,7 @@ import App from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { getDataFromTree } from '@apollo/react-ssr'
-import { AppProvider } from 'luma-ui/dist/AppProvider'
+import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import initApollo from '../apollo/client'
 import NextNprogress from 'nextjs-progressbar'
 

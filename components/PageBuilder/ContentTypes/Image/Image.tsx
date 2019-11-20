@@ -1,8 +1,8 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root, Caption } from './Image.styled'
 
-import ImageComponent, { ImageProps as ImageComponentProps } from 'luma-ui/dist/components/Image'
+import ImageComponent, { ImageProps as ImageComponentProps } from '@pmet-public/luma-ui/dist/components/Image'
 import Link, { LinkProps } from '../../../Link'
 
 export type ImageProps = {

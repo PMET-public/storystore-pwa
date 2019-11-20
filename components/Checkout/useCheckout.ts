@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from './../../hooks/useValueUpdated'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'

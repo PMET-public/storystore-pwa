@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { Wrapper as ContainerWrapper } from 'luma-ui/dist/components/Container'
+import { Wrapper as ContainerWrapper } from '@pmet-public/luma-ui/dist/components/Container/Container.styled'
 
 export const Root = styled.div``
 

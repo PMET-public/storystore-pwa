@@ -4,8 +4,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { Root, RichText } from './PageBuilder.styled'
-import { Component } from 'luma-ui/dist/lib'
-import { ErrorBoundary } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
+import { ErrorBoundary } from '@pmet-public/luma-ui/dist/lib'
 import { htmlToProps } from './lib/parser'
 import { isPageBuilderHtml } from './lib/utils'
 

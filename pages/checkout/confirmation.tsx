@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import CartLanding from 'luma-ui/dist/templates/CartLanding'
-import Button from 'luma-ui/dist/components/Button'
+import CartLanding from '@pmet-public/luma-ui/dist/templates/CartLanding'
+import Button from '@pmet-public/luma-ui/dist/components/Button'
 import Link from '../../components/Link'
 
 export const Confirmation = () => {

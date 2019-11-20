@@ -13,9 +13,8 @@ module.exports = {
         },
         clientSchemaDirectives: ['client', 'rest'],
         includes: [
-            './api/**/*.{graphql,ts,tsx}',
+            './apollo/**/*.ts',
             './components/**/graphql/**/*.graphql',
-            './lib/**/*.{graphql,ts,tsx}',
         ],
     },
 }

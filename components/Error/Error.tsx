@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
-import ErrorTemplate, { ErrorTypes } from 'luma-ui/dist/components/Error'
-import Button from 'luma-ui/dist/components/Button'
+import ErrorTemplate, { ErrorTypes } from '@pmet-public/luma-ui/dist/components/Error'
+import Button from '@pmet-public/luma-ui/dist/components/Button'
 import Link from '../Link'
 
 type ErrorProps = {

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Component, Props } from 'luma-ui/dist/lib'
+import { Component, Props } from '@pmet-public/luma-ui/dist/lib'
 import { Root, Container, Wrapper, Overlay, ContentWrapper, Content, Button } from './Banner.styled'
 
 import Link, { LinkProps } from '../../../Link'
-import ButtonComponent, { ButtonProps as ButtonComponentProps } from 'luma-ui/dist/components/Button'
+import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/luma-ui/dist/components/Button'
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 
 export type BannerProps = {

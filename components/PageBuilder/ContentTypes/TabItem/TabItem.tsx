@@ -1,9 +1,9 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root } from './TabItem.styled'
 
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
-import Accordion from 'luma-ui/dist/components/Accordion'
+import Accordion from '@pmet-public/luma-ui/dist/components/Accordion'
 
 export type TabItemProps = {
     appearance: string

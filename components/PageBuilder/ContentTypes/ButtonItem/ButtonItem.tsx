@@ -1,8 +1,8 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root, ButtonLink } from './ButtonItem.styled'
 
-import ButtonComponent, { ButtonProps as ButtonComponentProps } from 'luma-ui/dist/components/Button'
+import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/luma-ui/dist/components/Button'
 import Link, { LinkProps } from '../../../Link'
 
 export type ButtonItemProps = {

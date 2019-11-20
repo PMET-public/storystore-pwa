@@ -1,10 +1,10 @@
 import React, { useMemo, useContext } from 'react'
-import { Component, Props } from 'luma-ui/dist/lib'
+import { Component, Props } from '@pmet-public/luma-ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
 import { ThemeContext } from 'styled-components'
-import { Image, useImage } from 'luma-ui/dist/hooks/useImage'
-import { useResize } from 'luma-ui/dist/hooks/useResize'
+import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
+import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
 
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image

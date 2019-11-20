@@ -1,13 +1,15 @@
 {
   "name": "luma-pwa",
-  "version": "0.0.1--alpha",
-  "main": "server.js",
-  "author": "Carlos A. Cabrera <cacabrer@adobe.com>",
+  "version": "1.0.0-beta.1",
+  "author": "Carlos A. Cabrera @fnhipster",
   "license": "MIT",
+  "main": "server.js",
+  "engines": {
+    "node": ">=10.15.2"
+  },
   "scripts": {
     "dev": "node server.js",
-    "build": "yarn next:build",
-    "next:build": "next build",
+    "build": "next build",
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
@@ -27,7 +29,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "isomorphic-unfetch": "^3.0.0",
-    "luma-ui": "https://github.com/PMET-public/luma-ui#develop",
+    "@pmet-public/luma-ui": "^1.0.0-beta.1",
     "next": "^9.1.2",
     "next-offline": "5.0.0-beta.10",
     "nextjs-progressbar": "^0.0.4",

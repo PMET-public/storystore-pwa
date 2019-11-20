@@ -1,5 +1,5 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root, Line } from './Divider.styled'
 
 export type DividerProps = {

@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import { useValueUpdated } from '../../hooks/useValueUpdated'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import HOME_QUERY from './graphql/home.graphql'
 

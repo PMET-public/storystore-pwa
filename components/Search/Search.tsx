@@ -2,16 +2,16 @@ import React, { FunctionComponent, useState, useEffect } from 'react'
 import SEARCH_QUERY from './search.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
-import { useScroll } from 'luma-ui/dist/hooks/useScroll'
-import { useResize } from 'luma-ui/dist/hooks/useResize'
+import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
+import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
 import useValueUpdated from '../../hooks/useValueUpdated'
 
 import Router from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
-import CategoryTemplate from 'luma-ui/dist/templates/Category'
+import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
 import Link from '../Link'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 import { resolveImage } from '../../lib/resolveImage'
 
 type SearchProps = {

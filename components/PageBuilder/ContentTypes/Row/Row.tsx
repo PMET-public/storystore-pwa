@@ -1,5 +1,5 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root, Wrapper } from './Row.styled'
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 

@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 
 import { LinkProps } from '../../../../components/Link'
-import { ImageProps } from 'luma-ui/dist/components/Image'
+import { ImageProps } from '@pmet-public/luma-ui/dist/components/Image'
 
 const component = dynamic(() => import('./'))
 

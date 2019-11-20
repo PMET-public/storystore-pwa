@@ -1,8 +1,8 @@
 import React from 'react'
-import { Component } from 'luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root } from './Html.styled'
 
-import HtmlComponent, { HtmlProps as HtmlComponentProps } from 'luma-ui/dist/components/Html'
+import HtmlComponent, { HtmlProps as HtmlComponentProps } from '@pmet-public/luma-ui/dist/components/Html'
 
 export type HtmlProps = HtmlComponentProps
 

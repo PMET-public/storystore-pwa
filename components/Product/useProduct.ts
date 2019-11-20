@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from '../../hooks/useValueUpdated'
-import { useAppContext } from 'luma-ui/dist/AppProvider'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'

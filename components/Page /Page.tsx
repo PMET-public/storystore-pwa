@@ -3,8 +3,8 @@ import { usePage } from './usePage'
 
 import DocumentMetadata from '../../components/DocumentMetadata'
 import Error from '../Error'
-import PageTemplate from 'luma-ui/dist/templates/Page'
-import ViewLoader from 'luma-ui/dist/components/ViewLoader'
+import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
+import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
 type PageProps = {
     id: number

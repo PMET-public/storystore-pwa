@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { Root as ImageRoot } from 'luma-ui/dist/components/Image/Image.styled'
+import { Root as ImageRoot } from '@pmet-public/luma-ui/dist/components/Image/Image.styled'
 
 export const Root = styled.div`
     ${ImageRoot} {
