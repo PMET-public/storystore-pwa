@@ -141,6 +141,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     text: page.title,
                 }}
                 breadcrumbs={
+                    (!page.categories || (page.categories && page.categories.length === 0)) &&
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ id, text, href }: any) => ({
                             _id: id,
