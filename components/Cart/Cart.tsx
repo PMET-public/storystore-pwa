@@ -46,7 +46,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         <CartTemplate
                             breadcrumbs={{
                                 prefix: '#',
-                                items: [{ text: 'Cart', as: Link, href: '/cart' }],
+                                items: [{ text: 'Shopping Bag', as: Link, href: '/cart' }],
                             }}
                             list={{
                                 items: cart.items.map(({ id, quantity, product, options }: any, index: number) => ({

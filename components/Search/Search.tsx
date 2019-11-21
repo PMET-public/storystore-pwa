@@ -127,14 +127,14 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         }
     }
 
-    function handleOnClickFilterValue(key: string, value: string) {
-        setFilters({
-            ...filters,
-            [key]: {
-                eq: value,
-            },
-        })
-    }
+    // function handleOnClickFilterValue(key: string, value: string) {
+    //     setFilters({
+    //         ...filters,
+    //         [key]: {
+    //             eq: value,
+    //         },
+    //     })
+    // }
 
     return (
         <React.Fragment>
@@ -151,28 +151,28 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     },
                     noResult: getNotResult(),
                 }}
-                filters={{
-                    label: 'Filters',
-                    closeButton: {
-                        text: 'Done',
-                    },
-                    groups:
-                        products &&
-                        products.filters &&
-                        products.filters.map(({ name, key, items }: any) => ({
-                            title: name,
-                            items: items.map(({ label, count, value }: any) => ({
-                                as: 'a',
-                                count,
-                                href: '#',
-                                text: label,
-                                onClick: (e: Event) => {
-                                    e.preventDefault()
-                                    handleOnClickFilterValue(key, value)
-                                },
-                            })),
-                        })),
-                }}
+                // filters={{
+                //     label: 'Filters',
+                //     closeButton: {
+                //         text: 'Done',
+                //     },
+                //     groups:
+                //         products &&
+                //         products.filters &&
+                //         products.filters.map(({ name, key, items }: any) => ({
+                //             title: name,
+                //             items: items.map(({ label, count, value }: any) => ({
+                //                 as: 'a',
+                //                 count,
+                //                 href: '#',
+                //                 text: label,
+                //                 onClick: (e: Event) => {
+                //                     e.preventDefault()
+                //                     handleOnClickFilterValue(key, value)
+                //                 },
+                //             })),
+                //         })),
+                // }}
                 products={{
                     loading: loading ? 10 : 0,
                     items:

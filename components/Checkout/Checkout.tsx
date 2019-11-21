@@ -139,7 +139,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 breadcrumbs={{
                     prefix: '#',
                     items: [
-                        { text: 'Cart', as: Link, href: '/cart' },
+                        { text: 'Shopping Bag', as: Link, href: '/cart' },
                         { text: 'Checkout', as: Link, href: '/checkout' },
                     ],
                 }}
