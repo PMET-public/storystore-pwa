@@ -7,9 +7,9 @@ const next = require('next')
 const compression = require('compression')
 const sharp = require('express-sharp')
 
-const { NODE_ENV = 'development', PORT = 3000, MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
+const { NODE_ENV = 'development', PORT = 3000, $MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
 
-const MAGENTO_GRAPHQL_URL = new URL('graphql', MAGENTO_URL).href
+const MAGENTO_GRAPHQL_URL = new URL('graphql', $MAGENTO_URL).href
 
 const dev = NODE_ENV !== 'production'
 
@@ -32,7 +32,7 @@ app.prepare().then(async () => {
     server.use(
         '/images',
         sharp({
-            baseHost: new URL(MAGENTO_URL).href,
+            baseHost: new URL($MAGENTO_URL).href,
         })
     )
 
