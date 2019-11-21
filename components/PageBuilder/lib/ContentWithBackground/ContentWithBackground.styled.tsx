@@ -9,8 +9,7 @@ export const Root = styled.div<{ $backgroundColor?: string; $height?: string }>`
     ${props =>
         props.$height &&
         `
-            min-height: unset !important;
-            max-height: unset !important;
+
             height: calc(${props.$height} - 14rem);
 
             @media ${props.theme.breakpoints.medium} {
