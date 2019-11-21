@@ -74,7 +74,7 @@ module.exports = withOffline({
                 short_name: 'Luma',
                 description: 'We’re passionate about active lifestyles – and it goes way beyond apparel.',
                 background_color: '#ffffff',
-                theme_color: '#a14a24',
+                theme_color: '#222222',
                 orientation: 'landscape-primary',
                 display: 'standalone',
                 start_url: '.',
