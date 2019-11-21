@@ -34,12 +34,19 @@ export default class extends Document {
                     <noscript>Enable javascript to run this web app.</noscript>
 
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
                     <link rel="icon" href="/static/favicon.ico" />
+                    <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=contain"
+                    />
 
-                    {/* Web App Manifest  */}
+                    {/* Apple Specifi */}
+                    <meta name="apple-mobile-web-app-capable" content="yes" />
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
                     <link rel="apple-touch-startup-image" />
                     <link rel="apple-touch-icon" href="/_next/static/icons/icon_180x180.png" />
+
+                    {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
