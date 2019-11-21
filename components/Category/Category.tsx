@@ -40,13 +40,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const { loading, error, data, refetch } = useQuery(CATEGORY_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
     })
 
     const productsQuery = useQuery(PRODUCTS_QUERY, {
         variables: { filters: filterValues },
         fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
     })
 
     /**
@@ -137,7 +135,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             <DocumentMetadata />
 
             <CategoryTemplate
-                display={page.mode}
+                display={page.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
                     as: 'h2',
                     text: page.title,
