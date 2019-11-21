@@ -1,19 +1,19 @@
 import styled from 'styled-components'
 
-export const Root = styled.div<{ $backgroundColor?: string; $height?: string }>`
+export const Root = styled.div<{ $backgroundColor?: string; $fullScreen?: string }>`
     position: relative;
     width: 100%;
     background-color: ${props => props.$backgroundColor || 'transparent'};
     height: 100%;
 
     ${props =>
-        props.$height &&
+        props.$fullScreen &&
         `
 
-            height: calc(${props.$height} - 14rem);
+            height: calc(100vh - 14rem);
 
             @media ${props.theme.breakpoints.medium} {
-                height: calc(${props.$height} - 6rem);
+                height: calc(100vh - 6rem);
             }
         `}
 `

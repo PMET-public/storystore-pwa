@@ -34,7 +34,7 @@ export default class extends Document {
                     <noscript>Enable javascript to run this web app.</noscript>
 
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
                     <link rel="icon" href="/static/favicon.ico" />
 
                     {/* Web App Manifest  */}

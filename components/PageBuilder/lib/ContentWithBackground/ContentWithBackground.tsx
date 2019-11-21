@@ -4,7 +4,6 @@ import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
 import { ThemeContext } from 'styled-components'
 import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
-import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
 
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image
@@ -21,8 +20,6 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
     const bgImage = useImage(backgroundImages)
 
     const { colors } = useContext(ThemeContext)
-
-    const { vHeight } = useResize()
 
     const styles: { [key: string]: any } = useMemo(() => {
         if (!style) return {}
@@ -43,7 +40,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
 
     return (
         <Root
-            $height={fullScreen ? vHeight : undefined}
+            $fullScreen={fullScreen}
             $backgroundColor={styles.background.backgroundColor || bgImage.src ? colors.onSurface5 : 'transparent'}
             style={styles.wrapper}
             {...props}
