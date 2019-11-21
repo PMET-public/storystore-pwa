@@ -1234,10 +1234,10 @@
   dependencies:
     core-js "^2.5.7"
 
-"@pmet-public/luma-ui@^1.0.0-beta.1":
-  version "1.0.0-beta.1"
-  resolved "https://npm.pkg.github.com/download/@pmet-public/luma-ui/1.0.0-beta.1/5a1550f9b1176493f10fcefaa99df8da067d64cfb8de9fa23126090590dd6d07#"
-  integrity sha512-S+Hq6vrsx5g+fjIS+275aXlTBVTYc3OnVPbHXRqBgOUKZMzQ39TwJTwOhd+dWS9q7rIF7Pj18BBoCZDJqjjd5w==
+"@pmet-public/luma-ui@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.3.tgz#5c933f10d2f1d28bd318bfd123944d14b53e69be"
+  integrity sha512-fr/wpaBNhKcpwPFxwR0Wzwk/J3rh1KSG71jLCrXqXC2xCukbWIt7a6m6e2QlE92JJRKnjkq3QHBjt3qHGFIGmw==
 
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.1.1"

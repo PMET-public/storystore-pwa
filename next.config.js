@@ -24,6 +24,9 @@ module.exports = withOffline({
                     expiration: {
                         ...cacheExpiration,
                     },
+                    fetchOptions: {
+                        credentials: 'same-origin',
+                    },
                 },
             },
 
@@ -34,6 +37,9 @@ module.exports = withOffline({
                     cacheName: 'graphql',
                     expiration: {
                         ...cacheExpiration,
+                    },
+                    fetchOptions: {
+                        credentials: 'same-origin',
                     },
                 },
             },
