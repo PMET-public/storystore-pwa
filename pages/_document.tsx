@@ -32,20 +32,16 @@ export default class extends Document {
             <html lang="en">
                 <Head>
                     <noscript>Enable javascript to run this web app.</noscript>
-
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <link rel="icon" href="/static/favicon.ico" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-
                     {/* Apple Specifi */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-                    <link rel="apple-touch-startup-image" />
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                    <link rel="apple-touch-startup-image" /> {/* TODO: Add Custom Startup Image */}
                     <link rel="apple-touch-icon" href="/_next/static/icons/icon_180x180.png" />
-
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
-
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
                     <script
                         async
@@ -53,7 +49,6 @@ export default class extends Document {
                         integrity="sha384-VcI6S+HIsE80FVM1jgbd6WDFhzKYA0PecD/LcIyMQpT4fMJdijBh0I7Iblaacawc"
                         crossOrigin="anonymous"
                     ></script>
-
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>
