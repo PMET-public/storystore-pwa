@@ -30,7 +30,7 @@ function create(initialState: any) {
             jitter: true,
         },
         attempts: {
-            max: 10,
+            max: 3,
             retryIf: error => !!error && (process.browser ? navigator.onLine : false), // retry only on front-end
         },
     })
