@@ -30,7 +30,7 @@ function create(initialState: any) {
             jitter: true,
         },
         attempts: {
-            max: 5,
+            max: 3,
             retryIf: error => !!error && (process.browser ? navigator.onLine : true),
         },
     })
