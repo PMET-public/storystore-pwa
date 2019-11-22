@@ -31,7 +31,7 @@ function create(initialState: any) {
         },
         attempts: {
             max: 3,
-            retryIf: error => !!error && (process.browser ? navigator.onLine : true),
+            retryIf: error => !!error && (process.browser ? navigator.onLine : false), // retry only on front-end
         },
     })
 
