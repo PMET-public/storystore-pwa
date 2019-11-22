@@ -16,7 +16,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     if (!data && loading) return null
 
-    if (!data) return <Error type="500" />
+    if (!data) return <Error type="500">No data available.</Error>
 
     const { store, categories, cart, footer } = data
 
