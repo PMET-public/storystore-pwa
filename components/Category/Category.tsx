@@ -111,11 +111,16 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error)
+        return (
+            <Error type="500" button={{ button: { text: 'Try again', onClick: refetch } }}>
+                {error.message}
+            </Error>
+        )
 
     if (!data.page && loading) return <ViewLoader />
 
-    if (!data.page) return <Error type="404" />
+    if (!data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page } = data
 

@@ -12,17 +12,17 @@ import PageBuilder from '../PageBuilder'
 type HomeProps = {}
 
 export const Home: FunctionComponent<HomeProps> = ({}) => {
-    const { loading, error, data, online } = useHome()
+    const { loading, error, data, online, refetch } = useHome()
 
     if (!data) return null
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
     if (!data.page && loading) return <ViewLoader />
 
-    if (!data.page) return <Error type="404" />
+    if (!data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page, categories, storeConfig } = data
 

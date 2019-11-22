@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { graphQlUri } from '../apollo/client'
 import { NextComponentType } from 'next'
 import dynamic from 'next/dynamic'
+import Link from '../components/Link'
 
 const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
@@ -32,9 +33,13 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ url, type, co
         case 'PRODUCT':
             return <Product urlKey={urlKey} />
         case '404':
-            return <Error type="404" />
+            return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
         default:
-            return <Error type="500">`Internal Error: ${type} is not valid`</Error>
+            return (
+                <Error type="500" button={{ text: 'Reload', onClick: () => location.reload() }}>
+                    `Internal Error: ${type} is not valid`
+                </Error>
+            )
     }
 }
 

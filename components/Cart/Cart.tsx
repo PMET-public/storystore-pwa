@@ -14,7 +14,7 @@ import { resolveImage } from '../../lib/resolveImage'
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const { loading, updating, removing, error, online, data, api } = useCart()
+    const { loading, updating, removing, error, online, data, api, refetch } = useCart()
 
     const router = useRouter()
 
@@ -31,7 +31,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
     if (loading) return <ViewLoader />
 

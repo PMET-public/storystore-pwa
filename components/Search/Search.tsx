@@ -96,7 +96,12 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error)
+        return (
+            <Error type="500" button={{ text: 'Try again', onClick: refetch }}>
+                {error.message}
+            </Error>
+        )
 
     const { products, store, meta } = data
 

@@ -5,23 +5,24 @@ import DocumentMetadata from '../../components/DocumentMetadata'
 import Error from '../Error'
 import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
+import Link from '../Link'
 
 type PageProps = {
     id: number
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, error, data, online } = usePage({ id })
+    const { loading, error, data, online, refetch } = usePage({ id })
 
     if (!data) return null
 
     if (error && !online) <Error type="Offline" />
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
     if (!data.page && loading) return <ViewLoader />
 
-    if (!data.page) return <Error type="404" />
+    if (!data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/home' }} />
 
     const { page } = data
 

@@ -11,7 +11,7 @@ import { resolveImage } from '../../lib/resolveImage'
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const { loading, error, data, api, online } = useCheckout()
+    const { loading, error, data, api, online, refetch } = useCheckout()
 
     const router = useRouter()
 
@@ -124,7 +124,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) <Error type="500">{error.message}</Error>
+    if (error) <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
     if (loading) return <ViewLoader />
 

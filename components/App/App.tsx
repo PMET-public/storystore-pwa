@@ -12,11 +12,21 @@ type AppProps = {}
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
 
-    if (error) return <Error type="500">{error.message}</Error>
+    if (error)
+        return (
+            <Error type="500" button={{ text: 'Reload App', onClick: () => location.reload() }} fullScreen>
+                There was an issue loading the app.
+            </Error>
+        )
 
     if (!data && loading) return null
 
-    if (!data) return <Error type="500">No data available.</Error>
+    if (!data)
+        return (
+            <Error type="500" button={{ text: 'Reload App', onClick: location.reload }} fullScreen>
+                No data available.
+            </Error>
+        )
 
     const { store, categories, cart, footer } = data
 

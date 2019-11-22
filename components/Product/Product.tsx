@@ -17,7 +17,7 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, error, addingToCart, data, api, online } = useProduct({ urlKey })
+    const { loading, error, addingToCart, data, api, online, refetch } = useProduct({ urlKey })
 
     const router = useRouter()
 
@@ -59,11 +59,18 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" />
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
     if (!data.product && loading) return <ViewLoader />
 
-    if (!data || !data.product) return <Error type="404" />
+    if (!data || !data.product)
+        return (
+            <Error
+                type="404"
+                children="We're sorry, we coudn't find the product."
+                button={{ text: 'Search', as: Link, href: '/search' }}
+            />
+        )
 
     const { storeConfig, hasCart, product } = data
 
