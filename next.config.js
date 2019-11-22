@@ -2,49 +2,14 @@ require('dotenv').config()
 const webpack = require('webpack')
 const path = require('path')
 
-const withOffline = require('next-offline')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
+const withOffline = require('next-offline')
+const workboxOpts = require('./workboxOpts')
 
-const cacheExpiration = {
-    maxAgeSeconds: 30 * 24 * 60 * 60,
-    maxEntries: 200,
-}
+
 
 module.exports = withOffline({
-    workboxOpts: {
-        clientsClaim: true,
-        skipWaiting: true,
-
-        runtimeCaching: [
-            {
-                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
-                handler: 'StaleWhileRevalidate',
-                options: {
-                    cacheName: 'offlineCache',
-                    expiration: {
-                        ...cacheExpiration,
-                    },
-                    fetchOptions: {
-                        credentials: 'same-origin',
-                    },
-                },
-            },
-
-            {
-                urlPattern: /\/graphql/,
-                handler: 'NetworkFirst',
-                options: {
-                    cacheName: 'graphql',
-                    expiration: {
-                        ...cacheExpiration,
-                    },
-                    fetchOptions: {
-                        credentials: 'same-origin',
-                    },
-                },
-            },
-        ],
-    },
+    workboxOpts,
 
     webpack: config => {
         /**
