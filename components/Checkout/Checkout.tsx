@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect, useMemo } from 'react'
 import { useCheckout } from './useCheckout'
 import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
@@ -35,20 +35,14 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     /**
      * Countries Data
      */
-    const getSelectedCountryRegions = useCallback(
-        (code: string) => {
-            if (!code || !data.countries) return null
-            return data.countries.find((country: { code: string }) => country.code === code).regions
-        },
-        [data.countries]
+    const [selectedShippingCountryCode, setSelectedShippingCountryCode] = useState(
+        (data && data.cart && data.cart.shippingAddress && data.cart.shippingAddress.country.code) || 'US'
     )
 
-    const selectedShippingCountryCode =
-        (data.cart && data.cart.shippingAddress && data.cart.shippingAddress.country.code) || 'US'
-
-    const [selectedShippingCountryRegions, setSelectedShippingCountryRegions] = useState(
-        getSelectedCountryRegions(selectedShippingCountryCode)
-    )
+    const selectedShippingCountryRegions = useMemo(() => {
+        if (!(data && data.countries)) return null
+        return data.countries.find((country: { code: string }) => country.code === selectedShippingCountryCode).regions
+    }, [data && data.countries, selectedShippingCountryCode])
 
     /**
      * Contact Information
@@ -181,11 +175,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
                             defaultValue: selectedShippingCountryCode,
                             disabled: true, // US only for now
-
-                            onChange: e => {
-                                const regions = getSelectedCountryRegions(e.currentTarget.value)
-                                setSelectedShippingCountryRegions(regions)
-                            },
+                            onChange: e => setSelectedShippingCountryCode(e.currentTarget.value),
                             items: countries.map((country: { name: string; code: string }) => ({
                                 text: country.name,
                                 value: country.code,
