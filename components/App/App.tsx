@@ -14,9 +14,12 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     if (error)
         return (
-            <Error type="500" button={{ text: 'Reload App', onClick: () => location.reload() }} fullScreen>
-                There was an issue loading the app.
-            </Error>
+            <Error
+                type="500"
+                button={{ text: 'Reload App', onClick: () => location.reload() }}
+                children=""
+                fullScreen
+            />
         )
 
     if (!data && loading) return null

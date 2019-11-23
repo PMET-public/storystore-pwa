@@ -145,6 +145,16 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     as: 'h2',
                     text: page.title,
                 }}
+                backButton={
+                    page.breadcrumbs && {
+                        as: Link,
+                        urlResolver: {
+                            type: 'CATEGORY',
+                            id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
+                        },
+                        href: page.breadcrumbs[page.breadcrumbs.length - 1].href,
+                    }
+                }
                 breadcrumbs={
                     (!page.categories || (page.categories && page.categories.length === 0)) &&
                     page.breadcrumbs && {
