@@ -33,13 +33,17 @@ export default class extends Document {
                 <Head>
                     <noscript>Enable javascript to run this web app.</noscript>
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <link rel="icon" href="/static/favicon.ico" />
+                    <link rel="icon" href="/static/favicon.ico" crossOrigin="use-credentials" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
                     {/* Apple Specific */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                     <link rel="apple-touch-startup-image" /> {/* TODO: Add Custom Startup Image */}
-                    <link rel="apple-touch-icon" href="/_next/static/icons/icon_180x180.png" />
+                    <link
+                        rel="apple-touch-icon"
+                        href="/_next/static/icons/icon_180x180.png"
+                        crossOrigin="use-credentials"
+                    />
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
                     {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
@@ -50,7 +54,7 @@ export default class extends Document {
                         crossOrigin="anonymous"
                     ></script>
                     {/* Fonts */}
-                    <link rel="stylesheet" href="/static/fonts.css" />
+                    <link rel="stylesheet" href="/static/fonts.css" crossOrigin="use-credentials" />
                 </Head>
                 <body className="custom_class">
                     <Main />
