@@ -40,7 +40,7 @@ module.exports = withOffline({
                 description: 'We’re passionate about active lifestyles – and it goes way beyond apparel.',
                 background_color: '#ffffff',
                 theme_color: '#222222',
-                orientation: 'landscape-primary',
+                orientation: 'any',
                 display: 'standalone',
                 start_url: '.',
                 publicPath: '/_next/',
