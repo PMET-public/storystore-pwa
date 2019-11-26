@@ -9,12 +9,10 @@ web:
     commands:
         start: yarn start
     locations:
-        '/':
-            rules:
-                '^\/static\/icons\/.*.png$':
-                    allow: true
-                '^/robots\.txt$':
-                    allow: true
+        '/public':
+            passthru: false
+            root: 'public'
+            allow: true
 
 hooks:
     build: |
