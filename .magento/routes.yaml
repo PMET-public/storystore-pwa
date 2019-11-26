@@ -1,3 +1,5 @@
 'https://{default}/':
     type: upstream
-    upstream: 'node-luma-pwa:http'
+    upstream: 'varnish:http'
+    cache:
+        enabled: false
