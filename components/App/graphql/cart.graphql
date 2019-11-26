@@ -1,12 +1,10 @@
-query AppCart($cartId: String = "", $hasCart: Boolean = true) {
+#import "../../Cart/graphql/_Cart.graphql"
+
+query AppCart($cartId: String = "", $hasCart: Boolean = false) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
     cart(cart_id: $cartId) @include(if: $hasCart) {
-        totalQuantity @client
-        items {
-            id
-            quantity
-        }
+        ...Cart
     }
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { graphQlUri } from '../apollo/client'
 import { NextComponentType } from 'next'
 import dynamic from 'next/dynamic'
@@ -11,20 +11,11 @@ const Product = dynamic(() => import('../components/Product'))
 
 export type ResolverProps = {
     contentId: number
-    url: string
+    urlKey: string
     type: 'CMS_PAGE' | 'CATEGORY' | 'PRODUCT' | '404'
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ url, type, contentId }) => {
-    const urlKey = useMemo(
-        () =>
-            url
-                .toString()
-                .split('/')
-                .pop() || '',
-        [url]
-    )
-
+const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
     switch (type) {
         case 'CMS_PAGE':
             return <Page id={contentId} />
@@ -46,13 +37,19 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ url, type, co
 UrlResolver.getInitialProps = async ({ query }) => {
     const [url] = query.url.toString().split('?')
 
+    const urlKey =
+        url
+            .toString()
+            .split('/')
+            .pop() || ''
+
     if (query.type) {
         const type = query.type
         const contentId = Number(query.contentId)
-        return { url, type, contentId }
+        return { type, contentId, urlKey }
     }
 
-    const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D&variables=%7B"id":20,"categoryId":2%7D`
+    const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
 
     const res = await fetch(`${graphQlUri}?query=${graphQlQuery}`)
 
@@ -60,7 +57,7 @@ UrlResolver.getInitialProps = async ({ query }) => {
 
     const { type = '404', contentId } = data.urlResolver || {}
 
-    return { url, type, contentId }
+    return { type, contentId, urlKey }
 }
 
 export default UrlResolver

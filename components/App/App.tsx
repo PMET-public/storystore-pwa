@@ -22,7 +22,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             />
         )
 
-    if (!data && loading) return null
+    if (!(data && data.store) && loading) return null
 
     if (!data)
         return (

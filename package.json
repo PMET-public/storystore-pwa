@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "server.js",
   "scripts": {
-    "dev": "LAUNCH_IN_BROWSER=1 node server.js",
+    "dev": "LAUNCH_IN_BROWSER=1 node --inspect server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js"
   },

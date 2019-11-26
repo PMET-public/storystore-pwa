@@ -1,5 +1,9 @@
 fragment Cart on Cart {
     totalQuantity @client
+    _items: items {
+        id
+        quantity
+    }
 
     items {
         id
@@ -22,7 +26,6 @@ fragment Cart on Cart {
                 }
             }
         }
-
         ... on ConfigurableCartItem {
             options: configurable_options {
                 id

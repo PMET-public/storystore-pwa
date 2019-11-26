@@ -72,13 +72,13 @@ export const resolvers: Resolvers = {
         },
     },
     Cart: {
-        totalQuantity({ items }) {
+        totalQuantity({ _items }) {
             /**
              * 🩹Patch:
              * return total quantity
              */
 
-            return items ? items.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0) : 0
+            return _items ? _items.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0) : 0
         },
     },
 

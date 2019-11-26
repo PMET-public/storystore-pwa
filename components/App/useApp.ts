@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
-import CART_QUERY from './graphql/cart.graphql'
+// import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 const categoryId = LUMA_ENV.CONTENT_PARENT_CATEGORIES_ID
@@ -13,6 +13,7 @@ const footerBlockId = LUMA_ENV.CONTENT_FOOTER_BLOCK_ID
 export const useApp = () => {
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-first',
+        returnPartialData: true,
         variables: {
             categoryId,
             footerBlockId,
@@ -23,8 +24,6 @@ export const useApp = () => {
     /**
      * No Cart no problem. Let's create one
      */
-
-    const cartQuery = useQuery(CART_QUERY)
 
     const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
@@ -37,12 +36,12 @@ export const useApp = () => {
     })
 
     useEffect(() => {
-        if (cartQuery.loading || creatingEmptyCart) return
+        if (query.loading || creatingEmptyCart) return
 
-        if (cartQuery.error || (cartQuery.data && cartQuery.data.hasCart === false)) {
-            createEmptyCart().then(cartQuery.refetch)
+        if (query.error || (query.data && query.data.hasCart === false)) {
+            createEmptyCart().then(() => query.refetch())
         }
-    }, [cartQuery.error, cartQuery.data])
+    }, [query.error, query.data])
 
     /**
      * Handle Active URL Check
@@ -60,7 +59,7 @@ export const useApp = () => {
         ...query,
         data: query.data && {
             ...query.data,
-            ...cartQuery.data,
+            // ...cartQuery.data,
             footer: query.data.footer && query.data.footer.items[0],
         },
         api: {

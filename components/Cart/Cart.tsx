@@ -27,13 +27,13 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))
     }, [])
 
-    if (!data) return null
-
     if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
-    if (loading) return <ViewLoader />
+    if (!data && !loading) return <Error type="500" />
+
+    if (!data && loading) return <ViewLoader />
 
     const { cart } = data
 

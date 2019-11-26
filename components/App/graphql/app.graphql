@@ -1,5 +1,14 @@
-query AppShellQuery($categoryId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
-    hasCart @client
+#import "../../Cart/graphql/_Cart.graphql"
+
+query AppShellQuery(
+    $categoryId: Int!
+    $cartId: String = ""
+    $footerBlockId: String = ""
+    $hasCart: Boolean = false
+    $hasFooter: Boolean = false
+) {
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
 
     store: storeConfig {
         id
@@ -27,5 +36,9 @@ query AppShellQuery($categoryId: Int!, $footerBlockId: String = "", $hasFooter: 
             id: identifier
             html: content
         }
+    }
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        ...Cart
     }
 }
