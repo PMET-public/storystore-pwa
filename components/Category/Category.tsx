@@ -40,6 +40,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const { loading, error, data, refetch } = useQuery(CATEGORY_QUERY, {
         variables: { id },
         fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
     })
 
     const productsQuery = useQuery(PRODUCTS_QUERY, {
