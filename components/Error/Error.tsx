@@ -11,6 +11,7 @@ type ErrorProps = {
 const messages = {
     Offline: `You're offline. Check your connection and try again.`,
     '500': `Internal Error`,
+    '401': `Authorization Required.`,
     '404': `Oops! The page you landed on doesn't exist.`,
 }
 

@@ -11,16 +11,21 @@ type AppProps = {}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
-
-    if (error)
-        return (
-            <Error
-                type="500"
-                button={{ text: 'Reload App', onClick: () => location.reload() }}
-                children=""
-                fullScreen
-            />
-        )
+    if (error) {
+        if (error.networkError && (error.networkError as any).statusCode === 401) {
+            return (
+                <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
+                    Authorization Required
+                </Error>
+            )
+        } else {
+            return (
+                <Error type="500" button={{ text: 'Reload App', onClick: () => location.reload() }} fullScreen>
+                    {error.message}
+                </Error>
+            )
+        }
+    }
 
     if (!(data && data.store) && loading) return null
 
