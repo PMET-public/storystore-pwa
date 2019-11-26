@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { useApp } from './useApp'
-import Head from 'next/head'
+
 import Link from '../Link'
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
@@ -40,29 +40,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     return (
         <React.Fragment>
-            <Head>
-                <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
-                <meta name="theme-color" content="#222222" />
-                <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
-
-                {/* iOS */}
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-                <meta name="apple-mobile-web-app-title" content="Luma" />
-                <link rel="apple-touch-startup-image" />
-                <link
-                    rel="apple-touch-icon"
-                    href={`${location.origin}/static/ios-icon.png`}
-                    crossOrigin="use-credentials"
-                />
-
-                {/* Web App Manifest  */}
-                <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
-
-                {/* Fonts */}
-                <link rel="stylesheet" href="/static/fonts.css" />
-            </Head>
-
             <DocumentMetadata
                 defaults={{
                     title: store.metaTitle,
