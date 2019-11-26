@@ -33,19 +33,20 @@ export default class extends Document {
                 <Head>
                     <noscript>Enable javascript to run this web app.</noscript>
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></meta>
+                    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
                     <meta name="theme-color" content="#222222" />
 
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
-                    <link rel="apple-touch-icon" href="/static/icons/ios-icon.png" />
+                    <link rel="apple-touch-icon" href="ios-icon.png" />
 
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
 
-                    <link rel="icon" href="/static/favicon.ico" />
+                    <link rel="icon" href="icon_192x192.png" />
+                    <link rel="icon" href="icon_512x512.png" sizes="512x512" />
 
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
