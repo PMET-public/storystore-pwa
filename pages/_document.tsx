@@ -37,15 +37,16 @@ export default class extends Document {
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <meta
                         name="viewport"
-                        content="width=device-width, minimum-scale=1, initial-scale=1, viewport-fit=contain"
+                        content="width=device-width, minimum-scale=1, initial-scale=1, viewport-fit=cover"
                     />
                     <meta name="theme-color" content="#222222" />
                     <link rel="shortcut icon" href="/static/icons/favicon.ico" />
 
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
+
                     <link rel="apple-touch-startup-image" crossOrigin="use-credentials" />
                     <link
                         rel="apple-touch-icon"
