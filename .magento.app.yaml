@@ -10,10 +10,6 @@ web:
         start: yarn start
     locations:
         '/':
-            root: 'web'
-            expires: 5m
-            passthru: '/'
-            allow: false
             rules:
                 '^\/static\/icons\/.*.png$':
                     allow: true
