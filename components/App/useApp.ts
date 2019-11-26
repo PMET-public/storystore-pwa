@@ -12,7 +12,7 @@ const footerBlockId = LUMA_ENV.CONTENT_FOOTER_BLOCK_ID
 
 export const useApp = () => {
     const query = useQuery(APP_QUERY, {
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
         variables: {
             categoryId,
