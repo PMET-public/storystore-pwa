@@ -8,16 +8,6 @@ dependencies:
 web:
     commands:
         start: yarn start
-    locations:
-        '/':
-            passthru: false
-            root: 'static'
-            allow: false
-            rules:
-                '^manifest.webmanifest$':
-                    allow: true
-                '^static\/.*':
-                    allow: true
 
 hooks:
     build: |
