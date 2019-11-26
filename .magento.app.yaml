@@ -8,6 +8,17 @@ dependencies:
 web:
     commands:
         start: yarn start
+    locations:
+        '/':
+            root: 'web'
+            expires: 5m
+            passthru: '/'
+            allow: false
+            rules:
+                '^\/static\/icons\/.*.png$':
+                    allow: true
+                '^/robots\.txt$':
+                    allow: true
 
 hooks:
     build: |
