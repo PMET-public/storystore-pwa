@@ -44,6 +44,7 @@ module.exports = withOffline({
                 display: 'standalone',
                 start_url: '.',
                 publicPath: '/_next/',
+                crossorigin: 'use-credentials',
                 icons: [
                     {
                         src: path.resolve('./public/app-icon.png'),
