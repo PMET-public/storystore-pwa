@@ -82,7 +82,7 @@ app.prepare().then(async () => {
      * Web Manifest
      */
     server.get('/manifest.webmanifest', (req, res) => {
-        const filePath = join(__dirname, '.next', 'manifest.webmanifest')
+        const filePath = join(__dirname, 'public', 'manifest.webmanifest')
         app.serveStatic(req, res, filePath)
     })
 

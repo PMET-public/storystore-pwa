@@ -1,12 +1,7 @@
 require('dotenv').config()
 const webpack = require('webpack')
-const path = require('path')
-
-const WebpackPwaManifest = require('webpack-pwa-manifest')
 const withOffline = require('next-offline')
 const workboxOpts = require('./workboxOpts')
-
-
 
 module.exports = withOffline({
     workboxOpts,
@@ -24,40 +19,6 @@ module.exports = withOffline({
                     CONTENT_FOOTER_BLOCK_ID: JSON.stringify(process.env.CONTENT_FOOTER_BLOCK_ID),
                     DEVELOPMENT: process.env.NODE_ENV !== 'production',
                 },
-            })
-        )
-
-        /**
-         * PWA Manifest
-         * https://www.npmjs.com/package/webpack-pwa-manifest
-         */
-        config.plugins.push(
-            new WebpackPwaManifest({
-                fingerprints: false,
-                filename: 'manifest.webmanifest',
-                name: 'Luma',
-                short_name: 'Luma',
-                description: 'We’re passionate about active lifestyles – and it goes way beyond apparel.',
-                background_color: '#ffffff',
-                theme_color: '#222222',
-                orientation: 'portrait-primary',
-                display: 'standalone',
-                start_url: '.',
-                publicPath: '/_next/',
-                crossorigin: 'use-credentials',
-                icons: [
-                    {
-                        src: path.resolve('./public/app-icon.png'),
-                        sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
-                        destination: 'static/icons',
-                    },
-                    {
-                        src: path.resolve('./public/app-icon-ios.png'),
-                        sizes: [120, 152, 167, 180],
-                        destination: 'static/icons',
-                        ios: true,
-                    },
-                ],
             })
         )
 

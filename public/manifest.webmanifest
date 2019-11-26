@@ -1,0 +1,62 @@
+{
+    "icons": [
+        {
+            "src": "/static/icons/icon_180x180.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_167x167.png",
+            "sizes": "167x167",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_152x152.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_120x120.png",
+            "sizes": "120x120",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_128x128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon_96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        }
+    ],
+    "name": "Luma",
+    "short_name": "Luma",
+    "orientation": "portrait-primary",
+    "display": "standalone",
+    "start_url": ".",
+    "background_color": "#ffffff",
+    "description": "We’re passionate about active lifestyles – and it goes way beyond apparel.",
+    "theme_color": "#222222"
+}

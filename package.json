@@ -36,8 +36,7 @@
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "request": "^2.88.0",
-    "styled-components": "^4.4.1",
-    "webpack-pwa-manifest": "^4.1.1"
+    "styled-components": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.0",

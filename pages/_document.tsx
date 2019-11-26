@@ -33,21 +33,26 @@ export default class extends Document {
                 <Head>
                     <noscript>Enable javascript to run this web app.</noscript>
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <link rel="icon" href="/static/favicon.ico" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-                    {/* Apple Specific */}
-                    <meta name="apple-mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-                    <link rel="apple-touch-startup-image" /> {/* TODO: Add Custom Startup Image */}
+                    <link rel="icon" href="/static/favicon.ico" />
+
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
-                    {/*... cross-browser https://developers.google.com/web/updates/2018/07/pwacompat */}
-                    <script
-                        async
-                        src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.9/pwacompat.min.js"
-                        integrity="sha384-VcI6S+HIsE80FVM1jgbd6WDFhzKYA0PecD/LcIyMQpT4fMJdijBh0I7Iblaacawc"
-                        crossOrigin="anonymous"
-                    ></script>
+
+                    {/* iOS */}
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                    <meta name="apple-mobile-web-app-capable" content="yes" />
+                    <link rel="icon" href="/static/icons/icon_512x512.png" sizes="512x512" />
+                    <link rel="icon" href="/static/icons/icon_384x384.png" sizes="384x384" />
+                    <link rel="icon" href="/static/icons/icon_256x256.png" sizes="256x256" />
+                    <link rel="icon" href="/static/icons/icon_192x192.png" sizes="192x192" />
+                    <link rel="icon" href="/static/icons/icon_180x180.png" sizes="180x180" />
+                    <link rel="icon" href="/static/icons/icon_167x167.png" sizes="167x167" />
+                    <link rel="icon" href="/static/icons/icon_152x152.png" sizes="152x152" />
+                    <link rel="icon" href="/static/icons/icon_128x128.png" sizes="128x128" />
+                    <link rel="icon" href="/static/icons/icon_120x120.png" sizes="120x120" />
+                    <link rel="icon" href="/static/icons/icon_96x96.png" sizes="96x96" />
+
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>
