@@ -9,10 +9,15 @@ web:
     commands:
         start: yarn start
     locations:
-        '/public':
+        '/':
             passthru: false
-            root: 'public'
-            allow: true
+            root: 'static'
+            allow: false
+            rules:
+                '^manifest.webmanifest$':
+                    allow: true
+                '^static\/.*':
+                    allow: true
 
 hooks:
     build: |
