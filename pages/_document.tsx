@@ -42,7 +42,7 @@ export default class extends Document {
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-                    <meta name="apple-mobile-web-app-title" content="Luma">
+                    <meta name="apple-mobile-web-app-title" content="Luma" />
 
                     <link rel="apple-touch-icon" href="/static/icons/icon_180x180.png" />
                     <link rel="apple-touch-icon" href="/static/icons/icon_512x512.png" sizes="512x512" />
