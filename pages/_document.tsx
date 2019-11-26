@@ -40,13 +40,13 @@ export default class extends Document {
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
-                    <link rel="apple-touch-icon" href="ios-icon.png" />
+                    <link rel="apple-touch-icon" href="/static/ios-icon.png" />
 
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
 
-                    <link rel="icon" href="icon_192x192.png" />
-                    <link rel="icon" href="icon_512x512.png" sizes="512x512" />
+                    <link rel="icon" href="/static/icon_192x192.png" />
+                    <link rel="icon" href="/static/icon_512x512.png" sizes="512x512" />
 
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
