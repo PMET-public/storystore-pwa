@@ -49,6 +49,7 @@ export default class extends Document {
                     <link
                         rel="apple-touch-icon"
                         href={dataUri(path.relative(process.cwd(), './public/static/ios-icon.png'))}
+                        crossOrigin="use-credentials"
                     />
 
                     {/* Web App Manifest  */}
