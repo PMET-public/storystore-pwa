@@ -6,6 +6,7 @@ import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../../components/Error'
 import PageBuilder from '../../components/PageBuilder'
+import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
 type AppProps = {}
 
@@ -33,7 +34,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }
 
-    if (!(data && data.store) && loading) return null
+    if (!(data && data.store) && loading) return <ViewLoader />
 
     if (!data)
         return (
