@@ -1,6 +1,6 @@
 const runtimeDefaultCacheOptions = {
     cacheableResponse: {
-        statuses: [200],
+        statuses: [0, 200],
     },
     expiration: {
         maxAgeSeconds: 30 * 24 * 60 * 60,

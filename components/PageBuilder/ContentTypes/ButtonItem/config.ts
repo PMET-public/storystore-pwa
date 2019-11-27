@@ -18,8 +18,10 @@ const props = (elem: HTMLElement) => {
         text: elem.textContent || '',
     }
 
+    const href = buttonElem.getAttribute('href')
+
     const link: LinkProps | undefined =
-        buttonElem.nodeName === 'A'
+        buttonElem.nodeName === 'A' && href
             ? {
                   href: resolveLink(buttonElem.getAttribute('href') || ''),
                   urlResolver: true,

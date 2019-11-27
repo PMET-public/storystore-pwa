@@ -246,17 +246,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         authorization: braintreeToken,
                         vaultManager: true,
                         preselectVaultedPaymentMethod: true,
-                        card: {
-                            overrides: {
-                                fields: {
-                                    number: {
-                                        maskInput: {
-                                            showLastFour: true, // Only show last four digits on blur.
-                                        },
-                                    },
-                                },
-                            },
-                        },
                     },
                     editButton: {
                         text: 'Edit',
