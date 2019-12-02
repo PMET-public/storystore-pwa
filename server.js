@@ -64,17 +64,14 @@ app.prepare().then(async () => {
     /**
      * Static Files
      */
-    server.get('/_next/*', (req, res) => {
-        return handle(req, res)
-    })
+    server.get('/_next/*', handle)
 
-    server.use('/static', express.static('public/static'))
-
+    server.use('/static', express.static('./public/static'))
     /**
      * 🤖
      */
     server.get('/robots.txt', (req, res) => {
-        const filePath = join(__dirname, 'public', 'robot.txt')
+        const filePath = join(__dirname, './public', 'robots.txt')
         app.serveStatic(req, res, filePath)
     })
 
@@ -82,7 +79,7 @@ app.prepare().then(async () => {
      * Web Manifest
      */
     server.get('/manifest.webmanifest', (req, res) => {
-        const filePath = join(__dirname, 'public', 'manifest.webmanifest')
+        const filePath = join(__dirname, './public', 'manifest.webmanifest')
         app.serveStatic(req, res, filePath)
     })
 

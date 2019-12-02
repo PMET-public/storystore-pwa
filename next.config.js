@@ -1,11 +1,45 @@
 require('dotenv').config()
 const webpack = require('webpack')
 const withOffline = require('next-offline')
-const workboxOpts = require('./workboxOpts')
+
+const runtimeDefaultCacheOptions = {
+    cacheableResponse: {
+        statuses: [0, 200],
+    },
+    fetchOptions: {
+        credentials: 'same-origin',
+    },
+}
+
 
 module.exports = withOffline({
-    workboxOpts,
 
+    workboxOpts: {
+        modifyURLPrefix: {
+            'static/': '_next/static/',
+            'public': '',
+        },
+        navigationPreload: true,
+        cleanupOutdatedCaches: true,
+        runtimeCaching: [
+            {
+                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
+                handler: 'StaleWhileRevalidate',
+                options: {
+                    cacheName: 'offline-cache',
+                    ...runtimeDefaultCacheOptions,
+                },
+            },
+            {
+                urlPattern: /\/graphql/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'graphql-cache',
+                    ...runtimeDefaultCacheOptions,
+                },
+            },
+        ]
+    },
     webpack: config => {
         /**
          * Luma PWA Variable
