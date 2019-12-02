@@ -21,6 +21,9 @@ const handle = app.getRequestHandler()
 app.prepare().then(async () => {
     const server = express()
 
+    server.disable('x-powered-by')
+
+
     /**
      * Compression
      */

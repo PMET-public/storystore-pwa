@@ -6,9 +6,13 @@ const runtimeDefaultCacheOptions = {
     cacheableResponse: {
         statuses: [0, 200],
     },
-    fetchOptions: {
+}
+
+const addFetchOptionsPlugin = {
+    requestWillFetch: ({ request }) => new Request(request, {
         credentials: 'same-origin',
-    },
+        redirect: 'follow',
+    })
 }
 
 
@@ -24,10 +28,20 @@ module.exports = withOffline({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
             {
-                urlPattern: /^https?.*/,
-                handler: 'NetworkFirst',
+                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
+                handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'offline-cache',
+                    plugins: [addFetchOptionsPlugin],
+                    ...runtimeDefaultCacheOptions,
+                },
+            },
+            {
+                urlPattern: /\/graphql/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'graphql-cache',
+                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
