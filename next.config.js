@@ -24,18 +24,10 @@ module.exports = withOffline({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
             {
-                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
-                handler: 'StaleWhileRevalidate',
-                options: {
-                    cacheName: 'offline-cache',
-                    ...runtimeDefaultCacheOptions,
-                },
-            },
-            {
-                urlPattern: /\/graphql/,
+                urlPattern: /^https?.*/,
                 handler: 'NetworkFirst',
                 options: {
-                    cacheName: 'graphql-cache',
+                    cacheName: 'offline-cache',
                     ...runtimeDefaultCacheOptions,
                 },
             },
