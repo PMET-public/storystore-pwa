@@ -13,8 +13,9 @@ const runtimeDefaultCacheOptions = {
 
 
 module.exports = withOffline({
-
     workboxOpts: {
+        skipWaiting: true,
+        clientsClaim: true,
         modifyURLPrefix: {
             'static/': '_next/static/',
             'public': '',
