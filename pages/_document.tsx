@@ -62,6 +62,9 @@ export default class extends Document {
 
                     {/* Fonts */}
                     <link rel="stylesheet" href="/static/fonts.css" />
+
+                    {/* Preload App Shell */}
+                    <link rel="preload" href="/" />
                 </Head>
 
                 <body>
