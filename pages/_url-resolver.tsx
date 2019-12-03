@@ -34,7 +34,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
     }
 }
 
-UrlResolver.getInitialProps = async ({ query }) => {
+UrlResolver.getInitialProps = async ({ res, query }) => {
     const [url] = query.url.toString().split('?')
 
     const urlKey =
@@ -51,13 +51,19 @@ UrlResolver.getInitialProps = async ({ query }) => {
 
     const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
 
-    const res = await fetch(`${graphQlUri}?query=${graphQlQuery}`)
+    try {
+        const page = await fetch(`${graphQlUri}?query=${graphQlQuery}`)
 
-    const { data = {} } = await res.json()
+        const { data = {} } = await page.json()
 
-    const { type = '404', contentId } = data.urlResolver || {}
+        const { type = '404', contentId } = data.urlResolver || {}
 
-    return { type, contentId, urlKey }
+        if (type === '404') res.statusCode = 404
+
+        return { type, contentId, urlKey }
+    } catch (e) {
+        res.statusCode = 500
+    }
 }
 
 export default UrlResolver

@@ -51,15 +51,6 @@
     ts-invariant "^0.4.4"
     tslib "^1.10.0"
 
-"@apollo/react-ssr@^3.1.3":
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/@apollo/react-ssr/-/react-ssr-3.1.3.tgz#0791280d5b735f42f87dbfe849564e78843045bc"
-  integrity sha512-fUTmEYHxSTX1GA43B8vICxXXplpcEBnDwn0IgdAc3eG0p2YK97ZrJDRFCJ5vD7fyDZsrYhMf+rAI3sd+H2SS+A==
-  dependencies:
-    "@apollo/react-common" "^3.1.3"
-    "@apollo/react-hooks" "^3.1.3"
-    tslib "^1.10.0"
-
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.5.5.tgz#bc0782f6d69f7b7d49531219699b988f669a8f9d"
@@ -982,10 +973,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@pmet-public/luma-ui@^1.0.0-beta.7":
-  version "1.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.7.tgz#b9057b6fa3bc1384047d9fcf884e81eee042dc9e"
-  integrity sha512-CtZZf4P8i9n6b2UpyzBBwjKCuaPtbB/FsTVIDKDlF9Gr5OXVetBKf8yh5qDXlbNGDOY6syUq8zvyx8S1p13UOg==
+"@pmet-public/luma-ui@^1.0.0-beta.9":
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.9.tgz#1e0431e44773616f08eddba6493b19a7a7d0c4ea"
+  integrity sha512-l4ZxPQpirAzoID5dimAJPipbBRYdRj/P1OQxHRlXy/CskEMZn8lQTrL9cNz0uDQd2Whn0IopG93beQdRJ01HNw==
 
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.1.1"
@@ -4645,10 +4636,10 @@ neo-async@^2.5.0, neo-async@^2.6.1:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
   integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
 
-next-offline@5.0.0-beta.10:
-  version "5.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/next-offline/-/next-offline-5.0.0-beta.10.tgz#9dc6bebdcc63345648f24c40d4b124fbb6d809a3"
-  integrity sha512-aen0charVWQ40o4B5RaY4bx8ef4duFveVfTRpzh82Pj+kCN1ko22/18Mj93frcRDimJ/YRbI/WnPWvPFGlos5g==
+next-offline@5.0.0-beta.9:
+  version "5.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/next-offline/-/next-offline-5.0.0-beta.9.tgz#6a9ff1a8402e29c0814cc9056e8ed3e5ed1255c4"
+  integrity sha512-NVfuUFFIpXtLe5y9uBhiDdJXcqbBPBCtfNl7fn3oT8ZISm7Z/S5aeZL4ThNbrvvC0X72Zx22f9v0vEa3PpBLrQ==
   dependencies:
     copy-webpack-plugin "~5.0.5"
     fs-extra "~8.1.0"
