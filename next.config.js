@@ -1,4 +1,5 @@
 require('dotenv').config()
+const crypto = require('crypto')
 const webpack = require('webpack')
 const withOffline = require('next-offline')
 
@@ -9,12 +10,18 @@ const runtimeDefaultCacheOptions = {
 }
 
 const addFetchOptionsPlugin = {
-    requestWillFetch: ({ request }) => new Request(request, {
-        credentials: 'same-origin',
-        redirect: 'follow',
-    })
+    requestWillFetch: ({ request }) =>
+        new Request(request, {
+            credentials: 'same-origin',
+            redirect: 'follow',
+        }),
 }
 
+const getRevisionHash = () =>
+    crypto
+        .createHash('md5')
+        .update(String(Date.now()), 'utf8')
+        .digest('hex')
 
 module.exports = withOffline({
     workboxOpts: {
@@ -22,10 +29,23 @@ module.exports = withOffline({
         clientsClaim: true,
         modifyURLPrefix: {
             'static/': '_next/static/',
-            'public': '',
+            public: '',
         },
         navigationPreload: true,
         cleanupOutdatedCaches: true,
+        navigateFallback: '/',
+        manifestTransforms: [
+            manifest => ({
+                manifest: [
+                    { url: '/', revision: getRevisionHash() },
+                    { url: '/cart', revision: getRevisionHash() },
+                    { url: '/search', revision: getRevisionHash() },
+                    { url: '/checkout', revision: getRevisionHash() },
+                    { url: '/checkout', revision: getRevisionHash() },
+                    ...manifest
+                ],
+            }),
+        ],
         runtimeCaching: [
             {
                 urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
@@ -45,7 +65,7 @@ module.exports = withOffline({
                     ...runtimeDefaultCacheOptions,
                 },
             },
-        ]
+        ],
     },
     webpack: config => {
         /**
