@@ -33,7 +33,6 @@ module.exports = withOffline({
         },
         navigationPreload: true,
         cleanupOutdatedCaches: true,
-        navigateFallback: '/',
         manifestTransforms: [
             manifest => ({
                 manifest: [
