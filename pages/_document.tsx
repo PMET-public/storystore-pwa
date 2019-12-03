@@ -1,7 +1,5 @@
 import Document, { Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
-import { sync as dataUri } from 'datauri'
-import { relative } from 'path'
 
 export default class extends Document {
     static async getInitialProps(ctx: any) {
