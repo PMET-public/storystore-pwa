@@ -1,7 +1,8 @@
 import React from 'react'
 import App from 'next/app'
-// import Head from 'next/head'
+import Head from 'next/head'
 import { ApolloProvider } from '@apollo/react-hooks'
+import { getDataFromTree } from '@apollo/react-ssr'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import initApollo from '../apollo/client'
 import NextNprogress from 'nextjs-progressbar'
@@ -28,7 +29,7 @@ class MyApp extends App {
     }
 }
 
-function withApollo(PageComponent: any, {} = {}) {
+function withApollo(PageComponent: any, { ssr = true } = {}) {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: any) => {
         const client = apolloClient || initApollo(apolloState)
         return (
@@ -49,63 +50,63 @@ function withApollo(PageComponent: any, {} = {}) {
         WithApollo.displayName = `withApollo(${displayName})`
     }
 
-    // if (ssr || PageComponent.getInitialProps) {
-    //     WithApollo.getInitialProps = async (ctx: any) => {
-    //         const { AppTree } = ctx
+    if (ssr || PageComponent.getInitialProps) {
+        WithApollo.getInitialProps = async (ctx: any) => {
+            const { AppTree } = ctx
 
-    //         // Initialize ApolloClient, add it to the ctx object so
-    //         // we can use it in `PageComponent.getInitialProp`.
-    //         const apolloClient = (ctx.apolloClient = initApollo())
+            // Initialize ApolloClient, add it to the ctx object so
+            // we can use it in `PageComponent.getInitialProp`.
+            const apolloClient = (ctx.apolloClient = initApollo())
 
-    //         // Run wrapped getInitialProps methods
-    //         let pageProps = {}
-    //         if (PageComponent.getInitialProps) {
-    //             pageProps = await PageComponent.getInitialProps(ctx)
-    //         }
+            // Run wrapped getInitialProps methods
+            let pageProps = {}
+            if (PageComponent.getInitialProps) {
+                pageProps = await PageComponent.getInitialProps(ctx)
+            }
 
-    //         // Only on the server:
-    //         if (typeof window === 'undefined') {
-    //             // When redirecting, the response is finished.
-    //             // No point in continuing to render
-    //             if (ctx.res && ctx.res.finished) {
-    //                 return pageProps
-    //             }
+            // Only on the server:
+            if (typeof window === 'undefined') {
+                // When redirecting, the response is finished.
+                // No point in continuing to render
+                if (ctx.res && ctx.res.finished) {
+                    return pageProps
+                }
 
-    //             // Only if ssr is enabled
-    //             if (ssr) {
-    //                 try {
-    //                     // Run all GraphQL queries
-    //                     const { getDataFromTree } = await import('@apollo/react-ssr')
-    //                     await getDataFromTree(
-    //                         <AppTree
-    //                             pageProps={{
-    //                                 ...pageProps,
-    //                                 apolloClient,
-    //                             }}
-    //                         />
-    //                     )
-    //                 } catch (error) {
-    //                     // Prevent Apollo Client GraphQL errors from crashing SSR.
-    //                     // Handle them in components via the data.error prop:
-    //                     // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
-    //                     console.error('Error while running `getDataFromTree`', error)
-    //                 }
+                // Only if ssr is enabled
+                if (ssr) {
+                    try {
+                        // Run all GraphQL queries
 
-    //                 // getDataFromTree does not call componentWillUnmount
-    //                 // head side effect therefore need to be cleared manually
-    //                 Head.rewind()
-    //             }
-    //         }
+                        await getDataFromTree(
+                            <AppTree
+                                pageProps={{
+                                    ...pageProps,
+                                    apolloClient,
+                                }}
+                            />
+                        )
+                    } catch (error) {
+                        // Prevent Apollo Client GraphQL errors from crashing SSR.
+                        // Handle them in components via the data.error prop:
+                        // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
+                        console.error('Error while running `getDataFromTree`', error)
+                    }
 
-    //         // Extract query data from the Apollo store
-    //         const apolloState = apolloClient.cache.extract()
+                    // getDataFromTree does not call componentWillUnmount
+                    // head side effect therefore need to be cleared manually
+                    Head.rewind()
+                }
+            }
 
-    //         return {
-    //             ...pageProps,
-    //             apolloState,
-    //         }
-    //     }
-    // }
+            // Extract query data from the Apollo store
+            const apolloState = apolloClient.cache.extract()
+
+            return {
+                ...pageProps,
+                apolloState,
+            }
+        }
+    }
 
     return WithApollo
 }
