@@ -41,7 +41,7 @@ module.exports = withOffline({
                     { url: '/cart', revision: getRevisionHash() },
                     { url: '/search', revision: getRevisionHash() },
                     { url: '/checkout', revision: getRevisionHash() },
-                    ...manifest
+                    ...manifest,
                 ],
             }),
         ],
