@@ -52,10 +52,10 @@ app.prepare().then(async () => {
      */
     server.use(
         '/images',
-        cache(10),
         sharp({
             baseHost: new URL(MAGENTO_URL).href,
-        })
+        }),
+        cache(30)
     )
 
     /**
