@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.3",
-    "@pmet-public/luma-ui": "^1.0.0-beta.9",
+    "@pmet-public/luma-ui": "^1.0.0-beta.10",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
     "apollo-link-error": "^1.1.12",

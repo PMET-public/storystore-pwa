@@ -38,10 +38,7 @@ export default class extends Document {
                     <noscript>Enable javascript to run this web app.</noscript>
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <meta charSet="utf-8" />
-                    <meta
-                        name="viewport"
-                        content="width=device-width, minimum-scale=1, initial-scale=1, viewport-fit=cover"
-                    />
+                    <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
                     <meta name="theme-color" content="#222222" />
                     <link rel="shortcut icon" href="/static/favicon.ico" />
 
