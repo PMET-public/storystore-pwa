@@ -20,24 +20,14 @@ export const resolveImage = (
         progressive?: boolean
     }
 ) => {
-    const {
-        format = 'jpeg',
-        quality = 100,
-        crop = false,
-        width = 2000,
-        height,
-        gravity = 'centre',
-        progressive = true,
-    } = options || {}
+    const { quality = 100, crop = false, width = 2000, height, gravity = 'centre', progressive = true } = options || {}
 
     const path = url.match(/^(?:[^\/]*(?:\/(?:\/[^\/]*\/?)?)?([^?]+)(?:\??.+)?)$/)
 
     if (path) {
         const result = [`/images/resize/${width}`]
         if (height) result.push(height.toString())
-        result.push(
-            `?format=${format}&quality=${quality}&progressive=${progressive}&gravity=${gravity}&crop=${crop}&url=${path[1]}`
-        )
+        result.push(`?quality=${quality}&progressive=${progressive}&gravity=${gravity}&crop=${crop}&url=${path[1]}`)
 
         return result.join('/')
     } else {

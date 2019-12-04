@@ -23,7 +23,6 @@ app.prepare().then(async () => {
 
     server.disable('x-powered-by')
 
-
     /**
      * Compression
      */
