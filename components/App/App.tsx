@@ -22,7 +22,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         } else if (error.networkError && (error.networkError as any).statusCode === 403) {
             return (
                 <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
-                    Please make sure you have entered your credentials or that you're connected to Adobe's network.
+                    Authorization Required
                 </Error>
             )
         } else {

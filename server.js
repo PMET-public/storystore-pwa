@@ -6,7 +6,6 @@ const request = require('request')
 const next = require('next')
 const compression = require('compression')
 const sharp = require('express-sharp')
-const mcache = require('memory-cache')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
 
@@ -17,25 +16,6 @@ const dev = NODE_ENV !== 'production'
 const app = next({ dev })
 
 const handle = app.getRequestHandler()
-
-const cache = duration => {
-    return (req, res, next) => {
-        let key = '__express__' + req.originalUrl || req.url
-        let cachedBody = mcache.get(key)
-        if (cachedBody) {
-            res.send(cachedBody)
-            return
-        } else {
-            res.sendResponse = res.send
-            res.send = (body) => {
-                mcache.put(key, body, duration * 1000)
-                res.sendResponse(body)
-            }
-            next()
-        }
-    }
-}
-
 
 app.prepare().then(async () => {
     const server = express()
@@ -55,7 +35,6 @@ app.prepare().then(async () => {
         sharp({
             baseHost: new URL(MAGENTO_URL).href,
         }),
-        cache(30)
     )
 
     /**
