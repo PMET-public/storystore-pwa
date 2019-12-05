@@ -25,30 +25,3 @@ http://{default}/:
   ssi:
     enabled: false
   upstream: node-luma-pwa:http
-https://pwa.longliveluma.com/:
-  primary: null
-  id: null
-  attributes: {}
-  type: upstream
-  redirects:
-    expires: -1s
-    paths: {}
-  tls:
-    strict_transport_security:
-      enabled: null
-      include_subdomains: null
-      preload: null
-    min_version: null
-    client_authentication: null
-    client_certificate_authorities: []
-  cache:
-    enabled: true
-    default_ttl: 0
-    cookies:
-    - '*'
-    headers:
-    - Accept
-    - Accept-Language
-  ssi:
-    enabled: false
-  upstream: node-luma-pwa:http
