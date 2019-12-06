@@ -1,9 +1,8 @@
-import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 import { getBackgroundImages } from '../../lib/utils'
 import { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 
-const component = dynamic(() => import('./'))
+import component from '.'
 
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)

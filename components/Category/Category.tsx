@@ -11,7 +11,6 @@ import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
 import Error from '../Error'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 import { resolveImage } from '../../lib/resolveImage'
 import PageBuilder from '../PageBuilder'
@@ -108,8 +107,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (!data) return null
-
     if (error && !online) return <Error type="Offline" />
 
     if (error)
@@ -119,9 +116,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             </Error>
         )
 
-    if (!data.page && loading) return <ViewLoader />
-
-    if (!data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
+    if (!data.page && !loading) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page } = data
 
@@ -138,15 +133,22 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata />
+            {page && (
+                <DocumentMetadata
+                    title={page.metaTitle || page.title}
+                    description={page.metaDescription}
+                    keywords={page.metaKeywords}
+                />
+            )}
 
             <CategoryTemplate
-                display={page.mode || 'PRODUCTS_AND_PAGE'}
+                display={(page && page.mode) || 'PRODUCTS_AND_PAGE'}
                 title={{
                     as: 'h2',
-                    text: page.title,
+                    text: page && page.title,
                 }}
                 backButton={
+                    page &&
                     page.breadcrumbs && {
                         as: Link,
                         urlResolver: {
@@ -157,6 +159,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 breadcrumbs={
+                    page &&
                     (!page.categories || (page.categories && page.categories.length === 0)) &&
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ id, text, href }: any) => ({
@@ -172,6 +175,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 categories={
+                    page &&
                     page.categories && {
                         items: page.categories.map(({ id, text, count, href }: any) => ({
                             _id: id,
@@ -237,7 +241,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         })),
                 }}
             >
-                <PageBuilder html={page.cmsBlock} />
+                {page && <PageBuilder html={page.cmsBlock} />}
             </CategoryTemplate>
         </React.Fragment>
     )

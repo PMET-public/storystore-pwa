@@ -6,7 +6,6 @@ import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../../components/Error'
 import PageBuilder from '../../components/PageBuilder'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
 type AppProps = {}
 
@@ -34,33 +33,34 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }
 
-    if (!(data && data.store) && loading) return <ViewLoader />
-
-    if (!data)
+    if (!loading && !data) {
         return (
             <Error type="500" button={{ text: 'Reload App', onClick: location.reload }} fullScreen>
                 No data available.
             </Error>
         )
+    }
 
     const { store, categories, cart, footer } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                defaults={{
-                    title: store.metaTitle,
-                    titlePrefix: store.metaTitlePrefix,
-                    titleSuffix: store.metaTitleSuffix,
-                    description: store.metaDescription,
-                    keywords: store.metaKeywords,
-                }}
-            />
+            {store && (
+                <DocumentMetadata
+                    defaults={{
+                        title: store.metaTitle,
+                        titlePrefix: store.metaTitlePrefix,
+                        titleSuffix: store.metaTitleSuffix,
+                        description: store.metaDescription,
+                        keywords: store.metaKeywords,
+                    }}
+                />
+            )}
             <AppTemplate
                 logo={{
                     as: Link,
                     href: '/',
-                    title: store.logoAlt || 'Luma',
+                    title: (store && store.logoAlt) || 'Luma',
                 }}
                 home={{
                     active: api.isUrlActive('/'),
@@ -68,16 +68,20 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     href: '/',
                     text: 'Home',
                 }}
-                menu={categories.children.map(({ id, text, href }: any) => ({
-                    active: api.isUrlActive('/' + href),
-                    as: Link,
-                    urlResolver: {
-                        type: 'CATEGORY',
-                        id,
-                    },
-                    href: '/' + href,
-                    text,
-                }))}
+                menu={
+                    categories &&
+                    categories.children &&
+                    categories.children.map(({ id, text, href }: any) => ({
+                        active: api.isUrlActive('/' + href),
+                        as: Link,
+                        urlResolver: {
+                            type: 'CATEGORY',
+                            id,
+                        },
+                        href: '/' + href,
+                        text,
+                    }))
+                }
                 search={{
                     active: api.isUrlActive('/search'),
                     as: Link,

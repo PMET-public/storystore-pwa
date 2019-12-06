@@ -3,7 +3,6 @@ import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../Error'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import ProductTemplate from '@pmet-public/luma-ui/dist/templates/Product'
 import Link from '../Link'
 import { resolveImage } from '../../lib/resolveImage'
@@ -55,15 +54,11 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product && data.product.sku, data.product && data.product.variantSku])
 
-    if (!data) return null
-
     if (error && !online) return <Error type="Offline" />
 
     if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
-    if (!data.product && loading) return <ViewLoader />
-
-    if (!data || !data.product)
+    if (!loading && (!data || !data.product))
         return (
             <Error
                 type="404"
@@ -89,12 +84,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         stock,
         title,
         type,
-    } = product
+    } = product || {}
 
-    if (type !== 'configurable' && type !== 'simple') {
+    if (type && type !== 'configurable' && type !== 'simple') {
         return <Error type="500">Product type: {type} not supported.</Error>
     }
-    return sku ? (
+
+    return (
         <React.Fragment>
             <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
             <ProductTemplate
@@ -103,9 +99,11 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 title={{
                     text: title,
                 }}
-                sku={{
-                    text: `SKU. ${sku}`,
-                }}
+                sku={
+                    sku && {
+                        text: `SKU. ${sku}`,
+                    }
+                }
                 categories={
                     categories && {
                         items: categories
@@ -123,24 +121,31 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             })),
                     }
                 }
-                gallery={gallery
-                    .filter((x: any) => x.disabled === false && x.type === 'image')
-                    .map(({ id, label, file }: any) => ({
-                        _id: id,
-                        alt: label,
-                        src: {
-                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
-                                width: 1200,
-                            }),
-                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, { width: 600 }),
-                        },
-                    }))
-                    .sort((a: any, b: any) => a.position - b.position)}
-                price={{
-                    regular: price.regular.amount.value,
-                    special: specialPrice,
-                    currency: price.regular.amount.currency,
-                }}
+                gallery={
+                    gallery &&
+                    gallery
+                        .filter((x: any) => x.disabled === false && x.type === 'image')
+                        .map(({ id, label, file }: any) => ({
+                            _id: id,
+                            alt: label,
+                            src: {
+                                desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
+                                    width: 1200,
+                                }),
+                                mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
+                                    width: 600,
+                                }),
+                            },
+                        }))
+                        .sort((a: any, b: any) => a.position - b.position)
+                }
+                price={
+                    price && {
+                        regular: price.regular.amount.value,
+                        special: specialPrice,
+                        currency: price.regular.amount.currency,
+                    }
+                }
                 options={
                     options &&
                     options
@@ -178,8 +183,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     loading: addingToCart,
                 }}
                 shortDescription={shortDescription && shortDescription.html}
-                description={description.html}
+                description={description && description.html}
             />
         </React.Fragment>
-    ) : null
+    )
 }
