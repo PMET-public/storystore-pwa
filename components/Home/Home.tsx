@@ -32,30 +32,26 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
             )}
 
             <HomeTemplate
+                loading={loading}
                 stories={{
-                    items:
-                        categories &&
-                        categories.children &&
-                        categories.children.map(({ id, text, href, image }: any) => ({
-                            as: Link,
-                            urlResolver: {
-                                type: 'CATEGORY',
-                                id,
-                            },
-                            href,
-                            image: {
-                                alt: text,
-                                src:
-                                    image &&
-                                    resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
-                                        width: 150,
-                                    }),
-                            },
-                            text,
-                        })),
+                    items: categories?.children?.map(({ id, text, href, image }: any) => ({
+                        as: Link,
+                        urlResolver: {
+                            type: 'CATEGORY',
+                            id,
+                        },
+                        href,
+                        image: image && {
+                            alt: text,
+                            src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
+                                width: 150,
+                            }),
+                        },
+                        text,
+                    })),
                 }}
             >
-                {page && page.content && <PageBuilder html={page.content} />}
+                {page?.content && <PageBuilder html={page.content} />}
             </HomeTemplate>
         </React.Fragment>
     )

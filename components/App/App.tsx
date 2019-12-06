@@ -12,13 +12,13 @@ type AppProps = {}
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
     if (error) {
-        if (error.networkError && (error.networkError as any).statusCode === 401) {
+        if ((error?.networkError as any).statusCode === 401) {
             return (
                 <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
                     Authorization Required
                 </Error>
             )
-        } else if (error.networkError && (error.networkError as any).statusCode === 403) {
+        } else if ((error?.networkError as any).statusCode === 403) {
             return (
                 <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
                     Authorization Required
@@ -56,11 +56,13 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     }}
                 />
             )}
+
             <AppTemplate
+                loading={loading}
                 logo={{
                     as: Link,
                     href: '/',
-                    title: (store && store.logoAlt) || 'Luma',
+                    title: store?.logoAlt || 'Luma',
                 }}
                 home={{
                     active: api.isUrlActive('/'),
@@ -68,20 +70,16 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     href: '/',
                     text: 'Home',
                 }}
-                menu={
-                    categories &&
-                    categories.children &&
-                    categories.children.map(({ id, text, href }: any) => ({
-                        active: api.isUrlActive('/' + href),
-                        as: Link,
-                        urlResolver: {
-                            type: 'CATEGORY',
-                            id,
-                        },
-                        href: '/' + href,
-                        text,
-                    }))
-                }
+                menu={categories?.children?.map(({ id, text, href }: any) => ({
+                    active: api.isUrlActive('/' + href),
+                    as: Link,
+                    urlResolver: {
+                        type: 'CATEGORY',
+                        id,
+                    },
+                    href: '/' + href,
+                    text,
+                }))}
                 search={{
                     active: api.isUrlActive('/search'),
                     as: Link,
@@ -97,11 +95,9 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                         count: cart ? cart.totalQuantity : 0,
                     },
                 }}
-                footer={
-                    footer && {
-                        children: <PageBuilder html={footer.html} />,
-                    }
-                }
+                footer={{
+                    html: footer && <PageBuilder html={footer.html} />,
+                }}
             >
                 {children}
             </AppTemplate>
