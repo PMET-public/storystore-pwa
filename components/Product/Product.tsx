@@ -52,7 +52,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         } catch (error) {
             console.error(error)
         }
-    }, [data.product && data.product.sku, data.product && data.product.variantSku])
+    }, [data.product?.sku, data.product?.variantSku])
 
     if (error && !online) return <Error type="Offline" />
 
@@ -92,8 +92,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
+            {product && (
+                <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
+            )}
+
             <ProductTemplate
+                loading={loading}
                 onAddToCart={handleAddToCart}
                 onChange={handleOnChange}
                 title={{
@@ -104,78 +108,68 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         text: `SKU. ${sku}`,
                     }
                 }
-                categories={
-                    categories && {
-                        items: categories
-                            .slice(0, 4) // limit to 3
-                            .filter((x: any) => !!x.href)
-                            .map(({ id, text, href }: any) => ({
-                                _id: id,
-                                as: Link,
-                                urlResolver: {
-                                    type: 'CATEGORY',
-                                    id,
-                                },
-                                href: '/' + href,
-                                text,
-                            })),
-                    }
-                }
-                gallery={
-                    gallery &&
-                    gallery
-                        .filter((x: any) => x.disabled === false && x.type === 'image')
-                        .map(({ id, label, file }: any) => ({
+                categories={{
+                    items: categories
+                        ?.slice(0, 4) // limit to 3
+                        .filter((x: any) => !!x.href)
+                        .map(({ id, text, href }: any) => ({
                             _id: id,
-                            alt: label,
-                            src: {
-                                desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
-                                    width: 1200,
-                                }),
-                                mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
-                                    width: 600,
-                                }),
+                            as: Link,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
                             },
-                        }))
-                        .sort((a: any, b: any) => a.position - b.position)
-                }
-                price={
-                    price && {
-                        regular: price.regular.amount.value,
-                        special: specialPrice,
-                        currency: price.regular.amount.currency,
-                    }
-                }
-                options={
-                    options &&
-                    options
-                        .map(({ id, type, label, required = true, code, items }: any) => {
-                            const selected = items.find((x: any) => {
-                                return code === x.code, x.value.toString() === selectedOptions[code]
-                            })
-
-                            return {
-                                _id: id,
-                                type,
-                                required,
-                                label: selected ? `${label}: ${selected.label}` : label,
-                                swatches: {
-                                    name: `options.${code}`,
-                                    items: items.map(({ id, label, value, image }: any) => ({
-                                        _id: id,
-                                        text: label,
-                                        type: 'radio',
-                                        value,
-                                        image: image && {
-                                            alt: image.label,
-                                            src: resolveImage(image.url, { width: 240 }),
-                                        },
-                                    })),
-                                },
-                            }
+                            href: '/' + href,
+                            text,
+                        })),
+                }}
+                gallery={gallery
+                    ?.filter((x: any) => x.disabled === false && x.type === 'image')
+                    .map(({ id, label, file }: any) => ({
+                        _id: id,
+                        alt: label,
+                        src: {
+                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
+                                width: 1200,
+                            }),
+                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
+                                width: 600,
+                            }),
+                        },
+                    }))
+                    .sort((a: any, b: any) => a.position - b.position)}
+                price={{
+                    special: specialPrice,
+                    regular: price?.regular.amount.value,
+                    currency: price?.regular.amount.currency,
+                }}
+                options={options
+                    ?.map(({ id, type, label, required = true, code, items }: any) => {
+                        const selected = items.find((x: any) => {
+                            return code === x.code, x.value.toString() === selectedOptions[code]
                         })
-                        .sort((a: any, b: any) => b.position - a.position)
-                }
+
+                        return {
+                            _id: id,
+                            type,
+                            required,
+                            label: selected ? `${label}: ${selected.label}` : label,
+                            swatches: {
+                                name: `options.${code}`,
+                                items: items.map(({ id, label, value, image }: any) => ({
+                                    _id: id,
+                                    text: label,
+                                    type: 'radio',
+                                    value,
+                                    image: image && {
+                                        alt: image.label,
+                                        src: resolveImage(image.url, { width: 240 }),
+                                    },
+                                })),
+                            },
+                        }
+                    })
+                    .sort((a: any, b: any) => b.position - a.position)}
                 addToCartButton={{
                     as: 'button',
                     text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
