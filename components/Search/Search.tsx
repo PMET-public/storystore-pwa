@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useState, useEffect, useCallback } from 'react'
 import SEARCH_QUERY from './graphql/search.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -92,8 +92,6 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
     }, [search])
 
-    if (!data) return null
-
     if (error && !online) return <Error type="Offline" />
 
     if (error)
@@ -105,14 +103,14 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const { products, store, meta } = data
 
-    const getProductCount = () => {
+    const getProductCount = useCallback(() => {
         if (!products) return
         const { count = 0 } = products
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
-    }
+    }, [products])
 
-    const getNotResult = () => {
-        if (search && products && products.count === 0) {
+    const getNotResult = useCallback(() => {
+        if (search && products?.count === 0) {
             return (
                 <Error type="404">
                     We couldn’t find any results for "{search}". <br />
@@ -122,15 +120,18 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         } else {
             return null
         }
-    }
+    }, [search, products?.count])
 
-    function handleOnNewSearch(newQuery: string) {
-        if (newQuery.length === 0 || newQuery.length > 2) {
-            setSearch(newQuery)
-            setFilters({})
-            window.scrollTo(0, 0)
-        }
-    }
+    const handleOnNewSearch = useCallback(
+        (newQuery: string) => {
+            if (newQuery.length === 0 || newQuery.length > 2) {
+                setSearch(newQuery)
+                setFilters({})
+                window.scrollTo(0, 0)
+            }
+        },
+        [setSearch, setFilters]
+    )
 
     // function handleOnClickFilterValue(key: string, value: string) {
     //     setFilters({
@@ -146,11 +147,12 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
             {store && meta && <DocumentMetadata />}
 
             <CategoryTemplate
+                loading={loading}
+                loadingMore={loading}
                 search={{
                     searchBar: {
                         label: 'Search',
                         count: getProductCount(),
-                        loading: loading,
                         value: search,
                         onUpdate: handleOnNewSearch,
                     },
@@ -162,9 +164,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                 //         text: 'Done',
                 //     },
                 //     groups:
-                //         products &&
-                //         products.filters &&
-                //         products.filters.map(({ name, key, items }: any) => ({
+                //         products?.filters?.map(({ name, key, items }: any) => ({
                 //             title: name,
                 //             items: items.map(({ label, count, value }: any) => ({
                 //                 as: 'a',
@@ -179,32 +179,29 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                 //         })),
                 // }}
                 products={{
-                    loading: loading ? 10 : 0,
-                    items:
-                        products &&
-                        products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                            _id: `${id}--${index}`,
-                            as: Link,
-                            href: `/${urlKey}`,
-                            urlResolver: {
-                                type: 'PRODUCT',
-                                id,
+                    items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                        _id: `${id}--${index}`,
+                        as: Link,
+                        href: `/${urlKey}`,
+                        urlResolver: {
+                            type: 'PRODUCT',
+                            id,
+                        },
+                        image: {
+                            alt: image.alt,
+                            src: {
+                                desktop: resolveImage(image.src, { width: 1000 }),
+                                mobile: resolveImage(image.src, { width: 600 }),
                             },
-                            image: {
-                                alt: image.alt,
-                                src: {
-                                    desktop: resolveImage(image.src, { width: 1000 }),
-                                    mobile: resolveImage(image.src, { width: 600 }),
-                                },
-                            },
-                            price: {
-                                regular: price.regularPrice.amount.value,
-                                currency: price.regularPrice.amount.currency,
-                            },
-                            title: {
-                                text: title,
-                            },
-                        })),
+                        },
+                        price: {
+                            regular: price.regularPrice.amount.value,
+                            currency: price.regularPrice.amount.currency,
+                        },
+                        title: {
+                            text: title,
+                        },
+                    })),
                 }}
             />
         </React.Fragment>

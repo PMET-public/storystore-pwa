@@ -116,7 +116,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             </Error>
         )
 
-    if (!data.page && !loading) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
+    if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page } = data
 
@@ -142,14 +142,15 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             )}
 
             <CategoryTemplate
-                display={(page && page.mode) || 'PRODUCTS_AND_PAGE'}
+                loading={loading}
+                loadingMore={productsQuery.loading}
+                display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
                     as: 'h2',
-                    text: page && page.title,
+                    text: page?.title,
                 }}
                 backButton={
-                    page &&
-                    page.breadcrumbs && {
+                    page?.breadcrumbs && {
                         as: Link,
                         urlResolver: {
                             type: 'CATEGORY',
@@ -160,7 +161,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 }
                 breadcrumbs={
                     page &&
-                    (!page.categories || (page.categories && page.categories.length === 0)) &&
+                    (!page.categories || page.categories?.length === 0) &&
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ id, text, href }: any) => ({
                             _id: id,
@@ -175,8 +176,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 categories={
-                    page &&
-                    page.categories && {
+                    page?.categories && {
                         items: page.categories.map(({ id, text, count, href }: any) => ({
                             _id: id,
                             as: Link,
@@ -191,8 +191,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 filters={
-                    products &&
-                    products.filters && {
+                    products?.filters && {
                         label: 'Filters',
                         closeButton: {
                             text: 'Done',
@@ -213,32 +212,29 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
-                    loading: productsQuery.loading ? 10 : 0,
-                    items:
-                        products &&
-                        products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                            _id: `${id}--${index}`,
-                            as: Link,
-                            href: `/${urlKey}`,
-                            urlResolver: {
-                                type: 'PRODUCT',
-                                id,
+                    items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                        _id: `${id}--${index}`,
+                        as: Link,
+                        href: `/${urlKey}`,
+                        urlResolver: {
+                            type: 'PRODUCT',
+                            id,
+                        },
+                        image: {
+                            alt: image.alt,
+                            src: {
+                                desktop: resolveImage(image.src, { width: 1000 }),
+                                mobile: resolveImage(image.src, { width: 600 }),
                             },
-                            image: {
-                                alt: image.alt,
-                                src: {
-                                    desktop: resolveImage(image.src, { width: 1000 }),
-                                    mobile: resolveImage(image.src, { width: 600 }),
-                                },
-                            },
-                            price: {
-                                regular: price.regularPrice.amount.value,
-                                currency: price.regularPrice.amount.currency,
-                            },
-                            title: {
-                                text: title,
-                            },
-                        })),
+                        },
+                        price: {
+                            regular: price.regularPrice.amount.value,
+                            currency: price.regularPrice.amount.currency,
+                        },
+                        title: {
+                            text: title,
+                        },
+                    })),
                 }}
             >
                 {page && <PageBuilder html={page.cmsBlock} />}
