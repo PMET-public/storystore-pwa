@@ -144,7 +144,6 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     loading: updating || removing,
                 }}
             />
-            )}
         </React.Fragment>
     )
 }
