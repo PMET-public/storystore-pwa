@@ -11,7 +11,6 @@ import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
 import Error from '../Error'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 import { resolveImage } from '../../lib/resolveImage'
 import PageBuilder from '../PageBuilder'
@@ -108,8 +107,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (!data) return null
-
     if (error && !online) return <Error type="Offline" />
 
     if (error)
@@ -119,9 +116,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             </Error>
         )
 
-    if (!data.page && loading) return <ViewLoader />
-
-    if (!data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
+    if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page } = data
 
@@ -138,16 +133,24 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata />
+            {page && (
+                <DocumentMetadata
+                    title={page.metaTitle || page.title}
+                    description={page.metaDescription}
+                    keywords={page.metaKeywords}
+                />
+            )}
 
             <CategoryTemplate
-                display={page.mode || 'PRODUCTS_AND_PAGE'}
+                loading={loading}
+                loadingMore={productsQuery.loading}
+                display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
                     as: 'h2',
-                    text: page.title,
+                    text: page?.title,
                 }}
                 backButton={
-                    page.breadcrumbs && {
+                    page?.breadcrumbs && {
                         as: Link,
                         urlResolver: {
                             type: 'CATEGORY',
@@ -157,7 +160,8 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 breadcrumbs={
-                    (!page.categories || (page.categories && page.categories.length === 0)) &&
+                    page &&
+                    (!page.categories || page.categories?.length === 0) &&
                     page.breadcrumbs && {
                         items: page.breadcrumbs.map(({ id, text, href }: any) => ({
                             _id: id,
@@ -172,7 +176,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 categories={
-                    page.categories && {
+                    page?.categories && {
                         items: page.categories.map(({ id, text, count, href }: any) => ({
                             _id: id,
                             as: Link,
@@ -187,8 +191,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 filters={
-                    products &&
-                    products.filters && {
+                    products?.filters && {
                         label: 'Filters',
                         closeButton: {
                             text: 'Done',
@@ -209,35 +212,32 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     }
                 }
                 products={{
-                    loading: productsQuery.loading ? 10 : 0,
-                    items:
-                        products &&
-                        products.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                            _id: `${id}--${index}`,
-                            as: Link,
-                            href: `/${urlKey}`,
-                            urlResolver: {
-                                type: 'PRODUCT',
-                                id,
+                    items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                        _id: `${id}--${index}`,
+                        as: Link,
+                        href: `/${urlKey}`,
+                        urlResolver: {
+                            type: 'PRODUCT',
+                            id,
+                        },
+                        image: {
+                            alt: image.alt,
+                            src: {
+                                desktop: resolveImage(image.src, { width: 1000 }),
+                                mobile: resolveImage(image.src, { width: 600 }),
                             },
-                            image: {
-                                alt: image.alt,
-                                src: {
-                                    desktop: resolveImage(image.src, { width: 1000 }),
-                                    mobile: resolveImage(image.src, { width: 600 }),
-                                },
-                            },
-                            price: {
-                                regular: price.regularPrice.amount.value,
-                                currency: price.regularPrice.amount.currency,
-                            },
-                            title: {
-                                text: title,
-                            },
-                        })),
+                        },
+                        price: {
+                            regular: price.regularPrice.amount.value,
+                            currency: price.regularPrice.amount.currency,
+                        },
+                        title: {
+                            text: title,
+                        },
+                    })),
                 }}
             >
-                <PageBuilder html={page.cmsBlock} />
+                {page && <PageBuilder html={page.cmsBlock} />}
             </CategoryTemplate>
         </React.Fragment>
     )

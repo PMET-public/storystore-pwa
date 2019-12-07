@@ -6,20 +6,19 @@ import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
 import Error from '../../components/Error'
 import PageBuilder from '../../components/PageBuilder'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
 type AppProps = {}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
     if (error) {
-        if (error.networkError && (error.networkError as any).statusCode === 401) {
+        if ((error?.networkError as any).statusCode === 401) {
             return (
                 <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
                     Authorization Required
                 </Error>
             )
-        } else if (error.networkError && (error.networkError as any).statusCode === 403) {
+        } else if ((error?.networkError as any).statusCode === 403) {
             return (
                 <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
                     Authorization Required
@@ -34,33 +33,36 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }
 
-    if (!(data && data.store) && loading) return <ViewLoader />
-
-    if (!data)
+    if (!loading && !data) {
         return (
             <Error type="500" button={{ text: 'Reload App', onClick: location.reload }} fullScreen>
                 No data available.
             </Error>
         )
+    }
 
     const { store, categories, cart, footer } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                defaults={{
-                    title: store.metaTitle,
-                    titlePrefix: store.metaTitlePrefix,
-                    titleSuffix: store.metaTitleSuffix,
-                    description: store.metaDescription,
-                    keywords: store.metaKeywords,
-                }}
-            />
+            {store && (
+                <DocumentMetadata
+                    defaults={{
+                        title: store.metaTitle,
+                        titlePrefix: store.metaTitlePrefix,
+                        titleSuffix: store.metaTitleSuffix,
+                        description: store.metaDescription,
+                        keywords: store.metaKeywords,
+                    }}
+                />
+            )}
+
             <AppTemplate
+                loading={loading}
                 logo={{
                     as: Link,
                     href: '/',
-                    title: store.logoAlt || 'Luma',
+                    title: store?.logoAlt || 'Luma',
                 }}
                 home={{
                     active: api.isUrlActive('/'),
@@ -68,7 +70,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     href: '/',
                     text: 'Home',
                 }}
-                menu={categories.children.map(({ id, text, href }: any) => ({
+                menu={categories?.children?.map(({ id, text, href }: any) => ({
                     active: api.isUrlActive('/' + href),
                     as: Link,
                     urlResolver: {
@@ -93,11 +95,9 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                         count: cart ? cart.totalQuantity : 0,
                     },
                 }}
-                footer={
-                    footer && {
-                        children: <PageBuilder html={footer.html} />,
-                    }
-                }
+                footer={{
+                    html: footer && <PageBuilder html={footer.html} />,
+                }}
             >
                 {children}
             </AppTemplate>

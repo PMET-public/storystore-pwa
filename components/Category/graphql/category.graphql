@@ -4,6 +4,9 @@ query CategoryQuery($id: Int!) {
         title: name
         cmsBlock: description
         mode: display_mode
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+        metaTitle: meta_title
         breadcrumbs {
             id: category_id
             text: category_name
@@ -15,18 +18,5 @@ query CategoryQuery($id: Int!) {
             count: product_count
             href: url_path
         }
-    }
-
-    meta: category(id: $id) {
-        id
-        description: meta_description
-        keywords: meta_keywords
-        title: meta_title
-    }
-
-    store: storeConfig {
-        id
-        titlePrefix: title_prefix
-        titleSuffix: title_suffix
     }
 }

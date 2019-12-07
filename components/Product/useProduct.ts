@@ -58,7 +58,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
     const { products, ...restData } = data || {}
 
-    const product = products && products.items[0]
+    const product = products?.items[0]
 
     const [productVariant, setProductVariant] = useState<ProductVariant>()
 
@@ -68,51 +68,47 @@ export const useProduct = (props: { urlKey: string }) => {
     const optionsAndVariants: OptionsAndVariants = useMemo(() => {
         if (!product) return
 
-        const variants =
-            product.variants &&
-            product.variants.reduce((accumVariants: [], currentVariant: any) => {
-                return [
-                    ...accumVariants,
-                    currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
-                        const { code, value } = currentAttribute
-                        return { ...accumAttributes, [code]: value, product: currentVariant.product }
-                    }, {}),
-                ]
-            }, [])
+        const variants = product.variants?.reduce((accumVariants: [], currentVariant: any) => {
+            return [
+                ...accumVariants,
+                currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
+                    const { code, value } = currentAttribute
+                    return { ...accumAttributes, [code]: value, product: currentVariant.product }
+                }, {}),
+            ]
+        }, [])
 
-        const options =
-            product.options &&
-            product.options
-                .sort((a: any, b: any) => b.position - a.position)
-                .map((option: any) => {
-                    const { id, label, code, items } = option
-                    const type = code === 'color' ? 'thumb' : 'text'
+        const options = product.options
+            ?.sort((a: any, b: any) => b.position - a.position)
+            .map((option: any) => {
+                const { id, label, code, items } = option
+                const type = code === 'color' ? 'thumb' : 'text'
 
-                    return {
-                        id,
-                        type,
-                        label,
-                        code,
-                        items: items.map((item: any) => {
-                            const disabled = item.stock !== 'IN_STOCK'
+                return {
+                    id,
+                    type,
+                    label,
+                    code,
+                    items: items.map((item: any) => {
+                        const disabled = item.stock !== 'IN_STOCK'
 
-                            const { id, value, label } = item
+                        const { id, value, label } = item
 
-                            const { product } = variants.find((x: any) => x.color === value) || {}
+                        const { product } = variants.find((x: any) => x.color === value) || {}
 
-                            return {
-                                id,
-                                value,
-                                label,
-                                disabled,
-                                image: product && product.thumbnail,
-                            }
-                        }),
-                    }
-                })
+                        return {
+                            id,
+                            value,
+                            label,
+                            disabled,
+                            image: product && product.thumbnail,
+                        }
+                    }),
+                }
+            })
 
         return { options, variants }
-    }, [product && product.id])
+    }, [product?.id])
 
     /**
      * Handle Select Option
@@ -147,7 +143,7 @@ export const useProduct = (props: { urlKey: string }) => {
                 })
             }
         },
-        [product && product.sku, JSON.stringify(optionsAndVariants)]
+        [product?.sku, JSON.stringify(optionsAndVariants)]
     )
 
     /**

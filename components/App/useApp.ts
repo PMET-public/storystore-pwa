@@ -38,7 +38,7 @@ export const useApp = () => {
     useEffect(() => {
         if (query.loading || creatingEmptyCart) return
 
-        if (query.error || (query.data && query.data.hasCart === false)) {
+        if (query.error || query.data?.hasCart === false) {
             createEmptyCart().then(() => query.refetch())
         }
     }, [query.error, query.data])
@@ -59,8 +59,7 @@ export const useApp = () => {
         ...query,
         data: query.data && {
             ...query.data,
-            // ...cartQuery.data,
-            footer: query.data.footer && query.data.footer.items[0],
+            footer: query.data.footer?.items[0],
         },
         api: {
             isUrlActive: handleIsUrlActive,
