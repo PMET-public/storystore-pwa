@@ -32,8 +32,9 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
             )}
 
             <HomeTemplate
-                loading={loading}
+                loading={loading && !page}
                 stories={{
+                    loading: loading && !categories,
                     items: categories?.children?.map(({ id, text, href, image }: any) => ({
                         as: Link,
                         urlResolver: {
