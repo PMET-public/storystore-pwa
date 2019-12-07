@@ -58,7 +58,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             )}
 
             <AppTemplate
-                loading={loading}
+                loading={loading && !store}
                 logo={{
                     as: Link,
                     href: '/',

@@ -97,7 +97,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             )}
 
             <ProductTemplate
-                loading={loading}
+                loading={loading && !product}
                 onAddToCart={handleAddToCart}
                 onChange={handleOnChange}
                 title={{
