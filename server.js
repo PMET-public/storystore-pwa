@@ -1,12 +1,12 @@
 require('dotenv').config()
 
-const { join } = require('path')
 const express = require('express')
 const request = require('request')
 const next = require('next')
 const compression = require('compression')
 const sharp = require('express-sharp')
 const cacheableResponse = require('cacheable-response')
+const { join } = require('path')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
 
