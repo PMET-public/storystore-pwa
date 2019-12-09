@@ -1,9 +1,10 @@
-import React, { useMemo, useContext } from 'react'
+import React, { useMemo, useContext, useRef } from 'react'
 import { Component, Props } from '@pmet-public/luma-ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
 import { ThemeContext } from 'styled-components'
 import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
+import { useMeasure } from '@pmet-public/luma-ui/dist/hooks/useMeasure'
 
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image
@@ -17,7 +18,11 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
     style,
     ...props
 }) => {
-    const bgImage = useImage(backgroundImages)
+    const elemRef = useRef(null)
+
+    const { offsetY } = useMeasure(elemRef)
+
+    const bgImage = useImage(backgroundImages, offsetY - 200)
 
     const { colors } = useContext(ThemeContext)
 
@@ -42,6 +47,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
         <Root
             $fullScreen={fullScreen}
             $backgroundColor={styles.background.backgroundColor || bgImage.src ? colors.onSurface5 : 'transparent'}
+            ref={elemRef}
             style={styles.wrapper}
             {...props}
         >
