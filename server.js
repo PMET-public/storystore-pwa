@@ -6,6 +6,7 @@ const request = require('request')
 const next = require('next')
 const compression = require('compression')
 const sharp = require('express-sharp')
+const cacheableResponse = require('cacheable-response')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
 
@@ -17,10 +18,23 @@ const app = next({ dev })
 
 const handle = app.getRequestHandler()
 
+const ssrCache = cacheableResponse({
+    ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
+    get: async ({ req, res, pagePath, queryParams }) => ({
+        data: await app.renderToHTML(req, res, pagePath, queryParams),
+    }),
+    send: ({ data, res }) => res.send(data),
+})
+
 app.prepare().then(async () => {
     const server = express()
 
     server.disable('x-powered-by')
+
+    server.use((req, res, next) => {
+        res.setHeader('X-Powered-By', 'Luma PWA');
+        next()
+    })
 
     /**
      * Compression
@@ -96,35 +110,40 @@ app.prepare().then(async () => {
      * Home Page
      */
     server.get('/', (req, res) => {
-        return app.render(req, res, '/index', req.query)
+        const queryParams = req.query
+        return ssrCache({ req, res, pagePath: '/', queryParams })
     })
 
     /**
      * Cart Page
      */
     server.get('/cart', (req, res) => {
-        return app.render(req, res, '/cart', req.query)
+        const queryParams = req.query
+        return ssrCache({ req, res, pagePath: '/cart', queryParams })
     })
 
     /**
      * Cart Page
      */
     server.get('/checkout', (req, res) => {
-        return app.render(req, res, '/checkout', req.query)
+        const queryParams = req.query
+        return ssrCache({ req, res, pagePath: '/checkout', queryParams })
     })
 
     /**
      * Search Page
      */
     server.get('/search', (req, res) => {
-        return app.render(req, res, '/search', req.query)
+        const queryParams = req.query
+        return ssrCache({ req, res, pagePath: '/search', queryParams })
     })
 
     /**
      * Magento URL Resolver Routes
      */
     server.get('*', (req, res) => {
-        return app.render(req, res, '/_url-resolver', { url: req.url })
+        const queryParams = req.query
+        return ssrCache({ req, res, pagePath: '/_url-resolver', queryParams: { url: req.url, ...queryParams } })
     })
 
     server.listen(PORT, () => {
