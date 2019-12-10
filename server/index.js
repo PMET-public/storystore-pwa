@@ -4,9 +4,10 @@ const express = require('express')
 const request = require('request')
 const next = require('next')
 const compression = require('compression')
-const sharp = require('sharp')
 const cacheableResponse = require('cacheable-response')
 const { join } = require('path')
+
+const ssrImages = require('./lib/ssrImages')
 
 const { NODE_ENV = 'development', PORT = 3000, MAGENTO_URL = '', LAUNCH_IN_BROWSER = false } = process.env
 
@@ -26,51 +27,10 @@ const ssrCache = cacheableResponse({
     send: ({ data, res }) => res.send(data),
 })
 
-const ssrImageResolver = async (req) => {
-    const width = req.params.width ? Number(req.params.width) : 2000
-    const height = req.params.height ? Number(req.params.height) : null
-
-    const url = new URL(req.query.url, MAGENTO_URL)
-    const format = req.query.format || 'jpeg'
-    const fit = req.query.fit || 'cover'
-    const quality = req.query.quality ? Number(req.query.quality) : 100
-
-    // res.set('Content-Type', `image/${format}`)
-
-    return new Promise((resolve, reject) => {
-
-        try {
-            request.get({ url: url.href, encoding: null }, async (error, response) => {
-                const { statusCode, body } = response
-
-                if (statusCode >= 400) {
-                    throw Error(statusCode)
-                }
-
-                const image = await sharp(body)
-                    .resize(
-                        width > 2000 ? 2000 : width,
-                        height > 2000 ? 2000 : height,
-                        { fit, isProgressive: true }
-                    )
-                    .toFormat(format, { quality })
-                    .toBuffer()
-
-                resolve({ format, image })
-            })
-
-
-        } catch (error) {
-            reject(error)
-        }
-    })
-
-}
-
 const imageCache = cacheableResponse({
     ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
     get: async ({ req, res }) => ({
-        data: await ssrImageResolver(req),
+        data: await ssrImages(req),
     }),
     send: ({ data, res }) => {
         const { format, image } = data
@@ -129,12 +89,13 @@ app.prepare().then(async () => {
      */
     server.get('/_next/*', handle)
 
-    server.use('/static', express.static('./public/static'))
+    server.use('/static', express.static(join(__dirname, '../public/static')))
+
     /**
      * 🤖
      */
     server.get('/robots.txt', (req, res) => {
-        const filePath = join(__dirname, './public', 'robots.txt')
+        const filePath = join(__dirname, '../public', 'robots.txt')
         app.serveStatic(req, res, filePath)
     })
 
@@ -142,7 +103,7 @@ app.prepare().then(async () => {
      * Web Manifest
      */
     server.get('/manifest.webmanifest', (req, res) => {
-        const filePath = join(__dirname, './public', 'manifest.webmanifest')
+        const filePath = join(__dirname, '../public', 'manifest.webmanifest')
         app.serveStatic(req, res, filePath)
     })
 
@@ -150,7 +111,7 @@ app.prepare().then(async () => {
      * Service Worker
      */
     server.get('/service-worker.js', (req, res) => {
-        const filePath = join(__dirname, '.next', 'service-worker.js')
+        const filePath = join(__dirname, '../.next', 'service-worker.js')
         app.serveStatic(req, res, filePath)
     })
 

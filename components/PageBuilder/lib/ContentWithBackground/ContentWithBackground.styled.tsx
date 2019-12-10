@@ -4,6 +4,7 @@ export const Root = styled.div<{ $backgroundColor?: string; $fullScreen?: string
     position: relative;
     width: 100%;
     background-color: ${props => props.$backgroundColor || 'transparent'};
+    transition: background-color 200ms ease;
     height: 100%;
 
     ${props =>
