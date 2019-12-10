@@ -4,7 +4,7 @@ const express = require('express')
 const request = require('request')
 const next = require('next')
 const compression = require('compression')
-const sharp = require('express-sharp')
+const sharp = require('sharp')
 const cacheableResponse = require('cacheable-response')
 const { join } = require('path')
 
@@ -26,13 +26,66 @@ const ssrCache = cacheableResponse({
     send: ({ data, res }) => res.send(data),
 })
 
+const ssrImageResolver = async (req) => {
+    const width = req.params.width ? Number(req.params.width) : 2000
+    const height = req.params.height ? Number(req.params.height) : null
+
+    const url = new URL(req.query.url, MAGENTO_URL)
+    const format = req.query.format || 'jpeg'
+    const fit = req.query.fit || 'cover'
+    const quality = req.query.quality ? Number(req.query.quality) : 100
+
+    // res.set('Content-Type', `image/${format}`)
+
+    return new Promise((resolve, reject) => {
+
+        try {
+            request.get({ url: url.href, encoding: null }, async (error, response) => {
+                const { statusCode, body } = response
+
+                if (statusCode >= 400) {
+                    throw Error(statusCode)
+                }
+
+                const image = await sharp(body)
+                    .resize(
+                        width > 2000 ? 2000 : width,
+                        height > 2000 ? 2000 : height,
+                        { fit }
+                    )
+                    .toFormat(format, { quality })
+                    .toBuffer()
+
+                resolve({ format, image })
+            })
+
+
+        } catch (error) {
+            reject(error)
+        }
+    })
+
+}
+
+const imageCache = cacheableResponse({
+    ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
+    get: async ({ req, res }) => ({
+        data: await ssrImageResolver(req),
+    }),
+    send: ({ data, res }) => {
+        const { format, image } = data
+        res.set('Content-Type', `image/${format}`)
+        res.send(image)
+    },
+})
+
 app.prepare().then(async () => {
     const server = express()
 
     server.disable('x-powered-by')
 
     server.use((req, res, next) => {
-        res.setHeader('X-Powered-By', 'Luma PWA');
+        res.setHeader('X-Powered-By', 'Luma PWA')
         next()
     })
 
@@ -44,12 +97,7 @@ app.prepare().then(async () => {
     /**
      * Images
      */
-    server.use(
-        '/images',
-        sharp({
-            baseHost: new URL(MAGENTO_URL).href,
-        }),
-    )
+    server.get('/images/resize/:width/:height?', (req, res) => imageCache({ req, res }))
 
     /**
      * GraphQL Proxy

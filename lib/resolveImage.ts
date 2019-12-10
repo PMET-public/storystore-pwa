@@ -1,33 +1,21 @@
 export const resolveImage = (
     url: string,
     options?: {
-        format?: 'jpeg' | 'gif' | 'webp' | 'raw'
+        format?: 'jpeg' | 'gif' | 'webp' | 'svg' | 'png'
         quality?: number
-        crop?: boolean
+        fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside'
         width?: number
         height?: number
-        gravity?:
-            | 'north'
-            | 'northeast'
-            | 'east'
-            | 'southeast'
-            | 'south'
-            | 'southwest'
-            | 'west'
-            | 'northwest'
-            | 'center'
-            | 'centre'
-        progressive?: boolean
     }
 ) => {
-    const { quality = 100, crop = false, width = 2000, height, gravity = 'centre', progressive = true } = options || {}
+    const { format = 'jpeg', quality = 100, fit = 'cover', width = 2000, height } = options || {}
 
     const path = url.match(/^(?:[^\/]*(?:\/(?:\/[^\/]*\/?)?)?([^?]+)(?:\??.+)?)$/)
 
     if (path) {
         const result = [`/images/resize/${width}`]
         if (height) result.push(height.toString())
-        result.push(`?quality=${quality}&progressive=${progressive}&gravity=${gravity}&crop=${crop}&url=${path[1]}`)
+        result.push(`?url=${path[1]}&format=${format}&quality=${quality}&fit=${fit}`)
 
         return result.join('/')
     } else {
