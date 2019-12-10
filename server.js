@@ -51,7 +51,7 @@ const ssrImageResolver = async (req) => {
                     .resize(
                         width > 2000 ? 2000 : width,
                         height > 2000 ? 2000 : height,
-                        { fit }
+                        { fit, isProgressive: true }
                     )
                     .toFormat(format, { quality })
                     .toBuffer()

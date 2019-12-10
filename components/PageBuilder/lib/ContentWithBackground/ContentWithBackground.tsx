@@ -4,7 +4,6 @@ import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
 import { ThemeContext } from 'styled-components'
 import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
-import { useMeasure } from '@pmet-public/luma-ui/dist/hooks/useMeasure'
 
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image
@@ -20,9 +19,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
 }) => {
     const elemRef = useRef(null)
 
-    const { offsetY } = useMeasure(elemRef)
-
-    const bgImage = useImage(backgroundImages, offsetY - 200)
+    const bgImage = useImage(elemRef, backgroundImages, { offset: 200 })
 
     const { colors } = useContext(ThemeContext)
 
@@ -46,7 +43,9 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
     return (
         <Root
             $fullScreen={fullScreen}
-            $backgroundColor={styles.background.backgroundColor || bgImage.src ? colors.onSurface5 : 'transparent'}
+            $backgroundColor={
+                styles.background.backgroundColor || !!backgroundImages ? colors.onSurface10 : 'transparent'
+            }
             ref={elemRef}
             style={styles.wrapper}
             {...props}

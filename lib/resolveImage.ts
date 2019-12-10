@@ -1,3 +1,15 @@
+function canUseWebP() {
+    var elem = document.createElement('canvas')
+
+    if (!!(elem.getContext && elem.getContext('2d'))) {
+        // was able or not to get WebP representation
+        return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0
+    }
+
+    // very old browser like IE 8, canvas not supported
+    return false
+}
+
 export const resolveImage = (
     url: string,
     options?: {
@@ -8,14 +20,15 @@ export const resolveImage = (
         height?: number
     }
 ) => {
-    const { format = 'jpeg', quality = 100, fit = 'cover', width = 2000, height } = options || {}
+    const { format = canUseWebP() ? 'webp' : 'jpeg', quality = 100, fit = 'cover', width = 2000, height } =
+        options || {}
 
-    const path = url.match(/^(?:[^\/]*(?:\/(?:\/[^\/]*\/?)?)?([^?]+)(?:\??.+)?)$/)
+    const { pathname } = new URL(url)
 
-    if (path) {
+    if (pathname) {
         const result = [`/images/resize/${width}`]
         if (height) result.push(height.toString())
-        result.push(`?url=${path[1]}&format=${format}&quality=${quality}&fit=${fit}`)
+        result.push(`?url=${pathname}&format=${format}&quality=${quality}&fit=${fit}`)
 
         return result.join('/')
     } else {
