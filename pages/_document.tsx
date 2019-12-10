@@ -56,6 +56,8 @@ export default class extends Document {
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
                     {/* Fonts */}
+
+                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="true" />
                     <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>
 
