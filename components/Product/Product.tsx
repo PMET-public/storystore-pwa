@@ -125,9 +125,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 }}
                 gallery={gallery
                     ?.filter((x: any) => x.disabled === false && x.type === 'image')
-                    .map(({ id, label = '', file }: any) => ({
+                    .map(({ id, label, file }: any) => ({
                         _id: id,
-                        alt: label,
+                        alt: label || title,
                         src: {
                             desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
                                 width: 1200,
@@ -144,7 +144,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     currency: price?.regular.amount.currency,
                 }}
                 options={options
-                    ?.map(({ id, type, label = title, required = true, code, items }: any) => {
+                    ?.map(({ id, type, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
                             return code === x.code, x.value.toString() === selectedOptions[code]
                         })
@@ -156,13 +156,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             label: selected ? `${label}: ${selected.label}` : label,
                             swatches: {
                                 name: `options.${code}`,
-                                items: items?.map(({ id, label = '', value, image }: any) => ({
+                                items: items?.map(({ id, label, value, image }: any) => ({
                                     _id: id,
                                     text: label,
                                     type: 'radio',
                                     value,
                                     image: image && {
-                                        alt: image.label,
+                                        alt: image.label || '',
                                         src: resolveImage(image.url, { width: 240 }),
                                     },
                                 })),
