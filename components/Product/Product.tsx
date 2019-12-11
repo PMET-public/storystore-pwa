@@ -156,7 +156,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             label: selected ? `${label}: ${selected.label}` : label,
                             swatches: {
                                 name: `options.${code}`,
-                                items: items.map(({ id, label, value, image }: any) => ({
+                                items: items?.map(({ id, label, value, image }: any) => ({
                                     _id: id,
                                     text: label,
                                     type: 'radio',
