@@ -32,11 +32,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     if (!data && !loading) return <Error type="500" />
 
-    const { cart = {} } = data
+    const { cart } = data
 
-    const { items = [] } = cart
+    const { items = [] } = cart || {}
 
-    if (!loading && items.length < 1) {
+    if (!loading && cart?.totalQuantity < 1) {
         return (
             <CartLanding
                 title={{
@@ -57,12 +57,14 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         <React.Fragment>
             <DocumentMetadata title="Shopping Bag" />
             <CartTemplate
-                loading={loading}
+                loading={!process.browser || (loading && !cart)}
                 breadcrumbs={{
+                    loading: false,
                     prefix: '#',
                     items: [{ text: 'Shopping Bag', as: Link, href: '/cart' }],
                 }}
                 list={{
+                    loading: loading && !cart?.totalQuantity,
                     items: items.map(({ id, quantity, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
@@ -111,14 +113,14 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     prices: [
                         {
                             label: 'Subtotal',
-                            price: cart.prices?.subTotal && {
+                            price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
                             },
                         },
                         {
                             label: 'Estimated Taxes',
-                            price: cart.prices?.taxes[0] && {
+                            price: cart?.prices?.taxes[0] && {
                                 currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
                                 regular: cart.prices.taxes.reduce(
                                     (accum: number, tax: { value: number }) => accum + tax.value,
@@ -129,7 +131,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         {
                             appearance: 'bold',
                             label: 'Total',
-                            price: cart.prices?.total && {
+                            price: cart?.prices?.total && {
                                 currency: cart.prices.total.currency,
                                 regular: cart.prices.total.value,
                             },
