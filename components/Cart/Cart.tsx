@@ -57,7 +57,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         <React.Fragment>
             <DocumentMetadata title="Shopping Bag" />
             <CartTemplate
-                loading={!process.browser || (loading && !cart)}
+                loading={process.browser && loading && !cart}
                 breadcrumbs={{
                     loading: false,
                     prefix: '#',
