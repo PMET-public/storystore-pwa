@@ -21,7 +21,7 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
 
     if (loading && !data.page) return <ViewLoader />
 
-    if (!loading && !data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/home' }} />
+    if (!loading && !data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
 
     const { page } = data
 
