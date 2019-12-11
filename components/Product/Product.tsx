@@ -144,7 +144,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     currency: price?.regular.amount.currency,
                 }}
                 options={options
-                    ?.map(({ id, type, label, required = true, code, items }: any) => {
+                    ?.map(({ id, type, label = title, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
                             return code === x.code, x.value.toString() === selectedOptions[code]
                         })
