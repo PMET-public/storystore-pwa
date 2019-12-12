@@ -36,7 +36,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     const { items = [] } = cart || {}
 
-    if (!loading && cart?.totalQuantity < 1) {
+    if (cart?.totalQuantity < 1) {
         return (
             <CartLanding
                 title={{
@@ -57,7 +57,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         <React.Fragment>
             <DocumentMetadata title="Shopping Bag" />
             <CartTemplate
-                loading={process.browser && loading && !cart}
+                loading={!process.browser || (loading && !cart)}
                 breadcrumbs={{
                     loading: false,
                     prefix: '#',
