@@ -9,7 +9,6 @@ import DocumentMetadata from '../DocumentMetadata'
 import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
 import Link from '../Link'
 
-const ViewLoader = dynamic(() => import('@pmet-public/luma-ui/dist/components/ViewLoader'))
 const Error = dynamic(() => import('../Error'))
 
 type CheckoutProps = {}
@@ -40,7 +39,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      * Countries Data
      */
     const [selectedShippingCountryCode, setSelectedShippingCountryCode] = useState(
-        (data && data.cart && data.cart.shippingAddress && data.cart.shippingAddress.country.code) || 'US'
+        (data && data.cart && data.cart.shippingAddress && data.cart.shippingAddress?.country.code) || 'US'
     )
 
     const selectedShippingCountryRegions = useMemo(() => {
@@ -124,17 +123,16 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     if (error) <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
-    if (loading) return <ViewLoader />
-
     const { cart, countries } = data
     const { email, shippingAddresses, braintreeToken } = cart
-    const shippingAddress = shippingAddresses[0]
+    const shippingAddress = shippingAddresses && shippingAddresses[0]
 
     return (
         <React.Fragment>
             <DocumentMetadata title="Checkout" />
             <CheckoutTemplate
                 breadcrumbs={{
+                    loading: false,
                     prefix: '#',
                     items: [
                         { text: 'Shopping Bag', as: Link, href: '/cart' },
@@ -143,6 +141,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 step={step}
                 contactInfo={{
+                    loading: loading && !(shippingAddress && email),
                     title: 'Contact Information',
                     edit: step < 2,
                     fields: {
@@ -152,27 +151,27 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                         firstName: {
                             label: 'First Name',
-                            defaultValue: shippingAddress.firstName,
+                            defaultValue: shippingAddress?.firstName,
                         },
                         lastName: {
                             label: 'Last Name',
-                            defaultValue: shippingAddress.lastName,
+                            defaultValue: shippingAddress?.lastName,
                         },
                         company: {
                             label: 'Company (optional)',
-                            defaultValue: shippingAddress.company,
+                            defaultValue: shippingAddress?.company,
                         },
                         address1: {
                             label: 'Address',
-                            defaultValue: shippingAddress.street[0],
+                            defaultValue: shippingAddress?.street[0],
                         },
                         address2: {
                             label: 'Apt, Suite, Unit, etc (optional)',
-                            defaultValue: shippingAddress.street[1],
+                            defaultValue: shippingAddress?.street[1],
                         },
                         city: {
                             label: 'City',
-                            defaultValue: shippingAddress.city,
+                            defaultValue: shippingAddress?.city,
                         },
                         country: {
                             label: 'Country',
@@ -180,19 +179,19 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             defaultValue: selectedShippingCountryCode,
                             disabled: true, // US only for now
                             onChange: e => setSelectedShippingCountryCode(e.currentTarget.value),
-                            items: countries.map((country: { name: string; code: string }) => ({
+                            items: countries?.map((country: { name: string; code: string }) => ({
                                 text: country.name,
                                 value: country.code,
                             })),
                         },
                         region: {
                             label: 'State',
-                            defaultValue: shippingAddress.region.code,
+                            defaultValue: shippingAddress?.region.code,
                             type: 'text',
                             ...(selectedShippingCountryRegions
                                 ? {
                                       type: 'select',
-                                      items: selectedShippingCountryRegions.map(
+                                      items: selectedShippingCountryRegions?.map(
                                           (region: { name: string; code: string }) => ({
                                               text: region.name,
                                               value: region.code,
@@ -205,11 +204,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                         postalCode: {
                             label: 'Postal Code',
-                            defaultValue: shippingAddress.postalCode,
+                            defaultValue: shippingAddress?.postalCode,
                         },
                         phone: {
                             label: 'Phone Number',
-                            defaultValue: shippingAddress.phone,
+                            defaultValue: shippingAddress?.phone,
                         },
                     },
                     editButton: {
@@ -222,16 +221,17 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handleSetContactInformation,
                 }}
                 shippingMethod={{
+                    loading: loading && !(shippingAddress && shippingAddress.availableShippingMethods),
                     title: 'Shipping Method',
                     edit: step < 3,
-                    items: shippingAddress.availableShippingMethods.map(
+                    items: shippingAddress?.availableShippingMethods?.map(
                         ({ methodTitle, methodCode, available, amount }: any) => ({
                             text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
                                 style: 'currency',
                                 currency: amount.currency,
                             })}`,
                             value: methodCode,
-                            defaultChecked: methodCode === shippingAddress.selectedShippingMethod.methodCode,
+                            defaultChecked: methodCode === shippingAddress?.selectedShippingMethod.methodCode,
                             disabled: !available,
                         })
                     ),
@@ -267,36 +267,33 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handlePlaceOrder,
                 }}
                 list={{
-                    items:
-                        cart.items &&
-                        cart.items.map(({ id, quantity, product, options }: any, index: number) => ({
-                            _id: id || index,
-                            title: {
-                                text: product.name,
-                            },
-                            sku: `SKU. ${product.sku}`,
-                            thumbnail: {
-                                alt: product.thumbnail.label,
-                                src: resolveImage(product.thumbnail.url, { width: 250 }),
-                            },
-                            quantity: {
-                                value: quantity,
-                                addLabel: `Add another ${product.name} from shopping bag`,
-                                substractLabel: `Remove one ${product.name} from shopping bag`,
-                                removeLabel: `Remove all ${product.name} from shopping bag`,
-                            },
-                            price: {
-                                currency: product.price.regular.amount.currency,
-                                regular: product.price.regular.amount.value,
-                            },
-                            options:
-                                options &&
-                                options.map(({ id, label, value }: any) => ({
-                                    _id: id,
-                                    label,
-                                    value,
-                                })),
+                    loading: loading && !cart?.items?.length,
+                    items: cart?.items?.map(({ id, quantity, product, options }: any, index: number) => ({
+                        _id: id || index,
+                        title: {
+                            text: product.name,
+                        },
+                        sku: `SKU. ${product.sku}`,
+                        thumbnail: {
+                            alt: product.thumbnail.label,
+                            src: resolveImage(product.thumbnail.url, { width: 250 }),
+                        },
+                        quantity: {
+                            value: quantity,
+                            addLabel: `Add another ${product.name} from shopping bag`,
+                            substractLabel: `Remove one ${product.name} from shopping bag`,
+                            removeLabel: `Remove all ${product.name} from shopping bag`,
+                        },
+                        price: {
+                            currency: product.price.regular.amount.currency,
+                            regular: product.price.regular.amount.value,
+                        },
+                        options: options?.map(({ id, label, value }: any) => ({
+                            _id: id,
+                            label,
+                            value,
                         })),
+                    })),
                 }}
                 summary={{
                     title: {
@@ -312,9 +309,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         },
                         {
                             label: 'Shipping',
-                            price: shippingAddress.selectedShippingMethod.amount && {
-                                currency: shippingAddress.selectedShippingMethod.amount.currency,
-                                regular: shippingAddress.selectedShippingMethod.amount.value,
+                            price: shippingAddress?.selectedShippingMethod.amount && {
+                                currency: shippingAddress?.selectedShippingMethod.amount.currency,
+                                regular: shippingAddress?.selectedShippingMethod.amount.value,
                             },
                         },
                         {
