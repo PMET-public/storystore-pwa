@@ -3,16 +3,16 @@ type: nodejs:10
 
 dependencies:
     nodejs:
-        yarn: '1.19.*'
+        pm2: '^4.2.1'
 
 web:
     commands:
-        start: yarn start
+        start: 'NODE_ENV=production PM2_HOME=/app/run pm2 start server/index.js --no-daemon'
 
 hooks:
     build: |
-        yarn install
-        yarn build
+        npm install
+        npm run build
 build:
     flavor: none
 
