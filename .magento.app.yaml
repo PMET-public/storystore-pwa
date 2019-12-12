@@ -16,6 +16,11 @@ hooks:
 build:
     flavor: none
 
+mounts:
+    run:
+        source: local
+        source_path: run
+
 variables:
     env:
         PORT: 80
