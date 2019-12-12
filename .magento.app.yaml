@@ -30,4 +30,4 @@ variables:
         CONTENT_PARENT_CATEGORIES_ID: 2
         CONTENT_FOOTER_BLOCK_ID: footer
 
-disk: 512
+disk: 4096
