@@ -1,12 +1,15 @@
 import React, { FunctionComponent } from 'react'
+import dynamic from 'next/dynamic'
+
 import { useHome } from './useHome'
+import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
-import Error from '../Error'
-import HomeTemplate from '@pmet-public/luma-ui/dist/templates/Home'
 import Link from '../Link'
-import { resolveImage } from '../../lib/resolveImage'
-import PageBuilder from '../PageBuilder'
+import HomeTemplate from '@pmet-public/luma-ui/dist/templates/Home'
+
+const Error = dynamic(() => import('../Error'))
+const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type HomeProps = {}
 

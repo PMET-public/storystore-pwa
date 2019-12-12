@@ -1,6 +1,10 @@
 import React, { FunctionComponent } from 'react'
+import dynamic from 'next/dynamic'
+
 import ErrorTemplate, { ErrorTypes } from '@pmet-public/luma-ui/dist/components/Error'
-import Button, { ButtonProps } from '@pmet-public/luma-ui/dist/components/Button'
+import { ButtonProps } from '@pmet-public/luma-ui/dist/components/Button'
+
+const Button = dynamic(() => import('@pmet-public/luma-ui/dist/components/Button'))
 
 type ErrorProps = {
     type?: ErrorTypes

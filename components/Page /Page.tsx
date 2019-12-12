@@ -1,12 +1,14 @@
 import React, { FunctionComponent } from 'react'
+import dynamic from 'next/dynamic'
+
 import { usePage } from './usePage'
 
 import DocumentMetadata from '../../components/DocumentMetadata'
-import Error from '../Error'
 import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import Link from '../Link'
-import PageBuilder from '../../components/PageBuilder'
+
+const Error = dynamic(() => import('../Error'))
+const PageBuilder = dynamic(() => import('../../components/PageBuilder'))
 
 type PageProps = {
     id: number
@@ -19,23 +21,21 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
 
     if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
 
-    if (loading && !data.page) return <ViewLoader />
-
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
 
     const { page } = data
 
     return (
         <React.Fragment>
-            <DocumentMetadata
-                title={page.metaTitle || page.title}
-                description={page.metaDescription}
-                keywords={page.metaKeywords}
-            />
+            {page && (
+                <DocumentMetadata
+                    title={page.metaTitle || page.title}
+                    description={page.metaDescription}
+                    keywords={page.metaKeywords}
+                />
+            )}
 
-            <PageTemplate>
-                <PageBuilder html={page.content} />
-            </PageTemplate>
+            <PageTemplate loading={loading}>{page?.content && <PageBuilder html={page.content} />}</PageTemplate>
         </React.Fragment>
     )
 }

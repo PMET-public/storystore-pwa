@@ -1,11 +1,13 @@
 import React, { FunctionComponent } from 'react'
 import { useApp } from './useApp'
+import dynamic from 'next/dynamic'
 
 import Link from '../Link'
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
-import Error from '../../components/Error'
 import PageBuilder from '../../components/PageBuilder'
+
+const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {}
 

@@ -1,12 +1,16 @@
 import React, { FunctionComponent, useCallback, useState, useEffect, useMemo } from 'react'
+
 import { useCheckout } from './useCheckout'
-import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
-import Error from '../Error'
-import DocumentMetadata from '../DocumentMetadata'
-import { useRouter } from 'next/router'
-import Link from '../Link'
 import { resolveImage } from '../../lib/resolveImage'
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+
+import DocumentMetadata from '../DocumentMetadata'
+import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
+import Link from '../Link'
+
+const ViewLoader = dynamic(() => import('@pmet-public/luma-ui/dist/components/ViewLoader'))
+const Error = dynamic(() => import('../Error'))
 
 type CheckoutProps = {}
 

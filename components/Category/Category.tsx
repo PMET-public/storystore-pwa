@@ -1,19 +1,22 @@
 import React, { FunctionComponent, useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
+
 import CATEGORY_QUERY from './graphql/category.graphql'
 import PRODUCTS_QUERY from './graphql/products.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 import useValueUpdated from '../../hooks/useValueUpdated'
+import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
-import Error from '../Error'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-import { resolveImage } from '../../lib/resolveImage'
-import PageBuilder from '../PageBuilder'
+
+const Error = dynamic(() => import('../Error'))
+const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type CategoryProps = {
     id: number

@@ -1,11 +1,16 @@
 import React, { FunctionComponent, useCallback, useState } from 'react'
+import dynamic from 'next/dynamic'
+
 import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
-import DocumentMetadata from '../DocumentMetadata'
-import Error from '../Error'
-import ProductTemplate from '@pmet-public/luma-ui/dist/templates/Product'
-import Link from '../Link'
 import { resolveImage } from '../../lib/resolveImage'
+
+import DocumentMetadata from '../DocumentMetadata'
+import ProductTemplate from '@pmet-public/luma-ui/dist/templates/Product'
+
+import Link from '../Link'
+
+const Error = dynamic(() => import('../Error'))
 
 export type ProductProps = {
     urlKey: string

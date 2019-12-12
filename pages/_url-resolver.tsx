@@ -1,7 +1,8 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import { graphQlUri } from '../apollo/client'
 import { NextComponentType } from 'next'
-import dynamic from 'next/dynamic'
+
 import Link from '../components/Link'
 
 const Error = dynamic(() => import('../components/Error'))

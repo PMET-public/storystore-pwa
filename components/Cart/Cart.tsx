@@ -1,14 +1,18 @@
 import React, { FunctionComponent, useCallback, useEffect } from 'react'
-import { useCart } from './useCart'
-import DocumentMetadata from '../DocumentMetadata'
-import Error from '../Error'
-import Link from '../Link'
-import CartLanding from '@pmet-public/luma-ui/dist/templates/CartLanding'
-import Button from '@pmet-public/luma-ui/dist/components/Button'
+import dynamic from 'next/dynamic'
 
-import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+import { useCart } from './useCart'
 import { useRouter } from 'next/router'
 import { resolveImage } from '../../lib/resolveImage'
+
+import DocumentMetadata from '../DocumentMetadata'
+import Link from '../Link'
+import Button from '@pmet-public/luma-ui/dist/components/Button'
+import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+
+// import CartLanding from '@pmet-public/luma-ui/dist/templates/CartLanding'
+const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
+const Error = dynamic(() => import('../Error'))
 
 type CartProps = {}
 
