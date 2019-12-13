@@ -17,6 +17,7 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
+    console.log({ type, contentId })
     switch (type) {
         case 'CMS_PAGE':
             return <Page id={contentId} />

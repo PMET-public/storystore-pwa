@@ -1,24 +1,16 @@
 import React from 'react'
 import { Component } from '@pmet-public/luma-ui/dist/lib'
-import { Root } from './TabItem.styled'
 
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
-import Accordion from '@pmet-public/luma-ui/dist/components/Accordion'
 
 export type TabItemProps = {
-    appearance: string
-    tabName: string
     background: ContentWithBackgroundProps
 }
 
-export const TabItem: Component<TabItemProps> = ({ appearance, tabName, background, children, style, ...props }) => {
+export const TabItem: Component<TabItemProps> = ({ background, children, style }) => {
     return (
-        <Root>
-            <Accordion.Item label={tabName} {...props}>
-                <ContentWithBackground {...background} style={style}>
-                    {children}
-                </ContentWithBackground>
-            </Accordion.Item>
-        </Root>
+        <ContentWithBackground {...background} style={style}>
+            {children}
+        </ContentWithBackground>
     )
 }
