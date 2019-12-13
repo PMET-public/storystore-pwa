@@ -7,9 +7,18 @@ export type TabsProps = {
     appearance: string
     activeTab: number
     tabsAlignment: 'left' | 'center' | 'right'
+    minHeight: string
 }
 
-export const Tabs: Component<TabsProps> = ({ appearance, tabsAlignment, tabItems, activeTab, children, ...props }) => {
+export const Tabs: Component<TabsProps> = ({
+    appearance,
+    tabsAlignment,
+    tabItems,
+    activeTab,
+    children,
+    minHeight,
+    ...props
+}) => {
     const selected = Number(activeTab)
 
     return (
@@ -21,7 +30,9 @@ export const Tabs: Component<TabsProps> = ({ appearance, tabsAlignment, tabItems
             </TabList>
 
             {React.Children.map(children, (child, index) => (
-                <TabPanel key={index}>{child}</TabPanel>
+                <TabPanel key={index} style={{ minHeight }}>
+                    {child}
+                </TabPanel>
             ))}
         </TabsWrapper>
     )

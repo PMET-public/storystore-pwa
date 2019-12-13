@@ -15,7 +15,17 @@ const props = (elem: HTMLElement) => {
     const alignmentMatch = /tab-align-([a-zA-Z]*)/.exec(elem.classList.toString())
     const tabsAlignment = alignmentMatch ? alignmentMatch[1] : null
 
-    return { style, appearance, activeTab, tabItems, tabsAlignment }
+    const contentEl = elem.childNodes[1] as HTMLElement
+    const minHeight = contentEl.style.minHeight
+
+    return {
+        style,
+        minHeight,
+        appearance,
+        activeTab,
+        tabItems,
+        tabsAlignment,
+    }
 }
 
 export default { component, props }
