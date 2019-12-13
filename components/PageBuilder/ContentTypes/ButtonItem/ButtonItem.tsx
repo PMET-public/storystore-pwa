@@ -14,7 +14,7 @@ export type ButtonItemProps = {
 
 export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, color, children, ...props }) => {
     return (
-        <Root $color={color} as={link ? Link : 'span'} {...link} {...props}>
+        <Root as={link ? Link : 'span'} {...link} {...props}>
             <ButtonComponent as="span" secondary={color === 'secondary'}>
                 {button.text}
             </ButtonComponent>
