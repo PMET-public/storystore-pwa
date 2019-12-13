@@ -7,7 +7,13 @@ export type ButtonsProps = {
     sameWidth?: 'true' | 'false'
 }
 
-export const Buttons: Component<ButtonsProps> = ({ children, appearance = 'inline', sameWidth = false, ...props }) => {
+export const Buttons: Component<ButtonsProps> = ({
+    children,
+    appearance = 'inline',
+    sameWidth = false,
+    style,
+    ...props
+}) => {
     return (
         <Root $appearance={appearance} $sameWidth={sameWidth == 'true'} {...props}>
             {children}

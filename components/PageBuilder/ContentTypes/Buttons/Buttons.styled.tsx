@@ -1,28 +1,27 @@
 import styled from 'styled-components'
 
-import { Root as RootButton } from '../ButtonItem/ButtonItem.styled'
 import { Root as RootButtonComponent } from '@pmet-public/luma-ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div<{ $appearance: 'inline' | 'stacked'; $sameWidth: boolean }>`
-    display: inline-flex;
-    align-items: center;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    grid-auto-rows: max-content;
+    grid-gap: 1rem;
 
     ${props =>
         props.$appearance === 'stacked' &&
         `
-            flex-direction: column;
-            align-items: unset;
+            grid-auto-flow: row;
         `}
 
-    ${RootButton} {
-        &:not(:first-child) {
-            ${props => (props.$appearance === 'inline' ? `margin-left: 1rem;` : `margin-top: 1rem;`)}
-        }
+    ${props =>
+        props.$sameWidth &&
+        `
+            grid-auto-columns: 1fr;
 
-        flex-grow: ${props => (props.$sameWidth ? '1' : '0')};
-    }
-
-    ${RootButtonComponent} {
-        width: ${props => (props.$sameWidth ? '100%' : 'auto')};
-    }
+            ${RootButtonComponent} {
+                width: 100%;
+            }
+        `}
 `

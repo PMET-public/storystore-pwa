@@ -10,6 +10,7 @@ const props = (elem: HTMLElement) => {
     const buttonElem = elem.childNodes[0] as HTMLElement
 
     const type = buttonElem.classList.contains('pagebuilder-button-link') ? 'link' : 'button'
+
     const color = buttonElem.classList.contains('pagebuilder-button-secondary') ? 'secondary' : 'primary'
 
     const style = getStyleAsObject(elem.style)
@@ -25,7 +26,6 @@ const props = (elem: HTMLElement) => {
             ? {
                   href: resolveLink(buttonElem.getAttribute('href') || ''),
                   urlResolver: true,
-                  //   type: buttonElem.getAttribute('data-link-type') || undefined,
                   target: buttonElem.getAttribute('target') || undefined,
               }
             : undefined
