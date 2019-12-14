@@ -7,11 +7,6 @@ export const Overlay = styled.div`
     transition: background-color 305ms ease-out;
     display: flex;
     padding: 2rem;
-
-    @media ${props => props.theme.breakpoints.medium} {
-        max-width: 90rem;
-        padding: 3rem;
-    }
 `
 
 export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'collage-centered' | 'collage-right' }>`
@@ -20,11 +15,11 @@ export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'c
 
 
     ${Overlay} {
+        width: 100%;
+
         ${props =>
             props.$appearance === 'poster' &&
-            `
-                
-                    width: 100%;
+            `                
                     align-items: center;
                     justify-content: center;
                 
