@@ -23,7 +23,7 @@ export const Row: Component<RowProps> = ({
     const fullScreen = appearance === 'full-screen'
 
     return (
-        <Root {...props}>
+        <Root $contained={appearance === 'contained'} {...props}>
             <ContentWithBackground fullScreen={fullScreen} {...background} style={style}>
                 <Wrapper $contained={contained} $margin={contained}>
                     {children}
