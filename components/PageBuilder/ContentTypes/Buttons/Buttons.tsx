@@ -8,6 +8,7 @@ export type ButtonsProps = {
 }
 
 export const ButtonsContext = createContext({
+    appearance: 'inline',
     sameWidth: false,
     maxWidth: 0,
     setMaxWidth: (x: any) => x,
@@ -41,7 +42,9 @@ export const Buttons: Component<ButtonsProps> = ({
 
     return (
         <Root ref={rootElem} $appearance={appearance} $alignment={alignment} $sameWidth={sameWidth} {...props}>
-            <ButtonsContext.Provider value={{ maxWidth, setMaxWidth, sameWidth }}>{children}</ButtonsContext.Provider>
+            <ButtonsContext.Provider value={{ appearance, maxWidth, setMaxWidth, sameWidth }}>
+                {children}
+            </ButtonsContext.Provider>
         </Root>
     )
 }

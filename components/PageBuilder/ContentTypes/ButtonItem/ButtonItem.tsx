@@ -14,7 +14,7 @@ export type ButtonItemProps = {
 }
 
 export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, color, children, ...props }) => {
-    const { sameWidth, maxWidth, setMaxWidth } = useContext(ButtonsContext)
+    const { appearance, sameWidth, maxWidth, setMaxWidth } = useContext(ButtonsContext)
 
     const rootElem = useRef<HTMLDivElement>(null)
 
@@ -29,6 +29,7 @@ export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, col
             as={link ? Link : 'span'}
             {...link}
             {...props}
+            $appearance={appearance}
             $secondary={color === 'secondary'}
             $maxWidth={sameWidth ? maxWidth : undefined}
         >
