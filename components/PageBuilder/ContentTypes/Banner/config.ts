@@ -40,7 +40,7 @@ const props = (elem: HTMLElement) => {
         secondary: buttonElem.classList.contains('pagebuilder-button-secondary') ? true : false,
         text: buttonElem.textContent || '',
         style: getStyleAsObject(buttonElem.style),
-        // type: buttonElem.getAttribute('data-link-type') || undefined,
+        outline: buttonElem.classList.contains('pagebuilder-button-link') ? true : false,
     }
 
     /** Get Content */

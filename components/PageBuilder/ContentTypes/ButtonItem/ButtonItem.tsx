@@ -31,6 +31,7 @@ export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, col
             {...props}
             $appearance={appearance}
             $secondary={color === 'secondary'}
+            $link={type === 'link'}
             $maxWidth={sameWidth ? maxWidth : undefined}
         >
             <ButtonComponent as="span">{button.text}</ButtonComponent>
