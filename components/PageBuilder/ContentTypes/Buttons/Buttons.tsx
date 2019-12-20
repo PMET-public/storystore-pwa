@@ -1,4 +1,4 @@
-import React, { useRef, useState, createContext, useEffect, useMemo } from 'react'
+import React, { useRef, useState, createContext, useMemo } from 'react'
 import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root } from './Buttons.styled'
 
@@ -24,12 +24,6 @@ export const Buttons: Component<ButtonsProps> = ({
     const [maxWidth, setMaxWidth] = useState<number>(0)
 
     const sameWidth = _sameWidth == 'true'
-
-    useEffect(() => {
-        if (!rootElem.current) return
-        const { textAlign } = getComputedStyle(rootElem.current)
-        console.log({ textAlign })
-    }, [rootElem.current])
 
     const alignment = useMemo(() => {
         if (!rootElem.current) return 'flex-start'
