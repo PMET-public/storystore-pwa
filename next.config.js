@@ -7,9 +7,14 @@ const runtimeDefaultCacheOptions = {
     cacheableResponse: {
         statuses: [0, 200],
     },
-    fetchOptions: {
-        credentials: 'same-origin',
-    },
+}
+
+const addFetchOptionsPlugin = {
+    requestWillFetch: ({ request }) =>
+        new Request(request, {
+            credentials: 'same-origin',
+            redirect: 'follow',
+        }),
 }
 
 const getRevisionHash = () =>
@@ -45,6 +50,7 @@ module.exports = withOffline({
                 handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'offline-cache',
+                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
@@ -53,6 +59,7 @@ module.exports = withOffline({
                 handler: 'NetworkFirst',
                 options: {
                     cacheName: 'graphql-cache',
+                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
