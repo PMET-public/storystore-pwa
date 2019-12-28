@@ -3,6 +3,12 @@ const crypto = require('crypto')
 const webpack = require('webpack')
 const withOffline = require('next-offline')
 
+const runtimeDefaultCacheOptions = {
+    cacheableResponse: {
+        statuses: [0, 200],
+    },
+}
+
 const addFetchOptionsPlugin = {
     requestWillFetch: ({ request }) =>
         new Request(request, {
@@ -45,9 +51,7 @@ module.exports = withOffline({
                 options: {
                     cacheName: 'offline-cache',
                     plugins: [addFetchOptionsPlugin],
-                    cacheableResponse: {
-                        statuses: [0, 200],
-                    },
+                    ...runtimeDefaultCacheOptions,
                 },
             },
             {
@@ -56,14 +60,7 @@ module.exports = withOffline({
                 options: {
                     cacheName: 'graphql-cache',
                     plugins: [addFetchOptionsPlugin],
-                    cacheableResponse: {
-                        statuses: [0, 200],
-                        headers: {
-                            'content-type': 'application/json',
-                        },
-                    },
-
-
+                    ...runtimeDefaultCacheOptions,
                 },
             },
         ],
