@@ -32,12 +32,13 @@ function create(initialState: any) {
         },
         attempts: {
             max: 3,
-            retryIf: error => !!error && error.statusCode !== 401 && (process.browser ? navigator.onLine : false), // retry only on front-end
+            retryIf: error => !!error && (process.browser ? navigator.onLine : false), // retry only on front-end
         },
     })
 
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError }) => {
+            console.log({ graphQLErrors, networkError })
             console.groupCollapsed('🚨 GraphQL Error')
             if (graphQLErrors) {
                 graphQLErrors.forEach(({ message, locations, path }) => {
