@@ -21,7 +21,7 @@ function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: graphQlUri,
         useGETForQueries: true,
-        credentials: 'same-origin',
+        credentials: 'include',
     })
 
     const retryLink = new RetryLink({
@@ -38,6 +38,7 @@ function create(initialState: any) {
 
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError }) => {
+            console.log({ graphQLErrors, networkError })
             console.groupCollapsed('🚨 GraphQL Error')
             if (graphQLErrors) {
                 graphQLErrors.forEach(({ message, locations, path }) => {
@@ -47,7 +48,9 @@ function create(initialState: any) {
                 })
             }
 
-            if (networkError) console.info('Network error: ', networkError)
+            if (networkError) {
+                console.info('Network error: ', networkError)
+            }
             console.groupEnd()
         }),
         retryLink,
