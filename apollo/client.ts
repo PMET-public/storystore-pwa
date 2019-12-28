@@ -47,7 +47,10 @@ function create(initialState: any) {
                 })
             }
 
-            if (networkError) console.info('Network error: ', networkError)
+            if (networkError) {
+                debugger
+                console.info('Network error: ', networkError)
+            }
             console.groupEnd()
         }),
         retryLink,
