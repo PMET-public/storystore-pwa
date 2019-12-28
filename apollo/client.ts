@@ -32,7 +32,7 @@ function create(initialState: any) {
         },
         attempts: {
             max: 3,
-            retryIf: error => error.statusCode !== 401 || (!!error && (process.browser ? navigator.onLine : false)), // retry only on front-end
+            retryIf: error => !!error && error.statusCode !== 401 && (process.browser ? navigator.onLine : false), // retry only on front-end
         },
     })
 
@@ -48,7 +48,6 @@ function create(initialState: any) {
             }
 
             if (networkError) {
-                debugger
                 console.info('Network error: ', networkError)
             }
             console.groupEnd()
