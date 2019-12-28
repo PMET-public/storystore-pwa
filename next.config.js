@@ -4,6 +4,9 @@ const webpack = require('webpack')
 const withOffline = require('next-offline')
 
 const runtimeDefaultCacheOptions = {
+    expiration: {
+        maxAgeSeconds: 86400, // one day
+    },
     cacheableResponse: {
         statuses: [0, 200],
     },
