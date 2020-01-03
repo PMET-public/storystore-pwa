@@ -7,7 +7,7 @@ dependencies:
 
 web:
     commands:
-        start: 'pm2 start npm --name "next" -- start --no-daemon'
+        start: 'pm2 start npm --name "next" -- start:magento-cloud  --no-daemon'
 
 hooks:
     build: |
@@ -24,7 +24,6 @@ mounts:
 variables:
     env:
         PORT: 80
-        # Magento  Instance Config
         MAGENTO_URL: https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud
         CONTENT_HOME_PAGE_ID: 20
         CONTENT_PARENT_CATEGORIES_ID: 2
