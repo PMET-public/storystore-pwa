@@ -8,7 +8,7 @@ dependencies:
 
 web:
     commands:
-        start: 'pm2 start next -p $PORT --no-daemon --log /var/log'
+        start: 'pm2 start "next start -p $PORT" --no-daemon -o /var/log/pm2.out.log -e /var/log/pm2.err.log'
 
 hooks:
     build: |
