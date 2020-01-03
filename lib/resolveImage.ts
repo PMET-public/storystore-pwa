@@ -26,11 +26,11 @@ export const resolveImage = (
     const { pathname } = new URL(url)
 
     if (pathname) {
-        const result = [`/images/resize/${width}`]
-        if (height) result.push(height.toString())
-        result.push(`?url=${pathname}&format=${format}&quality=${quality}&fit=${fit}`)
+        const result = [`/api/images`]
+        result.push(`?url=${pathname}&format=${format}&quality=${quality}&fit=${fit}&width=${width}`)
+        if (height) result.push(`&height=${height.toString()}`)
 
-        return result.join('/')
+        return result.join('')
     } else {
         return url
     }

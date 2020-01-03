@@ -15,7 +15,9 @@ if (!process.browser) {
     ;(global as any).fetch = fetch
 }
 
-export const graphQlUri = process.browser ? '/graphql' : new URL('graphql', LUMA_ENV.MAGENTO_URL).href
+export const graphQlUri = process.browser
+    ? '/api/graphql'
+    : new (require('url').URL)('graphql', LUMA_ENV.MAGENTO_URL).href
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
@@ -37,9 +39,9 @@ function create(initialState: any) {
     })
 
     const link = ApolloLink.from([
-        onError(({ graphQLErrors, networkError }) => {
-            console.log({ graphQLErrors, networkError })
+        onError(({ graphQLErrors, networkError, response }) => {
             console.groupCollapsed('🚨 GraphQL Error')
+            console.log('Response: ', response)
             if (graphQLErrors) {
                 graphQLErrors.forEach(({ message, locations, path }) => {
                     console.info(`Message: ${message}`)

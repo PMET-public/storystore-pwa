@@ -1,7 +1,5 @@
 import Document, { Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
-import { sync as dataUri } from 'datauri'
-import { relative } from 'path'
 
 export default class extends Document {
     static async getInitialProps(ctx: any) {
@@ -47,10 +45,7 @@ export default class extends Document {
                     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
 
-                    <link
-                        rel="apple-touch-icon"
-                        href={dataUri(relative(process.cwd(), './public/static/icons/apple-touch-icon.png'))}
-                    />
+                    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
 
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />

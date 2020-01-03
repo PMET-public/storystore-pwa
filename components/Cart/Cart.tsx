@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useCart } from './useCart'
@@ -10,7 +10,6 @@ import Link from '../Link'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
 
-// import CartLanding from '@pmet-public/luma-ui/dist/templates/CartLanding'
 const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
 const Error = dynamic(() => import('../Error'))
 
@@ -20,11 +19,6 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api, refetch } = useCart()
 
     const router = useRouter()
-
-    useEffect(() => {
-        /** Prefetch Checkout Page */
-        router.prefetch('/checkout')
-    }, [])
 
     const handleGoToCheckout = useCallback(async () => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))

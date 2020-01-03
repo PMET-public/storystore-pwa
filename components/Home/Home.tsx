@@ -23,7 +23,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page, categories, storeConfig } = data
-
+    console.log({ loading, storeConfig })
     return (
         <React.Fragment>
             {page && (
@@ -45,12 +45,13 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                             id,
                         },
                         href,
-                        image: image && {
-                            alt: text,
-                            src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
-                                width: 150,
-                            }),
-                        },
+                        image: image &&
+                            storeConfig?.baseMediaUrl && {
+                                alt: text,
+                                src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
+                                    width: 150,
+                                }),
+                            },
                         text,
                     })),
                 }}

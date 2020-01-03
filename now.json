@@ -1,12 +1,19 @@
 {
-    "version": 1,
+    "version": 2,
+    "env": {
+        "PORT": "@port",
+        "MAGENTO_URL": "@magento_url",
+        "CONTENT_HOME_PAGE_ID": "@content_home_page_id",
+        "CONTENT_PARENT_CATEGORIES_ID": "@content_parent_categories_id",
+        "CONTENT_FOOTER_BLOCK_ID": "@content_footer_block_id"
+    },
     "build": {
         "env": {
-            "PORT": "80",
-            "MAGENTO_URL": "https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud",
-            "CONTENT_HOME_PAGE_ID": "20",
-            "CONTENT_PARENT_CATEGORIES_ID": "2",
-            "CONTENT_FOOTER_BLOCK_ID": "footer"
+            "PORT": "@port",
+            "MAGENTO_URL": "@magento_url",
+            "CONTENT_HOME_PAGE_ID": "@content_home_page_id",
+            "CONTENT_PARENT_CATEGORIES_ID": "@content_parent_categories_id",
+            "CONTENT_FOOTER_BLOCK_ID": "@content_footer_block_id"
         }
     }
 }

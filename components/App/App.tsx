@@ -13,6 +13,7 @@ type AppProps = {}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const { loading, error, data, api } = useApp()
+
     if (error) {
         if ((error?.networkError as any).statusCode === 401) {
             return (

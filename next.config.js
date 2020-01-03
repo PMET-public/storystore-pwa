@@ -17,36 +17,42 @@ const addFetchOptionsPlugin = {
         }),
 }
 
-const getRevisionHash = () =>
-    crypto
-        .createHash('md5')
-        .update(String(Date.now()), 'utf8')
-        .digest('hex')
+const getRevision = () => crypto
+    .createHash('md5')
+    .update(String(Date.now()), 'utf8')
+    .digest('hex')
+
 
 module.exports = withOffline({
     workboxOpts: {
         skipWaiting: true,
         clientsClaim: true,
-        modifyURLPrefix: {
-            'static/': '_next/static/',
-            public: '',
-        },
         navigationPreload: true,
         cleanupOutdatedCaches: true,
+
+        swDest: process.env.NEXT_EXPORT
+            ? `service-worker.js`
+            : `static/service-worker.js`,
+        modifyURLPrefix: {
+            'static/': '_next/static/',
+            'public/': '',
+        },
+
         manifestTransforms: [
             manifest => ({
                 manifest: [
-                    { url: '/', revision: getRevisionHash() },
-                    { url: '/cart', revision: getRevisionHash() },
-                    { url: '/search', revision: getRevisionHash() },
-                    { url: '/checkout', revision: getRevisionHash() },
+                    { url: '/', revision: getRevision() },
+                    { url: '/cart', revision: getRevision() },
+                    { url: '/search', revision: getRevision() },
+                    { url: '/checkout', revision: getRevision() },
                     ...manifest,
                 ],
             }),
         ],
+
         runtimeCaching: [
             {
-                urlPattern: /^https?((?!\/graphql).)*$/, //all but GraphQL
+                urlPattern: /^https?((?!\/api\/graphql).)*$/, //all but GraphQL
                 handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'offline-cache',
@@ -55,7 +61,7 @@ module.exports = withOffline({
                 },
             },
             {
-                urlPattern: /\/graphql/,
+                urlPattern: /\/api\/graphql/,
                 handler: 'NetworkFirst',
                 options: {
                     cacheName: 'graphql-cache',
@@ -64,6 +70,17 @@ module.exports = withOffline({
                 },
             },
         ],
+
+    },
+    experimental: {
+        async rewrites() {
+            return [
+                {
+                    source: `/service-worker.js`,
+                    destination: `/_next/static/service-worker.js`,
+                },
+            ]
+        },
     },
     webpack: config => {
         /**

@@ -36,7 +36,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 }
 
 UrlResolver.getInitialProps = async ({ res, query }) => {
-    const [url] = query.url.toString().split('?')
+    const url = query.url ? query.url.toString().split('?')[0] : query['*']
 
     const urlKey =
         url

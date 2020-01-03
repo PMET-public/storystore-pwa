@@ -28,6 +28,7 @@ query AppShellQuery(
             id
             text: name
             href: url_path
+            image
         }
     }
 
