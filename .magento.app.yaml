@@ -4,10 +4,11 @@ type: nodejs:10
 dependencies:
     nodejs:
         pm2: '^4.2.1'
+        next: ^9.1.6
 
 web:
     commands:
-        start: 'pm2 start npm --name "next" -- start:magento-cloud  --no-daemon'
+        start: 'pm2 start next -p $PORT  --no-daemon'
 
 hooks:
     build: |
