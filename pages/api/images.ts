@@ -45,12 +45,13 @@ const ssrImage = async (req: any, res: any) => {
 }
 
 const imageCache = cacheableResponse({
-    ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
+    ttl: 604800, // 7 days
     get: async ({ req, res }: any) => ({
         data: await ssrImage(req, res),
     }),
     send: ({ data, res }: any) => {
         const { format, image } = data
+        res.setHeader('Cache-Control', 's-maxage=604800')
         res.setHeader('Content-Type', `image/${format}`)
         res.send(image)
     },

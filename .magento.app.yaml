@@ -7,7 +7,7 @@ dependencies:
 
 web:
     commands:
-        start: 'NODE_ENV=production PM2_HOME=/app/run pm2 start server/index.js --no-daemon'
+        start: 'pm2 start npm --name "next" -- start --no-daemon'
 
 hooks:
     build: |
