@@ -20,7 +20,7 @@ export const GraphQLApi: RequestCallback = (req, res) => {
                 qs: req.query,
                 url: MAGENTO_GRAPHQL_URL,
                 pool: {
-                    separateReqPool: { maxSockets: 20 },
+                    maxSockets: Infinity,
                 },
             })
         ).pipe(res)
