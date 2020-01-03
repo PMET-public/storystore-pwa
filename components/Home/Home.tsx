@@ -23,7 +23,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
     const { page, categories, storeConfig } = data
-    console.log({ loading, storeConfig })
+
     return (
         <React.Fragment>
             {page && (
