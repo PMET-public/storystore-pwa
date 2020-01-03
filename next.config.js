@@ -27,7 +27,6 @@ module.exports = withOffline({
     workboxOpts: {
         skipWaiting: true,
         clientsClaim: true,
-        navigationPreload: true,
         cleanupOutdatedCaches: true,
 
         swDest: process.env.NEXT_EXPORT
@@ -52,23 +51,35 @@ module.exports = withOffline({
 
         runtimeCaching: [
             {
-                urlPattern: /^https?((?!\/api\/graphql).)*$/, //all but GraphQL
+                urlPattern: /^https?((?!\/api).)*$/, //all but api
                 handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'offline-cache',
+                    cacheName: 'cache',
+                    plugins: [addFetchOptionsPlugin],
+                    ...runtimeDefaultCacheOptions,
+                },
+            },
+
+
+            {
+                urlPattern: /\/api\/graphql/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'api-graphql',
                     plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
             {
-                urlPattern: /\/api\/graphql/,
-                handler: 'NetworkFirst',
+                urlPattern: /\/api\/images/,
+                handler: 'CacheFirst',
                 options: {
-                    cacheName: 'graphql-cache',
+                    cacheName: 'api-images',
                     plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
+
         ],
 
     },
