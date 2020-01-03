@@ -6,13 +6,15 @@ import Link from '../Link'
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
 import PageBuilder from '../../components/PageBuilder'
+import { useIsUrlActive } from '../../lib/resolveLink'
 
 const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
-    const { loading, error, data, api } = useApp()
+    const { loading, error, data } = useApp()
+    const isUrlActive = useIsUrlActive()
 
     if (error) {
         if ((error?.networkError as any).statusCode === 401) {
@@ -68,13 +70,13 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     title: store?.logoAlt || 'Luma',
                 }}
                 home={{
-                    active: api.isUrlActive('/'),
+                    active: isUrlActive('/'),
                     as: Link,
                     href: '/',
                     text: 'Home',
                 }}
                 menu={categories?.children?.map(({ id, text, href }: any) => ({
-                    active: api.isUrlActive('/' + href),
+                    active: isUrlActive('/' + href),
                     as: Link,
                     urlResolver: {
                         type: 'CATEGORY',
@@ -84,13 +86,13 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     text,
                 }))}
                 search={{
-                    active: api.isUrlActive('/search'),
+                    active: isUrlActive('/search'),
                     as: Link,
                     href: '/search',
                     text: 'Search',
                 }}
                 cart={{
-                    active: api.isUrlActive('/cart'),
+                    active: isUrlActive('/cart'),
                     as: Link,
                     href: '/cart',
                     text: 'Bag',

@@ -1,6 +1,5 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { useRouter } from 'next/router'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
@@ -43,26 +42,11 @@ export const useApp = () => {
         }
     }, [query.error, query.data])
 
-    /**
-     * Handle Active URL Check
-     */
-    const { route, query: urlQuery } = useRouter()
-
-    const handleIsUrlActive = useCallback(
-        (href: string) => {
-            return href === (urlQuery.url || route)
-        },
-        [urlQuery.url, route]
-    )
-
     return {
         ...query,
         data: query.data && {
             ...query.data,
             footer: query.data.footer?.items[0],
-        },
-        api: {
-            isUrlActive: handleIsUrlActive,
         },
     }
 }
