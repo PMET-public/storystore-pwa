@@ -3,12 +3,11 @@ type: nodejs:10
 
 dependencies:
     nodejs:
-        pm2: '^4.2.1'
         next: ^9.1.6
 
 web:
     commands:
-        start: 'pm2 start "next start -p $PORT" --no-daemon -o /var/log/pm2.out.log -e /var/log/pm2.err.log'
+        start: 'next start -p $PORT'
 
 hooks:
     build: |
