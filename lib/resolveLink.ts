@@ -15,11 +15,7 @@ export const useIsUrlActive = () => {
     const router = useRouter()
 
     return (href: string) => {
-        // if (!router) return false
-
         const { route, query } = router
-
-        console.log({ router })
 
         return href === (query.url || (query['*'] ? `/${query['*']}` : route))
     }
