@@ -14,9 +14,13 @@ export const resolveLink = (url: string) => {
 export const useIsUrlActive = () => {
     const router = useRouter()
 
-    if (!router) return false
+    return (href: string) => {
+        // if (!router) return false
 
-    const { route, query } = router
+        const { route, query } = router
 
-    return (href: string) => href === (query.url || (query['*'] ? `/${query['*']}` : route))
+        console.log({ router })
+
+        return href === (query.url || (query['*'] ? `/${query['*']}` : route))
+    }
 }
