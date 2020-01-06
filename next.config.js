@@ -54,7 +54,7 @@ module.exports = withOffline({
                 urlPattern: /^https?((?!\/api).)*$/, //all but api
                 handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'cache',
+                    cacheName: 'all',
                     plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
