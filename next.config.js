@@ -1,7 +1,8 @@
 require('dotenv').config()
-const crypto = require('crypto')
+
 const webpack = require('webpack')
 const withOffline = require('next-offline')
+const crypto = require('crypto')
 
 const runtimeDefaultCacheOptions = {
     cacheableResponse: {
@@ -17,8 +18,8 @@ const getRevision = () => crypto
     .update(String(Date.now()), 'utf8')
     .digest('hex')
 
-
 module.exports = withOffline({
+
     workboxOpts: {
         skipWaiting: true,
         clientsClaim: true,
@@ -32,24 +33,12 @@ module.exports = withOffline({
             'public/': '',
         },
 
-        manifestTransforms: [
-            manifest => ({
-                manifest: [
-                    { url: '/', revision: getRevision() },
-                    { url: '/cart', revision: getRevision() },
-                    { url: '/search', revision: getRevision() },
-                    { url: '/checkout', revision: getRevision() },
-                    ...manifest,
-                ],
-            }),
-        ],
-
         runtimeCaching: [
             {
                 urlPattern: /^https?((?!\/api).)*$/, //all but api
-                handler: 'StaleWhileRevalidate',
+                handler: 'NetworkFirst',
                 options: {
-                    cacheName: 'all',
+                    cacheName: 'cache',
                     ...runtimeDefaultCacheOptions,
                 },
             },
@@ -72,6 +61,18 @@ module.exports = withOffline({
                 },
             },
 
+        ],
+
+        manifestTransforms: [
+            manifest => ({
+                manifest: [
+                    { url: '/', revision: getRevision() },
+                    { url: '/cart', revision: getRevision() },
+                    { url: '/search', revision: getRevision() },
+                    { url: '/checkout', revision: getRevision() },
+                    ...manifest,
+                ],
+            }),
         ],
 
     },

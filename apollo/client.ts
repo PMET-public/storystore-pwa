@@ -13,6 +13,7 @@ let apolloClient: any
 // Polyfill fetch() on the server (used by apollo-client)
 if (!process.browser) {
     ;(global as any).fetch = fetch
+    // await before instantiating ApolloClient, else queries might run before the cache is persisted
 }
 
 export const graphQlUri = process.browser
@@ -23,7 +24,7 @@ function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: graphQlUri,
         useGETForQueries: true,
-        credentials: 'include',
+        credentials: 'same-origin',
     })
 
     const retryLink = new RetryLink({
