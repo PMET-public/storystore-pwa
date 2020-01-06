@@ -4,25 +4,16 @@ import { Component } from '@pmet-public/luma-ui/dist/lib'
 import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/luma-ui/dist/components/Tabs'
 
 export type TabsProps = {
-    appearance: string
     activeTab: number
     tabsAlignment: 'left' | 'center' | 'right'
     minHeight: string
 }
 
-export const Tabs: Component<TabsProps> = ({
-    appearance,
-    tabsAlignment,
-    tabItems,
-    activeTab,
-    children,
-    minHeight,
-    ...props
-}) => {
+export const Tabs: Component<TabsProps> = ({ tabsAlignment, tabItems, activeTab, children, minHeight }) => {
     const selected = Number(activeTab)
 
     return (
-        <TabsWrapper defaultIndex={selected} {...props}>
+        <TabsWrapper defaultIndex={selected}>
             <TabList align={tabsAlignment}>
                 {tabItems.map((label: string, index: number) => (
                     <Tab key={index}>{label}</Tab>

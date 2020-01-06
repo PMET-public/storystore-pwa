@@ -36,7 +36,7 @@ export const Banner: Component<BannerProps> = ({
 }) => {
     return (
         <Root
-            as={link ? p => <Link {...link} {...p} /> : 'div'}
+            as={link ? (p: any) => <Link {...link} {...p} /> : 'div'}
             $showButton={showButton}
             $showOverlay={showOverlay}
             $overlayColor={overlay && overlay.overlayColor}
