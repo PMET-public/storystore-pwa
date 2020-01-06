@@ -7,14 +7,9 @@ const runtimeDefaultCacheOptions = {
     cacheableResponse: {
         statuses: [0, 200],
     },
-}
-
-const addFetchOptionsPlugin = {
-    requestWillFetch: ({ request }) =>
-        new Request(request, {
-            credentials: 'same-origin',
-            redirect: 'follow',
-        }),
+    fetchOptions: {
+        credentials: 'include',
+    },
 }
 
 const getRevision = () => crypto
@@ -55,7 +50,6 @@ module.exports = withOffline({
                 handler: 'StaleWhileRevalidate',
                 options: {
                     cacheName: 'all',
-                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
@@ -66,7 +60,6 @@ module.exports = withOffline({
                 handler: 'NetworkFirst',
                 options: {
                     cacheName: 'api-graphql',
-                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
@@ -75,7 +68,6 @@ module.exports = withOffline({
                 handler: 'CacheFirst',
                 options: {
                     cacheName: 'api-images',
-                    plugins: [addFetchOptionsPlugin],
                     ...runtimeDefaultCacheOptions,
                 },
             },
