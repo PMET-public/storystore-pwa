@@ -38,7 +38,7 @@ module.exports = withOffline({
                 urlPattern: /^https?((?!\/api).)*$/, //all but api
                 handler: 'NetworkFirst',
                 options: {
-                    cacheName: 'cache',
+                    cacheName: 'http-requests',
                     ...runtimeDefaultCacheOptions,
                 },
             },
