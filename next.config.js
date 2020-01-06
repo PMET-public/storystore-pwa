@@ -8,7 +8,7 @@ const runtimeDefaultCacheOptions = {
         statuses: [0, 200],
     },
     fetchOptions: {
-        credentials: 'include',
+        credentials: 'same-origin',
     },
 }
 
