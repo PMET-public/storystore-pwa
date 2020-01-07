@@ -7,7 +7,7 @@ const { MAGENTO_URL = '' } = process.env
 
 export const ImagesApi = (req: NextApiRequest, res: NextApiResponse) => {
     const url = new URL(req.query.url.toString(), MAGENTO_URL)
-    const format = req.query.format.toString() || 'jpeg'
+    const format = req.query.format?.toString() || 'jpeg'
     const quality = req.query.quality ? Number(req.query.quality) : 100
 
     const width = req.query.width && Number(req.query.width)
