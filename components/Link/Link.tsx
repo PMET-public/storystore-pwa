@@ -1,6 +1,5 @@
 import React, { FunctionComponent, forwardRef } from 'react'
 import NextLink, { LinkProps as _LinkProps } from 'next/link'
-import styled from 'styled-components'
 import { Props } from '@pmet-public/luma-ui/dist/lib'
 
 export type LinkProps = Props<{
@@ -13,9 +12,6 @@ export type LinkProps = Props<{
     linkTagAs?: 'a' | 'button'
 }>
 
-const ATag = styled.a``
-// const pathname = (pathname: string) => pathname // .replace(/^(\/)/, '')
-
 export const Link: FunctionComponent<LinkProps> = forwardRef(
     (
         {
@@ -27,7 +23,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
             passHref,
             prefetch,
             urlResolver = false,
-            linkTagAs = 'a',
+            linkTagAs: ATag = 'a' as any,
             ...props
         },
         ref: any
@@ -48,7 +44,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
 
         return (
             <NextLink {...linkProps}>
-                <ATag ref={ref} as={linkTagAs as any} href={_href as string} {...props} />
+                <ATag ref={ref} href={_href as string} {...props} />
             </NextLink>
         )
     }
