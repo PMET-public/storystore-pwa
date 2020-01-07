@@ -1,62 +1,47 @@
-import request, { RequestCallback } from 'request'
+import request from 'request'
 import sharp from 'sharp'
 import { URL } from 'url'
-import cacheableResponse from 'cacheable-response'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 const { MAGENTO_URL = '' } = process.env
 
-const ssrImage = async (req: any, res: any) => {
-    const width = req.query.width ? Number(req.query.width) : 2000
-    const height = req.query.height ? Number(req.query.height) : null
-
-    const url = new URL(req.query.url, MAGENTO_URL)
-    const format = req.query.format || 'jpeg'
-    const fit = req.query.fit || 'cover'
+export const ImagesApi = (req: NextApiRequest, res: NextApiResponse) => {
+    const url = new URL(req.query.url.toString(), MAGENTO_URL)
+    const format = req.query.format.toString() || 'jpeg'
     const quality = req.query.quality ? Number(req.query.quality) : 100
 
-    return new Promise((resolve, reject) => {
-        try {
-            request.get({ url: url.href, encoding: null }, async (error, response) => {
-                if (error) {
-                    res.statusCode = 500
-                    throw Error()
-                }
+    const width = req.query.width && Number(req.query.width)
+    const height = req.query.height && Number(req.query.height)
+    const fit = (req.query.fit as '') || 'cover'
 
-                const { statusCode, body } = response
+    res.setHeader('Content-Type', `image/${format}`)
 
-                if (statusCode >= 400) {
-                    res.statusCode = statusCode
-                    throw Error()
-                }
-
-                const image = await sharp(body)
-                    .resize(width > 2000 ? 2000 : width, height && height > 2000 ? 2000 : height, {
-                        fit,
-                    })
-                    .toFormat(format, { quality })
-                    .toBuffer()
-
-                resolve({ format, image })
-            })
-        } catch (error) {
-            reject(error)
+    request.get({ url: url.href, encoding: null }, async (error, response) => {
+        if (error) {
+            res.statusCode = 500
+            res.send(null)
         }
+
+        const { statusCode, body } = response
+
+        if (statusCode >= 400) {
+            res.statusCode = statusCode
+            res.send(null)
+        }
+
+        const image = sharp(body)
+
+        if (width) {
+            image.resize(width > 2000 ? 2000 : width, height ? (height > 2000 ? 2000 : height) : undefined, {
+                fit,
+            })
+        }
+
+        const responseBody = await image.toFormat(format, { quality }).toBuffer()
+
+        res.setHeader('Cache-Control', 'max-age=2592000, immutable')
+        res.send(responseBody)
     })
 }
-
-const imageCache = cacheableResponse({
-    ttl: 2592000, // 30 days
-    get: async ({ req, res }: any) => ({
-        data: await ssrImage(req, res),
-    }),
-    send: ({ data, res }: any) => {
-        const { format, image } = data
-        res.setHeader('Cache-Control', 'max-age=2592000, immutable')
-        res.setHeader('Content-Type', `image/${format}`)
-        res.send(image)
-    },
-})
-
-export const ImagesApi: RequestCallback = (req, res) => imageCache({ req, res })
 
 export default ImagesApi

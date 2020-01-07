@@ -2,7 +2,6 @@ require('dotenv').config()
 
 const webpack = require('webpack')
 const withOffline = require('next-offline')
-const crypto = require('crypto')
 
 const runtimeDefaultCacheOptions = {
     cacheableResponse: {
@@ -13,21 +12,15 @@ const runtimeDefaultCacheOptions = {
     },
 }
 
-const getRevision = () => crypto
-    .createHash('md5')
-    .update(String(Date.now()), 'utf8')
-    .digest('hex')
-
 module.exports = withOffline({
+    transformManifest: manifest => ['/', '/search', '/cart', '/checkout'].concat(manifest),
 
     workboxOpts: {
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
 
-        swDest: process.env.NEXT_EXPORT
-            ? `service-worker.js`
-            : `static/service-worker.js`,
+        swDest: process.env.NEXT_EXPORT ? `service-worker.js` : `static/service-worker.js`,
         modifyURLPrefix: {
             'static/': '_next/static/',
             'public/': '',
@@ -42,7 +35,6 @@ module.exports = withOffline({
                     ...runtimeDefaultCacheOptions,
                 },
             },
-
 
             {
                 urlPattern: /\/api\/graphql/,
@@ -60,21 +52,7 @@ module.exports = withOffline({
                     ...runtimeDefaultCacheOptions,
                 },
             },
-
         ],
-
-        manifestTransforms: [
-            manifest => ({
-                manifest: [
-                    { url: '/', revision: getRevision() },
-                    { url: '/cart', revision: getRevision() },
-                    { url: '/search', revision: getRevision() },
-                    { url: '/checkout', revision: getRevision() },
-                    ...manifest,
-                ],
-            }),
-        ],
-
     },
     experimental: {
         async rewrites() {

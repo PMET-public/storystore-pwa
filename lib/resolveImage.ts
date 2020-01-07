@@ -20,17 +20,19 @@ export const resolveImage = (
         height?: number
     }
 ) => {
-    const { format = canUseWebP() ? 'webp' : 'jpeg', quality = 100, fit = 'cover', width = 2000, height } =
-        options || {}
+    const { format = canUseWebP() ? 'webp' : 'jpeg', quality = 100, fit, width, height } = options || {}
 
     const { pathname } = new URL(url)
 
     if (pathname) {
-        const result = [`/api/images`]
-        result.push(`?url=${pathname}&format=${format}&quality=${quality}&fit=${fit}&width=${width}`)
-        if (height) result.push(`&height=${height.toString()}`)
+        const query = [`url=${pathname}`, `format=${format}`]
 
-        return result.join('')
+        if (height) query.push(`height=${height.toString()}`)
+        if (width) query.push(`width=${width.toString()}`)
+        if (fit) query.push(`fit=${fit}`)
+        if (quality) query.push(`quality=${quality}`)
+
+        return `/api/images?${query.join('&')}`
     } else {
         return url
     }
