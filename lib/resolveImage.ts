@@ -1,14 +1,14 @@
-function canUseWebP() {
-    var elem = document.createElement('canvas')
+// function canUseWebP() {
+//     var elem = document.createElement('canvas')
 
-    if (!!(elem.getContext && elem.getContext('2d'))) {
-        // was able or not to get WebP representation
-        return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0
-    }
+//     if (!!(elem.getContext && elem.getContext('2d'))) {
+//         // was able or not to get WebP representation
+//         return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0
+//     }
 
-    // very old browser like IE 8, canvas not supported
-    return false
-}
+//     // very old browser like IE 8, canvas not supported
+//     return false
+// }
 
 export const resolveImage = (
     url: string,
@@ -20,12 +20,21 @@ export const resolveImage = (
         height?: number
     }
 ) => {
-    const { format = canUseWebP() ? 'webp' : 'jpeg', quality = 100, fit, width, height } = options || {}
+    const {
+        // format = canUseWebP() ? 'webp' : 'jpeg',
+        quality = 100,
+        fit,
+        width,
+        height,
+    } = options || {}
 
     const { pathname } = new URL(url)
 
     if (pathname) {
-        const query = [`url=${pathname}`, `format=${format}`]
+        const query = [
+            `url=${pathname}`,
+            // `format=${format}`
+        ]
 
         if (height) query.push(`height=${height.toString()}`)
         if (width) query.push(`width=${width.toString()}`)
