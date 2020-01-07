@@ -1,7 +1,5 @@
 import Document, { Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
-import { sync as dataUri } from 'datauri'
-import { relative } from 'path'
 
 export default class extends Document {
     static async getInitialProps(ctx: any) {
@@ -48,7 +46,7 @@ export default class extends Document {
 
                     <link
                         rel="apple-touch-icon"
-                        href={dataUri(relative(process.cwd(), './public/static/icons/apple-touch-icon.png'))}
+                        href="https://luma-pwa.fnhipster.now.sh/static/icons/apple-touch-icon.png"
                     />
 
                     {/* Web App Manifest  */}
