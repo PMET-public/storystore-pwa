@@ -39,7 +39,7 @@ export const ImagesApi = (req: NextApiRequest, res: NextApiResponse) => {
 
         const responseBody = await image.toFormat(format, { quality }).toBuffer()
 
-        res.setHeader('Cache-Control', 'max-age=2592000, immutable')
+        res.setHeader('Cache-Control', 'max-age=0, s-maxage=2592000')
         res.send(responseBody)
     })
 }
