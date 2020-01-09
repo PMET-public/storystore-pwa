@@ -26,6 +26,14 @@ module.exports = withOffline({
     },
 
     experimental: {
+        async redirects() {
+            return [
+                {
+                    source: `/basic-auth`,
+                    destination: '/'
+                }
+            ];
+        },
         async rewrites() {
             return [
                 {
