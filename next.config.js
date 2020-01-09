@@ -5,6 +5,7 @@ const webpack = require('webpack')
 const withOffline = require('next-offline')
 
 module.exports = withOffline({
+    transformManifest: manifest => ['/', '/search', '/cart', '/checkout'].concat(manifest),
     dontAutoRegisterSw: true,
     generateSw: false,
     workboxOpts: {
