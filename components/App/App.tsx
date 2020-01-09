@@ -19,13 +19,21 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     if (error) {
         if ((error?.networkError as any).statusCode === 401) {
             return (
-                <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
+                <Error
+                    type="401"
+                    button={{ text: 'Try Again', onClick: () => (location.href = '/basic-auth.html') }}
+                    fullScreen
+                >
                     Authorization Required
                 </Error>
             )
         } else if ((error?.networkError as any).statusCode === 403) {
             return (
-                <Error type="401" button={{ text: 'Try Again', onClick: () => location.reload() }} fullScreen>
+                <Error
+                    type="401"
+                    button={{ text: 'Try Again', onClick: () => (location.href = '/basic-auth.html') }}
+                    fullScreen
+                >
                     Authorization Required
                 </Error>
             )
