@@ -38,8 +38,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const { loading, error, data, refetch, fetchMore } = useQuery(SEARCH_QUERY, {
         variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
-        fetchPolicy: 'cache-and-network',
         returnPartialData: true,
+        fetchPolicy: 'cache-and-network',
     })
 
     /**

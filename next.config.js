@@ -1,59 +1,18 @@
 require('dotenv').config()
 
+const path = require('path')
 const webpack = require('webpack')
 const withOffline = require('next-offline')
 
-const runtimeDefaultCacheOptions = {
-    cacheableResponse: {
-        statuses: [0, 200],
-    },
-    fetchOptions: {
-        credentials: 'same-origin',
-    },
-}
-
 module.exports = withOffline({
     transformManifest: manifest => ['/', '/search', '/cart', '/checkout'].concat(manifest),
-
+    dontAutoRegisterSw: true,
+    generateSw: false,
     workboxOpts: {
-        skipWaiting: true,
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-
-        swDest: process.env.NEXT_EXPORT ? `service-worker.js` : `static/service-worker.js`,
-        modifyURLPrefix: {
-            'static/': '_next/static/',
-            'public/': '',
-        },
-
-        runtimeCaching: [
-            {
-                urlPattern: /^https?((?!\/api).)*$/, //all but api
-                handler: 'NetworkFirst',
-                options: {
-                    cacheName: 'http-requests',
-                    ...runtimeDefaultCacheOptions,
-                },
-            },
-
-            {
-                urlPattern: /\/api\/graphql/,
-                handler: 'NetworkFirst',
-                options: {
-                    cacheName: 'api-graphql',
-                    ...runtimeDefaultCacheOptions,
-                },
-            },
-            {
-                urlPattern: /\/api\/images/,
-                handler: 'CacheFirst',
-                options: {
-                    cacheName: 'api-images',
-                    ...runtimeDefaultCacheOptions,
-                },
-            },
-        ],
+        swSrc: path.resolve(__dirname, './lib/workboxOptions.js'),
+        swDest: 'static/service-worker.js',
     },
+
     experimental: {
         async rewrites() {
             return [

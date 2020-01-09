@@ -1,0 +1,7 @@
+README.md
+.next
+.vscode
+.env
+.env.sample
+.magento
+.magento.app.yaml

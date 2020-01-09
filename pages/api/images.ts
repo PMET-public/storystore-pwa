@@ -16,10 +16,10 @@ export const ImagesApi = (req: NextApiRequest, res: NextApiResponse) => {
 
     res.setHeader('Content-Type', `image/${format}`)
 
-    request.get({ url: url.href, encoding: null }, async (error, response) => {
+    request.get({ url: url.href, encoding: null }, (error, response) => {
         if (error) {
             res.statusCode = 500
-            res.send(null)
+            res.send(response)
         }
 
         const { statusCode, body } = response
@@ -37,10 +37,17 @@ export const ImagesApi = (req: NextApiRequest, res: NextApiResponse) => {
             })
         }
 
-        const responseBody = await image.toFormat(format, { quality }).toBuffer()
-
-        res.setHeader('Cache-Control', 'max-age=0, s-maxage=2592000')
-        res.send(responseBody)
+        image
+            .toFormat(format, { quality })
+            .toBuffer()
+            .then(responseBody => {
+                res.setHeader('Cache-Control', 'max-age=0, s-maxage=2592000')
+                res.send(responseBody)
+            })
+            .catch(error => {
+                res.statusCode = 500
+                res.send(error)
+            })
     })
 }
 
