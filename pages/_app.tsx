@@ -7,6 +7,13 @@ import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
 
 class MyApp extends NextApp {
+    async getInitialProps({ res }: { res: Response }) {
+        console.log({
+            headers: res.headers,
+            status: res.status,
+        })
+    }
+
     async componentDidMount() {
         if (!LUMA_ENV.DEVELOPMENT && 'serviceWorker' in navigator) {
             const { Workbox } = await import('workbox-window')
