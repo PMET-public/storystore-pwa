@@ -24,7 +24,7 @@ function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: graphQlUri,
         useGETForQueries: true,
-        credentials: 'same-origin',
+        // credentials: 'same-origin',
     })
 
     const retryLink = new RetryLink({
