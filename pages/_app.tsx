@@ -8,7 +8,7 @@ import App from '../components/App'
 
 class MyApp extends NextApp {
     async componentDidMount() {
-        if ('serviceWorker' in navigator) {
+        if (!LUMA_ENV.DEVELOPMENT && 'serviceWorker' in navigator) {
             const { Workbox } = await import('workbox-window')
 
             const wb = new Workbox('/service-worker.js')
