@@ -14,13 +14,12 @@ export const resolveImage = (
     url: string,
     options?: {
         format?: 'jpeg' | 'gif' | 'webp' | 'svg' | 'png'
-        quality?: number
         fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside'
         width?: number
         height?: number
     }
 ) => {
-    const { format = canUseWebP() ? 'webp' : 'jpeg', quality = 100, fit, width, height } = options || {}
+    const { format = canUseWebP() ? 'webp' : 'jpeg', fit, width, height } = options || {}
 
     const { pathname } = new URL(url)
 
@@ -30,7 +29,6 @@ export const resolveImage = (
         if (height) query.push(`height=${height.toString()}`)
         if (width) query.push(`width=${width.toString()}`)
         if (fit) query.push(`fit=${fit}`)
-        if (quality) query.push(`quality=${quality}`)
 
         return `/api/images?${query.join('&')}`
     } else {
