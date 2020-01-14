@@ -11,10 +11,10 @@ export const Root = styled.div<{ $backgroundColor?: string; $fullScreen?: string
         props.$fullScreen &&
         `
 
-            height: calc(100vh - 14rem);
+            height: calc(90vh - 14rem);
 
             @media ${props.theme.breakpoints.medium} {
-                height: calc(100vh - 6rem);
+                height: calc(90vh - 6rem);
             }
         `}
 `

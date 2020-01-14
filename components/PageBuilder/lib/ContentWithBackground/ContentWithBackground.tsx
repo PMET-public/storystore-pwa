@@ -6,7 +6,7 @@ import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
 
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image
-    fullScxreen?: boolean
+    fullScreen?: boolean
 }>
 
 export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
