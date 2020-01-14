@@ -57,6 +57,10 @@ export const Root = styled.div`
         font-weight: ${props => props.theme.typography.heading.weight.bold};
     }
 
+    & p {
+        line-height: 1.2;
+    }
+
     & ol,
     & ul {
         list-style-position: inside;
