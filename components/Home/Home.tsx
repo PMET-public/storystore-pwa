@@ -48,9 +48,7 @@ export const Home: FunctionComponent<HomeProps> = ({}) => {
                         image: image &&
                             storeConfig?.baseMediaUrl && {
                                 alt: text,
-                                src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`, {
-                                    width: 150,
-                                }),
+                                src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`),
                             },
                         text,
                     })),

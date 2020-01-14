@@ -276,7 +276,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         sku: `SKU. ${product.sku}`,
                         thumbnail: {
                             alt: product.thumbnail.label,
-                            src: resolveImage(product.thumbnail.url, { width: 250 }),
+                            src: resolveImage(product.thumbnail.url),
                         },
                         quantity: {
                             value: quantity,
