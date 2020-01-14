@@ -134,12 +134,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         _id: id,
                         alt: label || title,
                         src: {
-                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
-                                width: 1200,
-                            }),
-                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file, {
-                                width: 600,
-                            }),
+                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
+                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
                         },
                     }))
                     .sort((a: any, b: any) => a.position - b.position)}
@@ -168,7 +164,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                     value,
                                     image: image && {
                                         alt: image.label || '',
-                                        src: resolveImage(image.url, { width: 240 }),
+                                        src: resolveImage(image.url),
                                     },
                                 })),
                             },
