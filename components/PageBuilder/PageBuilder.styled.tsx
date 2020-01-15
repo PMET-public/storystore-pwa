@@ -2,18 +2,19 @@ import styled from 'styled-components'
 
 export const Root = styled.div`
     width: 100%;
+    line-height: 1.4;
 
     & h1,
     & h2,
     & h3,
     & h4,
     & h5,
-    & h6 & p {
+    & h6 {
         &:not(:first-child) {
-            margin-top: 1rem;
+            margin-top: 1.8rem;
         }
         &:not(:last-child) {
-            margin-bottom: 1rem;
+            margin-bottom: 1.8rem;
         }
     }
 
@@ -25,6 +26,7 @@ export const Root = styled.div`
     & h6 {
         font-family: ${props => props.theme.typography.heading.family};
         word-break: break-word;
+        line-height: 0.9;
     }
 
     & h1 {
@@ -34,7 +36,7 @@ export const Root = styled.div`
 
     & h2 {
         font-size: 3rem;
-        font-weight: ${props => props.theme.typography.heading.weight.semi};
+        font-weight: ${props => props.theme.typography.heading.weight.bolder};
     }
 
     & h3 {
@@ -58,8 +60,15 @@ export const Root = styled.div`
     }
 
     & p {
-        line-height: 1.2;
+        &:not(:first-child) {
+            margin-top: 1rem;
+        }
+        &:not(:last-child) {
+            margin-bottom: 1rem;
+        }
     }
+
+  
 
     & ol,
     & ul {
@@ -119,6 +128,10 @@ export const Root = styled.div`
         color: ${props => props.theme.colors.surface};
         display: block;
         padding: 2rem;
+    }
+
+    & a {
+        color: ${props => props.theme.colors.onSurface75};
     }
 `
 

@@ -13,7 +13,9 @@ const props = (elem: HTMLElement) => {
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
     }
 
-    return { appearance, background, style }
+    const hero = elem.classList.contains('hero')
+
+    return { appearance, hero, background, style }
 }
 
 export default { component, props }
