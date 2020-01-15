@@ -3,7 +3,7 @@ type: nodejs:10
 
 dependencies:
     nodejs:
-        next: ^9.1.6
+        next: ^9.2.0
 
 web:
     commands:
