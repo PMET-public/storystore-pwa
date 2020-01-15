@@ -12,19 +12,27 @@ export const config = {
 }
 
 export const GraphQLApi: RequestCallback = (req, res) => {
-    if (req.method === 'POST') {
-        req.pipe(request.post(MAGENTO_GRAPHQL_URL)).pipe(res)
-    } else {
-        req.pipe(
-            request.get({
-                qs: req.query,
-                url: MAGENTO_GRAPHQL_URL,
-                pool: {
-                    maxSockets: Infinity,
-                },
-            })
-        ).pipe(res)
-    }
+    return new Promise((resolve, reject) => {
+        if (req.method === 'POST') {
+            req.pipe(request.post(MAGENTO_GRAPHQL_URL))
+                .pipe(res)
+                .on('error', reject)
+                .on('response', resolve)
+        } else {
+            req.pipe(
+                request.get({
+                    qs: req.query,
+                    url: MAGENTO_GRAPHQL_URL,
+                    pool: {
+                        maxSockets: Infinity,
+                    },
+                })
+            )
+                .pipe(res)
+                .on('error', reject)
+                .on('response', resolve)
+        }
+    })
 }
 
 export default GraphQLApi

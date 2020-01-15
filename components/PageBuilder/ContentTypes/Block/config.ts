@@ -6,7 +6,7 @@ const component = dynamic(() => import('./'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const html = elem.children[0].innerHTML
+    const html = elem.children[0]?.innerHTML
 
     return {
         style,
