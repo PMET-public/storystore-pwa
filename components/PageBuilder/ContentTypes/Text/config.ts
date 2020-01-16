@@ -8,7 +8,6 @@ const props = (elem: HTMLElement) => {
 
     return {
         style,
-        source: elem.innerHTML,
     }
 }
 
