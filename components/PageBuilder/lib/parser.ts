@@ -18,21 +18,11 @@ const getComponentData = (type: string, node?: HTMLElement) => {
 
     const config = (configs as any)[name]
 
-    const component = config
-        ? {
-              component: config.component,
-              props: config.props(currentNode),
-          }
-        : {
-              component: configs['Text'].component,
-              props: {
-                  as: type,
-                  ...currentNode,
-              },
-          }
-    if (!config) {
-        console.log(name, { component, currentNode })
+    const component = {
+        component: config.component,
+        props: config.props(currentNode),
     }
+
     return {
         appearance,
         component: component.component,
@@ -58,12 +48,12 @@ const walk = (rootEl: Node, component: any) => {
 
         const contentType = (currentNode as HTMLElement).getAttribute('data-content-type')
 
-        // if (!contentType) {
-        //     currentNode = tree.nextNode()
-        //     continue
-        // }
+        if (!contentType) {
+            currentNode = tree.nextNode()
+            continue
+        }
 
-        const data = getComponentData(contentType || currentNode.nodeName.toLowerCase(), currentNode as HTMLElement)
+        const data = getComponentData(contentType, currentNode as HTMLElement)
 
         // Add children elements
         component.items.push(data)
