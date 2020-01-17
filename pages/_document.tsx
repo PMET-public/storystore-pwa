@@ -29,15 +29,24 @@ export default class extends Document {
     }
 
     render() {
+        const {
+            NODE_ENV,
+            MAGENTO_URL,
+            CONTENT_HOME_PAGE_ID,
+            CONTENT_PARENT_CATEGORIES_ID,
+            CONTENT_FOOTER_BLOCK_ID,
+        } = process.env
+
         return (
             <html lang="en">
                 <Head>
                     <noscript>Enable javascript to run this web app.</noscript>
+
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <meta charSet="utf-8" />
                     <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
                     <meta name="theme-color" content="#222222" />
-                    <link rel="shortcut icon" href="/static/favicon.ico" />
+                    <link rel="shortcut icon" href="/favicon.ico" />
 
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,6 +68,20 @@ export default class extends Document {
                 </Head>
 
                 <body>
+                    {/* Global Variables needed for the front-end */}
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                                <script>
+                                    window.DEVELOPMENT = ${NODE_ENV !== 'production'}
+                                    window.MAGENTO_URL = '${MAGENTO_URL}';
+                                    window.CONTENT_HOME_PAGE_ID = '${CONTENT_HOME_PAGE_ID}';
+                                    window.CONTENT_PARENT_CATEGORIES_ID = '${CONTENT_PARENT_CATEGORIES_ID}';
+                                    window.CONTENT_FOOTER_BLOCK_ID = '${CONTENT_FOOTER_BLOCK_ID}';
+                                </script>
+                            `,
+                        }}
+                    />
                     <Main />
                     <NextScript />
                 </body>

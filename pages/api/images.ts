@@ -3,7 +3,7 @@ import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const MAX_AGE = 30 * 86400 // 30 days
-const { MAGENTO_URL = '' } = process.env
+const { MAGENTO_URL = '' } = process.browser ? (window as any) : process.env
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
     return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, MAGENTO_URL).href,
+                url: new URL(url, MAGENTO_URL || '').href,
                 pool: {
                     maxSockets: Infinity,
                 },

@@ -4,8 +4,9 @@ import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import HOME_QUERY from './graphql/home.graphql'
 
-const id = LUMA_ENV.CONTENT_HOME_PAGE_ID
-const categoryId = LUMA_ENV.CONTENT_PARENT_CATEGORIES_ID
+const { CONTENT_HOME_PAGE_ID: id, CONTENT_PARENT_CATEGORIES_ID: categoryId } = process.browser
+    ? (window as any)
+    : process.env
 
 export const useHome = () => {
     const query = useQuery(HOME_QUERY, {

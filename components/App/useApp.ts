@@ -6,8 +6,9 @@ import APP_QUERY from './graphql/app.graphql'
 // import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-const categoryId = LUMA_ENV.CONTENT_PARENT_CATEGORIES_ID
-const footerBlockId = LUMA_ENV.CONTENT_FOOTER_BLOCK_ID
+const { CONTENT_PARENT_CATEGORIES_ID: categoryId, CONTENT_FOOTER_BLOCK_ID: footerBlockId } = process.browser
+    ? (window as any)
+    : process.env
 
 export const useApp = () => {
     const query = useQuery(APP_QUERY, {

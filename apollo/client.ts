@@ -18,7 +18,7 @@ if (!process.browser) {
 
 export const graphQlUri = process.browser
     ? '/api/graphql'
-    : new (require('url').URL)('graphql', LUMA_ENV.MAGENTO_URL).href
+    : new (require('url').URL)('graphql', process.env.MAGENTO_URL).href
 
 function create(initialState: any) {
     const httpLink = new HttpLink({

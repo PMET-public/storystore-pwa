@@ -1,9 +1,10 @@
-import request, { RequestCallback } from 'request'
+import { NextApiRequest, NextApiResponse } from 'next'
+import request from 'request'
 import { URL } from 'url'
 
 const { MAGENTO_URL = '' } = process.env
 
-const MAGENTO_GRAPHQL_URL = new URL('graphql', MAGENTO_URL).href
+const MAGENTO_GRAPHQL_URL = new URL('graphql', MAGENTO_URL || '').href
 
 export const config = {
     api: {
@@ -11,7 +12,7 @@ export const config = {
     },
 }
 
-export const GraphQLApi: RequestCallback = (req, res) => {
+export const GraphQLApi = (req: NextApiRequest, res: NextApiResponse) => {
     return new Promise((resolve, reject) => {
         if (req.method === 'POST') {
             req.pipe(request.post(MAGENTO_GRAPHQL_URL))
