@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 
 export const resolveLink = (url: string) => {
     try {
-        const baseUrl = new URL(process.browser ? (window as any).MAGENTO_URL : process.env.MAGENTO_URL)
+        const baseUrl = new URL(LUMA_ENV.MAGENTO_URL)
         const linkUrl = new URL(url)
 
         return baseUrl.host === linkUrl.host ? linkUrl.pathname + linkUrl.search : url

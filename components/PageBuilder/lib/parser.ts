@@ -70,7 +70,7 @@ export const htmlToProps = (htmlStr: string) => {
     const stageContentType = getComponentData('root-container')
     const result = walk(container.body, stageContentType)
 
-    if (process.browser && (window as any).DEVELOPMENT) {
+    if (LUMA_ENV.DEVELOPMENT) {
         console.group('🏗 PageBuilder')
         console.log('Content Types', result)
         console.groupEnd()
