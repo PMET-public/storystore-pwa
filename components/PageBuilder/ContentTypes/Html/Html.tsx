@@ -1,11 +1,13 @@
 import React from 'react'
 import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { Root } from './Html.styled'
+import useHtml from '../../../../hooks/useHtml'
 
-import HtmlComponent, { HtmlProps as HtmlComponentProps } from '@pmet-public/luma-ui/dist/components/Html'
+export type HtmlProps = {
+    source: string
+}
 
-export type HtmlProps = HtmlComponentProps
-
-export const Html: Component<HtmlProps> = ({ children, ...props }) => {
-    return <Root as={HtmlComponent} {...props} />
+export const Html: Component<HtmlProps> = ({ children, source, ...props }) => {
+    const html = useHtml(source)
+    return <Root {...props}>{html}</Root>
 }

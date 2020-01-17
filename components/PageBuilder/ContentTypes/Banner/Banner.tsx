@@ -5,6 +5,7 @@ import { Root, Container, Wrapper, Overlay, ContentWrapper, Content, Button } fr
 import Link, { LinkProps } from '../../../Link'
 import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/luma-ui/dist/components/Button'
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
+import useHtml from '../../../../hooks/useHtml'
 
 export type BannerProps = {
     appearance?: 'poster' | 'collage-left' | 'collage-centered' | 'collage-right'
@@ -34,6 +35,8 @@ export const Banner: Component<BannerProps> = ({
     style,
     ...props
 }) => {
+    const contentHtml = useHtml(content?.html)
+
     return (
         <Root
             as={link ? (p: any) => <Link {...link} {...p} /> : 'div'}
@@ -46,7 +49,7 @@ export const Banner: Component<BannerProps> = ({
                 <Wrapper $appearance={appearance} style={style}>
                     <Overlay {...overlay}>
                         <ContentWrapper>
-                            {content && <Content {...content} dangerouslySetInnerHTML={{ __html: content.html }} />}
+                            {content && <Content {...content}>{contentHtml}</Content>}
                             {button && <Button as={ButtonComponent} {...button} />}
                         </ContentWrapper>
                     </Overlay>

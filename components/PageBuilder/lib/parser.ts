@@ -24,7 +24,6 @@ const getComponentData = (type: string, node?: HTMLElement) => {
     }
 
     return {
-        appearance,
         component: component.component,
         name,
         items: [],
