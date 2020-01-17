@@ -18,15 +18,12 @@ const getComponentData = (type: string, node?: HTMLElement) => {
 
     const config = (configs as any)[name]
 
-    const component = config
-        ? {
-              component: config.component,
-              props: config.props(currentNode),
-          }
-        : {}
+    const component = {
+        component: config.component,
+        props: config.props(currentNode),
+    }
 
     return {
-        appearance,
         component: component.component,
         name,
         items: [],

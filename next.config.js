@@ -30,7 +30,8 @@ module.exports = withOffline({
             return [
                 {
                     source: `/basic-auth`,
-                    destination: '/'
+                    destination: '/',
+                    permanent: false,
                 }
             ];
         },

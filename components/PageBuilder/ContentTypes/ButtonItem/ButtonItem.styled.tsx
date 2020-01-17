@@ -22,7 +22,6 @@ export const Root = styled.div<{ $appearance?: string; $secondary?: boolean; $li
         ${props =>
             props.$link &&
             `
-                color: ${props.$secondary ? '#fff' : '#222'};
                 border: 0.1rem solid currentColor;
                 background-color: transparent;
             `}

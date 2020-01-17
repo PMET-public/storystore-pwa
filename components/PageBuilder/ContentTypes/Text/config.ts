@@ -5,10 +5,11 @@ const component = dynamic(() => import('./'))
 
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
+    const { innerHTML } = elem
 
     return {
         style,
-        source: elem.innerHTML,
+        innerHTML,
     }
 }
 
