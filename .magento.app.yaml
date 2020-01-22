@@ -12,7 +12,7 @@ web:
 hooks:
     build: |
         npm install
-        yarn build
+        next build
 
 build:
     flavor: default
