@@ -10,9 +10,12 @@ web:
         start: 'next start -p $PORT'
 
 hooks:
-    build: next build
+    build: |
+        npm install
+        yarn build
+
 build:
-    flavor: none
+    flavor: default
 
 mounts:
     run:
