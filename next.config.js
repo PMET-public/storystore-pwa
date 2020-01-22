@@ -17,8 +17,6 @@ const env = {
     FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
 }
 
-console.log('⚙️', env)
-
 module.exports = withOffline({
     env,
 

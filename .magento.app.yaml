@@ -12,7 +12,7 @@ web:
 hooks:
     build: |
         npm install
-        npm run build
+        MAGENTO_URL=$MAGENTO_URL CATEGORIES_PARENT_ID=$CATEGORIES_PARENT_ID FOOTER_BLOCK_ID=$FOOTER_BLOCK_ID next build
 build:
     flavor: none
 
