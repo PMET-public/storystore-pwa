@@ -16,20 +16,6 @@ const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
      * Service Workder
      */
     useEffect(() => {
-        console.log(
-            JSON.stringify(
-                {
-                    MAGENTO_URL: process.env.MAGENTO_URL,
-                    HOME_PAGE_ID: process.env.HOME_PAGE_ID,
-                    CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
-                    FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-                },
-                null,
-                4
-            ),
-            '\n'
-        )
-
         if (process.env.NODEV_ENV !== 'development' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
