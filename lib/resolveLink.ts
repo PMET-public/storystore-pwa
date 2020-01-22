@@ -1,8 +1,13 @@
 import { useRouter } from 'next/router'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
+
+const { magentoUrl } = publicRuntimeConfig
 
 export const resolveLink = (url: string) => {
     try {
-        const baseUrl = new URL(LUMA_ENV.MAGENTO_URL)
+        const baseUrl = new URL(magentoUrl)
         const linkUrl = new URL(url)
 
         return baseUrl.host === linkUrl.host ? linkUrl.pathname + linkUrl.search : url

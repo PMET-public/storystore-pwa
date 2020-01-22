@@ -6,15 +6,12 @@ import APP_QUERY from './graphql/app.graphql'
 // import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-const categoryId = LUMA_ENV.CONTENT_PARENT_CATEGORIES_ID
-const footerBlockId = LUMA_ENV.CONTENT_FOOTER_BLOCK_ID
-
-export const useApp = () => {
+export const useApp = ({ categoryParentId, footerBlockId }: { categoryParentId: string; footerBlockId: string }) => {
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
         variables: {
-            categoryId,
+            categoryParentId,
             footerBlockId,
             hasFooter: !!footerBlockId,
         },

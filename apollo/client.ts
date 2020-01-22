@@ -7,24 +7,24 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
+
+const { magentoGraphQlUrl } = publicRuntimeConfig
 
 let apolloClient: any
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (!process.browser) {
-    ;(global as any).fetch = fetch
+    global.fetch = fetch
     // await before instantiating ApolloClient, else queries might run before the cache is persisted
 }
 
-export const graphQlUri = process.browser
-    ? '/api/graphql'
-    : new (require('url').URL)('graphql', LUMA_ENV.MAGENTO_URL).href
-
 function create(initialState: any) {
     const httpLink = new HttpLink({
-        uri: graphQlUri,
+        uri: process.browser ? '/api/graphql' : magentoGraphQlUrl,
         useGETForQueries: true,
-        // credentials: 'same-origin',
     })
 
     const retryLink = new RetryLink({

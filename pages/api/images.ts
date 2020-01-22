@@ -2,8 +2,13 @@ import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const MAX_AGE = 30 * 86400 // 30 days
-const { MAGENTO_URL = '' } = process.env
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
+
+const { magentoUrl } = publicRuntimeConfig
+
+const maxAge = 30 * 86400 // 30 days
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
     return new Promise((resolve, reject) => {
@@ -12,7 +17,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, MAGENTO_URL).href,
+                url: new URL(url, magentoUrl).href,
                 pool: {
                     maxSockets: Infinity,
                 },
@@ -20,7 +25,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
         )
             .on('response', res => {
                 /** Use Edge Case in now.sh */
-                res.headers['Cache-Control'] = `max-age=${MAX_AGE}, immutable`
+                res.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
             })
             .pipe(res)
             .on('error', reject)

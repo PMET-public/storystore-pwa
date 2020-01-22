@@ -1,10 +1,10 @@
-query HomeQuery($id: Int!, $categoryId: Int!) {
+query HomeQuery($id: Int!, $categoryParentId: Int!) {
     storeConfig {
         id
         baseMediaUrl: secure_base_media_url
     }
 
-    categories: category(id: $categoryId) {
+    categories: category(id: $categoryParentId) {
         id
         children {
             id
