@@ -1,19 +1,19 @@
 {
     "version": 2,
     "env": {
-        "PORT": "@port",
-        "MAGENTO_URL": "@magento_url",
-        "CONTENT_HOME_PAGE_ID": "@content_home_page_id",
-        "CONTENT_PARENT_CATEGORIES_ID": "@content_parent_categories_id",
-        "CONTENT_FOOTER_BLOCK_ID": "@content_footer_block_id"
+        "port": "@port",
+        "magentoUrl": "@magento_url",
+        "homePageId": "@content_home_page_id",
+        "categoryParentId": "@content_parent_categories_id",
+        "footerBlockId": "@content_footer_block_id"
     },
     "build": {
         "env": {
-            "PORT": "@port",
-            "MAGENTO_URL": "@magento_url",
-            "CONTENT_HOME_PAGE_ID": "@content_home_page_id",
-            "CONTENT_PARENT_CATEGORIES_ID": "@content_parent_categories_id",
-            "CONTENT_FOOTER_BLOCK_ID": "@content_footer_block_id"
+            "port": "@port",
+            "magentoUrl": "@magento_url",
+            "homePageId": "@content_home_page_id",
+            "categoryParentId": "@content_parent_categories_id",
+            "footerBlockId": "@content_footer_block_id"
         }
     }
 }
