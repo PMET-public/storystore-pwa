@@ -9,14 +9,9 @@ const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
-// Polyfill Server
-if (!process.browser) {
-    global.URL = require('url')
-}
+const magentoGraphQlUrl = process.env.magentoGraphQlUrl
 
-const magentoUrl = process.env.magentoUrl
-
-const graphQLUrl = process.browser ? '/api/graphql' : new URL(magentoUrl).href
+const graphQLUrl = process.browser ? '/api/graphql' : magentoGraphQlUrl
 
 export type ResolverProps = {
     contentId: number

@@ -7,7 +7,7 @@ import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
 
-const magentoUrl = process.env.magentoUrl
+const magentoGraphQlUrl = process.env.magentoGraphQlUrl
 
 let apolloClient: any
 
@@ -19,7 +19,7 @@ if (!process.browser) {
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
-        uri: process.browser ? '/api/graphql' : new URL(magentoUrl).href,
+        uri: process.browser ? '/api/graphql' : magentoGraphQlUrl,
         useGETForQueries: true,
     })
 
