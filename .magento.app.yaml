@@ -21,11 +21,11 @@ mounts:
         source: local
         source_path: run
 
-# variables:
-#     env:
-#         MAGENTO_URL: https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud
-#         CONTENT_HOME_PAGE_ID: 20
-#         CONTENT_PARENT_CATEGORIES_ID: 2
-#         CONTENT_FOOTER_BLOCK_ID: footer
+variables:
+    env:
+        MAGENTO_URL: https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud
+        CONTENT_HOME_PAGE_ID: 20
+        CONTENT_PARENT_CATEGORIES_ID: 2
+        CONTENT_FOOTER_BLOCK_ID: footer
 
 disk: 4096
