@@ -10,9 +10,7 @@ web:
         start: 'next start -p $PORT'
 
 hooks:
-    build: |
-        npm install
-        MAGENTO_URL=$MAGENTO_URL CATEGORIES_PARENT_ID=$CATEGORIES_PARENT_ID FOOTER_BLOCK_ID=$FOOTER_BLOCK_ID next build
+    build: next build
 build:
     flavor: none
 
