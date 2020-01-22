@@ -10,13 +10,17 @@ const getRevisionHash = () =>
         .update(Date.now().toString(), 'utf8')
         .digest('hex')
 
+const env = {
+    MAGENTO_URL: process.env.MAGENTO_URL,
+    HOME_PAGE_ID: process.env.HOME_PAGE_ID,
+    CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
+    FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
+}
+
+console.log('⚙️', env)
+
 module.exports = withOffline({
-    env: {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        HOME_PAGE_ID: process.env.HOME_PAGE_ID,
-        CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
-        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-    },
+    env,
 
     transformManifest: manifest =>
         // Precaching
