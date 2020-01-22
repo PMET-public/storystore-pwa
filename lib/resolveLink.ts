@@ -1,9 +1,6 @@
 import { useRouter } from 'next/router'
-import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
-
-const { magentoUrl } = publicRuntimeConfig
+const magentoUrl = process.env.magentoUrl
 
 export const resolveLink = (url: string) => {
     try {

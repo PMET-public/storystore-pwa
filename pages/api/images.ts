@@ -1,12 +1,10 @@
 import request from 'request'
+
 import { URL } from 'url'
+
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import getConfig from 'next/config'
-
-const { publicRuntimeConfig } = getConfig()
-
-const { magentoUrl } = publicRuntimeConfig
+const magentoUrl = process.env.magentoUrl
 
 const maxAge = 30 * 86400 // 30 days
 

@@ -1,7 +1,6 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
-import getConfig from 'next/config'
 
 import Link from '../components/Link'
 
@@ -10,9 +9,14 @@ const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
-const { publicRuntimeConfig } = getConfig()
+// Polyfill Server
+if (!process.browser) {
+    global.URL = require('url')
+}
 
-const graphQLUrl = process.browser ? '/api/graphql' : publicRuntimeConfig.magentoGraphQlUrl
+const magentoUrl = process.env.magentoUrl
+
+const graphQLUrl = process.browser ? '/api/graphql' : new URL(magentoUrl).href
 
 export type ResolverProps = {
     contentId: number

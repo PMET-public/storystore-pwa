@@ -11,14 +11,13 @@ const getRevisionHash = () =>
         .digest('hex')
 
 module.exports = withOffline({
-    publicRuntimeConfig: {
-        // Will be available on both server and client
+    env: {
         mode: process.env.NODE_ENV || 'development',
-        magentoUrl: process.env.MAGENTO_URL,
-        magentoGraphQlUrl: new URL('graphql', process.env.MAGENTO_URL).href,
-        homePageId: process.env.CONTENT_HOME_PAGE_ID,
-        categoryParentId: process.env.CONTENT_PARENT_CATEGORIES_ID,
-        footerBlockId: process.env.CONTENT_FOOTER_BLOCK_ID,
+        magentoUrl: process.env.magentoUrl,
+        magentoGraphQlUrl: new URL('graphql', process.env.magentoUrl).href,
+        homePageId: process.env.homePageId,
+        categoryParentId: process.env.categoryParentId,
+        footerBlockId: process.env.footerBlockId,
     },
 
     transformManifest: manifest =>

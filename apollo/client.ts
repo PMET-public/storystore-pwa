@@ -1,29 +1,25 @@
 import { getFromLocalStorage } from '../lib/localStorage'
 import { HttpLink } from 'apollo-link-http'
-import fetch from 'node-fetch'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
-import getConfig from 'next/config'
 
-const { publicRuntimeConfig } = getConfig()
-
-const { magentoGraphQlUrl } = publicRuntimeConfig
+const magentoUrl = process.env.magentoUrl
 
 let apolloClient: any
 
-// Polyfill fetch() on the server (used by apollo-client)
+// Polyfill Server
 if (!process.browser) {
-    global.fetch = fetch
-    // await before instantiating ApolloClient, else queries might run before the cache is persisted
+    global.fetch = require('node-fetch')
+    global.URL = require('url').URL
 }
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
-        uri: process.browser ? '/api/graphql' : magentoGraphQlUrl,
+        uri: process.browser ? '/api/graphql' : new URL(magentoUrl).href,
         useGETForQueries: true,
     })
 

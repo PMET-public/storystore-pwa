@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { NextComponentType } from 'next'
-import getConfig from 'next/config'
 
 import withApollo from '../apollo/with-apollo'
 import NextNprogress from 'nextjs-progressbar'
@@ -9,10 +8,10 @@ import { Workbox } from 'workbox-window'
 
 import App from '../components/App'
 
-const { publicRuntimeConfig } = getConfig()
-
 const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
-    const { mode, categoryParentId, footerBlockId } = publicRuntimeConfig
+    const mode = process.env.mode
+    const categoryParentId = process.env.categoryParentId
+    const footerBlockId = process.env.footerBlockId
 
     /**
      * Service Workder

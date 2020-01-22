@@ -2,11 +2,6 @@ import React from 'react'
 import { NextComponentType } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import initApolloClient from './client'
-import getConfig from 'next/config'
-
-const { publicRuntimeConfig } = getConfig()
-
-const { mode } = publicRuntimeConfig
 
 export default function(PageComponent: NextComponentType<any, any, any>) {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: any) => {
@@ -19,7 +14,7 @@ export default function(PageComponent: NextComponentType<any, any, any>) {
     }
 
     // Set the correct displayName in development
-    if (mode !== 'production') {
+    if (process.env.mode !== 'production') {
         const displayName = PageComponent.displayName || PageComponent.name || 'Component'
 
         if (displayName === 'App') {
