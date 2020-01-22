@@ -14,7 +14,7 @@ export default function(PageComponent: NextComponentType<any, any, any>) {
     }
 
     // Set the correct displayName in development
-    if (process.env.mode !== 'production') {
+    if (process.env.NODE_ENV !== 'production') {
         const displayName = PageComponent.displayName || PageComponent.name || 'Component'
 
         if (displayName === 'App') {

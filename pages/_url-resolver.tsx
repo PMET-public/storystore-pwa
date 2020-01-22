@@ -9,9 +9,7 @@ const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
-const magentoGraphQlUrl = process.env.magentoGraphQlUrl
-
-const graphQLUrl = process.browser ? '/api/graphql' : magentoGraphQlUrl
+const graphQLUrl = process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL).href
 
 export type ResolverProps = {
     contentId: number

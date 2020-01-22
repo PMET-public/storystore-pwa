@@ -9,15 +9,14 @@ import { Workbox } from 'workbox-window'
 import App from '../components/App'
 
 const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
-    const mode = process.env.mode
-    const categoryParentId = process.env.categoryParentId
-    const footerBlockId = process.env.footerBlockId
+    const categoryParentId = process.env.CATEGORIES_PARENT_ID
+    const footerBlockId = process.env.FOOTER_BLOCK_ID
 
     /**
      * Service Workder
      */
     useEffect(() => {
-        if (mode !== 'development' && 'serviceWorker' in navigator) {
+        if (process.env.NODEV_ENV !== 'development' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
             wb.addEventListener('activated', _event => {

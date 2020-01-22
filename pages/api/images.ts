@@ -4,8 +4,6 @@ import { URL } from 'url'
 
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const magentoUrl = process.env.magentoUrl
-
 const maxAge = 30 * 86400 // 30 days
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -15,7 +13,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, magentoUrl).href,
+                url: new URL(url, process.env.MAGENTO_URL).href,
                 pool: {
                     maxSockets: Infinity,
                 },
