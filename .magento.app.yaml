@@ -12,6 +12,7 @@ web:
 hooks:
     build: |
         npm install
+        echo MAGENTO_URL=$MAGENTO_URL > .env
         npm run build
 
 build:
