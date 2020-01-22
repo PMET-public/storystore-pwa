@@ -11,11 +11,13 @@ web:
 
 hooks:
     build: |
+        touch .env 
+        chmod 777 .env
         npm install
-        npm run build
 
     deploy: |
         echo MAGENTO_URL=$MAGENTO_URL > .env
+        npm run build
 
 build:
     flavor: none
