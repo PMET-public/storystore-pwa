@@ -12,10 +12,10 @@ web:
 hooks:
     build: |
         npm install
-        next build
+        npm run build
 
 build:
-    flavor: default
+    flavor: none
 
 mounts:
     run:
