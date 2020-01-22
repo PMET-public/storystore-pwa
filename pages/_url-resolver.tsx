@@ -54,7 +54,6 @@ UrlResolver.getInitialProps = async ({ res, query }) => {
         return { type, contentId, urlKey }
     }
 
-    // TODO: Parse query
     const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
 
     try {

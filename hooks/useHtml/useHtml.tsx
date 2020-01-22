@@ -3,8 +3,6 @@ import parseHtml, { domToReact, HTMLReactParserOptions } from 'html-react-parser
 
 import Link from '../../components/Link'
 
-// TODO: resolve URL
-
 const options: HTMLReactParserOptions = {
     replace: ({ name, attribs, children }) => {
         if (name === 'a') {
