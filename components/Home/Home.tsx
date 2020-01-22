@@ -11,10 +11,13 @@ import HomeTemplate from '@pmet-public/luma-ui/dist/templates/Home'
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
 
-type HomeProps = {}
+type HomeProps = {
+    id: string
+    categoryParentId: string
+}
 
-export const Home: FunctionComponent<HomeProps> = ({}) => {
-    const { loading, error, data, online, refetch } = useHome()
+export const Home: FunctionComponent<HomeProps> = ({ id, categoryParentId }) => {
+    const { loading, error, data, online, refetch } = useHome({ id, categoryParentId })
 
     if (error && !online) return <Error type="Offline" />
 

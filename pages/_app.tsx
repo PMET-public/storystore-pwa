@@ -1,17 +1,24 @@
-import React from 'react'
-import NextApp from 'next/app'
+import React, { useEffect } from 'react'
+import { NextComponentType } from 'next'
+import getConfig from 'next/config'
 
 import withApollo from '../apollo/with-apollo'
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
+import { Workbox } from 'workbox-window'
 
 import App from '../components/App'
 
-class MyApp extends NextApp {
-    async componentDidMount() {
-        if (!LUMA_ENV.DEVELOPMENT && 'serviceWorker' in navigator) {
-            const { Workbox } = await import('workbox-window')
+const { publicRuntimeConfig } = getConfig()
 
+const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
+    const { mode, categoryParentId, footerBlockId } = publicRuntimeConfig
+
+    /**
+     * Service Workder
+     */
+    useEffect(() => {
+        if (mode !== 'development' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
             wb.addEventListener('activated', _event => {
@@ -28,26 +35,22 @@ class MyApp extends NextApp {
             // Register the service worker
             wb.register()
         }
-    }
+    }, [])
 
-    render() {
-        const { Component, pageProps } = this.props
-
-        return (
-            <AppProvider>
-                <App>
-                    <NextNprogress
-                        color="rgba(161, 74, 36, 1)"
-                        startPosition={0.4}
-                        stopDelayMs={200}
-                        height={3}
-                        options={{ showSpinner: false, easing: 'ease' }}
-                    />
-                    <Component {...pageProps} />
-                </App>
-            </AppProvider>
-        )
-    }
+    return (
+        <AppProvider>
+            <App categoryParentId={categoryParentId} footerBlockId={footerBlockId}>
+                <NextNprogress
+                    color="rgba(161, 74, 36, 1)"
+                    startPosition={0.4}
+                    stopDelayMs={200}
+                    height={3}
+                    options={{ showSpinner: false, easing: 'ease' }}
+                />
+                <Component {...pageProps} />
+            </App>
+        </AppProvider>
+    )
 }
 
 export default withApollo(MyApp)

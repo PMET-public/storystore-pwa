@@ -1,7 +1,7 @@
 #import "../../Cart/graphql/_Cart.graphql"
 
 query AppShellQuery(
-    $categoryId: Int!
+    $categoryParentId: Int!
     $cartId: String = ""
     $footerBlockId: String = ""
     $hasCart: Boolean = false
@@ -22,7 +22,7 @@ query AppShellQuery(
         copyright
     }
 
-    categories: category(id: $categoryId) {
+    categories: category(id: $categoryParentId) {
         id
         children {
             id

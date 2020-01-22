@@ -1,7 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { graphQlUri } from '../apollo/client'
 import { NextComponentType } from 'next'
+import getConfig from 'next/config'
 
 import Link from '../components/Link'
 
@@ -9,6 +9,10 @@ const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
+
+const { publicRuntimeConfig } = getConfig()
+
+const graphQLUrl = process.browser ? '/api/graphql' : publicRuntimeConfig.magentoGraphQlUrl
 
 export type ResolverProps = {
     contentId: number
@@ -53,7 +57,7 @@ UrlResolver.getInitialProps = async ({ res, query }) => {
     const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
 
     try {
-        const page = await fetch(`${graphQlUri}?query=${graphQlQuery}`)
+        const page = await fetch(`${graphQLUrl}?query=${graphQlQuery}`)
 
         const { data = {} } = await page.json()
 
