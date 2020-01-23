@@ -22,11 +22,4 @@ mounts:
         source: local
         source_path: run
 
-variables:
-    env:
-        MAGENTO_URL: https://admin:a6terwtbk67os@forrester-vhjbjgi-a6terwtbk67os.demo.magentosite.cloud/
-        HOME_PAGE_ID: 20
-        CATEGORIES_PARENT_ID: 2
-        FOOTER_BLOCK_ID: 'footer'
-
 disk: 4096

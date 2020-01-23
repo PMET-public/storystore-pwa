@@ -3,15 +3,21 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
-// import CART_QUERY from './graphql/cart.graphql'
+import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-export const useApp = ({ categoryParentId, footerBlockId }: { categoryParentId: string; footerBlockId: string }) => {
+export const useApp = ({
+    categoriesParentId,
+    footerBlockId,
+}: {
+    categoriesParentId: string
+    footerBlockId: string
+}) => {
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
         variables: {
-            categoryParentId,
+            categoriesParentId,
             footerBlockId,
             hasFooter: !!footerBlockId,
         },
@@ -20,6 +26,8 @@ export const useApp = ({ categoryParentId, footerBlockId }: { categoryParentId: 
     /**
      * No Cart no problem. Let's create one
      */
+
+    const cart = useQuery(CART_QUERY)
 
     const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
@@ -32,18 +40,19 @@ export const useApp = ({ categoryParentId, footerBlockId }: { categoryParentId: 
     })
 
     useEffect(() => {
-        if (query.loading || creatingEmptyCart) return
+        if (cart.loading || creatingEmptyCart) return
 
-        if (query.error || query.data?.hasCart === false) {
-            createEmptyCart().then(() => query.refetch())
+        if (cart.error || cart.data?.hasCart === false) {
+            createEmptyCart().then(() => cart.refetch())
         }
-    }, [query.error, query.data])
+    }, [cart.error, cart.data])
 
     return {
         ...query,
-        data: query.data && {
-            ...query.data,
-            footer: query.data.footer?.items[0],
+        data: {
+            ...cart?.data,
+            ...query?.data,
+            footer: query.data?.footer?.items[0],
         },
     }
 }
