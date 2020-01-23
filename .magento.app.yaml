@@ -23,8 +23,8 @@ mounts:
         source: local
         source_path: run
 
-    'app/.env':
+    app:
         source: local
-        source_path: .env
+        source_path: app
 
 disk: 4096
