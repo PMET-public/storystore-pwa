@@ -22,4 +22,8 @@ mounts:
         source: local
         source_path: run
 
+variables:
+    env:
+        MAGENTO_URL: https://admin:a6terwtbk67os@develop-sr3snxi-a6terwtbk67os.demo.magentosite.cloud/
+
 disk: 4096

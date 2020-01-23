@@ -1,4 +1,4 @@
-require('dotenv').config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development' })
+require('dotenv').config()
 
 const { URL } = require('url')
 const path = require('path')
