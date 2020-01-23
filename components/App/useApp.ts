@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
-// import CART_QUERY from './graphql/cart.graphql'
+import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useApp = ({
@@ -27,6 +27,8 @@ export const useApp = ({
      * No Cart no problem. Let's create one
      */
 
+    const cart = useQuery(CART_QUERY)
+
     const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
             writeInLocalStorage('cartId', cartId)
@@ -38,18 +40,19 @@ export const useApp = ({
     })
 
     useEffect(() => {
-        if (query.loading || creatingEmptyCart) return
+        if (cart.loading || creatingEmptyCart) return
 
-        if (query.error || query.data?.hasCart === false) {
-            createEmptyCart().then(() => query.refetch())
+        if (cart.error || cart.data?.hasCart === false) {
+            createEmptyCart().then(() => cart.refetch())
         }
-    }, [query.error, query.data])
+    }, [cart.error, cart.data])
 
     return {
         ...query,
-        data: query.data && {
-            ...query.data,
-            footer: query.data.footer?.items[0],
+        data: {
+            ...cart?.data,
+            ...query?.data,
+            footer: query.data?.footer?.items[0],
         },
     }
 }
