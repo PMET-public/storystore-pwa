@@ -11,14 +11,12 @@ const getRevisionHash = () =>
         .digest('hex')
 
 module.exports = withOffline({
+    // Build environment variables
     env: {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        MAGENTO_GRAPHQL_URL: new URL('graphql', process.env.MAGENTO_URL).href,
         HOME_PAGE_ID: process.env.HOME_PAGE_ID,
         CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
     },
-
     transformManifest: manifest =>
         // Precaching
         [

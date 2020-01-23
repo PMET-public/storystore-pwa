@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { LinkProps } from '../../../../components/Link'
-import { resolveLink } from './../../../../lib/resolveLink'
+import { resolveLink, LinkType } from './../../../../lib/resolveLink'
 import { getBackgroundImages } from '../../lib/utils'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 import { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
@@ -12,11 +12,15 @@ const props = (elem: HTMLElement) => {
 
     const style = getStyleAsObject(elem.style)
 
+    const linkElem = elem.querySelector('a[data-element="link"]')
+
+    const linkType = linkElem?.getAttribute('data-link-type') as LinkType
+
     /** Get Button */
     const link: LinkProps | undefined =
-        elem.childNodes[0].nodeName === 'A'
+        linkElem?.nodeName === 'A'
             ? {
-                  href: resolveLink(elem.children[0].getAttribute('href') || ''),
+                  href: resolveLink(elem.children[0].getAttribute('href') || '', linkType),
                   urlResolver: true,
                   //   type:  elem.children[0].getAttribute('data-link-type') || undefined,
                   target: elem.children[0].getAttribute('href') || undefined,

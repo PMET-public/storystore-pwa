@@ -11,12 +11,12 @@ import { useIsUrlActive } from '../../lib/resolveLink'
 const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {
-    categoryParentId: string
+    categoriesParentId: string
     footerBlockId: string
 }
 
-export const App: FunctionComponent<AppProps> = ({ children, categoryParentId, footerBlockId }) => {
-    const { loading, error, data } = useApp({ categoryParentId, footerBlockId })
+export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId, footerBlockId }) => {
+    const { loading, error, data } = useApp({ categoriesParentId, footerBlockId })
     const isUrlActive = useIsUrlActive()
 
     if (error) {
