@@ -6,6 +6,9 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
+import getConfig from 'next/config'
+
+const { serverRuntimeConfig } = getConfig()
 
 let apolloClient: any
 
@@ -15,7 +18,7 @@ if (!process.browser) {
     global.URL = require('url').URL
 }
 
-const magentoGraphQlUrl = process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL).href
+const magentoGraphQlUrl = process.browser ? '/api/graphql' : new URL('graphql', serverRuntimeConfig.MAGENTO_URL).href
 
 function create(initialState: any) {
     const httpLink = new HttpLink({

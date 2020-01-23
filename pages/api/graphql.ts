@@ -1,8 +1,10 @@
 import request, { RequestCallback } from 'request'
-
+import getConfig from 'next/config'
 import { URL } from 'url'
 
-const magentoGraphQlUrl = process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL).href
+const { serverRuntimeConfig } = getConfig()
+
+const magentoGraphQlUrl = new URL('graphql', serverRuntimeConfig.MAGENTO_URL).href
 
 export const config = {
     api: {

@@ -1,11 +1,13 @@
 import { useRouter } from 'next/router'
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
 
 export const resolveLink = (url: string) => {
     try {
-        const baseUrl = new URL(process.env.MAGENTO_URL)
         const linkUrl = new URL(url)
 
-        return baseUrl.host === linkUrl.host ? linkUrl.pathname + linkUrl.search : url
+        return publicRuntimeConfig.MAGENTO_HOST === linkUrl.host ? linkUrl.pathname + linkUrl.search : url
     } catch (_) {
         return url
     }

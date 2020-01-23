@@ -1,22 +1,25 @@
 import React, { useEffect } from 'react'
-import { NextComponentType } from 'next'
+import getConfig from 'next/config'
+import { NextPage } from 'next'
+import { Workbox } from 'workbox-window'
 
 import withApollo from '../apollo/with-apollo'
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
-import { Workbox } from 'workbox-window'
 
 import App from '../components/App'
 
-const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
-    const categoryParentId = process.env.CATEGORIES_PARENT_ID
-    const footerBlockId = process.env.FOOTER_BLOCK_ID
+const { publicRuntimeConfig } = getConfig()
+
+const MyApp: NextPage<any> = ({ Component, pageProps }) => {
+    const categoryParentId = publicRuntimeConfig.CATEGORIES_PARENT_ID
+    const footerBlockId = publicRuntimeConfig.FOOTER_BLOCK_ID
 
     /**
      * Service Workder
      */
     useEffect(() => {
-        if (process.env.NODEV_ENV !== 'development' && 'serviceWorker' in navigator) {
+        if (process.env.NODEV_ENV === 'production' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
             wb.addEventListener('activated', _event => {
@@ -50,5 +53,7 @@ const MyApp: NextComponentType<any, any, any> = ({ Component, pageProps }) => {
         </AppProvider>
     )
 }
+
+MyApp.getInitialProps = () => ({})
 
 export default withApollo(MyApp)

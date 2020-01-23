@@ -1,8 +1,9 @@
 import request from 'request'
-
+import getConfig from 'next/config'
 import { URL } from 'url'
-
 import { NextApiRequest, NextApiResponse } from 'next'
+
+const { serverRuntimeConfig } = getConfig()
 
 const maxAge = 30 * 86400 // 30 days
 
@@ -13,7 +14,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, process.env.MAGENTO_URL).href,
+                url: new URL(url, serverRuntimeConfig.MAGENTO_URL).href,
                 pool: {
                     maxSockets: Infinity,
                 },
