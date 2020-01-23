@@ -23,7 +23,7 @@ mounts:
         source: local
         source_path: run
 
-    '.env':
+    'app/.env':
         source: local
         source_path: .env
 
