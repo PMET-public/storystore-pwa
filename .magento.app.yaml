@@ -11,13 +11,9 @@ web:
 
 hooks:
     build: |
-        touch .env 
-        chmod 777 .env
+        touch .env
         npm install
         npm run build
-
-    deploy: |
-        echo MAGENTO_URL=$MAGENTO_URL > .env
 
 build:
     flavor: none
@@ -26,5 +22,9 @@ mounts:
     run:
         source: local
         source_path: run
+
+    '.env':
+        source: local
+        source_path: .env
 
 disk: 4096
