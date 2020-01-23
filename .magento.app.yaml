@@ -11,7 +11,7 @@ web:
 
 hooks:
     build: |
-        touch .env
+        echo MAGENTO_URL=$MAGENTO_URL > .env
         npm install
         npm run build
 
@@ -22,9 +22,5 @@ mounts:
     run:
         source: local
         source_path: run
-
-    app:
-        source: local
-        source_path: app
 
 disk: 4096
