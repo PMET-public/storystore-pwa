@@ -41,4 +41,5 @@ jspm_packages
 .next
 
 # Environment Variables
-.env
+# .env
+.env.development

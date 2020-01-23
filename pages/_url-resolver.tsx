@@ -1,18 +1,15 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
-import getConfig from 'next/config'
 import { NextComponentType } from 'next'
 
 import Link from '../components/Link'
-
-const { serverRuntimeConfig } = getConfig()
 
 const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
-const graphQLUrl = process.browser ? '/api/graphql' : new URL('graphql', serverRuntimeConfig.MAGENTO_URL).href
+const graphQLUrl = process.browser ? '/api/graphql' : process.env.MAGENTO_GRAPHQL_URL
 
 export type ResolverProps = {
     contentId: number
