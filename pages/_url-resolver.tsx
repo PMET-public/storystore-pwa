@@ -9,8 +9,6 @@ const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
-const graphQLUrl = process.browser ? '/api/graphql' : process.env.MAGENTO_GRAPHQL_URL
-
 export type ResolverProps = {
     contentId: number
     urlKey: string
@@ -37,6 +35,8 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 }
 
 UrlResolver.getInitialProps = async ({ res, query }) => {
+    const graphQLUrl = process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL)
+
     const url = query.url ? query.url.toString().split('?')[0] : query['*']
 
     const urlKey =

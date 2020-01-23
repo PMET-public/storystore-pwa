@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { resolveLink } from './../../../../lib/resolveLink'
+import { resolveLink, LinkType } from './../../../../lib/resolveLink'
 import { LinkProps } from '../../../../components/Link'
 import { ButtonProps } from '@pmet-public/luma-ui/dist/components/Button'
 
@@ -21,10 +21,12 @@ const props = (elem: HTMLElement) => {
 
     const href = buttonElem.getAttribute('href')
 
+    const linkType = buttonElem.getAttribute('data-link-type') as LinkType
+
     const link: LinkProps | undefined =
         buttonElem.nodeName === 'A' && href
             ? {
-                  href: resolveLink(buttonElem.getAttribute('href') || ''),
+                  href: resolveLink(buttonElem.getAttribute('href') || '', linkType),
                   urlResolver: true,
                   target: buttonElem.getAttribute('target') || undefined,
               }
