@@ -11,6 +11,8 @@ const getRevisionHash = () =>
         .digest('hex')
 
 module.exports = withOffline({
+    target: 'server',
+
     serverRuntimeConfig: {
         MAGENTO_URL: process.env.MAGENTO_URL,
     },
