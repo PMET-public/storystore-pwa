@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { NextPage } from 'next'
 import { Workbox } from 'workbox-window'
-import { version } from '../package.json'
 
 import withApollo from '../apollo/with-apollo'
 import NextNprogress from 'nextjs-progressbar'
@@ -10,14 +9,13 @@ import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
 
 const MyApp: NextPage<any> = ({ Component, pageProps }) => {
+    const categoryParentId = process.env.CATEGORIES_PARENT_ID
+    const footerBlockId = process.env.FOOTER_BLOCK_ID
+
     /**
      * Service Workder
      */
     useEffect(() => {
-        if (process.browser) {
-            console.log(`🙌 Luma PWA ${version}.`)
-        }
-
         if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
@@ -39,7 +37,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
 
     return (
         <AppProvider>
-            <App categoriesParentId={process.env.CATEGORIES_PARENT_ID} footerBlockId={process.env.FOOTER_BLOCK_ID}>
+            <App categoryParentId={categoryParentId} footerBlockId={footerBlockId}>
                 <NextNprogress
                     color="rgba(161, 74, 36, 1)"
                     startPosition={0.4}

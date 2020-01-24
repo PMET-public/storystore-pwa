@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import parseHtml, { domToReact, HTMLReactParserOptions } from 'html-react-parser'
 
 import Link from '../../components/Link'
+import { resolveLink } from '../../lib/resolveLink'
 
 const options: HTMLReactParserOptions = {
     replace: ({ name, attribs, children }) => {
@@ -12,7 +13,7 @@ const options: HTMLReactParserOptions = {
             }, {})
 
             return (
-                <Link {...attribs} style={style} urlResolver>
+                <Link {...attribs} href={attribs && resolveLink(attribs.href)} style={style} urlResolver>
                     {children && domToReact(children, options)}
                 </Link>
             )

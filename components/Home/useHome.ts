@@ -4,9 +4,9 @@ import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import HOME_QUERY from './graphql/home.graphql'
 
-export const useHome = ({ id, categoriesParentId }: { id: string; categoriesParentId: string }) => {
+export const useHome = ({ id, categoryParentId }: { id: string; categoryParentId: string }) => {
     const query = useQuery(HOME_QUERY, {
-        variables: { id, categoriesParentId },
+        variables: { id, categoryParentId },
         returnPartialData: true,
         fetchPolicy: 'cache-and-network',
     })

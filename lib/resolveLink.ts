@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router'
 
-export type LinkType = 'default' | 'category' | 'product' | 'page'
-
-export const resolveLink = (url: string, type: LinkType = 'default') => {
+export const resolveLink = (url: string) => {
     try {
+        const magentoHost = new URL(process.env.MAGENTO_URL).host
         const linkUrl = new URL(url)
-        return type !== 'default' ? linkUrl.pathname + linkUrl.search : url
+
+        return magentoHost === linkUrl.host ? linkUrl.pathname + linkUrl.search : url
     } catch (_) {
         return url
     }

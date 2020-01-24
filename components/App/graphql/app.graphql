@@ -1,4 +1,6 @@
-query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
+#import "../../Cart/graphql/_Cart.graphql"
+
+query AppShellQuery($categoryParentId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
@@ -14,7 +16,7 @@ query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $has
         copyright
     }
 
-    categories: category(id: $categoriesParentId) {
+    categories: category(id: $categoryParentId) {
         id
         children {
             id

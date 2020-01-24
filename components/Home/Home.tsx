@@ -13,11 +13,11 @@ const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type HomeProps = {
     id: string
-    categoriesParentId: string
+    categoryParentId: string
 }
 
-export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) => {
-    const { loading, error, data, online, refetch } = useHome({ id, categoriesParentId })
+export const Home: FunctionComponent<HomeProps> = ({ id, categoryParentId }) => {
+    const { loading, error, data, online, refetch } = useHome({ id, categoryParentId })
 
     if (error && !online) return <Error type="Offline" />
 

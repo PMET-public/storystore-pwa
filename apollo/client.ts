@@ -15,9 +15,11 @@ if (!process.browser) {
     global.URL = require('url').URL
 }
 
+const magentoGraphQlUrl = process.browser ? '/api/graphql' : process.env.MAGENTO_GRAPHQL_URL
+
 function create(initialState: any) {
     const httpLink = new HttpLink({
-        uri: process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL).href,
+        uri: magentoGraphQlUrl,
         useGETForQueries: true,
         // credentials: 'same-origin',
     })
