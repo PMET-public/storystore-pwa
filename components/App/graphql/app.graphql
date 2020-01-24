@@ -1,7 +1,4 @@
 query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
-    hasCart @client @export(as: "hasCart")
-    cartId @client @export(as: "cartId")
-
     store: storeConfig {
         id
         metaTitle: default_title

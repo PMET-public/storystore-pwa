@@ -26,4 +26,4 @@ disk: 4096
 
 variables:
     env:
-        MAGENTO_URL: 'https://admin:a6terwtbk67os@forrester-vhjbjgi-a6terwtbk67os.demo.magentosite.cloud/'
+        MAGENTO_URL: https://admin:a6terwtbk67os@forrester-vhjbjgi-a6terwtbk67os.demo.magentosite.cloud/

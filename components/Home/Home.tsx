@@ -51,7 +51,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
                         image: image &&
                             storeConfig?.baseMediaUrl && {
                                 alt: text,
-                                src: resolveImage(image),
+                                src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`),
                             },
                         text,
                     })),
