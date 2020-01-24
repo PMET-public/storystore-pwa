@@ -40,7 +40,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     })
 
     const { loading, error, data, refetch } = useQuery(CATEGORY_QUERY, {
-        variables: { id },
+        variables: { id: id.toString() },
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
     })
@@ -121,7 +121,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
-    const { page } = data
+    const page = data.page && data.page[0]
 
     const products = productsQuery.data && productsQuery.data.products
 
@@ -231,8 +231,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             },
                         },
                         price: {
-                            regular: price.regularPrice.amount.value,
-                            currency: price.regularPrice.amount.currency,
+                            label:
+                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                            regular: price.minimum.regular.value,
+                            special:
+                                price.minimum.discount.amountOff &&
+                                price.minimum.final.value - price.minimum.discount.amountOff,
+                            currency: price.minimum.regular.currency,
                         },
                         title: {
                             text: title,

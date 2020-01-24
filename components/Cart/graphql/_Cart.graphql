@@ -1,9 +1,5 @@
 fragment Cart on Cart {
-    totalQuantity @client
-    _items: items {
-        id
-        quantity
-    }
+    totalQuantity: total_quantity
 
     items {
         id
@@ -17,11 +13,16 @@ fragment Cart on Cart {
                 label
                 url
             }
-            price {
-                regular: regularPrice {
-                    amount {
+
+            price: price_range {
+                minimum: minimum_price {
+                    regular: regular_price {
                         currency
                         value
+                    }
+
+                    discount {
+                        off: amount_off
                     }
                 }
             }

@@ -47,11 +47,14 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const handleAddToCart = useCallback(async () => {
         const { sku, variantSku } = data.product
+
         try {
-            if (type === 'configurable') {
+            if (type === 'ConfigurableProduct') {
                 await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
-            } else if (type === 'simple') {
+            } else if (type === 'SimpleProduct') {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
+            } else {
+                throw 'Product type not supported'
             }
             await router.push('/cart').then(() => window.scrollTo(0, 0))
         } catch (error) {
@@ -72,7 +75,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             />
         )
 
-    const { storeConfig, hasCart, product } = data
+    const { hasCart, product } = data
 
     const {
         categories,
@@ -85,13 +88,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         price,
         shortDescription,
         sku,
-        specialPrice,
         stock,
         title,
         type,
     } = product || {}
 
-    if (type && type !== 'configurable' && type !== 'simple') {
+    if (type && type !== 'ConfigurableProduct' && type !== 'SimpleProduct') {
         return <Error type="500">Product type: {type} not supported.</Error>
     }
 
@@ -129,21 +131,25 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         })),
                 }}
                 gallery={gallery
-                    ?.filter((x: any) => x.disabled === false && x.type === 'image')
-                    .map(({ id, label, file }: any) => ({
-                        _id: id,
+                    ?.filter((x: any) => x.type === 'ProductImage')
+                    .map(({ label, url }: any) => ({
                         alt: label || title,
                         src: {
-                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
-                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
+                            desktop: resolveImage(url),
+                            mobile: resolveImage(url),
                         },
                     }))
                     .sort((a: any, b: any) => a.position - b.position)}
-                price={{
-                    special: specialPrice,
-                    regular: price?.regular.amount.value,
-                    currency: price?.regular.amount.currency,
-                }}
+                price={
+                    price && {
+                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                        regular: price.minimum.regular.value,
+                        special:
+                            price.minimum.discount.amountOff &&
+                            price.minimum.final.value - price.minimum.discount.amountOff,
+                        currency: price.minimum.regular.currency,
+                    }
+                }
                 options={options
                     ?.map(({ id, type, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {

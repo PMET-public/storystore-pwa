@@ -1,4 +1,4 @@
-query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
+query AppShellQuery($categoriesParentId: String!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
@@ -14,7 +14,7 @@ query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $has
         copyright
     }
 
-    categories: category(id: $categoriesParentId) {
+    categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {
         id
         children {
             id

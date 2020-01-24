@@ -39,13 +39,9 @@ UrlResolver.getInitialProps = async ({ res, query }) => {
         ? new URL('/api/graphql', location.href).href
         : new URL('graphql', process.env.MAGENTO_URL).href
 
-    const url = query.url ? query.url.toString().split('?')[0] : query['*']
+    const url = query.url ? query.url.toString().split('?')[0] : query[''].join('/')
 
-    const urlKey =
-        url
-            .toString()
-            .split('/')
-            .pop() || ''
+    const urlKey = url.split('/').pop() || ''
 
     if (query.type) {
         const type = query.type
@@ -54,7 +50,6 @@ UrlResolver.getInitialProps = async ({ res, query }) => {
     }
 
     const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
-
     try {
         const page = await fetch(`${graphQLUrl}?query=${graphQlQuery}`)
 

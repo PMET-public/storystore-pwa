@@ -7,11 +7,10 @@ query ProductQuery($urlKey: String!) {
             metaTitle: meta_title
             metaDescription: meta_description
             metaKeywords: meta_keyword
-            type: type_id
+            type: __typename
             title: name
             sku
             stock: stock_status
-            specialPrice: special_price
 
             categories {
                 id
@@ -19,27 +18,33 @@ query ProductQuery($urlKey: String!) {
                 href: url_path
             }
 
-            price {
-                regular: regularPrice {
-                    amount {
-                        currency
+            price: price_range {
+                minimum: minimum_price {
+                    discount {
+                        amountOff: amount_off
+                    }
+                    regular: regular_price {
                         value
+                        currency
+                    }
+                    final: final_price {
+                        value
+                        currency
                     }
                 }
-                minimal: regularPrice {
-                    amount {
-                        currency
+                maximum: maximum_price {
+                    regular: regular_price {
                         value
+                        currency
                     }
                 }
             }
 
-            gallery: media_gallery_entries {
-                id
-                file
+            gallery: media_gallery {
+                id: url
                 label
-                disabled
-                type: media_type
+                url
+                type: __typename
             }
 
             shortDescription: short_description {
@@ -73,33 +78,43 @@ query ProductQuery($urlKey: String!) {
                         id
                         variantSku: sku
                         stock: stock_status
-                        price {
-                            regular: regularPrice {
-                                amount {
-                                    currency
+
+                        price: price_range {
+                            minimum: minimum_price {
+                                discount {
+                                    amountOff: amount_off
+                                }
+                                regular: regular_price {
                                     value
+                                    currency
+                                }
+                                final: final_price {
+                                    value
+                                    currency
+                                }
+                            }
+                            maximum: maximum_price {
+                                regular: regular_price {
+                                    value
+                                    currency
                                 }
                             }
                         }
+
                         thumbnail {
                             label
                             url
                         }
-                        gallery: media_gallery_entries {
-                            id
-                            file
+
+                        gallery: media_gallery {
+                            id: url
                             label
-                            disabled
-                            type: media_type
+                            url
+                            type: __typename
                         }
                     }
                 }
             }
         }
-    }
-
-    storeConfig {
-        id
-        baseMediaUrl: secure_base_media_url
     }
 }

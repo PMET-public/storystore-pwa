@@ -11,7 +11,6 @@ export const typeDefs = gql`
     }
 
     extend type Cart {
-        totalQuantity: Int!
         braintreeToken: String!
     }
 `
@@ -43,42 +42,6 @@ export const resolvers: Resolvers = {
         hasCart() {
             const cartId = process.browser && getFromLocalStorage('cartId')
             return process.browser && !!cartId
-        },
-
-        countries({ countries }) {
-            /**
-             * 🩹Patch:
-             * return countries sorted by name
-             * and filter empty values
-             */
-
-            if (!countries) return countries
-
-            return countries
-                .filter((x: any) => !!x.name)
-                .sort(function compare(a: any, b: any) {
-                    // Use toUpperCase() to ignore character casing
-                    const genreA = a.name.toUpperCase()
-                    const genreB = b.name.toUpperCase()
-
-                    let comparison = 0
-                    if (genreA > genreB) {
-                        comparison = 1
-                    } else if (genreA < genreB) {
-                        comparison = -1
-                    }
-                    return comparison
-                })
-        },
-    },
-    Cart: {
-        totalQuantity({ _items }) {
-            /**
-             * 🩹Patch:
-             * return total quantity
-             */
-
-            return _items ? _items.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0) : 0
         },
     },
 

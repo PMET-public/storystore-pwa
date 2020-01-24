@@ -1,5 +1,5 @@
-query CategoryQuery($id: Int!) {
-    page: category(id: $id) {
+query CategoryQuery($id: String!) {
+    page: categoryList(filters: { ids: { eq: $id } }) {
         id
         title: name
         cmsBlock: description
@@ -10,7 +10,7 @@ query CategoryQuery($id: Int!) {
         breadcrumbs {
             id: category_id
             text: category_name
-            href: category_url_key # TODO: Needs to be changed to url_path
+            href: category_url_path
         }
         categories: children {
             id

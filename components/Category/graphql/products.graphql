@@ -1,29 +1,34 @@
-query ProductsQuery($filters: ProductFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
+query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
     products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         pagination: page_info {
             current: current_page
             total: total_pages
         }
-        # filters {
-        #     name
-        #     key: request_var
-        #     items: filter_items {
-        #         count: items_count
-        #         label
-        #         value: value_string
-        #     }
-        # }
+
         items @connection(key: "items") {
             id
             image {
                 alt: label
                 src: url
             }
-            price {
-                regularPrice {
-                    amount {
-                        currency
+            price: price_range {
+                minimum: minimum_price {
+                    discount {
+                        amountOff: amount_off
+                    }
+                    regular: regular_price {
                         value
+                        currency
+                    }
+                    final: final_price {
+                        value
+                        currency
+                    }
+                }
+                maximum: maximum_price {
+                    regular: regular_price {
+                        value
+                        currency
                     }
                 }
             }

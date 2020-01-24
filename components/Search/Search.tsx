@@ -37,7 +37,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     const [filters, setFilters] = useState<FilterValues>({})
 
     const { loading, error, data, refetch, fetchMore } = useQuery(SEARCH_QUERY, {
-        variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
+        variables: { search, filters },
         returnPartialData: true,
         fetchPolicy: 'cache-and-network',
     })
@@ -129,7 +129,6 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         (newQuery: string) => {
             if (newQuery.length === 0 || newQuery.length > 2) {
                 setSearch(newQuery)
-                setFilters({})
                 window.scrollTo(0, 0)
             }
         },
@@ -198,8 +197,13 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                             },
                         },
                         price: {
-                            regular: price.regularPrice.amount.value,
-                            currency: price.regularPrice.amount.currency,
+                            label:
+                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                            regular: price.minimum.regular.value,
+                            special:
+                                price.minimum.discount.amountOff &&
+                                price.minimum.final.value - price.minimum.discount.amountOff,
+                            currency: price.minimum.regular.currency,
                         },
                         title: {
                             text: title,

@@ -12,7 +12,7 @@ const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type HomeProps = {
-    id: string
+    id: number
     categoriesParentId: string
 }
 
@@ -39,23 +39,25 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
             <HomeTemplate
                 loading={loading && !page}
-                stories={{
-                    loading: loading && !categories,
-                    items: categories?.children?.map(({ id, text, href, image }: any) => ({
-                        as: Link,
-                        urlResolver: {
-                            type: 'CATEGORY',
-                            id,
-                        },
-                        href,
-                        image: image &&
-                            storeConfig?.baseMediaUrl && {
-                                alt: text,
-                                src: resolveImage(image),
+                stories={
+                    categories && {
+                        loading: loading && !categories,
+                        items: categories[0].children.map(({ id, text, href, image }: any) => ({
+                            as: Link,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
                             },
-                        text,
-                    })),
-                }}
+                            href,
+                            image: image &&
+                                storeConfig?.baseMediaUrl && {
+                                    alt: text,
+                                    src: resolveImage(image),
+                                },
+                            text,
+                        })),
+                    }
+                }
             >
                 {page?.content && <PageBuilder html={page.content} />}
             </HomeTemplate>
