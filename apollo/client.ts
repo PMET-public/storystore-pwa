@@ -19,7 +19,7 @@ function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL).href,
         useGETForQueries: true,
-        credentials: 'same-origin',
+        // credentials: 'same-origin',
     })
 
     const retryLink = new RetryLink({
