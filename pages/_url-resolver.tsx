@@ -35,7 +35,9 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 }
 
 UrlResolver.getInitialProps = async ({ res, query }) => {
-    const graphQLUrl = process.browser ? '/api/graphql' : new URL('graphql', process.env.MAGENTO_URL)
+    const graphQLUrl = process.browser
+        ? new URL('/api/graphql', location.href).href
+        : new URL('graphql', process.env.MAGENTO_URL).href
 
     const url = query.url ? query.url.toString().split('?')[0] : query['*']
 
