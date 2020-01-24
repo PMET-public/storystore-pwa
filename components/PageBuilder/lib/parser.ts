@@ -70,9 +70,11 @@ export const htmlToProps = (htmlStr: string) => {
     const stageContentType = getComponentData('root-container')
     const result = walk(container.body, stageContentType)
 
-    // console.group('🏗 PageBuilder')
-    // console.log('Content Types', result)
-    // console.groupEnd()
+    if (process.browser && process.env.NODE_ENV !== 'production') {
+        console.group('🏗 PageBuilder')
+        console.log('Content Types', result)
+        console.groupEnd()
+    }
 
     return result
 }

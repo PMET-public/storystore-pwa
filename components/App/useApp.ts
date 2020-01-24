@@ -6,12 +6,18 @@ import APP_QUERY from './graphql/app.graphql'
 import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-export const useApp = ({ categoryParentId, footerBlockId }: { categoryParentId: string; footerBlockId: string }) => {
+export const useApp = ({
+    categoriesParentId,
+    footerBlockId,
+}: {
+    categoriesParentId: string
+    footerBlockId: string
+}) => {
     const query = useQuery(APP_QUERY, {
         fetchPolicy: 'cache-and-network',
         returnPartialData: true,
         variables: {
-            categoryParentId,
+            categoriesParentId,
             footerBlockId,
             hasFooter: !!footerBlockId,
         },
