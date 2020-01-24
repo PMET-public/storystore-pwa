@@ -12,7 +12,7 @@ const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type HomeProps = {
-    id: number
+    id: string
     categoriesParentId: string
 }
 
