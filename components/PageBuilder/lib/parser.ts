@@ -18,6 +18,8 @@ const getComponentData = (type: string, node?: HTMLElement) => {
 
     const config = (configs as any)[name]
 
+    if (!config) return null
+
     const component = {
         component: config.component,
         props: config.props(currentNode),
@@ -53,6 +55,11 @@ const walk = (rootEl: Node, component: any) => {
         }
 
         const data = getComponentData(contentType, currentNode as HTMLElement)
+
+        if (!data) {
+            currentNode = tree.nextNode()
+            continue
+        }
 
         // Add children elements
         component.items.push(data)
