@@ -63,7 +63,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
-                    items: items.map(({ id, quantity, product, options }: any, index: number) => ({
+                    items: items.map(({ id, quantity, product, prices, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             as: Link,
@@ -94,8 +94,9 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             onRemove: () => api.removeCartItem({ productId: id }),
                         },
                         price: {
-                            currency: product.price.regular.amount.currency,
-                            regular: product.price.regular.amount.value,
+                            currency: prices.regular.currency,
+                            regular: prices.regular.value,
+                            special: prices.special.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -114,6 +115,9 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
+                                special:
+                                    cart.prices.subTotalWithDiscounts.value < cart.prices.subTotal.value &&
+                                    cart.prices.subTotalWithDiscounts.value,
                             },
                         },
                         {

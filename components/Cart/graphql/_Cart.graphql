@@ -13,18 +13,15 @@ fragment Cart on Cart {
                 label
                 url
             }
-
-            price: price_range {
-                minimum: minimum_price {
-                    regular: regular_price {
-                        currency
-                        value
-                    }
-
-                    discount {
-                        off: amount_off
-                    }
-                }
+        }
+        prices {
+            regular: price {
+                currency
+                value
+            }
+            special: total_item_discount {
+                currency
+                value
             }
         }
         ... on ConfigurableCartItem {
@@ -36,15 +33,18 @@ fragment Cart on Cart {
         }
     }
 
+    # Summary Prices
     prices {
         subTotal: subtotal_excluding_tax {
             currency
             value
         }
+
         subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
             currency
             value
         }
+
         taxes: applied_taxes {
             label
             amount {
