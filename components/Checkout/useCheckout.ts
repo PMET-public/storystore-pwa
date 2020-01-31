@@ -2,14 +2,15 @@ import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from './../../hooks/useValueUpdated'
 import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
+import { writeInLocalStorage } from '../../lib/localStorage'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
-import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useCheckout = () => {
     /**
@@ -105,11 +106,11 @@ export const useCheckout = () => {
         },
     })
 
-    const handleSetShippingMethod = useCallback((props: { methodCode: string }) => {
-        const { methodCode } = props
+    const handleSetShippingMethod = useCallback((props: { methodCode: string; carrierCode: string }) => {
+        const { methodCode, carrierCode } = props
         return setShippingMethod({
             variables: {
-                shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
+                shippingMethods: [{ carrier_code: carrierCode, method_code: methodCode }],
             },
         })
     }, [])
@@ -145,13 +146,22 @@ export const useCheckout = () => {
     /**
      * Place Order
      */
-    const [resetCart] = useMutation(RESET_CART_MUTATION)
 
     const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION)
 
+    const [createEmptyCart] = useMutation(CREATE_EMPTY_CART_MUTATION, {
+        update: (cache, { data: { cartId } }) => {
+            writeInLocalStorage('cartId', cartId)
+
+            cache.writeData({
+                data: { cartId },
+            })
+        },
+    })
+
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()
-        await resetCart()
+        await createEmptyCart()
         return res
     }, [])
 

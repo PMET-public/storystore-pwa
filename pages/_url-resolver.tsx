@@ -41,7 +41,11 @@ UrlResolver.getInitialProps = async ({ res, query }) => {
 
     const url = query.url ? query.url.toString().split('?')[0] : query[''].join('/')
 
-    const urlKey = url.split('/').pop() || ''
+    const urlKey =
+        url
+            .split('/')
+            .pop()
+            .split('.')[0] || ''
 
     if (query.type) {
         const type = query.type

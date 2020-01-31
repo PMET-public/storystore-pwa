@@ -91,9 +91,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      */
     const handleSetShippingMethod = useCallback(
         async formData => {
-            const { shippingMethod: methodCode } = formData
+            const [methodCode, carrierCode] = formData.shippingMethod.split(',')
 
-            await api.setShippingMethod({ methodCode })
+            await api.setShippingMethod({ methodCode, carrierCode })
 
             setStep(3)
         },
@@ -225,13 +225,13 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     title: 'Shipping Method',
                     edit: step < 3,
                     items: shippingAddress?.availableShippingMethods?.map(
-                        ({ methodTitle, methodCode, available, amount }: any) => ({
-                            text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
+                        ({ methodTitle, carrierTitle, methodCode, carrierCode, available, amount }: any) => ({
+                            text: `${carrierTitle} ${amount.value.toLocaleString('en-US', {
                                 style: 'currency',
                                 currency: amount.currency,
-                            })}`,
-                            value: methodCode,
-                            defaultChecked: methodCode === shippingAddress?.selectedShippingMethod.methodCode,
+                            })} (${methodTitle})`,
+                            value: `${methodCode},${carrierCode}`,
+                            defaultChecked: methodCode === shippingAddress?.selectedShippingMethod?.methodCode,
                             disabled: !available,
                         })
                     ),
@@ -268,7 +268,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.items?.length,
-                    items: cart?.items?.map(({ id, quantity, product, options }: any, index: number) => ({
+                    items: cart?.items?.map(({ id, quantity, product, prices, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             text: product.name,
@@ -285,8 +285,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             removeLabel: `Remove all ${product.name} from shopping bag`,
                         },
                         price: {
-                            currency: product.price.regular.amount.currency,
-                            regular: product.price.regular.amount.value,
+                            currency: prices.regular.currency,
+                            regular: prices.regular.value,
+                            special: prices.special.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -299,24 +300,27 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     title: {
                         text: 'Bag Summary',
                     },
-                    prices: cart.prices && [
+                    prices: [
                         {
                             label: 'Subtotal',
-                            price: cart.prices.subTotal && {
+                            price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
+                                special:
+                                    cart.prices.subTotalWithDiscounts.value < cart.prices.subTotal.value &&
+                                    cart.prices.subTotalWithDiscounts.value,
                             },
                         },
                         {
                             label: 'Shipping',
-                            price: shippingAddress?.selectedShippingMethod.amount && {
-                                currency: shippingAddress?.selectedShippingMethod.amount.currency,
-                                regular: shippingAddress?.selectedShippingMethod.amount.value,
+                            price: shippingAddress?.selectedShippingMethod?.amount && {
+                                currency: shippingAddress?.selectedShippingMethod?.amount.currency,
+                                regular: shippingAddress?.selectedShippingMethod?.amount.value,
                             },
                         },
                         {
-                            label: 'Taxes',
-                            price: cart.prices.taxes[0] && {
+                            label: 'Estimated Taxes',
+                            price: cart?.prices?.taxes[0] && {
                                 currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
                                 regular: cart.prices.taxes.reduce(
                                     (accum: number, tax: { value: number }) => accum + tax.value,
@@ -327,7 +331,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         {
                             appearance: 'bold',
                             label: 'Total',
-                            price: cart.prices.total && {
+                            price: cart?.prices?.total && {
                                 currency: cart.prices.total.currency,
                                 regular: cart.prices.total.value,
                             },
