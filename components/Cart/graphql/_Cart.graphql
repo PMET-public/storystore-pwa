@@ -40,6 +40,14 @@ fragment Cart on Cart {
             value
         }
 
+        discounts {
+            label
+            amount {
+                currency
+                value
+            }
+        }
+
         subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
             currency
             value

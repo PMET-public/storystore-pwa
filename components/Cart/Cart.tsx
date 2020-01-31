@@ -115,11 +115,17 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
-                                special:
-                                    cart.prices.subTotalWithDiscounts.value < cart.prices.subTotal.value &&
-                                    cart.prices.subTotalWithDiscounts.value,
                             },
                         },
+                        ...(cart?.prices?.discounts
+                            ? cart.prices.discounts.map((discount: any) => ({
+                                  label: discount.label,
+                                  price: {
+                                      currency: discount.amount.currency,
+                                      regular: -discount.amount.value,
+                                  },
+                              }))
+                            : []),
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {
