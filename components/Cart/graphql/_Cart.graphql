@@ -4,6 +4,14 @@ fragment Cart on Cart {
     items {
         id
         quantity
+
+        price: prices {
+            amount: price {
+                currency
+                value
+            }
+        }
+
         product {
             id
             sku
@@ -13,20 +21,8 @@ fragment Cart on Cart {
                 label
                 url
             }
-
-            price: price_range {
-                minimum: minimum_price {
-                    regular: regular_price {
-                        currency
-                        value
-                    }
-
-                    discount {
-                        off: amount_off
-                    }
-                }
-            }
         }
+
         ... on ConfigurableCartItem {
             options: configurable_options {
                 id
@@ -36,15 +32,24 @@ fragment Cart on Cart {
         }
     }
 
+    appliedCoupons: applied_coupons {
+        code
+    }
+
+    appliedGiftCards: applied_gift_cards {
+        code
+        amount: applied_balance {
+            currency
+            value
+        }
+    }
+
     prices {
         subTotal: subtotal_excluding_tax {
             currency
             value
         }
-        subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
-            currency
-            value
-        }
+
         taxes: applied_taxes {
             label
             amount {
@@ -52,6 +57,15 @@ fragment Cart on Cart {
                 value
             }
         }
+
+        discounts {
+            label
+            amount {
+                currency
+                value
+            }
+        }
+
         total: grand_total {
             currency
             value

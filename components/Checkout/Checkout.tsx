@@ -14,7 +14,17 @@ const Error = dynamic(() => import('../Error'))
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const { loading, error, data, api, online, refetch } = useCheckout()
+    const {
+        loading,
+        error,
+        data,
+        api,
+        online,
+        refetch,
+        applyingCouponCode,
+        applyCouponCodeError,
+        removingCoupon,
+    } = useCheckout()
 
     const router = useRouter()
 
@@ -267,26 +277,35 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handlePlaceOrder,
                 }}
                 list={{
-                    loading: loading && !cart?.items?.length,
-                    items: cart?.items?.map(({ id, quantity, product, options }: any, index: number) => ({
+                    loading: loading && !cart?.totalQuantity,
+                    items: cart?.items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
+                            as: Link,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
+                            href: `/${product.urlKey}`,
                             text: product.name,
                         },
                         sku: `SKU. ${product.sku}`,
                         thumbnail: {
+                            as: Link,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
+                            href: `/${product.urlKey}`,
                             alt: product.thumbnail.label,
                             src: resolveImage(product.thumbnail.url),
                         },
                         quantity: {
                             value: quantity,
-                            addLabel: `Add another ${product.name} from shopping bag`,
-                            substractLabel: `Remove one ${product.name} from shopping bag`,
-                            removeLabel: `Remove all ${product.name} from shopping bag`,
                         },
                         price: {
-                            currency: product.price.regular.amount.currency,
-                            regular: product.price.regular.amount.value,
+                            currency: price.amount.currency,
+                            regular: price.amount.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -299,24 +318,54 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     title: {
                         text: 'Bag Summary',
                     },
-                    prices: cart.prices && [
+                    coupons: {
+                        label: 'Gift Cards & Coupons',
+                        open: !!cart?.appliedCoupons,
+                        fields: [
+                            // {
+                            //     field: { label: 'Gift Card', name: 'giftCardCode' },
+                            //     submitButton: { text: 'Apply' },
+                            //     onSubmit: () => {},
+                            // },
+                            {
+                                field: {
+                                    label: 'Coupon Code',
+                                    name: 'couponCode',
+                                    error: applyCouponCodeError,
+                                    disabled: !!cart.appliedCoupons,
+                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : '',
+                                },
+                                submitButton: {
+                                    text: cart.appliedCoupons ? 'Remove' : 'Apply',
+                                },
+                                submitting: applyingCouponCode || removingCoupon,
+                                onSubmit: ({ couponCode }: any) => {
+                                    cart.appliedCoupons ? api.removeCoupon() : api.applyCouponCode({ couponCode })
+                                },
+                            },
+                        ],
+                    },
+                    prices: [
                         {
                             label: 'Subtotal',
-                            price: cart.prices.subTotal && {
+                            price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
                             },
                         },
-                        {
-                            label: 'Shipping',
-                            price: shippingAddress?.selectedShippingMethod.amount && {
-                                currency: shippingAddress?.selectedShippingMethod.amount.currency,
-                                regular: shippingAddress?.selectedShippingMethod.amount.value,
+
+                        // Discounts
+                        ...(cart?.prices?.discounts?.map((discount: any) => ({
+                            label: discount.label,
+                            price: {
+                                currency: discount.amount.currency,
+                                regular: -discount.amount.value,
                             },
-                        },
+                        })) || []),
+
                         {
-                            label: 'Taxes',
-                            price: cart.prices.taxes[0] && {
+                            label: 'Estimated Taxes',
+                            price: cart?.prices?.taxes[0] && {
                                 currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
                                 regular: cart.prices.taxes.reduce(
                                     (accum: number, tax: { value: number }) => accum + tax.value,
@@ -327,7 +376,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         {
                             appearance: 'bold',
                             label: 'Total',
-                            price: cart.prices.total && {
+                            price: cart?.prices?.total && {
                                 currency: cart.prices.total.currency,
                                 regular: cart.prices.total.value,
                             },

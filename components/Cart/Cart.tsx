@@ -2,6 +2,7 @@ import React, { FunctionComponent, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useCart } from './useCart'
+import { useCouponsAndGiftCards } from './useCouponsAndGiftCards'
 import { useRouter } from 'next/router'
 import { resolveImage } from '../../lib/resolveImage'
 
@@ -18,6 +19,8 @@ type CartProps = {}
 export const Cart: FunctionComponent<CartProps> = ({}) => {
     const { loading, updating, removing, error, online, data, api, refetch } = useCart()
 
+    const couponsAndGiftCards = useCouponsAndGiftCards()
+
     const router = useRouter()
 
     const handleGoToCheckout = useCallback(async () => {
@@ -32,14 +35,12 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     const { cart } = data
 
-    const { items = [] } = cart || {}
+    const { items = [], appliedCoupons } = cart || {}
 
     if (cart?.totalQuantity < 1) {
         return (
             <CartLanding
-                title={{
-                    text: 'Your bag is empty.',
-                }}
+                title={{ text: 'Shopping Bag' }}
                 children={
                     <div>
                         <Button as={Link} href="/" style={{ marginTop: '2rem' }}>
@@ -63,7 +64,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
-                    items: items.map(({ id, quantity, product, options }: any, index: number) => ({
+                    items: items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             as: Link,
@@ -94,8 +95,8 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             onRemove: () => api.removeCartItem({ productId: id }),
                         },
                         price: {
-                            currency: product.price.regular.amount.currency,
-                            regular: product.price.regular.amount.value,
+                            currency: price.amount.currency,
+                            regular: price.amount.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -108,6 +109,35 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     title: {
                         text: 'Bag Summary',
                     },
+                    coupons: {
+                        label: 'Gift Cards & Coupons',
+                        open: !!appliedCoupons,
+                        fields: [
+                            // {
+                            //     field: { label: 'Gift Card', name: 'giftCardCode' },
+                            //     submitButton: { text: 'Apply' },
+                            //     onSubmit: () => {},
+                            // },
+                            {
+                                field: {
+                                    label: 'Coupon Code',
+                                    name: 'couponCode',
+                                    error: couponsAndGiftCards.couponError,
+                                    disabled: !!appliedCoupons,
+                                    defaultValue: appliedCoupons ? appliedCoupons[0].code : '',
+                                },
+                                submitButton: {
+                                    text: appliedCoupons ? 'Remove' : 'Apply',
+                                },
+                                submitting: couponsAndGiftCards.applyingCoupon || couponsAndGiftCards.removingCoupon,
+                                onSubmit: ({ couponCode }: any) => {
+                                    appliedCoupons
+                                        ? couponsAndGiftCards.api.removeCoupon()
+                                        : couponsAndGiftCards.api.applyCoupon({ couponCode })
+                                },
+                            },
+                        ],
+                    },
                     prices: [
                         {
                             label: 'Subtotal',
@@ -116,6 +146,16 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 regular: cart.prices.subTotal.value,
                             },
                         },
+
+                        // Discounts
+                        ...(cart?.prices?.discounts?.map((discount: any) => ({
+                            label: discount.label,
+                            price: {
+                                currency: discount.amount.currency,
+                                regular: -discount.amount.value,
+                            },
+                        })) || []),
+
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {

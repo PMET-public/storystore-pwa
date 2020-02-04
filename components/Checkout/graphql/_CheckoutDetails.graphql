@@ -14,21 +14,22 @@ fragment CheckoutDetails on Cart {
     items {
         id
         quantity
+
+        price: prices {
+            amount: price {
+                currency
+                value
+            }
+        }
+
         product {
             id
             sku
             name
+            urlKey: url_key
             thumbnail {
                 label
                 url
-            }
-            price {
-                regular: regularPrice {
-                    amount {
-                        currency
-                        value
-                    }
-                }
             }
         }
 
@@ -41,15 +42,24 @@ fragment CheckoutDetails on Cart {
         }
     }
 
+    appliedCoupons: applied_coupons {
+        code
+    }
+
+    appliedGiftCards: applied_gift_cards {
+        code
+        amount: applied_balance {
+            currency
+            value
+        }
+    }
+
     prices {
         subTotal: subtotal_excluding_tax {
             currency
             value
         }
-        subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
-            currency
-            value
-        }
+
         taxes: applied_taxes {
             label
             amount {
@@ -57,6 +67,15 @@ fragment CheckoutDetails on Cart {
                 value
             }
         }
+
+        discounts {
+            label
+            amount {
+                currency
+                value
+            }
+        }
+
         total: grand_total {
             currency
             value

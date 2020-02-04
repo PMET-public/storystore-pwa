@@ -10,6 +10,8 @@ import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToke
 import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+import APPLY_COUPON_CODE_MUTATION from '../Cart/graphql/applyCouponCode.graphql'
+import REMOVE_COUPON_MUTATION from '../Cart/graphql/removeCoupon.graphql'
 
 export const useCheckout = () => {
     /**
@@ -155,6 +157,46 @@ export const useCheckout = () => {
         return res
     }, [])
 
+    /**
+     * Handle Apply Coupon Code
+     */
+    const [applyCouponCode, { error: applyCouponCodeError, loading: applyingCouponCode }] = useMutation(
+        APPLY_COUPON_CODE_MUTATION,
+        {
+            update(cache, { data: { applyCouponToCart } }) {
+                const { cart } = applyCouponToCart
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
+
+    const handleApplyCouponCode = useCallback((props: { couponCode: string }) => {
+        const { couponCode } = props
+        return applyCouponCode({
+            variables: {
+                couponCode,
+            },
+        })
+    }, [])
+
+    /**
+     * Handle Apply Coupon Code
+     */
+    const [removeCoupon, { loading: removingCoupon }] = useMutation(REMOVE_COUPON_MUTATION, {
+        update(cache, { data: { removeCouponFromCart } }) {
+            const { cart } = removeCouponFromCart
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
+
+    const handleRemoveCoupon = useCallback(() => {
+        return removeCoupon()
+    }, [])
+
     return {
         ...query,
         online,
@@ -162,11 +204,18 @@ export const useCheckout = () => {
         settingShippingMethod,
         settingPaymentMethod,
         placingOrder,
+        applyingCouponCode,
+        applyCouponCodeError: applyCouponCodeError && {
+            message: applyCouponCodeError.graphQLErrors[0]?.message,
+        },
+        removingCoupon,
         api: {
             setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,
             setPaymentMethod: handleSetPaymentMethod,
             placeOrder: handlePlaceOrder,
+            applyCouponCode: handleApplyCouponCode,
+            removeCoupon: handleRemoveCoupon,
         },
     }
 }
