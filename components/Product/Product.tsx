@@ -159,10 +159,10 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         return {
                             _id: id,
                             type,
-                            required,
-                            label: selected ? `${label}: ${selected.label}` : label,
                             swatches: {
+                                label: selected ? `${label}: ${selected.label}` : label,
                                 name: `options.${code}`,
+                                rules: { required },
                                 items: items?.map(({ id, label, value, image }: any) => ({
                                     _id: id,
                                     text: label,
@@ -171,6 +171,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                     image: image && {
                                         alt: image.label || '',
                                         src: resolveImage(image.url),
+                                        width: 4,
+                                        height: 5,
                                     },
                                 })),
                             },
