@@ -10,8 +10,6 @@ import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToke
 import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
-import APPLY_COUPON_CODE_MUTATION from '../Cart/graphql/applyCouponCode.graphql'
-import REMOVE_COUPON_MUTATION from '../Cart/graphql/removeCoupon.graphql'
 
 export const useCheckout = () => {
     /**
@@ -37,15 +35,18 @@ export const useCheckout = () => {
     /**
      * Set Contact Info
      */
-    const [setContactInfo, { loading: settingContactInfo }] = useMutation(SET_CONTACT_INFO_MUTATION, {
-        update(cache, { data: { email, billingAddress } }) {
-            const cart = { ...email.cart, ...billingAddress.cart }
+    const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
+        SET_CONTACT_INFO_MUTATION,
+        {
+            update(cache, { data: { email, billingAddress } }) {
+                const cart = { ...email.cart, ...billingAddress.cart }
 
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
 
     const handleSetContactInfo = useCallback(
         (props: {
@@ -98,14 +99,17 @@ export const useCheckout = () => {
     /**
      * Set Shipping Method
      */
-    const [setShippingMethod, { loading: settingShippingMethod }] = useMutation(SET_SHIPPING_METHOD_MUTATION, {
-        update(cache, { data: { setShippingMethodsOnCart } }) {
-            const { cart } = setShippingMethodsOnCart
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
+    const [setShippingMethod, { loading: settingShippingMethod, error: setShippingMethodError }] = useMutation(
+        SET_SHIPPING_METHOD_MUTATION,
+        {
+            update(cache, { data: { setShippingMethodsOnCart } }) {
+                const { cart } = setShippingMethodsOnCart
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
 
     const handleSetShippingMethod = useCallback((props: { methodCode: string }) => {
         const { methodCode } = props
@@ -134,7 +138,9 @@ export const useCheckout = () => {
     /**
      * Set Payment Method
      */
-    const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION)
+    const [setPaymentMethod, { loading: settingPaymentMethod, error: setPaymentMethodError }] = useMutation(
+        SET_PAYMENT_METHOD_MUTATION
+    )
 
     const handleSetPaymentMethod = useCallback(async (props: { nonce: string }) => {
         const { nonce } = props
@@ -149,7 +155,7 @@ export const useCheckout = () => {
      */
     const [resetCart] = useMutation(RESET_CART_MUTATION)
 
-    const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION)
+    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
 
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()
@@ -157,65 +163,22 @@ export const useCheckout = () => {
         return res
     }, [])
 
-    /**
-     * Handle Apply Coupon Code
-     */
-    const [applyCouponCode, { error: applyCouponCodeError, loading: applyingCouponCode }] = useMutation(
-        APPLY_COUPON_CODE_MUTATION,
-        {
-            update(cache, { data: { applyCouponToCart } }) {
-                const { cart } = applyCouponToCart
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
-
-    const handleApplyCouponCode = useCallback((props: { couponCode: string }) => {
-        const { couponCode } = props
-        return applyCouponCode({
-            variables: {
-                couponCode,
-            },
-        })
-    }, [])
-
-    /**
-     * Handle Apply Coupon Code
-     */
-    const [removeCoupon, { loading: removingCoupon }] = useMutation(REMOVE_COUPON_MUTATION, {
-        update(cache, { data: { removeCouponFromCart } }) {
-            const { cart } = removeCouponFromCart
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
-
-    const handleRemoveCoupon = useCallback(() => {
-        return removeCoupon()
-    }, [])
-
     return {
         ...query,
         online,
         settingContactInfo,
+        setContactInfoError: setContactInfoError?.message,
         settingShippingMethod,
+        setShippingMethodError: setShippingMethodError?.message,
         settingPaymentMethod,
+        setPaymentMethodError: setPaymentMethodError?.message,
         placingOrder,
-        applyingCouponCode,
-        applyCouponCodeError: applyCouponCodeError && {
-            message: applyCouponCodeError.graphQLErrors[0]?.message,
-        },
-        removingCoupon,
+        placeOrderError: placeOrderError?.message,
         api: {
             setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,
             setPaymentMethod: handleSetPaymentMethod,
             placeOrder: handlePlaceOrder,
-            applyCouponCode: handleApplyCouponCode,
-            removeCoupon: handleRemoveCoupon,
         },
     }
 }

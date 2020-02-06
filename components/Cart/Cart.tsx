@@ -2,7 +2,6 @@ import React, { FunctionComponent, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useCart } from './useCart'
-import { useCouponsAndGiftCards } from './useCouponsAndGiftCards'
 import { useRouter } from 'next/router'
 import { resolveImage } from '../../lib/resolveImage'
 
@@ -17,9 +16,19 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const { loading, updating, removing, error, online, data, api, refetch } = useCart()
-
-    const couponsAndGiftCards = useCouponsAndGiftCards()
+    const {
+        loading,
+        updating,
+        removing,
+        error,
+        online,
+        data,
+        api,
+        refetch,
+        applyingCoupon,
+        removingCoupon,
+        couponError,
+    } = useCart()
 
     const router = useRouter()
 
@@ -113,27 +122,20 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         label: 'Gift Cards & Coupons',
                         open: !!appliedCoupons,
                         fields: [
-                            // {
-                            //     field: { label: 'Gift Card', name: 'giftCardCode' },
-                            //     submitButton: { text: 'Apply' },
-                            //     onSubmit: () => {},
-                            // },
                             {
                                 field: {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
-                                    error: couponsAndGiftCards.couponError,
+                                    error: couponError,
                                     disabled: !!appliedCoupons,
                                     defaultValue: appliedCoupons ? appliedCoupons[0].code : '',
                                 },
                                 submitButton: {
                                     text: appliedCoupons ? 'Remove' : 'Apply',
                                 },
-                                submitting: couponsAndGiftCards.applyingCoupon || couponsAndGiftCards.removingCoupon,
+                                submitting: applyingCoupon || removingCoupon,
                                 onSubmit: ({ couponCode }: any) => {
-                                    appliedCoupons
-                                        ? couponsAndGiftCards.api.removeCoupon()
-                                        : couponsAndGiftCards.api.applyCoupon({ couponCode })
+                                    appliedCoupons ? api.removeCoupon() : api.applyCoupon({ couponCode })
                                 },
                             },
                         ],
