@@ -21,7 +21,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
 
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 

@@ -4,8 +4,6 @@
 #import "../../Cart/graphql/_Cart.graphql"
 
 fragment CheckoutDetails on Cart {
-    braintreeToken @client
-
     email
 
     ...Cart

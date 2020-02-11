@@ -38,7 +38,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
 
     if (!data && !loading) return <Error type="500" />
 

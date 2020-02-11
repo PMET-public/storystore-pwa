@@ -139,10 +139,10 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (error) <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
 
-    const { cart, countries } = data
-    const { email, shippingAddresses, braintreeToken } = cart
+    const { cart, countries, braintreeToken } = data
+    const { email, shippingAddresses } = cart
     const shippingAddress = shippingAddresses && shippingAddresses[0]
 
     return (
@@ -351,23 +351,28 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         text: 'Bag Summary',
                     },
                     coupons: {
-                        label: 'Gift Cards & Coupons',
+                        label: 'Coupons',
                         open: !!cart?.appliedCoupons,
                         items: [
                             {
                                 field: {
-                                    name: 'couponCode',
                                     label: 'Coupon Code',
+                                    name: 'couponCode',
                                     error: couponError,
                                     disabled: !!cart.appliedCoupons,
-                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : '',
+                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
                                 },
                                 submitButton: {
                                     text: cart.appliedCoupons ? 'Remove' : 'Apply',
+                                    type: cart.appliedCoupons ? 'reset' : 'submit',
                                 },
                                 submitting: applyingCoupon || removingCoupon,
-                                onSubmit: ({ couponCode }: any) => {
-                                    cart.appliedCoupons ? cartApi.removeCoupon() : cartApi.applyCoupon({ couponCode })
+                                onReset: () => {
+                                    cartApi.removeCoupon()
+                                },
+                                onSubmit: (values: any) => {
+                                    const { couponCode } = values
+                                    cartApi.applyCoupon({ couponCode })
                                 },
                             },
                         ],

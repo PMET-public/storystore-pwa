@@ -8,9 +8,6 @@ export const typeDefs = gql`
     extend type Query {
         hasCart: Boolean!
         cartId: String!
-    }
-
-    extend type Cart {
         braintreeToken: String!
     }
 `
@@ -70,15 +67,5 @@ export const resolvers: Resolvers = {
         },
     },
 
-    Mutation: {
-        resetCart: (_root, _variables, { cache }) => {
-            cache.writeData({
-                data: {
-                    hasCart: false,
-                    cartId: null,
-                    cart: null,
-                },
-            })
-        },
-    },
+    Mutation: {},
 }

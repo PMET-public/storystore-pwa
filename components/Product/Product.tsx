@@ -64,7 +64,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
 
     if (!loading && (!data || !data.product))
         return (

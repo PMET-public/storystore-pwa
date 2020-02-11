@@ -1,3 +1,4 @@
+import { writeInLocalStorage } from './../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from './../../hooks/useValueUpdated'
@@ -126,7 +127,7 @@ export const useCheckout = () => {
     const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {
         update(cache, { data: { braintreeToken } }) {
             cache.writeData({
-                data: { cart: { braintreeToken, __typename: 'Cart' } },
+                data: { braintreeToken },
             })
         },
     })
@@ -153,7 +154,15 @@ export const useCheckout = () => {
     /**
      * Place Order
      */
-    const [resetCart] = useMutation(RESET_CART_MUTATION)
+    const [resetCart] = useMutation(RESET_CART_MUTATION, {
+        update: (cache, { data: { cartId } }) => {
+            writeInLocalStorage('cartId', cartId)
+
+            cache.writeData({
+                data: { cartId },
+            })
+        },
+    })
 
     const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
 
