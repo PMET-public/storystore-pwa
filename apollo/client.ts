@@ -1,4 +1,3 @@
-import { getFromLocalStorage } from '../lib/localStorage'
 import { HttpLink } from 'apollo-link-http'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
@@ -61,8 +60,6 @@ function create(initialState: any) {
         // https://github.com/apollographql/react-apollo/issues/2387
         dataIdFromObject: (object: any) => {
             switch (object.__typename) {
-                case 'Cart':
-                    return (process.browser && getFromLocalStorage('cartId')) || ''
                 case 'SelectedConfigurableOption':
                     // Fixes cache
                     return object.id ? `${object.id}:${object.value}` : defaultDataIdFromObject(object)

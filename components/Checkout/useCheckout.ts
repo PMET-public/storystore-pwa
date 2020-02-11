@@ -1,16 +1,16 @@
+import { writeInLocalStorage } from './../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { useValueUpdated } from './../../hooks/useValueUpdated'
 import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-import { writeInLocalStorage } from '../../lib/localStorage'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
+import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
-import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useCheckout = () => {
     /**
@@ -36,15 +36,18 @@ export const useCheckout = () => {
     /**
      * Set Contact Info
      */
-    const [setContactInfo, { loading: settingContactInfo }] = useMutation(SET_CONTACT_INFO_MUTATION, {
-        update(cache, { data: { email, billingAddress } }) {
-            const cart = { ...email.cart, ...billingAddress.cart }
+    const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
+        SET_CONTACT_INFO_MUTATION,
+        {
+            update(cache, { data: { email, billingAddress } }) {
+                const cart = { ...email.cart, ...billingAddress.cart }
 
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
 
     const handleSetContactInfo = useCallback(
         (props: {
@@ -97,20 +100,23 @@ export const useCheckout = () => {
     /**
      * Set Shipping Method
      */
-    const [setShippingMethod, { loading: settingShippingMethod }] = useMutation(SET_SHIPPING_METHOD_MUTATION, {
-        update(cache, { data: { setShippingMethodsOnCart } }) {
-            const { cart } = setShippingMethodsOnCart
-            cache.writeData({
-                data: { cart },
-            })
-        },
-    })
+    const [setShippingMethod, { loading: settingShippingMethod, error: setShippingMethodError }] = useMutation(
+        SET_SHIPPING_METHOD_MUTATION,
+        {
+            update(cache, { data: { setShippingMethodsOnCart } }) {
+                const { cart } = setShippingMethodsOnCart
+                cache.writeData({
+                    data: { cart },
+                })
+            },
+        }
+    )
 
-    const handleSetShippingMethod = useCallback((props: { methodCode: string; carrierCode: string }) => {
-        const { methodCode, carrierCode } = props
+    const handleSetShippingMethod = useCallback((props: { methodCode: string }) => {
+        const { methodCode } = props
         return setShippingMethod({
             variables: {
-                shippingMethods: [{ carrier_code: carrierCode, method_code: methodCode }],
+                shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
             },
         })
     }, [])
@@ -121,7 +127,7 @@ export const useCheckout = () => {
     const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {
         update(cache, { data: { braintreeToken } }) {
             cache.writeData({
-                data: { cart: { braintreeToken, __typename: 'Cart' } },
+                data: { braintreeToken },
             })
         },
     })
@@ -133,7 +139,9 @@ export const useCheckout = () => {
     /**
      * Set Payment Method
      */
-    const [setPaymentMethod, { loading: settingPaymentMethod }] = useMutation(SET_PAYMENT_METHOD_MUTATION)
+    const [setPaymentMethod, { loading: settingPaymentMethod, error: setPaymentMethodError }] = useMutation(
+        SET_PAYMENT_METHOD_MUTATION
+    )
 
     const handleSetPaymentMethod = useCallback(async (props: { nonce: string }) => {
         const { nonce } = props
@@ -146,10 +154,7 @@ export const useCheckout = () => {
     /**
      * Place Order
      */
-
-    const [placeOrder, { loading: placingOrder }] = useMutation(PLACE_ORDER_MUTATION)
-
-    const [createEmptyCart] = useMutation(CREATE_EMPTY_CART_MUTATION, {
+    const [resetCart] = useMutation(RESET_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
             writeInLocalStorage('cartId', cartId)
 
@@ -159,9 +164,11 @@ export const useCheckout = () => {
         },
     })
 
+    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
+
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()
-        await createEmptyCart()
+        await resetCart()
         return res
     }, [])
 
@@ -169,9 +176,13 @@ export const useCheckout = () => {
         ...query,
         online,
         settingContactInfo,
+        setContactInfoError: setContactInfoError?.message,
         settingShippingMethod,
+        setShippingMethodError: setShippingMethodError?.message,
         settingPaymentMethod,
+        setPaymentMethodError: setPaymentMethodError?.message,
         placingOrder,
+        placeOrderError: placeOrderError?.message,
         api: {
             setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,

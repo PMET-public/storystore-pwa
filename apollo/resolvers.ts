@@ -8,9 +8,6 @@ export const typeDefs = gql`
     extend type Query {
         hasCart: Boolean!
         cartId: String!
-    }
-
-    extend type Cart {
         braintreeToken: String!
     }
 `
@@ -69,4 +66,6 @@ export const resolvers: Resolvers = {
                 })
         },
     },
+
+    Mutation: {},
 }

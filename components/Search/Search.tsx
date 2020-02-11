@@ -99,7 +99,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     if (error)
         return (
-            <Error type="500" button={{ text: 'Try again', onClick: refetch }}>
+            <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }}>
                 {error.message}
             </Error>
         )

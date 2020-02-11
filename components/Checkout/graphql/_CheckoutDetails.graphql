@@ -1,11 +1,12 @@
 #import "./_BillingAddress.graphql"
 #import "./_ShippingAddresses.graphql"
 #import "./_SelectedPaymentMethod.graphql"
+#import "../../Cart/graphql/_Cart.graphql"
 
 fragment CheckoutDetails on Cart {
-    braintreeToken @client
-
     email
+
+    ...Cart
 
     ...BillingAddress
     ...ShippingAddresses

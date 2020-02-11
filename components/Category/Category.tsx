@@ -114,7 +114,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     if (error)
         return (
-            <Error type="500" button={{ button: { text: 'Try again', onClick: refetch } }}>
+            <Error type="500" button={{ button: { text: 'Try again', onClick: () => refetch() } }}>
                 {error.message}
             </Error>
         )

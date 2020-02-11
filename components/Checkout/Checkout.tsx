@@ -1,6 +1,7 @@
-import React, { FunctionComponent, useCallback, useState, useEffect, useMemo } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect, useMemo, ChangeEvent } from 'react'
 
 import { useCheckout } from './useCheckout'
+import { useCart } from '../Cart/useCart'
 import { resolveImage } from '../../lib/resolveImage'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
@@ -14,7 +15,24 @@ const Error = dynamic(() => import('../Error'))
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const { loading, error, data, api, online, refetch } = useCheckout()
+    const {
+        loading,
+        error,
+        data,
+        api,
+        online,
+        refetch,
+        settingContactInfo,
+        setContactInfoError,
+        settingShippingMethod,
+        setShippingMethodError,
+        settingPaymentMethod,
+        setPaymentMethodError,
+        placingOrder,
+        placeOrderError,
+    } = useCheckout()
+
+    const { applyingCoupon, removingCoupon, couponError, api: cartApi } = useCart()
 
     const router = useRouter()
 
@@ -91,9 +109,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      */
     const handleSetShippingMethod = useCallback(
         async formData => {
-            const [methodCode, carrierCode] = formData.shippingMethod.split(',')
+            const { shippingMethod: methodCode } = formData
 
-            await api.setShippingMethod({ methodCode, carrierCode })
+            await api.setShippingMethod({ methodCode })
 
             setStep(3)
         },
@@ -121,10 +139,10 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     if (error && !online) return <Error type="Offline" />
 
-    if (error) <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (error) <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
 
-    const { cart, countries } = data
-    const { email, shippingAddresses, braintreeToken } = cart
+    const { cart, countries, braintreeToken } = data
+    const { email, shippingAddresses } = cart
     const shippingAddress = shippingAddresses && shippingAddresses[0]
 
     return (
@@ -141,53 +159,63 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 step={step}
                 contactInfo={{
-                    loading: loading && !(shippingAddress && email),
                     title: 'Contact Information',
                     edit: step < 2,
+                    loading: loading && !(shippingAddress && email),
+                    submitting: settingContactInfo,
+                    error: setContactInfoError,
                     fields: {
                         email: {
+                            name: 'email',
                             label: 'Email',
                             defaultValue: email,
                         },
                         firstName: {
+                            name: 'firstName',
                             label: 'First Name',
                             defaultValue: shippingAddress?.firstName,
                         },
                         lastName: {
+                            name: 'lastName',
                             label: 'Last Name',
                             defaultValue: shippingAddress?.lastName,
                         },
                         company: {
+                            name: 'company',
                             label: 'Company (optional)',
                             defaultValue: shippingAddress?.company,
                         },
                         address1: {
+                            name: 'street[0]',
                             label: 'Address',
                             defaultValue: shippingAddress?.street[0],
                         },
                         address2: {
+                            name: 'street[1]',
                             label: 'Apt, Suite, Unit, etc (optional)',
                             defaultValue: shippingAddress?.street[1],
                         },
                         city: {
+                            name: 'city',
                             label: 'City',
                             defaultValue: shippingAddress?.city,
                         },
                         country: {
+                            name: 'country',
                             label: 'Country',
-
                             defaultValue: selectedShippingCountryCode,
                             disabled: true, // US only for now
-                            onChange: e => setSelectedShippingCountryCode(e.currentTarget.value),
+                            onChange: (e: ChangeEvent<HTMLSelectElement>) =>
+                                setSelectedShippingCountryCode(e.currentTarget.value),
                             items: countries?.map((country: { name: string; code: string }) => ({
                                 text: country.name,
                                 value: country.code,
                             })),
                         },
                         region: {
+                            name: 'region',
                             label: 'State',
-                            defaultValue: shippingAddress?.region.code,
-                            type: 'text',
+                            defaultValue: shippingAddress?.region?.code,
                             ...(selectedShippingCountryRegions
                                 ? {
                                       type: 'select',
@@ -203,10 +231,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                   }),
                         },
                         postalCode: {
+                            name: 'postalCode',
                             label: 'Postal Code',
                             defaultValue: shippingAddress?.postalCode,
                         },
                         phone: {
+                            name: 'phone',
                             label: 'Phone Number',
                             defaultValue: shippingAddress?.phone,
                         },
@@ -221,20 +251,27 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     onSubmit: handleSetContactInformation,
                 }}
                 shippingMethod={{
-                    loading: loading && !(shippingAddress && shippingAddress.availableShippingMethods),
                     title: 'Shipping Method',
                     edit: step < 3,
-                    items: shippingAddress?.availableShippingMethods?.map(
-                        ({ methodTitle, carrierTitle, methodCode, carrierCode, available, amount }: any) => ({
-                            text: `${carrierTitle} ${amount.value.toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: amount.currency,
-                            })} (${methodTitle})`,
-                            value: `${methodCode},${carrierCode}`,
-                            defaultChecked: methodCode === shippingAddress?.selectedShippingMethod?.methodCode,
-                            disabled: !available,
-                        })
-                    ),
+                    loading: loading && !(shippingAddress && shippingAddress.availableShippingMethods),
+                    submitting: settingShippingMethod,
+                    error: setShippingMethodError,
+                    fields: {
+                        shippingMethod: {
+                            name: 'shippingMethod',
+                            items: shippingAddress?.availableShippingMethods?.map(
+                                ({ methodTitle, methodCode, available, amount }: any) => ({
+                                    text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: amount.currency,
+                                    })}`,
+                                    value: methodCode,
+                                    defaultChecked: methodCode === shippingAddress?.selectedShippingMethod?.methodCode,
+                                    disabled: !available,
+                                })
+                            ),
+                        },
+                    },
                     editButton: {
                         text: 'Edit',
                     },
@@ -246,6 +283,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 paymentMethod={{
                     title: 'Payment',
+                    submitting: settingPaymentMethod,
+                    error: setPaymentMethodError,
                     braintree: {
                         authorization: braintreeToken,
                         vaultManager: true,
@@ -261,33 +300,44 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 placeOrder={{
                     title: 'Finish',
+                    loading,
+                    submitting: placingOrder,
+                    error: placeOrderError,
                     submitButton: {
                         text: 'Place Order',
                     },
                     onSubmit: handlePlaceOrder,
                 }}
                 list={{
-                    loading: loading && !cart?.items?.length,
-                    items: cart?.items?.map(({ id, quantity, product, prices, options }: any, index: number) => ({
+                    loading: loading && !cart?.totalQuantity,
+                    items: cart?.items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
+                            as: Link,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
+                            href: `/${product.urlKey}`,
                             text: product.name,
                         },
                         sku: `SKU. ${product.sku}`,
                         thumbnail: {
+                            as: Link,
+                            urlResolver: {
+                                type: 'PRODUCT',
+                                id,
+                            },
+                            href: `/${product.urlKey}`,
                             alt: product.thumbnail.label,
                             src: resolveImage(product.thumbnail.url),
                         },
                         quantity: {
                             value: quantity,
-                            addLabel: `Add another ${product.name} from shopping bag`,
-                            substractLabel: `Remove one ${product.name} from shopping bag`,
-                            removeLabel: `Remove all ${product.name} from shopping bag`,
                         },
                         price: {
-                            currency: prices.regular.currency,
-                            regular: prices.regular.value,
-                            special: prices.special.value,
+                            currency: price.amount.currency,
+                            regular: price.amount.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -300,24 +350,51 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     title: {
                         text: 'Bag Summary',
                     },
+                    coupons: {
+                        label: 'Coupons',
+                        open: !!cart?.appliedCoupons,
+                        items: [
+                            {
+                                field: {
+                                    label: 'Coupon Code',
+                                    name: 'couponCode',
+                                    error: couponError,
+                                    disabled: !!cart.appliedCoupons,
+                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
+                                },
+                                submitButton: {
+                                    text: cart.appliedCoupons ? 'Remove' : 'Apply',
+                                    type: cart.appliedCoupons ? 'reset' : 'submit',
+                                },
+                                submitting: applyingCoupon || removingCoupon,
+                                onReset: () => {
+                                    cartApi.removeCoupon()
+                                },
+                                onSubmit: (values: any) => {
+                                    const { couponCode } = values
+                                    cartApi.applyCoupon({ couponCode })
+                                },
+                            },
+                        ],
+                    },
                     prices: [
                         {
                             label: 'Subtotal',
                             price: cart?.prices?.subTotal && {
                                 currency: cart.prices.subTotal.currency,
                                 regular: cart.prices.subTotal.value,
-                                special:
-                                    cart.prices.subTotalWithDiscounts.value < cart.prices.subTotal.value &&
-                                    cart.prices.subTotalWithDiscounts.value,
                             },
                         },
-                        {
-                            label: 'Shipping',
-                            price: shippingAddress?.selectedShippingMethod?.amount && {
-                                currency: shippingAddress?.selectedShippingMethod?.amount.currency,
-                                regular: shippingAddress?.selectedShippingMethod?.amount.value,
+
+                        // Discounts
+                        ...(cart?.prices?.discounts?.map((discount: any) => ({
+                            label: discount.label,
+                            price: {
+                                currency: discount.amount.currency,
+                                regular: -discount.amount.value,
                             },
-                        },
+                        })) || []),
+
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {
