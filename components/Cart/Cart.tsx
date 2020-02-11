@@ -119,23 +119,28 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         text: 'Bag Summary',
                     },
                     coupons: {
-                        label: 'Gift Cards & Coupons',
+                        label: 'Coupons',
                         open: !!appliedCoupons,
-                        fields: [
+                        items: [
                             {
                                 field: {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
                                     error: couponError,
                                     disabled: !!appliedCoupons,
-                                    defaultValue: appliedCoupons ? appliedCoupons[0].code : '',
+                                    defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
                                 },
                                 submitButton: {
                                     text: appliedCoupons ? 'Remove' : 'Apply',
+                                    type: appliedCoupons ? 'reset' : 'submit',
                                 },
                                 submitting: applyingCoupon || removingCoupon,
-                                onSubmit: ({ couponCode }: any) => {
-                                    appliedCoupons ? api.removeCoupon() : api.applyCoupon({ couponCode })
+                                onReset: () => {
+                                    api.removeCoupon()
+                                },
+                                onSubmit: (values: any) => {
+                                    const { couponCode } = values
+                                    api.applyCoupon({ couponCode })
                                 },
                             },
                         ],

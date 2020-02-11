@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useEffect, useMemo } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect, useMemo, ChangeEvent } from 'react'
 
 import { useCheckout } from './useCheckout'
 import { useCart } from '../Cart/useCart'
@@ -205,7 +205,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             label: 'Country',
                             defaultValue: selectedShippingCountryCode,
                             disabled: true, // US only for now
-                            onChange: e => setSelectedShippingCountryCode(e.currentTarget.value),
+                            onChange: (e: ChangeEvent<HTMLSelectElement>) =>
+                                setSelectedShippingCountryCode(e.currentTarget.value),
                             items: countries?.map((country: { name: string; code: string }) => ({
                                 text: country.name,
                                 value: country.code,
@@ -215,7 +216,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             name: 'region',
                             label: 'State',
                             defaultValue: shippingAddress?.region?.code,
-                            type: 'text',
                             ...(selectedShippingCountryRegions
                                 ? {
                                       type: 'select',
@@ -353,12 +353,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                     coupons: {
                         label: 'Gift Cards & Coupons',
                         open: !!cart?.appliedCoupons,
-                        fields: [
-                            // {
-                            //     field: { label: 'Gift Card', name: 'giftCardCode' },
-                            //     submitButton: { text: 'Apply' },
-                            //     onSubmit: () => {},
-                            // },
+                        items: [
                             {
                                 field: {
                                     name: 'couponCode',
