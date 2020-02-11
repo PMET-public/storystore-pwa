@@ -54,8 +54,9 @@ export default class extends Document<any> {
 
                     {/* Fonts */}
 
+                    <link href="https://storage.googleapis.com" rel="preconnect" crossOrigin="true" />
                     <link href="https://use.typekit.net" rel="preconnect" crossOrigin="true" />
-                    <link rel="stylesheet" href="/static/fonts.css" />
+                    <link rel="preload" as="style" href="/static/fonts.css" />
                 </Head>
 
                 <body>

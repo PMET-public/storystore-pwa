@@ -53,6 +53,8 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
                                 storeConfig?.baseMediaUrl && {
                                     alt: text,
                                     src: resolveImage(image),
+                                    width: '100px',
+                                    height: '100px',
                                 },
                             text,
                         })),
