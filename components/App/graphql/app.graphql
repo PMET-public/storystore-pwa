@@ -1,4 +1,12 @@
-query AppShellQuery($categoriesParentId: String!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
+#import "../../Cart/graphql/_Cart.graphql"
+
+query AppShellQuery(
+    $categoriesParentId: String!
+    $footerBlockId: String = ""
+    $hasFooter: Boolean = false
+    $hasCart: Boolean = false
+    $cartId: String = ""
+) {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
@@ -12,6 +20,10 @@ query AppShellQuery($categoriesParentId: String!, $footerBlockId: String = "", $
         logoAlt: logo_alt
         homePath: cms_home_page
         copyright
+    }
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        ...Cart
     }
 
     categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {

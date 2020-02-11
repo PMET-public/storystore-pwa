@@ -73,7 +73,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
+<<<<<<< HEAD
                     items: items.map(({ id, quantity, price, product, options }: any, index: number) => ({
+=======
+                    items: items.map(({ id, quantity, product, prices, options }: any, index: number) => ({
+>>>>>>> 1c25bdcf16bdb2bb2549f3720ed455a0321761b8
                         _id: id || index,
                         title: {
                             as: Link,
@@ -104,8 +108,14 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             onRemove: () => api.removeCartItem({ productId: id }),
                         },
                         price: {
+<<<<<<< HEAD
                             currency: price.amount.currency,
                             regular: price.amount.value,
+=======
+                            currency: prices.regular.currency,
+                            regular: prices.regular.value,
+                            special: prices.special.value,
+>>>>>>> 1c25bdcf16bdb2bb2549f3720ed455a0321761b8
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -153,6 +163,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 regular: cart.prices.subTotal.value,
                             },
                         },
+<<<<<<< HEAD
 
                         // Discounts
                         ...(cart?.prices?.discounts?.map((discount: any) => ({
@@ -163,6 +174,17 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             },
                         })) || []),
 
+=======
+                        ...(cart?.prices?.discounts
+                            ? cart.prices.discounts.map((discount: any) => ({
+                                  label: discount.label,
+                                  price: {
+                                      currency: discount.amount.currency,
+                                      regular: -discount.amount.value,
+                                  },
+                              }))
+                            : []),
+>>>>>>> 1c25bdcf16bdb2bb2549f3720ed455a0321761b8
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {

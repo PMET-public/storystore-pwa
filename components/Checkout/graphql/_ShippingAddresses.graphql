@@ -13,6 +13,7 @@ fragment ShippingAddresses on Cart {
             carrierCode: carrier_code
             methodCode: method_code
             methodTitle: method_title
+            carrierTitle: carrier_title
         }
 
         selectedShippingMethod: selected_shipping_method {
