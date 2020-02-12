@@ -31,7 +31,7 @@
     "graphql-tag": "^2.10.1",
     "html-react-parser": "^0.10.0",
     "next": "^9.2.0",
-    "next-offline": "^4.0.6",
+    "next-offline": "^5.0.0",
     "nextjs-progressbar": "^0.0.4",
     "node-fetch": "^2.6.0",
     "preact": "^10.1.1",
@@ -39,7 +39,13 @@
     "react-dom": "^16.12.0",
     "request": "^2.88.0",
     "styled-components": "^4.4.1",
-    "workbox-window": "^4.3.1"
+    "workbox-cacheable-response": "^5.0.0",
+    "workbox-core": "^5.0.0",
+    "workbox-expiration": "^5.0.0",
+    "workbox-precaching": "^5.0.0",
+    "workbox-routing": "^5.0.0",
+    "workbox-strategies": "^5.0.0",
+    "workbox-window": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.0",

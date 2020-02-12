@@ -17,7 +17,6 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
         if (process.browser) {
             console.log(`🙌 Luma PWA ${version}.`)
         }
-
         if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
             const wb = new Workbox('/service-worker.js')
 
@@ -30,6 +29,12 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
                     type: 'CACHE_URLS',
                     payload: { urlsToCache },
                 })
+            })
+
+            wb.addEventListener('installed', event => {
+                if (event.isUpdate) {
+                    console.log('A new version available. Please reload the app.')
+                }
             })
 
             // Register the service worker
