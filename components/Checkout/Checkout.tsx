@@ -260,8 +260,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         shippingMethod: {
                             name: 'shippingMethod',
                             items: shippingAddress?.availableShippingMethods?.map(
-                                ({ methodTitle, methodCode, available, amount }: any) => ({
-                                    text: `${methodTitle} ${amount.value.toLocaleString('en-US', {
+                                ({ carrierTitle, methodTitle, methodCode, available, amount }: any) => ({
+                                    text: `${carrierTitle} (${methodTitle}) ${amount.value.toLocaleString('en-US', {
                                         style: 'currency',
                                         currency: amount.currency,
                                     })}`,
@@ -378,6 +378,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         ],
                     },
                     prices: [
+                        // Sub-total
                         {
                             label: 'Subtotal',
                             price: cart?.prices?.subTotal && {
@@ -395,6 +396,18 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                             },
                         })) || []),
 
+                        // Shipping
+                        ...(shippingAddresses
+                            ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
+                            .map(({ selectedShippingMethod }: any) => ({
+                                label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
+                                price: {
+                                    currency: selectedShippingMethod.amount.currency,
+                                    regular: selectedShippingMethod.amount.value,
+                                },
+                            })) || []),
+
+                        // Taxes
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {
@@ -405,6 +418,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                 ),
                             },
                         },
+
+                        // Total
                         {
                             appearance: 'bold',
                             label: 'Total',

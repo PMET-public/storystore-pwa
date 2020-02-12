@@ -5,9 +5,7 @@
 
 fragment CheckoutDetails on Cart {
     email
-
     ...Cart
-
     ...BillingAddress
     ...ShippingAddresses
     ...SelectedPaymentMethod

@@ -1,5 +1,4 @@
 #import "./_CheckoutDetails.graphql"
-#import "../../Cart/graphql/_Cart.graphql"
 
 query CheckoutQuery($cartId: String = "", $hasCart: Boolean = false) {
     cartId @client @export(as: "cartId")
@@ -8,7 +7,6 @@ query CheckoutQuery($cartId: String = "", $hasCart: Boolean = false) {
 
     cart(cart_id: $cartId) @include(if: $hasCart) {
         ...CheckoutDetails
-        ...Cart
     }
 
     countries {

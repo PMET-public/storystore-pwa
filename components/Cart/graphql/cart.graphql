@@ -1,4 +1,5 @@
 #import "./_Cart.graphql"
+#import "../../Checkout/graphql/_ShippingAddresses.graphql"
 
 query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
     hasCart @client @export(as: "hasCart")
@@ -6,5 +7,6 @@ query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
 
     cart(cart_id: $cartId) @include(if: $hasCart) {
         ...Cart
+        ...ShippingAddresses
     }
 }

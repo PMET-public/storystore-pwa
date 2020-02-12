@@ -146,6 +146,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         ],
                     },
                     prices: [
+                        // Sub-total
                         {
                             label: 'Subtotal',
                             price: cart?.prices?.subTotal && {
@@ -163,6 +164,18 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             },
                         })) || []),
 
+                        // Shipping
+                        ...(cart?.shippingAddresses
+                            ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
+                            .map(({ selectedShippingMethod }: any) => ({
+                                label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
+                                price: {
+                                    currency: selectedShippingMethod.amount.currency,
+                                    regular: selectedShippingMethod.amount.value,
+                                },
+                            })) || []),
+
+                        // Taxes
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {
@@ -173,6 +186,8 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 ),
                             },
                         },
+
+                        // Total
                         {
                             appearance: 'bold',
                             label: 'Total',

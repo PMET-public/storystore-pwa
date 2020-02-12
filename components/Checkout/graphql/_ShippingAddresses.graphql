@@ -19,6 +19,8 @@ fragment ShippingAddresses on Cart {
         selectedShippingMethod: selected_shipping_method {
             methodCode: method_code
             carrierCode: carrier_code
+            methodTitle: method_title
+            carrierTitle: carrier_title
             amount {
                 currency
                 value
