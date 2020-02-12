@@ -35,7 +35,6 @@ query ProductQuery($urlKey: String!) {
                 maximum: maximum_price {
                     regular: regular_price {
                         value
-                        currency
                     }
                 }
             }
