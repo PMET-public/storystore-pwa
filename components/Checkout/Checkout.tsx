@@ -351,7 +351,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         text: 'Bag Summary',
                     },
                     coupons: {
-                        label: 'Coupons',
+                        label: 'Apply Coupons',
                         open: !!cart?.appliedCoupons,
                         items: [
                             {

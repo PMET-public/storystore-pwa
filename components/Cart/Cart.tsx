@@ -119,7 +119,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                         text: 'Bag Summary',
                     },
                     coupons: {
-                        label: 'Coupons',
+                        label: 'Apply Coupons',
                         open: !!appliedCoupons,
                         items: [
                             {
