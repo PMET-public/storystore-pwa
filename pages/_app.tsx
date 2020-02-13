@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { NextPage } from 'next'
-import { Workbox } from 'workbox-window'
+// import { Workbox } from 'workbox-window'
 import { version } from '../package.json'
 
 import withApollo from '../apollo/with-apollo'
@@ -17,29 +17,29 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
         if (process.browser) {
             console.log(`🙌 Luma PWA ${version}.`)
         }
-        if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-            const wb = new Workbox('/service-worker.js')
+        // if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+        //     const wb = new Workbox('/service-worker.js')
 
-            wb.addEventListener('activated', _event => {
-                // Get the current page URL + all resources the page loaded.
-                const urlsToCache = [location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
+        //     wb.addEventListener('activated', _event => {
+        //         // Get the current page URL + all resources the page loaded.
+        //         const urlsToCache = [location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
 
-                // Send that list of URLs to your router in the service worker.
-                wb.messageSW({
-                    type: 'CACHE_URLS',
-                    payload: { urlsToCache },
-                })
-            })
+        //         // Send that list of URLs to your router in the service worker.
+        //         wb.messageSW({
+        //             type: 'CACHE_URLS',
+        //             payload: { urlsToCache },
+        //         })
+        //     })
 
-            wb.addEventListener('installed', event => {
-                if (event.isUpdate) {
-                    console.log('A new version available. Please reload the app.')
-                }
-            })
+        //     wb.addEventListener('installed', event => {
+        //         if (event.isUpdate) {
+        //             console.log('A new version available. Please reload the app.')
+        //         }
+        //     })
 
-            // Register the service worker
-            wb.register()
-        }
+        //     // Register the service worker
+        //     wb.register()
+        // }
     }, [])
 
     return (
