@@ -20,13 +20,13 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
     const isUrlActive = useIsUrlActive()
 
     if (error) {
-        if ((error?.networkError as any).statusCode === 401) {
+        if ((error?.networkError as any)?.statusCode === 401) {
             return (
                 <Error type="401" button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }} fullScreen>
                     Authorization Required
                 </Error>
             )
-        } else if ((error?.networkError as any).statusCode === 403) {
+        } else if ((error?.networkError as any)?.statusCode === 403) {
             return (
                 <Error type="401" button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }} fullScreen>
                     Authorization Required
