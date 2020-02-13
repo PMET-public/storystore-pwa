@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { NextPage } from 'next'
-// import { Workbox } from 'workbox-window'
+import { Workbox } from 'workbox-window'
 import { version } from '../package.json'
 
 import withApollo from '../apollo/with-apollo'
