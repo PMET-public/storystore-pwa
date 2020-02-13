@@ -19,7 +19,7 @@ function create(initialState: any) {
         uri: process.browser
             ? new URL('/api/graphql', location.href).href
             : new URL('graphql', process.env.MAGENTO_URL).href,
-        useGETForQueries: true,
+        // useGETForQueries: true,
         credentials: 'same-origin',
     })
 
