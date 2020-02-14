@@ -1,6 +1,6 @@
 import { registerRoute } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim } from 'workbox-core'
@@ -35,25 +35,6 @@ cleanupOutdatedCaches()
 /**
  * Routes
  */
-
-// GraphQL API
-registerRoute(
-    /\/api\/graphql/,
-    new NetworkFirst({
-        cacheName: 'api-graphql',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
-        plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
-            new ExpirationPlugin({
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
-    })
-)
 
 // Images API
 registerRoute(

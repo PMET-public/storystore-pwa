@@ -2,6 +2,7 @@ import { HttpLink } from 'apollo-link-http'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
+import { persistCache } from 'apollo-cache-persist'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import { defaults, typeDefs, resolvers } from './resolvers'
@@ -30,7 +31,13 @@ function create(initialState: any) {
         },
         attempts: {
             max: 3,
-            retryIf: error => !!error && (process.browser ? navigator.onLine : false), // retry only on front-end
+            retryIf: error => {
+                if (process.browser) {
+                    debugger
+                    return !!error ? navigator.onLine : false
+                }
+                return false
+            }, // retry only on front-end
         },
     })
 
@@ -71,6 +78,11 @@ function create(initialState: any) {
     cache.writeData({
         data: { ...defaults },
     })
+
+    // await before instantiating ApolloClient, else queries might run before the cache is persisted
+    if (process.browser) {
+        persistCache({ cache, storage: window.localStorage as any })
+    }
 
     const client = new ApolloClient({
         cache,
