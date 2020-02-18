@@ -135,12 +135,10 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     const online = useNetworkStatus()
 
-    if (!data || !data.cart) return null
-
     if (!online && !data) return <Error type="Offline" />
 
-    const { cart, countries, braintreeToken } = data
-    const { email, shippingAddresses } = cart
+    const { cart, countries, braintreeToken } = data || {}
+    const { email, shippingAddresses } = cart || {}
     const shippingAddress = shippingAddresses && shippingAddresses[0]
 
     return (
@@ -357,12 +355,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
                                     error: couponError,
-                                    disabled: !!cart.appliedCoupons,
-                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
+                                    disabled: !!cart?.appliedCoupons,
+                                    defaultValue: cart?.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
                                 },
                                 submitButton: {
-                                    text: cart.appliedCoupons ? 'Remove' : 'Apply',
-                                    type: cart.appliedCoupons ? 'reset' : 'submit',
+                                    text: cart?.appliedCoupons ? 'Remove' : 'Apply',
+                                    type: cart?.appliedCoupons ? 'reset' : 'submit',
                                 },
                                 submitting: applyingCoupon || removingCoupon,
                                 onReset: () => {

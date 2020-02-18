@@ -2,7 +2,6 @@ import { HttpLink } from 'apollo-link-http'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
-import { persistCache } from 'apollo-cache-persist'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import QueueLink from 'apollo-link-queue'
@@ -25,6 +24,7 @@ async function create(initialState: any) {
             ? new URL('/api/graphql', location.href).href
             : new URL('graphql', process.env.MAGENTO_URL).href,
         credentials: 'same-origin',
+        useGETForQueries: true,
     })
 
     const retryLink = new RetryLink({
@@ -83,11 +83,6 @@ async function create(initialState: any) {
         data: { ...defaults },
     })
 
-    // await before instantiating ApolloClient, else queries might run before the cache is persisted
-    if (process.browser) {
-        await persistCache({ cache, storage: window.localStorage as any })
-    }
-
     const client = new ApolloClient({
         cache,
         connectToDevTools: process.browser,
@@ -95,6 +90,17 @@ async function create(initialState: any) {
         resolvers,
         ssrMode: !process.browser,
         typeDefs,
+        defaultOptions: {
+            watchQuery: {
+                fetchPolicy: 'no-cache',
+            },
+            query: {
+                fetchPolicy: 'no-cache',
+            },
+            mutate: {
+                fetchPolicy: 'no-cache',
+            },
+        },
     })
 
     return client
@@ -115,7 +121,6 @@ export default async function createApolloClient(initialState?: any) {
 
 export const queryDefaultOptions: QueryHookOptions = {
     fetchPolicy: 'cache-and-network',
-    // errorPolicy: 'all',
     returnPartialData: true,
     notifyOnNetworkStatusChange: true,
 }

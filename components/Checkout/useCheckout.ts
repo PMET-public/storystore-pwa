@@ -1,4 +1,3 @@
-import { queryDefaultOptions } from '../../apollo/client'
 import { writeInLocalStorage } from '../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
@@ -10,6 +9,7 @@ import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToke
 import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+import { queryDefaultOptions } from '../../apollo/client'
 
 export const useCheckout = () => {
     /**
@@ -17,6 +17,7 @@ export const useCheckout = () => {
      */
     const query = useQuery(CHECKOUT_QUERY, {
         ...queryDefaultOptions,
+        fetchPolicy: 'no-cache',
     })
 
     /**
@@ -150,7 +151,7 @@ export const useCheckout = () => {
         },
     })
 
-    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
+    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION, {})
 
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()
