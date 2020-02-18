@@ -19,7 +19,7 @@ if (!process.browser) {
 
 export const offlineLink = new QueueLink()
 
-function create(initialState: any) {
+async function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: process.browser
             ? new URL('/api/graphql', location.href).href
@@ -85,7 +85,7 @@ function create(initialState: any) {
 
     // await before instantiating ApolloClient, else queries might run before the cache is persisted
     if (process.browser) {
-        persistCache({ cache, storage: window.localStorage as any })
+        await persistCache({ cache, storage: window.localStorage as any })
     }
 
     const client = new ApolloClient({
@@ -100,14 +100,14 @@ function create(initialState: any) {
     return client
 }
 
-export default function initApollo(initialState?: any) {
+export default async function createApolloClient(initialState?: any) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
-    if (!process.browser) return create(initialState)
+    if (!process.browser) return await create(initialState)
 
     // Reuse client on the client-side
     if (!apolloClient) {
-        apolloClient = create(initialState)
+        apolloClient = await create(initialState)
     }
 
     return apolloClient
