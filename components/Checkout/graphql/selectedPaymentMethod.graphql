@@ -1,0 +1,11 @@
+#import "./_SelectedPaymentMethod.graphql"
+
+query SelectedPaymentMethodQuery($cartId: String = "", $hasCart: Boolean = false) {
+    cartId @client @export(as: "cartId")
+    hasCart @client @export(as: "hasCart")
+    braintreeToken @client
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        ...SelectedPaymentMethod
+    }
+}

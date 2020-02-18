@@ -1,4 +1,6 @@
-#import "./_CheckoutDetails.graphql"
+#import "./_ContactInfo.graphql"
+#import "./_ShippingMethods.graphql"
+#import "./_SelectedPaymentMethod.graphql"
 
 # Braintree!
 
@@ -15,7 +17,9 @@ mutation SetPaymentOnCart($cartId: String = "", $nonce: String!) {
         }
     ) {
         cart {
-            ...CheckoutDetails
+            ...ContactInfo
+            ...ShippingMethods
+            ...SelectedPaymentMethod
         }
     }
 }

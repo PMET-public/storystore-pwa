@@ -1,0 +1,10 @@
+#import "./_ContactInfo.graphql"
+
+query ContactInfoQuery($cartId: String = "", $hasCart: Boolean = false) {
+    cartId @client @export(as: "cartId")
+    hasCart @client @export(as: "hasCart")
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        ...ContactInfo
+    }
+}

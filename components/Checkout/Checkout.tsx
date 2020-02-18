@@ -16,23 +16,22 @@ const Error = dynamic(() => import('../Error'))
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const {
-        loading,
-        data,
-        api,
-        settingContactInfo,
-        setContactInfoError,
-        settingShippingMethod,
-        setShippingMethodError,
-        settingPaymentMethod,
-        setPaymentMethodError,
-        placingOrder,
-        placeOrderError,
-    } = useCheckout()
+    const { loading, data, api, contactInfo, shippingMethods, paymentMethod, placeOrder } = useCheckout()
 
-    const { applyingCoupon, removingCoupon, couponError, api: cartApi } = useCart()
+    const { applyingCoupon, removingCoupon, couponError, api: cartApi, data: cartData } = useCart()
 
     const router = useRouter()
+
+    const { cart } = cartData || {}
+
+    const { braintreeToken, countries } = data || {}
+
+    const { email } = contactInfo.data?.cart || {}
+
+    const shippingAddress = contactInfo.data?.cart?.shippingAddresses && contactInfo.data?.cart?.shippingAddresses[0]
+
+    const { availableShippingMethods, selectedShippingMethod } =
+        (shippingMethods.data?.cart?.shippingAddresses && shippingMethods.data?.cart?.shippingAddresses[0]) || {}
 
     /**
      * Steps
@@ -48,20 +47,20 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (data && data.cart && data.cart.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
-    }, [data && data.cart])
+        if (cart && cart.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
+    }, [cart])
 
     /**
      * Countries Data
      */
     const [selectedShippingCountryCode, setSelectedShippingCountryCode] = useState(
-        (data && data.cart && data.cart.shippingAddress && data.cart.shippingAddress?.country.code) || 'US'
+        shippingAddress?.country.code || 'US'
     )
 
     const selectedShippingCountryRegions = useMemo(() => {
-        if (!(data && data.countries)) return null
-        return data.countries.find((country: { code: string }) => country.code === selectedShippingCountryCode).regions
-    }, [data && data.countries, selectedShippingCountryCode])
+        if (!countries) return null
+        return countries.find((country: { code: string }) => country.code === selectedShippingCountryCode).regions
+    }, [countries, selectedShippingCountryCode])
 
     /**
      * Contact Information
@@ -137,10 +136,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     if (!online && !data) return <Error type="Offline" />
 
-    const { cart, countries, braintreeToken } = data || {}
-    const { email, shippingAddresses } = cart || {}
-    const shippingAddress = shippingAddresses && shippingAddresses[0]
-
     return (
         <React.Fragment>
             <DocumentMetadata title="Checkout" />
@@ -157,9 +152,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 contactInfo={{
                     title: 'Contact Information',
                     edit: step < 2,
-                    loading: loading && !(shippingAddress && email),
-                    submitting: settingContactInfo,
-                    error: setContactInfoError,
+                    loading: contactInfo.loading,
+                    submitting: contactInfo.settingContactInfo,
+                    error: contactInfo.setContactInfoError,
                     fields: {
                         email: {
                             name: 'email',
@@ -249,20 +244,20 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 shippingMethod={{
                     title: 'Shipping Method',
                     edit: step < 3,
-                    loading: loading && !(shippingAddress && shippingAddress.availableShippingMethods),
-                    submitting: settingShippingMethod,
-                    error: setShippingMethodError,
+                    loading: shippingMethods.loading,
+                    submitting: shippingMethods.settingShippingMethod,
+                    error: shippingMethods.setShippingMethodError,
                     fields: {
                         shippingMethod: {
                             name: 'shippingMethod',
-                            items: shippingAddress?.availableShippingMethods?.map(
+                            items: availableShippingMethods?.map(
                                 ({ carrierTitle, methodTitle, methodCode, available, amount }: any) => ({
                                     text: `${carrierTitle} (${methodTitle}) ${amount.value.toLocaleString('en-US', {
                                         style: 'currency',
                                         currency: amount.currency,
                                     })}`,
                                     value: methodCode,
-                                    defaultChecked: methodCode === shippingAddress?.selectedShippingMethod?.methodCode,
+                                    defaultChecked: methodCode === selectedShippingMethod?.methodCode,
                                     disabled: !available,
                                 })
                             ),
@@ -279,8 +274,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 paymentMethod={{
                     title: 'Payment',
-                    submitting: settingPaymentMethod,
-                    error: setPaymentMethodError,
+                    submitting: paymentMethod.settingPaymentMethod,
+                    error: paymentMethod.setPaymentMethodError,
                     braintree: {
                         authorization: braintreeToken,
                         vaultManager: true,
@@ -297,8 +292,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 placeOrder={{
                     title: 'Finish',
                     loading,
-                    submitting: placingOrder,
-                    error: placeOrderError,
+                    submitting: placeOrder.placingOrder,
+                    error: placeOrder.placeOrderError,
                     submitButton: {
                         text: 'Place Order',
                     },
@@ -393,7 +388,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         })) || []),
 
                         // Shipping
-                        ...(shippingAddresses
+                        ...(cart?.shippingAddresses
                             ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
                             .map(({ selectedShippingMethod }: any) => ({
                                 label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,

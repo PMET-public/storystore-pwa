@@ -1,0 +1,13 @@
+#import "./_Address.graphql"
+
+fragment ContactInfo on Cart {
+    email
+
+    billingAddress: billing_address {
+        ...Address
+    }
+
+    shippingAddresses: shipping_addresses {
+        ...Address
+    }
+}
