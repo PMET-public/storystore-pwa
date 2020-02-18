@@ -1,8 +1,9 @@
-import { writeInLocalStorage } from './../../lib/localStorage'
+import { queryDefaultOptions } from '../../apollo/client'
+import { writeInLocalStorage } from '../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { useValueUpdated } from './../../hooks/useValueUpdated'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
+import { useValueUpdated } from '../../hooks/useValueUpdated'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
@@ -17,20 +18,16 @@ export const useCheckout = () => {
      * Data Query
      */
     const query = useQuery(CHECKOUT_QUERY, {
-        fetchPolicy: 'cache-and-network',
-        errorPolicy: 'all',
-        returnPartialData: true,
+        ...queryDefaultOptions,
     })
 
     /**
      * Refetch when back online
      */
-    const {
-        state: { online },
-    } = useAppContext()
+    const online = useNetworkStatus()
 
     useValueUpdated(() => {
-        if (query.error && online) query.refetch()
+        if (online) query.refetch()
     }, online)
 
     /**

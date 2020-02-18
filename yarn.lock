@@ -1083,7 +1083,7 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@pmet-public/luma-ui@1.0.0-beta.34":
+"@pmet-public/luma-ui@1.0.0-beta.35":
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.34.tgz#38869f5186b361799188ccab3b8580de90e360ce"
   integrity sha512-6xzZkxsvlSEGNMPLkdT3WiRGz0+sP70UzdSFiwXoJsFO5fb0s/+7arGZrxtaDejl2RZh9+ENrX5O3vmR3kxkMA==
@@ -1592,6 +1592,13 @@ apollo-link-http@^1.5.16:
     apollo-link-http-common "^0.2.15"
     tslib "^1.9.3"
 
+apollo-link-queue@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/apollo-link-queue/-/apollo-link-queue-2.2.0.tgz#d315ff722b5a82ac766c27cc14b39ac356c28c64"
+  integrity sha512-LlqSRSWOVBzdCyodTyU7i2zACyisVh9Evwr4aQtI1OeUZAJYW6GNSEMHXBwPkWQ8QJ3ZpQUIq+uI1hh7xBJvyw==
+  dependencies:
+    apollo-link "^1.2.3"
+
 apollo-link-retry@^2.2.15:
   version "2.2.15"
   resolved "https://registry.yarnpkg.com/apollo-link-retry/-/apollo-link-retry-2.2.15.tgz#4cc3202fcb6251fed6f6b57ade99b4b1ad05c619"
@@ -1601,7 +1608,7 @@ apollo-link-retry@^2.2.15:
     apollo-link "^1.2.13"
     tslib "^1.9.3"
 
-apollo-link@^1.0.0, apollo-link@^1.2.13:
+apollo-link@^1.0.0, apollo-link@^1.2.13, apollo-link@^1.2.3:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/apollo-link/-/apollo-link-1.2.13.tgz#dff00fbf19dfcd90fddbc14b6a3f9a771acac6c4"
   integrity sha512-+iBMcYeevMm1JpYgwDEIDt/y0BB7VWyvlm/7x+TIPNLHCTCMgcEgDuW5kH86iQZWo0I7mNwQiTOz+/3ShPFmBw==

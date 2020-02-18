@@ -5,7 +5,9 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { persistCache } from 'apollo-cache-persist'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
+import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
+import { QueryHookOptions } from '@apollo/react-hooks'
 
 let apolloClient: any
 
@@ -14,6 +16,8 @@ if (!process.browser) {
     global.fetch = require('node-fetch')
     global.URL = require('url').URL
 }
+
+export const offlineLink = new QueueLink()
 
 function create(initialState: any) {
     const httpLink = new HttpLink({
@@ -33,7 +37,6 @@ function create(initialState: any) {
             max: 3,
             retryIf: error => {
                 if (process.browser) {
-                    debugger
                     return !!error ? navigator.onLine : false
                 }
                 return false
@@ -59,6 +62,7 @@ function create(initialState: any) {
             console.groupEnd()
         }),
         retryLink,
+        offlineLink,
         httpLink,
     ])
 
@@ -107,4 +111,11 @@ export default function initApollo(initialState?: any) {
     }
 
     return apolloClient
+}
+
+export const queryDefaultOptions: QueryHookOptions = {
+    fetchPolicy: 'cache-and-network',
+    // errorPolicy: 'all',
+    returnPartialData: true,
+    notifyOnNetworkStatusChange: true,
 }
