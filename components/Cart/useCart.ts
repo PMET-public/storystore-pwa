@@ -1,8 +1,6 @@
 import { queryDefaultOptions } from '../../apollo/client'
-import { useValueUpdated } from '../../hooks/useValueUpdated'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 
 import CART_QUERY from './graphql/cart.graphql'
 import UPDATE_CART_ITEMS_MUTATION from './graphql/updateCartItems.graphql'
@@ -17,15 +15,6 @@ export const useCart = () => {
     const query = useQuery(CART_QUERY, {
         ...queryDefaultOptions,
     })
-
-    /**
-     * Refetch when back online
-     */
-    const online = useNetworkStatus()
-
-    useValueUpdated(() => {
-        if (online) query.refetch()
-    }, online)
 
     /**
      * Handle Update Cart Item Action
@@ -111,7 +100,6 @@ export const useCart = () => {
 
     return {
         ...query,
-        online,
         updating,
         removing,
         applyingCoupon,

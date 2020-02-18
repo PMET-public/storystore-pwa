@@ -2,8 +2,6 @@ import { queryDefaultOptions } from '../../apollo/client'
 import { writeInLocalStorage } from '../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { useValueUpdated } from '../../hooks/useValueUpdated'
-import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
@@ -20,15 +18,6 @@ export const useCheckout = () => {
     const query = useQuery(CHECKOUT_QUERY, {
         ...queryDefaultOptions,
     })
-
-    /**
-     * Refetch when back online
-     */
-    const online = useNetworkStatus()
-
-    useValueUpdated(() => {
-        if (online) query.refetch()
-    }, online)
 
     /**
      * Set Contact Info
@@ -171,7 +160,6 @@ export const useCheckout = () => {
 
     return {
         ...query,
-        online,
         settingContactInfo,
         setContactInfoError: setContactInfoError?.message,
         settingShippingMethod,

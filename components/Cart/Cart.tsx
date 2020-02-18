@@ -9,6 +9,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
 const Error = dynamic(() => import('../Error'))
@@ -16,19 +17,7 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const {
-        loading,
-        updating,
-        removing,
-        error,
-        online,
-        data,
-        api,
-        refetch,
-        applyingCoupon,
-        removingCoupon,
-        couponError,
-    } = useCart()
+    const { loading, updating, removing, data, api, applyingCoupon, removingCoupon, couponError } = useCart()
 
     const router = useRouter()
 
@@ -36,11 +25,11 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))
     }, [])
 
-    if (error && !online) return <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
+    if (!online && !data) return <Error type="Offline" />
 
-    if (!data && !loading) return <Error type="500" />
+    if (!loading && !data) return <Error type="500" />
 
     const { cart } = data
 

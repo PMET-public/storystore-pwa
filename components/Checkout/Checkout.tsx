@@ -4,6 +4,7 @@ import { useCheckout } from './useCheckout'
 import { useCart } from '../Cart/useCart'
 import { resolveImage } from '../../lib/resolveImage'
 import { useRouter } from 'next/router'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 import dynamic from 'next/dynamic'
 
 import DocumentMetadata from '../DocumentMetadata'
@@ -17,11 +18,8 @@ type CheckoutProps = {}
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
     const {
         loading,
-        error,
         data,
         api,
-        online,
-        refetch,
         settingContactInfo,
         setContactInfoError,
         settingShippingMethod,
@@ -135,11 +133,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
     }, [api.setPaymentMethod])
 
+    const online = useNetworkStatus()
+
     if (!data || !data.cart) return null
 
-    if (error && !online) return <Error type="Offline" />
-
-    if (error) <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
+    if (!online && !data) return <Error type="Offline" />
 
     const { cart, countries, braintreeToken } = data
     const { email, shippingAddresses } = cart
