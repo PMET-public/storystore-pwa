@@ -1,4 +1,6 @@
 fragment ShippingMethods on Cart {
+    id
+
     shippingAddresses: shipping_addresses {
         availableShippingMethods: available_shipping_methods {
             available

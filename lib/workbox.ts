@@ -1,6 +1,6 @@
-import { registerRoute, setDefaultHandler, setCatchHandler } from 'workbox-routing'
+import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim } from 'workbox-core'
@@ -100,17 +100,29 @@ registerRoute(
 /**
  * Fallback (default handler)
  */
-setDefaultHandler(new StaleWhileRevalidate())
 
-setCatchHandler(({ event, request }) => {
-    if ((request as Request).method !== 'GET') return Response.error() as any
+setDefaultHandler(args => {
+    if (args.event.request.method === 'GET' && args.event.request.destination === 'document') {
+        return new NetworkFirst({
+            cacheName: 'default',
+            plugins: [
+                new CacheableResponsePlugin({
+                    statuses: [0, 200],
+                }),
+                new ExpirationPlugin({
+                    maxAgeSeconds: 7 * DAY_IN_SECONDS,
+                }),
+            ],
+        }).handle(args)
+    } else {
+        return fetch(args.event.request)
+    }
+})
 
-    switch (event.request.destination) {
-        case 'document':
-            return matchPrecache(FALLBACK_HTML_URL)
-
-        default:
-            // If we don't have a fallback, just return an error response.
-            return Response.error() as any
+setCatchHandler(({ event }) => {
+    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+        return matchPrecache(FALLBACK_HTML_URL)
+    } else {
+        return Response.error() as any
     }
 })

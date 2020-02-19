@@ -7,6 +7,7 @@ import { onError } from 'apollo-link-error'
 import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
 import { QueryHookOptions } from '@apollo/react-hooks'
+import { persistCache } from 'apollo-cache-persist'
 
 let apolloClient: any
 
@@ -78,6 +79,13 @@ async function create(initialState: any) {
             }
         },
     }).restore(initialState || {})
+
+    // await before instantiating ApolloClient, else queries might run before the cache is persisted
+    await persistCache({
+        cache,
+        storage: localStorage as any,
+        debug: process.browser && process.env.NODE_ENV !== 'production',
+    })
 
     cache.writeData({
         data: { ...defaults },

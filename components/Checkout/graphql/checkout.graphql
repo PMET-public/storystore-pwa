@@ -1,4 +1,6 @@
 query CheckoutQuery {
+    braintreeToken @client
+
     countries {
         id
         code: id

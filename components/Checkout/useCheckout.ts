@@ -34,7 +34,7 @@ export const useCheckout = () => {
 
     const contactInfo = useQuery(CONTACT_INFO_QUERY, {
         ...queryDefaultOptions,
-        // fetchPolicy: 'no-cache',
+        fetchPolicy: 'no-cache',
     })
 
     const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
@@ -102,7 +102,7 @@ export const useCheckout = () => {
      */
     const shippingMethods = useQuery(SHIPPING_METHODS_QUERY, {
         ...queryDefaultOptions,
-        // fetchPolicy: 'no-cache',
+        fetchPolicy: 'no-cache',
     })
 
     const [setShippingMethod, { loading: settingShippingMethod, error: setShippingMethodError }] = useMutation(
@@ -131,7 +131,7 @@ export const useCheckout = () => {
      */
     const paymentMethod = useQuery(SELECTED_PAYMENT_METHOD_QUERY, {
         ...queryDefaultOptions,
-        // fetchPolicy: 'no-cache',
+        fetchPolicy: 'no-cache',
     })
 
     const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {
