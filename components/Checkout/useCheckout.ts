@@ -27,6 +27,21 @@ export const useCheckout = () => {
     })
 
     /**
+     * Create Braintree Token
+     */
+    const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {
+        update(cache, { data: { braintreeToken } }) {
+            cache.writeData({
+                data: { braintreeToken },
+            })
+        },
+    })
+
+    useEffect(() => {
+        createBraintreeToken()
+    }, [])
+
+    /**
      * Contact Info
      */
 
@@ -129,18 +144,6 @@ export const useCheckout = () => {
         ...queryDefaultOptions,
     })
 
-    const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {
-        update(cache, { data: { braintreeToken } }) {
-            cache.writeData({
-                data: { braintreeToken },
-            })
-        },
-    })
-
-    useEffect(() => {
-        createBraintreeToken()
-    }, [])
-
     const [setPaymentMethod, { loading: settingPaymentMethod, error: setPaymentMethodError }] = useMutation(
         SET_PAYMENT_METHOD_MUTATION
     )
@@ -166,7 +169,7 @@ export const useCheckout = () => {
         },
     })
 
-    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION, {})
+    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
 
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()

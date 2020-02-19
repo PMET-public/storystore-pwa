@@ -1,26 +1,26 @@
-import React, { FunctionComponent, useCallback, useState, useEffect, useMemo, ChangeEvent } from 'react'
+import React, { FunctionComponent, useCallback, useState, useMemo, ChangeEvent, useEffect } from 'react'
 
 import { useCheckout } from './useCheckout'
 import { useCart } from '../Cart/useCart'
 import { resolveImage } from '../../lib/resolveImage'
-import { useRouter } from 'next/router'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 import dynamic from 'next/dynamic'
 
 import DocumentMetadata from '../DocumentMetadata'
 import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
 import Link from '../Link'
+import { useRouter } from 'next/router'
 
 const Error = dynamic(() => import('../Error'))
 
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
+    const router = useRouter()
+
     const { loading, data, api, contactInfo, shippingMethods, paymentMethod, placeOrder } = useCheckout()
 
     const { applyingCoupon, removingCoupon, couponError, api: cartApi, data: cartData } = useCart()
-
-    const router = useRouter()
 
     const { cart } = cartData || {}
 
@@ -34,21 +34,16 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         (shippingMethods.data?.cart?.shippingAddresses && shippingMethods.data?.cart?.shippingAddresses[0]) || {}
 
     /**
-     * Steps
-     */
-    const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
-
-    useEffect(() => {
-        /** Prefetch Confirmation Page */
-        router.prefetch('/checkout/confirmation')
-    }, [])
-
-    /**
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (cart && cart.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
-    }, [cart])
+        if (!data || cart?.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
+    }, [data, cart?.items?.length])
+
+    /**
+     * Steps
+     */
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
 
     /**
      * Countries Data
@@ -301,7 +296,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
-                    items: cart?.items.map(({ id, quantity, price, product, options }: any, index: number) => ({
+                    items: cart?.items?.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             as: Link,
