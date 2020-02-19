@@ -90,17 +90,6 @@ async function create(initialState: any) {
         resolvers,
         ssrMode: !process.browser,
         typeDefs,
-        defaultOptions: {
-            watchQuery: {
-                fetchPolicy: 'no-cache',
-            },
-            query: {
-                fetchPolicy: 'no-cache',
-            },
-            mutate: {
-                fetchPolicy: 'no-cache',
-            },
-        },
     })
 
     return client
