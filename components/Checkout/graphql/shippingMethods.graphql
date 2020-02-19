@@ -1,6 +1,6 @@
 #import "./_ShippingMethods.graphql"
 
-query ShippingMethodsQuery($cartId: String = "", $hasCart: Boolean = false) {
+query __ShippingMethodsQuery($cartId: String = "", $hasCart: Boolean = false) {
     cartId @client @export(as: "cartId")
     hasCart @client @export(as: "hasCart")
 

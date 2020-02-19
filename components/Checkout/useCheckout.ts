@@ -4,6 +4,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '../../apollo/client'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
+import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 
 import CONTACT_INFO_QUERY from './graphql/contactInfo.graphql'
@@ -12,7 +13,6 @@ import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SHIPPING_METHODS_QUERY from './graphql/shippingMethods.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethodOnCart.graphql'
 
-import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import SELECTED_PAYMENT_METHOD_QUERY from './graphql/selectedPaymentMethod.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphql'
 
@@ -23,8 +23,6 @@ export const useCheckout = () => {
      * Data Query
      */
     const query = useQuery(CHECKOUT_QUERY, {
-        // This data is cached by default.
-        // Do not include any sensitive data in this query
         ...queryDefaultOptions,
     })
 
@@ -34,7 +32,6 @@ export const useCheckout = () => {
 
     const contactInfo = useQuery(CONTACT_INFO_QUERY, {
         ...queryDefaultOptions,
-        fetchPolicy: 'no-cache',
     })
 
     const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
@@ -102,7 +99,6 @@ export const useCheckout = () => {
      */
     const shippingMethods = useQuery(SHIPPING_METHODS_QUERY, {
         ...queryDefaultOptions,
-        fetchPolicy: 'no-cache',
     })
 
     const [setShippingMethod, { loading: settingShippingMethod, error: setShippingMethodError }] = useMutation(
@@ -131,7 +127,6 @@ export const useCheckout = () => {
      */
     const paymentMethod = useQuery(SELECTED_PAYMENT_METHOD_QUERY, {
         ...queryDefaultOptions,
-        fetchPolicy: 'no-cache',
     })
 
     const [createBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION, {

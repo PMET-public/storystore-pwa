@@ -1,4 +1,4 @@
-query CheckoutQuery {
+query __CheckoutQuery {
     braintreeToken @client
 
     countries {
