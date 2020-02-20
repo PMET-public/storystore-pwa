@@ -25,7 +25,6 @@ async function create(initialState: any) {
             ? new URL('/api/graphql', location.href).href
             : new URL('graphql', process.env.MAGENTO_URL).href,
         credentials: 'same-origin',
-        useGETForQueries: true,
     })
 
     const retryLink = new RetryLink({
