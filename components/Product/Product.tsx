@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 
 import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
@@ -21,9 +22,11 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, error, addingToCart, data, api, online, refetch } = useProduct({ urlKey })
+    const { loading, addingToCart, data, api } = useProduct({ urlKey })
 
     const router = useRouter()
+
+    const online = useNetworkStatus()
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
@@ -62,11 +65,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product?.sku, data.product?.variantSku])
 
-    if (error && !online) return <Error type="Offline" />
+    if (!online && !data?.product) return <Error type="Offline" />
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
-
-    if (!loading && (!data || !data.product))
+    if (!loading && !data?.product) {
         return (
             <Error
                 type="404"
@@ -74,6 +75,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 button={{ text: 'Search', as: Link, href: '/search' }}
             />
         )
+    }
 
     const { hasCart, product } = data
 

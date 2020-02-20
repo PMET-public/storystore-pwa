@@ -1,4 +1,6 @@
-#import "./_CheckoutDetails.graphql"
+#import "./_ContactInfo.graphql"
+#import "./_ShippingMethods.graphql"
+#import "./_SelectedPaymentMethod.graphql"
 
 mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAddressInput!) {
     cartId @client @export(as: "cartId")
@@ -21,7 +23,9 @@ mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAdd
         }
     ) {
         cart {
-            ...CheckoutDetails
+            ...ContactInfo
+            ...ShippingMethods
+            ...SelectedPaymentMethod
         }
     }
 }

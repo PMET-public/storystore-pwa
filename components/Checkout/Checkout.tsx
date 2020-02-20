@@ -1,69 +1,61 @@
-import React, { FunctionComponent, useCallback, useState, useEffect, useMemo, ChangeEvent } from 'react'
+import React, { FunctionComponent, useCallback, useState, useMemo, ChangeEvent, useEffect } from 'react'
 
 import { useCheckout } from './useCheckout'
 import { useCart } from '../Cart/useCart'
 import { resolveImage } from '../../lib/resolveImage'
-import { useRouter } from 'next/router'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 import dynamic from 'next/dynamic'
 
 import DocumentMetadata from '../DocumentMetadata'
 import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
 import Link from '../Link'
+import { useRouter } from 'next/router'
 
 const Error = dynamic(() => import('../Error'))
 
 type CheckoutProps = {}
 
 export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const {
-        loading,
-        error,
-        data,
-        api,
-        online,
-        refetch,
-        settingContactInfo,
-        setContactInfoError,
-        settingShippingMethod,
-        setShippingMethodError,
-        settingPaymentMethod,
-        setPaymentMethodError,
-        placingOrder,
-        placeOrderError,
-    } = useCheckout()
-
-    const { applyingCoupon, removingCoupon, couponError, api: cartApi } = useCart()
-
     const router = useRouter()
+
+    const { loading, data, api, contactInfo, shippingMethods, paymentMethod, placeOrder } = useCheckout()
+
+    const { applyingCoupon, removingCoupon, couponError, api: cartApi, data: cartData } = useCart()
+
+    const { cart } = cartData || {}
+
+    const { braintreeToken, countries } = data || {}
+
+    const { email } = contactInfo.data?.cart || {}
+
+    const shippingAddress = contactInfo.data?.cart?.shippingAddresses && contactInfo.data?.cart?.shippingAddresses[0]
+
+    const { availableShippingMethods, selectedShippingMethod } =
+        (shippingMethods.data?.cart?.shippingAddresses && shippingMethods.data?.cart?.shippingAddresses[0]) || {}
+
+    /**
+     * Redirect to Shopping Cart if empty
+     */
+    useEffect(() => {
+        if (!data || cart?.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
+    }, [data, cart?.items?.length])
 
     /**
      * Steps
      */
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
 
-    useEffect(() => {
-        /** Prefetch Confirmation Page */
-        router.prefetch('/checkout/confirmation')
-    }, [])
-
-    /**
-     * Redirect to Shopping Cart if empty
-     */
-    useEffect(() => {
-        if (data && data.cart && data.cart.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
-    }, [data && data.cart])
-
     /**
      * Countries Data
      */
     const [selectedShippingCountryCode, setSelectedShippingCountryCode] = useState(
-        (data && data.cart && data.cart.shippingAddress && data.cart.shippingAddress?.country.code) || 'US'
+        shippingAddress?.country.code || 'US'
     )
 
     const selectedShippingCountryRegions = useMemo(() => {
-        if (!(data && data.countries)) return null
-        return data.countries.find((country: { code: string }) => country.code === selectedShippingCountryCode).regions
-    }, [data && data.countries, selectedShippingCountryCode])
+        if (!countries) return null
+        return countries.find((country: { code: string }) => country.code === selectedShippingCountryCode).regions
+    }, [countries, selectedShippingCountryCode])
 
     /**
      * Contact Information
@@ -135,15 +127,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
         router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
     }, [api.setPaymentMethod])
 
-    if (!data || !data.cart) return null
+    const online = useNetworkStatus()
 
-    if (error && !online) return <Error type="Offline" />
-
-    if (error) <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
-
-    const { cart, countries, braintreeToken } = data
-    const { email, shippingAddresses } = cart
-    const shippingAddress = shippingAddresses && shippingAddresses[0]
+    if (!online && !data) return <Error type="Offline" />
 
     return (
         <React.Fragment>
@@ -161,9 +147,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 contactInfo={{
                     title: 'Contact Information',
                     edit: step < 2,
-                    loading: loading && !(shippingAddress && email),
-                    submitting: settingContactInfo,
-                    error: setContactInfoError,
+                    loading: contactInfo.loading,
+                    submitting: contactInfo.settingContactInfo,
+                    error: contactInfo.setContactInfoError,
                     fields: {
                         email: {
                             name: 'email',
@@ -253,20 +239,20 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 shippingMethod={{
                     title: 'Shipping Method',
                     edit: step < 3,
-                    loading: loading && !(shippingAddress && shippingAddress.availableShippingMethods),
-                    submitting: settingShippingMethod,
-                    error: setShippingMethodError,
+                    loading: shippingMethods.loading,
+                    submitting: shippingMethods.settingShippingMethod,
+                    error: shippingMethods.setShippingMethodError,
                     fields: {
                         shippingMethod: {
                             name: 'shippingMethod',
-                            items: shippingAddress?.availableShippingMethods?.map(
+                            items: availableShippingMethods?.map(
                                 ({ carrierTitle, methodTitle, methodCode, available, amount }: any) => ({
                                     text: `${carrierTitle} (${methodTitle}) ${amount.value.toLocaleString('en-US', {
                                         style: 'currency',
                                         currency: amount.currency,
                                     })}`,
                                     value: methodCode,
-                                    defaultChecked: methodCode === shippingAddress?.selectedShippingMethod?.methodCode,
+                                    defaultChecked: methodCode === selectedShippingMethod?.methodCode,
                                     disabled: !available,
                                 })
                             ),
@@ -283,8 +269,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 paymentMethod={{
                     title: 'Payment',
-                    submitting: settingPaymentMethod,
-                    error: setPaymentMethodError,
+                    submitting: paymentMethod.settingPaymentMethod,
+                    error: paymentMethod.setPaymentMethodError,
                     braintree: {
                         authorization: braintreeToken,
                         vaultManager: true,
@@ -301,8 +287,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 placeOrder={{
                     title: 'Finish',
                     loading,
-                    submitting: placingOrder,
-                    error: placeOrderError,
+                    submitting: placeOrder.placingOrder,
+                    error: placeOrder.placeOrderError,
                     submitButton: {
                         text: 'Place Order',
                     },
@@ -310,7 +296,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
-                    items: cart?.items.map(({ id, quantity, price, product, options }: any, index: number) => ({
+                    items: cart?.items?.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             as: Link,
@@ -359,12 +345,12 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
                                     error: couponError,
-                                    disabled: !!cart.appliedCoupons,
-                                    defaultValue: cart.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
+                                    disabled: !!cart?.appliedCoupons,
+                                    defaultValue: cart?.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
                                 },
                                 submitButton: {
-                                    text: cart.appliedCoupons ? 'Remove' : 'Apply',
-                                    type: cart.appliedCoupons ? 'reset' : 'submit',
+                                    text: cart?.appliedCoupons ? 'Remove' : 'Apply',
+                                    type: cart?.appliedCoupons ? 'reset' : 'submit',
                                 },
                                 submitting: applyingCoupon || removingCoupon,
                                 onReset: () => {
@@ -397,7 +383,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
                         })) || []),
 
                         // Shipping
-                        ...(shippingAddresses
+                        ...(cart?.shippingAddresses
                             ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
                             .map(({ selectedShippingMethod }: any) => ({
                                 label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,

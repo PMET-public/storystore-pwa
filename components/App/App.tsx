@@ -7,6 +7,7 @@ import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import DocumentMetadata from '../DocumentMetadata'
 import PageBuilder from '../../components/PageBuilder'
 import { useIsUrlActive } from '../../lib/resolveLink'
+import { ServerError } from 'apollo-link-http-common'
 
 const Error = dynamic(() => import('../../components/Error'))
 
@@ -20,22 +21,12 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
     const isUrlActive = useIsUrlActive()
 
     if (error) {
-        if ((error?.networkError as any).statusCode === 401) {
+        const networkError = error.networkError as ServerError
+
+        if (networkError.statusCode === 401 || networkError.statusCode === 403) {
             return (
                 <Error type="401" button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }} fullScreen>
                     Authorization Required
-                </Error>
-            )
-        } else if ((error?.networkError as any).statusCode === 403) {
-            return (
-                <Error type="401" button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }} fullScreen>
-                    Authorization Required
-                </Error>
-            )
-        } else {
-            return (
-                <Error type="500" button={{ text: 'Reload App', onClick: () => location.reload() }} fullScreen>
-                    {error.message}
                 </Error>
             )
         }

@@ -1,3 +1,4 @@
+import { queryDefaultOptions } from '../../apollo/client'
 import { useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
@@ -14,8 +15,7 @@ export const useApp = ({
     footerBlockId: string
 }) => {
     const query = useQuery(APP_QUERY, {
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
+        ...queryDefaultOptions,
         variables: {
             categoriesParentId,
             footerBlockId,
@@ -27,7 +27,7 @@ export const useApp = ({
      * No Cart no problem. Let's create one
      */
 
-    const cart = useQuery(CART_QUERY)
+    const cart = useQuery(CART_QUERY, { ...queryDefaultOptions })
 
     const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
         update: (cache, { data: { cartId } }) => {
@@ -42,10 +42,10 @@ export const useApp = ({
     useEffect(() => {
         if (cart.loading || creatingEmptyCart) return
 
-        if (cart.error || cart.data?.hasCart === false) {
+        if (cart.data?.hasCart === false) {
             createEmptyCart().then(() => cart.refetch())
         }
-    }, [cart.error, cart.data])
+    }, [cart.data])
 
     return {
         ...query,

@@ -1,4 +1,4 @@
-import { useValueUpdated } from '../../hooks/useValueUpdated'
+import { queryDefaultOptions } from '../../apollo/client'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -8,27 +8,13 @@ import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
 
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-
 export const useCart = () => {
     /**
      * Data Query
      */
     const query = useQuery(CART_QUERY, {
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
+        ...queryDefaultOptions,
     })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (query.error && online) query.refetch()
-    }, online)
 
     /**
      * Handle Update Cart Item Action
@@ -114,7 +100,6 @@ export const useCart = () => {
 
     return {
         ...query,
-        online,
         updating,
         removing,
         applyingCoupon,
