@@ -8,6 +8,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import PageBuilder from '../../components/PageBuilder'
 import { useIsUrlActive } from '../../lib/resolveLink'
 import { ServerError } from 'apollo-link-http-common'
+import { useRouter } from 'next/router'
 
 const Error = dynamic(() => import('../../components/Error'))
 
@@ -19,6 +20,7 @@ type AppProps = {
 export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId, footerBlockId }) => {
     const { loading, error, data } = useApp({ categoriesParentId, footerBlockId })
     const isUrlActive = useIsUrlActive()
+    const router = useRouter()
 
     if (error) {
         const networkError = error.networkError as ServerError
@@ -29,12 +31,14 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
                     Authorization Required
                 </Error>
             )
+        } else if (networkError) {
+            return <Error type="500" button={{ text: 'Reload App', onClick: () => router.reload() }} fullScreen />
         }
     }
 
     if (!loading && !data) {
         return (
-            <Error type="500" button={{ text: 'Reload App', onClick: location.reload }} fullScreen>
+            <Error type="500" button={{ text: 'Reload App', onClick: () => router.reload() }} fullScreen>
                 No data available.
             </Error>
         )
