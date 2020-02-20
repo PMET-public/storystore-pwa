@@ -47,15 +47,15 @@ export const useCheckout = () => {
 
     const contactInfo = useQuery(CONTACT_INFO_QUERY, {
         ...queryDefaultOptions,
+        fetchPolicy: 'no-cache',
     })
 
     const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
         SET_CONTACT_INFO_MUTATION,
         {
-            update(cache, { data: { email, billingAddress } }) {
-                const cart = { ...email.cart, ...billingAddress.cart }
+            update(cache, { data: { billingAddress } }) {
                 cache.writeData({
-                    data: { cart },
+                    data: { ...billingAddress },
                 })
             },
         }
@@ -182,21 +182,21 @@ export const useCheckout = () => {
         contactInfo: {
             ...contactInfo,
             settingContactInfo,
-            setContactInfoError: setContactInfoError?.graphQLErrors[0].message,
+            setContactInfoError: setContactInfoError?.message,
         },
         shippingMethods: {
             ...shippingMethods,
             settingShippingMethod,
-            setShippingMethodError: setShippingMethodError?.graphQLErrors[0].message,
+            setShippingMethodError: setShippingMethodError?.message,
         },
         paymentMethod: {
             ...paymentMethod,
             settingPaymentMethod,
-            setPaymentMethodError: setPaymentMethodError?.graphQLErrors[0].message,
+            setPaymentMethodError: setPaymentMethodError?.message,
         },
         placeOrder: {
             placingOrder,
-            placeOrderError: placeOrderError?.graphQLErrors[0].message,
+            placeOrderError: placeOrderError?.message,
         },
         api: {
             setShippingMethod: handleSetShippingMethod,

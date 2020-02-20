@@ -1,13 +1,13 @@
 query __CheckoutQuery {
-    braintreeToken @client
-
-    countries {
-        id
-        code: id
-        name: full_name_locale
-        regions: available_regions {
-            code
-            name
-        }
-    }
+	hasCart @client
+	braintreeToken @client
+	countries {
+		id
+		code: id
+		name: full_name_locale
+		regions: available_regions {
+			code
+			name
+		}
+	}
 }

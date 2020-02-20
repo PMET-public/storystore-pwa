@@ -40,27 +40,6 @@ cleanupOutdatedCaches()
  */
 
 // Images API
-
-// Only cache GET requests to /api/graphql that contains the `_` prefix to the Query's name
-registerRoute(
-    /\/api\/graphql\?query=query%20(?!_).*/,
-    new NetworkFirst({
-        cacheName: 'api-graphql',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
-        plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
-            new ExpirationPlugin({
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
-    })
-)
-
-// Images API
 registerRoute(
     /\/api\/images/,
     new CacheFirst({

@@ -104,7 +104,7 @@ export const useCart = () => {
         removing,
         applyingCoupon,
         removingCoupon,
-        couponError: applyingCouponError?.graphQLErrors[0].message || removingCouponError?.graphQLErrors[0].message,
+        couponError: applyingCouponError?.message || removingCouponError?.message,
         api: {
             updateCartItem: handleUpdateCartItem,
             removeCartItem: handleRemoveCartItem,

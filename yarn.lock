@@ -1107,9 +1107,9 @@
   integrity sha512-J51QpynN0AxQ0saWkxgpr0JxWqSJFCBOOeQpbyn5hlgxjrcXR9dQ59tN677vbq2wJ8idLn898vZFaRmQsLq13A==
 
 "@pmet-public/luma-ui@1.0.0-beta.35":
-  version "1.0.0-beta.34"
-  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.34.tgz#38869f5186b361799188ccab3b8580de90e360ce"
-  integrity sha512-6xzZkxsvlSEGNMPLkdT3WiRGz0+sP70UzdSFiwXoJsFO5fb0s/+7arGZrxtaDejl2RZh9+ENrX5O3vmR3kxkMA==
+  version "1.0.0-beta.35"
+  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.0-beta.35.tgz#e030c235cd25862d36e27650ebe66c0a580b7ec3"
+  integrity sha512-Zc0V76nluKCLIOn6+JoJr7n61gSaEmLKPQl/oIdw/1uzLbQAtj49ZBAbKjT44jZDyXfqedZRjoW1VzoyHcZCpQ==
 
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.1.1"
