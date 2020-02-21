@@ -98,7 +98,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
     if (type && type !== 'ConfigurableProduct' && type !== 'SimpleProduct') {
         return <Error type="500">Product type: {type} not supported.</Error>
     }
-    console.log({ product })
+
     return (
         <React.Fragment>
             {product && (

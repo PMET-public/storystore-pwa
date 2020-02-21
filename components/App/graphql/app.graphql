@@ -17,21 +17,6 @@ query AppShellQuery($categoriesParentId: String) {
             id
             text: name
             href: url_path
-
-            # Precatch Category Page Data
-            title: name
-            cmsBlock: description
-            mode: display_mode
-            metaDescription: meta_description
-            metaKeywords: meta_keywords
-            metaTitle: meta_title
-
-            categories: children {
-                id
-                text: name
-                count: product_count
-                href: url_path
-            }
         }
     }
 }
