@@ -7,10 +7,14 @@ query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10,
 
         items @connection(key: "items") {
             id
+            title: name
+            urlKey: url_key
+
             image {
                 alt: label
                 src: url
             }
+
             price: price_range {
                 minimum: minimum_price {
                     discount {
@@ -32,8 +36,6 @@ query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10,
                     }
                 }
             }
-            title: name
-            urlKey: url_key
         }
     }
 }

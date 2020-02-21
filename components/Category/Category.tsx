@@ -123,9 +123,8 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     keywords={page.metaKeywords}
                 />
             )}
-
             <CategoryTemplate
-                loading={loading}
+                loading={loading && !page}
                 loadingMore={productsQuery.loading}
                 display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{

@@ -1,4 +1,4 @@
-query AppShellQuery($categoriesParentId: String!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
+query AppShellQuery($categoriesParentId: String) {
     store: storeConfig {
         id
         metaTitle: default_title
@@ -17,14 +17,6 @@ query AppShellQuery($categoriesParentId: String!, $footerBlockId: String = "", $
             id
             text: name
             href: url_path
-            image
-        }
-    }
-
-    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
-        items {
-            id: identifier
-            html: content
         }
     }
 }

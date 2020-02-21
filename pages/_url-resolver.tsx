@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
 
 import Link from '../components/Link'
+import { useRouter } from 'next/router'
 
 const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
@@ -16,6 +17,8 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
+    const router = useRouter()
+
     switch (type) {
         case 'CMS_PAGE':
             return <Page id={contentId} />
@@ -27,7 +30,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
             return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
         default:
             return (
-                <Error type="500" button={{ text: 'Reload', onClick: () => location.reload() }}>
+                <Error type="500" button={{ text: 'Reload', onClick: () => router.reload() }}>
                     `Internal Error: ${type} is not valid`
                 </Error>
             )
