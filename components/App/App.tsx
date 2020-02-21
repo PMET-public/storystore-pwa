@@ -9,6 +9,7 @@ import PageBuilder from '../../components/PageBuilder'
 import { useIsUrlActive } from '../../lib/resolveLink'
 import { ServerError } from 'apollo-link-http-common'
 import { useRouter } from 'next/router'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 const Error = dynamic(() => import('../../components/Error'))
 
@@ -18,21 +19,26 @@ type AppProps = {
 }
 
 export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId, footerBlockId }) => {
-    const { loading, error, data } = useApp({ categoriesParentId, footerBlockId })
+    const { loading, error, data, footer } = useApp({ categoriesParentId, footerBlockId })
     const isUrlActive = useIsUrlActive()
     const router = useRouter()
+    const online = useNetworkStatus()
 
-    if (error) {
+    if (online && error) {
         const networkError = error.networkError as ServerError
 
-        if (networkError.statusCode === 401 || networkError.statusCode === 403) {
-            return (
-                <Error type="401" button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }} fullScreen>
-                    Authorization Required
-                </Error>
-            )
-        } else if (networkError) {
-            return <Error type="500" button={{ text: 'Reload App', onClick: () => router.reload() }} fullScreen />
+        if (networkError) {
+            if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
+                return (
+                    <Error
+                        type="401"
+                        button={{ text: 'Login', onClick: () => (location.href = '/basic-auth') }}
+                        fullScreen
+                    >
+                        Authorization Required
+                    </Error>
+                )
+            }
         }
     }
 
@@ -44,7 +50,7 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
         )
     }
 
-    const { store, categories, cart, footer } = data
+    const { store, categories, cart } = data
 
     return (
         <React.Fragment>
@@ -102,7 +108,8 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
                     },
                 }}
                 footer={{
-                    html: footer && <PageBuilder html={footer.html} />,
+                    loading: footer.loading,
+                    html: footer.data?.footer && <PageBuilder html={footer.data.footer.items[0].html} />,
                 }}
             >
                 {children}

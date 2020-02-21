@@ -125,7 +125,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             )}
 
             <CategoryTemplate
-                loading={loading}
+                loading={loading && !data.page}
                 loadingMore={productsQuery.loading}
                 display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
