@@ -1,44 +1,12 @@
+#import "./_Product.graphql"
+
 query ProductQuery($urlKey: String!) {
     hasCart @client
 
     products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
-        items {
+        items @connection(key: "items") {
             id
-            metaTitle: meta_title
-            metaDescription: meta_description
-            metaKeywords: meta_keyword
-            type: __typename
-            title: name
-            sku
-            stock: stock_status
-
-            categories {
-                id
-                text: name
-                href: url_path
-            }
-
-            price: price_range {
-                minimum: minimum_price {
-                    discount {
-                        amountOff: amount_off
-                    }
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                    final: final_price {
-                        value
-                        currency
-                    }
-                }
-                maximum: maximum_price {
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                }
-            }
+            ...Product
 
             gallery: media_gallery {
                 id: url

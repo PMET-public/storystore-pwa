@@ -1,3 +1,5 @@
+#import "../../Product/graphql/_Product.graphql"
+
 query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
     products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         pagination: page_info {
@@ -7,33 +9,15 @@ query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10,
 
         items @connection(key: "items") {
             id
+            ...Product
+
+            title: name
+            urlKey: url_key
+
             image {
                 alt: label
                 src: url
             }
-            price: price_range {
-                minimum: minimum_price {
-                    discount {
-                        amountOff: amount_off
-                    }
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                    final: final_price {
-                        value
-                        currency
-                    }
-                }
-                maximum: maximum_price {
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                }
-            }
-            title: name
-            urlKey: url_key
         }
     }
 }
