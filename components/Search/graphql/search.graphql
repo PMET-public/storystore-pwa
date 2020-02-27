@@ -20,6 +20,7 @@ query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageS
         }
 
         count: total_count
+
         items @connection(key: "items") {
             id
             image {

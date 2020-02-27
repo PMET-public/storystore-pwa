@@ -4,9 +4,9 @@ import dynamic from 'next/dynamic'
 import { usePage } from './usePage'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
-import DocumentMetadata from '../../components/DocumentMetadata'
 import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
 import Link from '../Link'
+import Head from '../Head'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../../components/PageBuilder'))
@@ -29,7 +29,7 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
     return (
         <React.Fragment>
             {page && (
-                <DocumentMetadata
+                <Head
                     title={page.metaTitle || page.title}
                     description={page.metaDescription}
                     keywords={page.metaKeywords}

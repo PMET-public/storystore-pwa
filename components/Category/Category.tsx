@@ -1,19 +1,15 @@
-import React, { FunctionComponent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
-import CATEGORY_QUERY from './graphql/category.graphql'
-import PRODUCTS_QUERY from './graphql/products.graphql'
-
-import { useQuery } from '@apollo/react-hooks'
+import { useCategory } from './useCategory'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
-import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
-import { queryDefaultOptions } from '../../apollo/client'
+import Head from '../Head'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
@@ -22,43 +18,12 @@ type CategoryProps = {
     id: number
 }
 
-type FilterValues = {
-    [key: string]: {
-        eq: string
-    }
-}
-
 export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
+    const { data, loading, products: productsQuery, api } = useCategory({ id })
+
     const { scrollY, scrollHeight } = useScroll()
 
     const { height } = useResize()
-
-    const [filterValues, setFilterValues] = useState<FilterValues>({
-        category_id: {
-            eq: id.toString(),
-        },
-    })
-
-    const { loading, data } = useQuery(CATEGORY_QUERY, {
-        ...queryDefaultOptions,
-        variables: { id: id.toString() },
-    })
-
-    const productsQuery = useQuery(PRODUCTS_QUERY, {
-        ...queryDefaultOptions,
-        variables: { filters: filterValues },
-    })
-
-    /**
-     * Update filters on ID change
-     */
-    useEffect(() => {
-        setFilterValues({
-            category_id: {
-                eq: id.toString(),
-            },
-        })
-    }, [id])
 
     /**
      * Infinite Scroll Effect
@@ -76,24 +41,26 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            productsQuery.fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            })
+            productsQuery
+                .fetchMore({
+                    variables: {
+                        currentPage: products.pagination.current + 1, // next page
+                    },
+                    updateQuery: (prev: any, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) return prev
+                        return {
+                            ...prev,
+                            products: {
+                                ...prev.products,
+                                ...fetchMoreResult.products,
+                                items: [...prev.products.items, ...fetchMoreResult.products.items],
+                            },
+                        }
+                    },
+                })
+                .catch(() => {})
         }
-    }, [scrollY])
+    }, [scrollY, height, productsQuery, scrollHeight])
 
     const online = useNetworkStatus()
 
@@ -105,24 +72,16 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const products = productsQuery.data && productsQuery.data.products
 
-    function handleOnClickFilterValue(key: string, value: string) {
-        setFilterValues({
-            ...filterValues,
-            [key]: {
-                eq: value,
-            },
-        })
-    }
-
     return (
         <React.Fragment>
             {page && (
-                <DocumentMetadata
+                <Head
                     title={page.metaTitle || page.title}
                     description={page.metaDescription}
                     keywords={page.metaKeywords}
                 />
             )}
+
             <CategoryTemplate
                 loading={loading && !page}
                 loadingMore={productsQuery.loading}
@@ -187,7 +146,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                 text: label,
                                 onClick: (e: Event) => {
                                     e.preventDefault()
-                                    handleOnClickFilterValue(key, value)
+                                    api.setFilter(key, value)
                                 },
                             })),
                         })),

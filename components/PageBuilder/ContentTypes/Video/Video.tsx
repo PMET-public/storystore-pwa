@@ -10,6 +10,7 @@ export const Video: Component<VideoProps> = ({ children, url, ...props }) => {
     return (
         <Root {...props}>
             <iframe
+                title="Video Player"
                 src={url}
                 height={360}
                 width={640}

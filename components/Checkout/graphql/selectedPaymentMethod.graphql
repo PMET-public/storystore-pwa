@@ -1,6 +1,6 @@
 #import "./_SelectedPaymentMethod.graphql"
 
-query __SelectedPaymentMethodQuery($cartId: String = "", $hasCart: Boolean = false) {
+query SelectedPaymentMethodQuery($cartId: String = "", $hasCart: Boolean = false) {
     cartId @client @export(as: "cartId")
     hasCart @client @export(as: "hasCart")
 

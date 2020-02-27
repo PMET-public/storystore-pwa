@@ -9,13 +9,13 @@ import { ApolloClient } from 'apollo-client'
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import { ApolloProvider } from '@apollo/react-hooks'
-import createApolloClient from '../apollo/client'
+import createApolloClient from '../lib/apollo/client'
 
 const MyApp: NextPage<any> = ({ Component, pageProps }) => {
     const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
 
     useEffect(() => {
-        createApolloClient().then(client => {
+        createApolloClient().then((client: ApolloClient<any>) => {
             setApolloClient(client)
         })
     }, [])

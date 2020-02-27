@@ -1,6 +1,6 @@
+import React from 'react'
 import { Workbox } from 'workbox-window'
 import { useMemo, createContext, FunctionComponent } from 'react'
-import { version } from '../../package.json'
 
 export const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
 
@@ -18,7 +18,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
             return undefined
         }
 
-        console.log(`🙌 Luma PWA ${version}.`)
+        console.log(`🙌 Luma PWA.`)
 
         const wb = new Workbox(url)
 
@@ -36,7 +36,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
          */
         wb.addEventListener('activated', _event => {
             // Get the current page URL + all resources the page loaded.
-            const urlsToCache = [location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
+            const urlsToCache = [window.location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
 
             // Send that list of URLs to your router in the service worker.
             wb.messageSW({
@@ -47,7 +47,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
 
         // Register the service worker
         wb.register()
-    }, [url])
+    }, [url, disableInDev])
 
     return <ServiceWorkerContext.Provider value={wb}>{children}</ServiceWorkerContext.Provider>
 }

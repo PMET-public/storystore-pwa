@@ -1,10 +1,10 @@
 import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
-import { queryDefaultOptions } from '../../apollo/client'
 
 type ProductVariant =
     | {
@@ -95,7 +95,7 @@ export const useProduct = (props: { urlKey: string }) => {
             })
 
         return { options, variants }
-    }, [product?.id])
+    }, [product])
 
     /**
      * Handle Select Option
@@ -108,7 +108,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
             const variant = optionsAndVariants.variants.find(v => {
                 return optionsList.reduce((accum: boolean, code) => {
-                    return v[code] == options[code] && accum
+                    return Number(v[code]) === Number(options[code]) && accum
                 }, true)
             })
 
@@ -130,7 +130,7 @@ export const useProduct = (props: { urlKey: string }) => {
                 })
             }
         },
-        [product?.sku, JSON.stringify(optionsAndVariants)]
+        [product, optionsAndVariants]
     )
 
     /**
@@ -148,17 +148,20 @@ export const useProduct = (props: { urlKey: string }) => {
         }
     )
 
-    const handleAddSimpleProductToCart = useCallback(async (variables: { sku: string; quantity: number }) => {
-        const { sku, quantity } = variables
-        const { data } = await addSimpleProductsToCart({
-            variables: {
-                cartId: '', // @client
-                sku,
-                quantity,
-            },
-        })
-        return data
-    }, [])
+    const handleAddSimpleProductToCart = useCallback(
+        async (variables: { sku: string; quantity: number }) => {
+            const { sku, quantity } = variables
+            const { data } = await addSimpleProductsToCart({
+                variables: {
+                    cartId: '', // @client
+                    sku,
+                    quantity,
+                },
+            })
+            return data
+        },
+        [addSimpleProductsToCart]
+    )
 
     /**
      * Handle Add To Cart Configurable Product
@@ -190,7 +193,7 @@ export const useProduct = (props: { urlKey: string }) => {
             })
             return data
         },
-        []
+        [addConfigurableProductsToCart]
     )
 
     return {

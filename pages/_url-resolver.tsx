@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
 
 import Link from '../components/Link'
-import { useRouter } from 'next/router'
 
 const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
@@ -17,27 +16,27 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
-    const router = useRouter()
-
     switch (type) {
         case 'CMS_PAGE':
-            return <Page id={contentId} />
+            return <Page key={contentId} id={contentId} />
         case 'CATEGORY':
-            return <Category id={contentId} />
+            return <Category key={contentId} id={contentId} />
         case 'PRODUCT':
-            return <Product urlKey={urlKey} />
+            return <Product key={urlKey} urlKey={urlKey} />
         case '404':
             return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
         default:
             return (
-                <Error type="500" button={{ text: 'Reload', onClick: () => router.reload() }}>
-                    `Internal Error: ${type} is not valid`
+                <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
+                    Internal Error: {type} is not valid
                 </Error>
             )
     }
 }
 
 UrlResolver.getInitialProps = async ({ res, query }) => {
+    console.log('Resolving URL')
+
     const graphQLUrl = process.browser
         ? new URL('/api/graphql', location.href).href
         : new URL('graphql', process.env.MAGENTO_URL).href

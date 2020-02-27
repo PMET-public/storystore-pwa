@@ -2,23 +2,25 @@ import { useRouter } from 'next/router'
 
 export type LinkType = 'default' | 'category' | 'product' | 'page'
 
-export const resolveLink = (url: string, type: LinkType = 'default') => {
+export const resolveLink = (url: string, type: LinkType = 'default'): { href: string; external?: boolean } => {
     try {
-        const linkUrl = new URL(url)
-        return type !== 'default' ? linkUrl.pathname + linkUrl.search : url
-    } catch (_) {
-        return url
+        if (type === 'default' && /^https?:\/\//i.test(url)) {
+            return { href: url, external: true }
+        } else {
+            const { pathname, search, hash } = new URL(url, window.location.href)
+            return { href: pathname + search + hash, external: false }
+        }
+    } catch (error) {
+        console.error(error)
+        return { href: url, external: true }
     }
 }
 
 export const useIsUrlActive = () => {
-    const router = useRouter()
+    const { pathname, query } = useRouter()
+    const { url = pathname } = query
 
     return (href: string) => {
-        if (!router) return false
-
-        const { route, query } = router
-
-        return href === (query.url || (query['*'] ? `/${query['*']}` : route))
+        return href === url
     }
 }

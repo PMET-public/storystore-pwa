@@ -28,7 +28,7 @@ export const Image: Component<ImageProps> = ({ children, caption, link, image, .
     return (
         <Root as={link ? (p: any) => <Link {...link} {...p} /> : 'div'} {...props}>
             <figure>
-                <img ref={ImageElem} src={src} {...imageProps} />
+                <img alt="" ref={ImageElem} src={src} {...imageProps} />
                 {caption && <Caption as="figcaption">{caption}</Caption>}
             </figure>
         </Root>

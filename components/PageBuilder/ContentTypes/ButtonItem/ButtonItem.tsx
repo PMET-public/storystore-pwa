@@ -21,7 +21,7 @@ export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, col
     useEffect(() => {
         const width = rootElem.current?.offsetWidth || 0
         if (sameWidth && width > maxWidth) setMaxWidth(width)
-    }, [rootElem.current])
+    }, [maxWidth, sameWidth, setMaxWidth])
 
     return (
         <Root

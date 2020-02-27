@@ -5,9 +5,9 @@ import { useHome } from './useHome'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
-import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import HomeTemplate from '@pmet-public/luma-ui/dist/templates/Home'
+import Head from '../Head'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
@@ -31,7 +31,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
     return (
         <React.Fragment>
             {page && (
-                <DocumentMetadata
+                <Head
                     title={page.metaTitle || page.title}
                     description={page.metaDescription}
                     keywords={page.metaKeywords}

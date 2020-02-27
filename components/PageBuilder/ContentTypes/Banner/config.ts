@@ -13,17 +13,16 @@ const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
     const linkElem = elem.querySelector('a[data-element="link"]')
-
     const linkType = linkElem?.getAttribute('data-link-type') as LinkType
+    const linkHref = linkElem?.getAttribute('href')
+    const linkTarget = linkElem?.getAttribute('target')
 
     /** Get Button */
     const link: LinkProps | undefined =
-        linkElem?.nodeName === 'A'
+        linkElem?.nodeName === 'A' && linkHref
             ? {
-                  href: resolveLink(elem.children[0].getAttribute('href') || '', linkType),
-                  urlResolver: true,
-                  //   type:  elem.children[0].getAttribute('data-link-type') || undefined,
-                  target: elem.children[0].getAttribute('href') || undefined,
+                  ...resolveLink(linkHref, linkType),
+                  target: linkTarget,
               }
             : undefined
 

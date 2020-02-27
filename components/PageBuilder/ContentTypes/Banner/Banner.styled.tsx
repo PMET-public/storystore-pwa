@@ -50,9 +50,11 @@ export const ContentWrapper = styled.div`
 
 export const Content = styled.div``
 
-export const Button = styled.div`
+export const Button = styled.div<{ $secondary?: boolean }>`
     transition: opacity 305ms ease-out;
-    color: #fff;
+    background-color: ${props => (props.$secondary ? '#fff' : '#222')};
+    color: ${props => (props.$secondary ? '#222' : '#fff')};
+    /* color: #fff; */
 `
 
 export const Root = styled.div<{

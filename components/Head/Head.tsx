@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useRef } from 'react'
-import Head from 'next/head'
+import NextHead from 'next/head'
 
 type Metadata = {
     title?: string
@@ -8,13 +8,13 @@ type Metadata = {
     description?: string
     keywords?: string
 }
-export type DocumentMetadataProps = Metadata & {
+export type HeadProps = Metadata & {
     defaults?: Metadata
 }
 
 export const getFullPageTitle = (arr: Array<string | undefined>) => arr.filter(x => !!x).join(' | ')
 
-export const DocumentMetadata: FunctionComponent<DocumentMetadataProps> = ({
+export const Head: FunctionComponent<HeadProps> = ({
     title,
     titlePrefix,
     titleSuffix,
@@ -33,10 +33,10 @@ export const DocumentMetadata: FunctionComponent<DocumentMetadataProps> = ({
     const _keywords = keywords || globalsRef.current.keywords
 
     return (
-        <Head>
+        <NextHead>
             {_title && <title>{getFullPageTitle([_titlePrefix, _title, _titleSuffix])}</title>}
             {_description && <meta name="description" content={_description} />}
             {_keywords && <meta name="keywords" content={_keywords} />}
-        </Head>
+        </NextHead>
     )
 }

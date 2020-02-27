@@ -1,25 +1,27 @@
 #import "./_ShippingMethods.graphql"
+#import "../../Cart/graphql/_Cart.graphql"
 
 mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAddressInput!) {
-	cartId @client @export(as: "cartId")
-	# Set Email Address
-	email: setGuestEmailOnCart(input: { cart_id: $cartId, email: $email }) @connection(key: "setGuestEmailOnCart") {
-		cart {
-			id
-		}
-	}
-	# Set Billing & Shipping Address
-	billingAddress: setBillingAddressOnCart(
-		input: {
-			cart_id: $cartId
-			billing_address: {
-				address: $address
-				use_for_shipping: true # Use same address for shipping
-			}
-		}
-	) @connection(key: "setBillingAddressOnCart") {
-		cart {
-			...ShippingMethods
-		}
-	}
+    cartId @client @export(as: "cartId")
+    # Set Email Address
+    email: setGuestEmailOnCart(input: { cart_id: $cartId, email: $email }) @connection(key: "setGuestEmailOnCart") {
+        cart {
+            id
+        }
+    }
+    # Set Billing & Shipping Address
+    billingAddress: setBillingAddressOnCart(
+        input: {
+            cart_id: $cartId
+            billing_address: {
+                address: $address
+                use_for_shipping: true # Use same address for shipping
+            }
+        }
+    ) @connection(key: "setBillingAddressOnCart") {
+        cart {
+            ...ShippingMethods
+            ...Cart
+        }
+    }
 }

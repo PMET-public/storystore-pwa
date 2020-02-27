@@ -6,12 +6,12 @@ import { useRouter } from 'next/router'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
-import DocumentMetadata from '../DocumentMetadata'
 import ProductTemplate from '@pmet-public/luma-ui/dist/templates/Product'
 
 import Link from '../Link'
+import Head from '../Head'
 
-const Error = dynamic(() => import('../Error'))
+const ErrorComponent = dynamic(() => import('../Error'))
 
 export type ProductProps = {
     urlKey: string
@@ -24,11 +24,13 @@ type SelectedOptions = {
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
     const { loading, addingToCart, data, api } = useProduct({ urlKey })
 
-    const router = useRouter()
+    const history = useRouter()
 
     const online = useNetworkStatus()
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
+
+    const { hasCart, product } = data
 
     const handleOnChange = useCallback(
         (values: { options: { [key: string]: string } }) => {
@@ -45,11 +47,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
             api.selectVariant(options)
         },
-        [api.selectVariant]
+        [api]
     )
 
     const handleAddToCart = useCallback(async () => {
-        const { sku, variantSku } = data.product
+        if (!product) return
+
+        const { type, sku, variantSku } = product
 
         try {
             if (type === 'ConfigurableProduct') {
@@ -57,19 +61,20 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             } else if (type === 'SimpleProduct') {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
             } else {
-                throw 'Product type not supported'
+                throw Error('Product type not supported')
             }
-            await router.push('/cart').then(() => window.scrollTo(0, 0))
+
+            history.push('/cart')
         } catch (error) {
             console.error(error)
         }
-    }, [data.product?.sku, data.product?.variantSku])
+    }, [api, product, history])
 
-    if (!online && !data?.product) return <Error type="Offline" />
+    if (!online && !product) return <ErrorComponent type="Offline" />
 
-    if (!loading && !data?.product) {
+    if (!loading && !product) {
         return (
-            <Error
+            <ErrorComponent
                 type="404"
                 children="We're sorry, we coudn't find the product."
                 button={{ text: 'Search', as: Link, href: '/search' }}
@@ -77,32 +82,19 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         )
     }
 
-    const { hasCart, product } = data
-
-    const {
-        categories,
-        description,
-        gallery,
-        metaDescription,
-        metaKeywords,
-        metaTitle,
-        options,
-        price,
-        shortDescription,
-        sku,
-        stock,
-        title,
-        type,
-    } = product || {}
-
-    if (type && type !== 'ConfigurableProduct' && type !== 'SimpleProduct') {
-        return <Error type="500">Product type: {type} not supported.</Error>
+    // Pending support of other Product Types
+    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct') {
+        return <ErrorComponent type="500">Product type: {product.type} not supported.</ErrorComponent>
     }
 
     return (
         <React.Fragment>
             {product && (
-                <DocumentMetadata title={metaTitle || title} description={metaDescription} keywords={metaKeywords} />
+                <Head
+                    title={product.metaTitle || product.title}
+                    description={product.metaDescription}
+                    keywords={product.metaKeywords}
+                />
             )}
 
             <ProductTemplate
@@ -110,15 +102,15 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 onAddToCart={handleAddToCart}
                 onChange={handleOnChange}
                 title={{
-                    text: title,
+                    text: product?.title,
                 }}
                 sku={
-                    sku && {
-                        text: `SKU. ${sku}`,
+                    product?.sku && {
+                        text: `SKU. ${product.sku}`,
                     }
                 }
                 categories={{
-                    items: categories
+                    items: product?.categories
                         ?.slice(0, 4) // limit to 3
                         .filter((x: any) => !!x.href)
                         .map(({ id, text, href }: any) => ({
@@ -132,10 +124,10 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             text,
                         })),
                 }}
-                gallery={gallery
+                gallery={product?.gallery
                     ?.filter((x: any) => x.type === 'ProductImage')
                     .map(({ label, url }: any) => ({
-                        alt: label || title,
+                        alt: label || product?.title,
                         src: {
                             desktop: resolveImage(url),
                             mobile: resolveImage(url),
@@ -143,19 +135,22 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     }))
                     .sort((a: any, b: any) => a.position - b.position)}
                 price={
-                    price && {
-                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                        regular: price.minimum.regular.value,
+                    product?.price && {
+                        label:
+                            product.price.maximum.regular.value > product.price.minimum.regular.value
+                                ? 'Starting at'
+                                : undefined,
+                        regular: product.price.minimum.regular.value,
                         special:
-                            price.minimum.discount.amountOff &&
-                            price.minimum.final.value - price.minimum.discount.amountOff,
-                        currency: price.minimum.regular.currency,
+                            product.price.minimum.discount.amountOff &&
+                            product.price.minimum.final.value - product.price.minimum.discount.amountOff,
+                        currency: product.price.minimum.regular.currency,
                     }
                 }
-                options={options
+                options={product?.options
                     ?.map(({ id, type, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
-                            return code === x.code, x.value.toString() === selectedOptions[code]
+                            return code === x.code || x.value.toString() === selectedOptions[code]
                         })
 
                         return {
@@ -183,12 +178,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     .sort((a: any, b: any) => b.position - a.position)}
                 addToCartButton={{
                     as: 'button',
-                    text: stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                    disabled: !hasCart || stock === 'OUT_OF_STOCK',
+                    text: product?.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
+                    disabled: !hasCart || product?.stock === 'OUT_OF_STOCK',
                     loading: addingToCart,
                 }}
-                shortDescription={shortDescription && shortDescription.html}
-                description={description && description.html}
+                shortDescription={product?.shortDescription && product?.shortDescription.html}
+                description={product?.description && product?.description.html}
             />
         </React.Fragment>
     )

@@ -1,4 +1,4 @@
-import { queryDefaultOptions } from '../../apollo/client'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -28,14 +28,17 @@ export const useCart = () => {
         },
     })
 
-    const handleUpdateCartItem = useCallback((props: { productId: number; quantity: number }) => {
-        const { productId, quantity } = props
-        return updateCartItems({
-            variables: {
-                items: [{ cart_item_id: productId, quantity }],
-            },
-        })
-    }, [])
+    const handleUpdateCartItem = useCallback(
+        (props: { productId: number; quantity: number }) => {
+            const { productId, quantity } = props
+            return updateCartItems({
+                variables: {
+                    items: [{ cart_item_id: productId, quantity }],
+                },
+            })
+        },
+        [updateCartItems]
+    )
 
     /**
      * Handle Remove Cart Item Action
@@ -49,14 +52,17 @@ export const useCart = () => {
         },
     })
 
-    const handleRemoveCartItem = useCallback((props: { productId: number }) => {
-        const { productId } = props
-        return removeCartItem({
-            variables: {
-                itemId: productId,
-            },
-        })
-    }, [])
+    const handleRemoveCartItem = useCallback(
+        (props: { productId: number }) => {
+            const { productId } = props
+            return removeCartItem({
+                variables: {
+                    itemId: productId,
+                },
+            })
+        },
+        [removeCartItem]
+    )
 
     /**
      * Handle Apply Coupon Code
@@ -70,14 +76,17 @@ export const useCart = () => {
         },
     })
 
-    const handleApplyCoupon = useCallback((props: { couponCode: string }) => {
-        const { couponCode } = props
-        return applyCoupon({
-            variables: {
-                couponCode,
-            },
-        })
-    }, [])
+    const handleApplyCoupon = useCallback(
+        (props: { couponCode: string }) => {
+            const { couponCode } = props
+            return applyCoupon({
+                variables: {
+                    couponCode,
+                },
+            })
+        },
+        [applyCoupon]
+    )
 
     /**
      * Handle Apply Coupon Code
@@ -96,7 +105,7 @@ export const useCart = () => {
 
     const handleRemoveCoupon = useCallback(() => {
         return removeCoupon()
-    }, [])
+    }, [removeCoupon])
 
     return {
         ...query,

@@ -1,4 +1,4 @@
-import { queryDefaultOptions } from '../../apollo/client'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 import { useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
@@ -36,23 +36,29 @@ export const useApp = ({
 
     const cart = useQuery(CART_QUERY, { ...queryDefaultOptions })
 
-    const [createEmptyCart, { loading: creatingEmptyCart }] = useMutation(CREATE_EMPTY_CART_MUTATION, {
-        update: (cache, { data: { cartId } }) => {
-            writeInLocalStorage('cartId', cartId)
+    const [createEmptyCart, { data: newCartData, loading: creatingEmptyCart }] = useMutation(
+        CREATE_EMPTY_CART_MUTATION,
+        {
+            update: (cache, { data: { cartId } }) => {
+                writeInLocalStorage('cartId', cartId)
 
-            cache.writeData({
-                data: { cartId },
-            })
-        },
-    })
+                cache.writeData({
+                    data: {
+                        cartId,
+                    },
+                })
+            },
+        }
+    )
 
     useEffect(() => {
-        if (cart.loading || creatingEmptyCart) return
+        if (cart.loading || creatingEmptyCart || !!newCartData?.cartId) return
 
-        if (cart.data?.hasCart === false) {
+        if (cart.error || cart.data?.hasCart === false) {
+            if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
             createEmptyCart().then(() => cart.refetch())
         }
-    }, [cart.data])
+    }, [cart, newCartData, createEmptyCart, creatingEmptyCart])
 
     return {
         ...query,

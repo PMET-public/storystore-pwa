@@ -1,4 +1,4 @@
-import { offlineLink } from './../../apollo/client'
+import { offlineLink } from './../../lib/apollo/client'
 import { useState, useEffect, useCallback } from 'react'
 
 export const useNetworkStatus = () => {
@@ -19,14 +19,14 @@ export const useNetworkStatus = () => {
     }, [])
 
     useEffect(() => {
-        addEventListener('online', handleNetworkChange)
-        addEventListener('offline', handleNetworkChange)
+        window.addEventListener('online', handleNetworkChange)
+        window.addEventListener('offline', handleNetworkChange)
 
         return () => {
-            removeEventListener('online', handleNetworkChange)
-            removeEventListener('offline', handleNetworkChange)
+            window.removeEventListener('online', handleNetworkChange)
+            window.removeEventListener('offline', handleNetworkChange)
         }
-    }, [])
+    }, [handleNetworkChange])
 
     return online
 }

@@ -1,7 +1,7 @@
 import { writeInLocalStorage } from '../../lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { queryDefaultOptions } from '../../apollo/client'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
@@ -39,7 +39,7 @@ export const useCheckout = () => {
 
     useEffect(() => {
         createBraintreeToken()
-    }, [])
+    }, [createBraintreeToken])
 
     /**
      * Contact Info
@@ -106,7 +106,7 @@ export const useCheckout = () => {
                 },
             })
         },
-        []
+        [setContactInfo]
     )
 
     /**
@@ -128,14 +128,17 @@ export const useCheckout = () => {
         }
     )
 
-    const handleSetShippingMethod = useCallback((props: { methodCode: string }) => {
-        const { methodCode } = props
-        return setShippingMethod({
-            variables: {
-                shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
-            },
-        })
-    }, [])
+    const handleSetShippingMethod = useCallback(
+        (props: { methodCode: string }) => {
+            const { methodCode } = props
+            return setShippingMethod({
+                variables: {
+                    shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
+                },
+            })
+        },
+        [setShippingMethod]
+    )
 
     /**
      * Selected Payment Method
@@ -148,13 +151,16 @@ export const useCheckout = () => {
         SET_PAYMENT_METHOD_MUTATION
     )
 
-    const handleSetPaymentMethod = useCallback(async (props: { nonce: string }) => {
-        const { nonce } = props
+    const handleSetPaymentMethod = useCallback(
+        async (props: { nonce: string }) => {
+            const { nonce } = props
 
-        return await setPaymentMethod({
-            variables: { nonce },
-        })
-    }, [])
+            return await setPaymentMethod({
+                variables: { nonce },
+            })
+        },
+        [setPaymentMethod]
+    )
 
     /**
      * Place Order
@@ -175,7 +181,7 @@ export const useCheckout = () => {
         const res = await placeOrder()
         await resetCart()
         return res
-    }, [])
+    }, [placeOrder, resetCart])
 
     return {
         ...query,

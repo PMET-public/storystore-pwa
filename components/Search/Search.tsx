@@ -1,53 +1,46 @@
-import React, { FunctionComponent, useState, useEffect, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { queryDefaultOptions } from '../../apollo/client'
 
-import SEARCH_QUERY from './graphql/search.graphql'
-
-import { useQuery } from '@apollo/react-hooks'
+import { useSearch } from './useSearch'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
-import Router from 'next/router'
-import DocumentMetadata from '../DocumentMetadata'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
 import Link from '../Link'
 
+import { useRouter } from 'next/router'
+import Head from '../Head'
+
 const Error = dynamic(() => import('../Error'))
 
-type SearchProps = {
-    query?: string
-}
+type SearchProps = {}
 
-type FilterValues = {
-    [key: string]: {
-        eq: string
-    }
-}
+// type FilterValues = {
+//     [key: string]: {
+//         eq: string
+//     }
+// }
 
-export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
+export const Search: FunctionComponent<SearchProps> = () => {
+    const history = useRouter()
+
+    const { query = '' } = history.query
+
+    const { data, loading, fetchMore, api } = useSearch({ queryString: query?.toString() })
+
     const { scrollY, scrollHeight } = useScroll()
 
     const { height } = useResize()
 
-    const [search, setSearch] = useState(query)
-
-    const [filters, setFilters] = useState<FilterValues>({})
-
-    const { loading, data, fetchMore } = useQuery(SEARCH_QUERY, {
-        ...queryDefaultOptions,
-        variables: { search, filters },
-    })
+    const { products } = data
 
     /**
      * Infinite Scroll Effect
      */
     useEffect(() => {
         if (loading) return
-
-        const { products } = data
 
         // ignore if it is loading or has no pagination
         if (!products.pagination) return
@@ -72,18 +65,9 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         },
                     }
                 },
-            })
+            }).catch(() => {})
         }
-    }, [scrollY])
-
-    /**
-     * Update query URL
-     */
-    useEffect(() => {
-        Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
-    }, [search])
-
-    const { products, store, meta } = data
+    }, [scrollY, products, fetchMore, height, loading, scrollHeight])
 
     const getProductCount = useCallback(() => {
         if (!products) return
@@ -92,36 +76,17 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     }, [products])
 
     const getNotResult = useCallback(() => {
-        if (search && products?.count === 0) {
+        if (query && products?.count === 0) {
             return (
                 <Error type="404">
-                    We couldn’t find any results for "{search}". <br />
+                    We couldn’t find any results for "{query}". <br />
                     Please try the field above to search again.
                 </Error>
             )
         } else {
             return null
         }
-    }, [search, products?.count])
-
-    const handleOnNewSearch = useCallback(
-        (newQuery: string) => {
-            if (newQuery.length === 0 || newQuery.length > 2) {
-                setSearch(newQuery)
-                window.scrollTo(0, 0)
-            }
-        },
-        [setSearch, setFilters]
-    )
-
-    // function handleOnClickFilterValue(key: string, value: string) {
-    //     setFilters({
-    //         ...filters,
-    //         [key]: {
-    //             eq: value,
-    //         },
-    //     })
-    // }
+    }, [query, products])
 
     const online = useNetworkStatus()
 
@@ -129,7 +94,7 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     return (
         <React.Fragment>
-            {store && meta && <DocumentMetadata />}
+            <Head title="Search" />
 
             <CategoryTemplate
                 loading={loading}
@@ -138,8 +103,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     searchBar: {
                         label: 'Search',
                         count: getProductCount(),
-                        value: search,
-                        onUpdate: handleOnNewSearch,
+                        value: query.toString(),
+                        onUpdate: api.search,
                     },
                     noResult: getNotResult(),
                 }}

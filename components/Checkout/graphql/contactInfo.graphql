@@ -1,6 +1,6 @@
 #import "./_ContactInfo.graphql"
 
-query __ContactInfoQuery($cartId: String = "", $hasCart: Boolean = false) {
+query ContactInfoQuery($cartId: String = "", $hasCart: Boolean = false) {
     cartId @client @export(as: "cartId")
     hasCart @client @export(as: "hasCart")
 

@@ -1,22 +1,23 @@
 import React, { FunctionComponent, useCallback, useState, useMemo, ChangeEvent, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 
 import { useCheckout } from './useCheckout'
 import { useCart } from '../Cart/useCart'
 import { resolveImage } from '../../lib/resolveImage'
-import useNetworkStatus from '../../hooks/useNetworkStatus'
-import dynamic from 'next/dynamic'
 
-import DocumentMetadata from '../DocumentMetadata'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
+import { useRouter } from 'next/router'
+
 import CheckoutTemplate from '@pmet-public/luma-ui/dist/templates/Checkout'
 import Link from '../Link'
-import { useRouter } from 'next/router'
+import Head from '../Head'
 
 const Error = dynamic(() => import('../Error'))
 
 type CheckoutProps = {}
 
-export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
-    const router = useRouter()
+export const Checkout: FunctionComponent<CheckoutProps> = () => {
+    const history = useRouter()
 
     const { loading, data, api, contactInfo, shippingMethods, paymentMethod, placeOrder } = useCheckout()
 
@@ -37,8 +38,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (!data.hasCart || cart?.items.length === 0) router.push('/cart').then(() => window.scrollTo(0, 0))
-    }, [data, cart?.items?.length])
+        if (!data.hasCart || cart?.items.length === 0) history.push('/cart')
+    }, [data, cart, history])
 
     /**
      * Steps
@@ -93,7 +94,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
             setStep(2)
         },
-        [api.setContactInfo]
+        [api]
     )
 
     /**
@@ -107,7 +108,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
             setStep(3)
         },
-        [api.setShippingMethod]
+        [api]
     )
 
     /**
@@ -119,13 +120,13 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
             await api.setPaymentMethod({ nonce })
             setStep(4)
         },
-        [api.setPaymentMethod]
+        [api]
     )
 
     const handlePlaceOrder = useCallback(async () => {
         const { data } = await api.placeOrder()
-        router.push(`/checkout/confirmation?order=${data.placeOrder.order.id}`).then(() => window.scrollTo(0, 0))
-    }, [api.setPaymentMethod])
+        history.push(`/checkout/confirmation`, { orderId: data.placeOrder.order.id })
+    }, [api, history])
 
     const online = useNetworkStatus()
 
@@ -133,7 +134,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = ({}) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata title="Checkout" />
+            <Head title="Checkout" />
+
             <CheckoutTemplate
                 breadcrumbs={{
                     loading: false,

@@ -2,7 +2,7 @@
  * ☢️ Experimental
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, Suspense } from 'react'
 import { Root, RichText } from './PageBuilder.styled'
 import { Component } from '@pmet-public/luma-ui/dist/lib'
 import { ErrorBoundary } from '@pmet-public/luma-ui/dist/lib'
@@ -32,16 +32,20 @@ const renderComponent = (Component: React.ComponentType<any>, props: any, items:
 }
 
 const PageBuilderFactory: Component<PageBuilderFactoryProps> = ({ component, items, props }) => {
-    return component ? <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary> : null
+    return (
+        <Suspense fallback="">
+            {component ? <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary> : null}
+        </Suspense>
+    )
 }
 
 export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => {
     const usePageBuilder = useMemo(() => isPageBuilderHtml(html), [html])
 
     const items = useMemo(() => {
-        if (!process.browser || !html || !usePageBuilder) return
+        if (!html || !usePageBuilder) return
         return htmlToProps(html).items
-    }, [html])
+    }, [html, usePageBuilder])
 
     return (
         <Root {...props}>

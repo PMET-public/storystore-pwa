@@ -35,7 +35,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
             background,
             wrapper,
         }
-    }, [JSON.stringify(style)])
+    }, [style])
 
     return (
         <Root

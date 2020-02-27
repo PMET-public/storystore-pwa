@@ -1,20 +1,22 @@
 #import "./_SelectedPaymentMethod.graphql"
+#import "../../Cart/graphql/_Cart.graphql"
 
 # Braintree!
 
 mutation SetPaymentOnCart($cartId: String = "", $nonce: String!) {
-	cartId @client @export(as: "cartId")
-	payment: setPaymentMethodOnCart(
-		input: {
-			cart_id: $cartId
-			payment_method: {
-				code: "braintree"
-				braintree: { payment_method_nonce: $nonce, is_active_payment_token_enabler: false }
-			}
-		}
-	) {
-		cart {
-			...SelectedPaymentMethod
-		}
-	}
+    cartId @client @export(as: "cartId")
+    payment: setPaymentMethodOnCart(
+        input: {
+            cart_id: $cartId
+            payment_method: {
+                code: "braintree"
+                braintree: { payment_method_nonce: $nonce, is_active_payment_token_enabler: false }
+            }
+        }
+    ) {
+        cart {
+            ...SelectedPaymentMethod
+            ...Cart
+        }
+    }
 }

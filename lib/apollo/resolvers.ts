@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { getFromLocalStorage } from '../lib/localStorage'
+import { getFromLocalStorage } from '../../lib/localStorage'
 
 /**
  * Extending the types of our server schema
@@ -12,12 +12,14 @@ export const typeDefs = gql`
     }
 `
 
+const isBrowser = process.browser
+
 /**
  * Default values on application load
  */
 export const defaults = {
-    cartId: (process.browser && getFromLocalStorage('cartId')) || '',
-    hasCart: process.browser && !!getFromLocalStorage('cartId'),
+    cartId: (isBrowser && getFromLocalStorage('cartId')) || '',
+    hasCart: isBrowser && !!getFromLocalStorage('cartId'),
 }
 
 /**
@@ -33,12 +35,12 @@ type Resolvers = {
 export const resolvers: Resolvers = {
     Query: {
         cartId() {
-            const cartId = (process.browser && getFromLocalStorage('cartId')) || ''
+            const cartId = (isBrowser && getFromLocalStorage('cartId')) || ''
             return cartId
         },
         hasCart() {
-            const cartId = process.browser && getFromLocalStorage('cartId')
-            return process.browser && !!cartId
+            const cartId = isBrowser && getFromLocalStorage('cartId')
+            return isBrowser && !!cartId
         },
         countries({ countries }) {
             /**
