@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 
 import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
@@ -21,9 +22,11 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, error, addingToCart, data, api, online, refetch } = useProduct({ urlKey })
+    const { loading, addingToCart, data, api } = useProduct({ urlKey })
 
     const router = useRouter()
+
+    const online = useNetworkStatus()
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
@@ -47,11 +50,14 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const handleAddToCart = useCallback(async () => {
         const { sku, variantSku } = data.product
+
         try {
-            if (type === 'configurable') {
+            if (type === 'ConfigurableProduct') {
                 await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
-            } else if (type === 'simple') {
+            } else if (type === 'SimpleProduct') {
                 await api.addSimpleProductToCart({ sku, quantity: 1 })
+            } else {
+                throw 'Product type not supported'
             }
             await router.push('/cart').then(() => window.scrollTo(0, 0))
         } catch (error) {
@@ -59,11 +65,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [data.product?.sku, data.product?.variantSku])
 
-    if (error && !online) return <Error type="Offline" />
+    if (!online && !data?.product) return <Error type="Offline" />
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
-
-    if (!loading && (!data || !data.product))
+    if (!loading && !data?.product) {
         return (
             <Error
                 type="404"
@@ -71,8 +75,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 button={{ text: 'Search', as: Link, href: '/search' }}
             />
         )
+    }
 
-    const { storeConfig, hasCart, product } = data
+    const { hasCart, product } = data
 
     const {
         categories,
@@ -85,13 +90,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         price,
         shortDescription,
         sku,
-        specialPrice,
         stock,
         title,
         type,
     } = product || {}
 
-    if (type && type !== 'configurable' && type !== 'simple') {
+    if (type && type !== 'ConfigurableProduct' && type !== 'SimpleProduct') {
         return <Error type="500">Product type: {type} not supported.</Error>
     }
 
@@ -129,21 +133,25 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         })),
                 }}
                 gallery={gallery
-                    ?.filter((x: any) => x.disabled === false && x.type === 'image')
-                    .map(({ id, label, file }: any) => ({
-                        _id: id,
+                    ?.filter((x: any) => x.type === 'ProductImage')
+                    .map(({ label, url }: any) => ({
                         alt: label || title,
                         src: {
-                            desktop: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
-                            mobile: resolveImage(storeConfig.baseMediaUrl + '/catalog/product' + file),
+                            desktop: resolveImage(url),
+                            mobile: resolveImage(url),
                         },
                     }))
                     .sort((a: any, b: any) => a.position - b.position)}
-                price={{
-                    special: specialPrice,
-                    regular: price?.regular.amount.value,
-                    currency: price?.regular.amount.currency,
-                }}
+                price={
+                    price && {
+                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                        regular: price.minimum.regular.value,
+                        special:
+                            price.minimum.discount.amountOff &&
+                            price.minimum.final.value - price.minimum.discount.amountOff,
+                        currency: price.minimum.regular.currency,
+                    }
+                }
                 options={options
                     ?.map(({ id, type, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
@@ -153,10 +161,10 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         return {
                             _id: id,
                             type,
-                            required,
-                            label: selected ? `${label}: ${selected.label}` : label,
                             swatches: {
+                                label: selected ? `${label}: ${selected.label}` : label,
                                 name: `options.${code}`,
+                                rules: { required },
                                 items: items?.map(({ id, label, value, image }: any) => ({
                                     _id: id,
                                     text: label,
@@ -165,6 +173,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                     image: image && {
                                         alt: image.label || '',
                                         src: resolveImage(image.url),
+                                        width: 4,
+                                        height: 5,
                                     },
                                 })),
                             },

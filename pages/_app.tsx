@@ -1,56 +1,48 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
-import { Workbox } from 'workbox-window'
-import { version } from '../package.json'
 
-import withApollo from '../apollo/with-apollo'
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
+import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
+import { ApolloClient } from 'apollo-client'
 
 import App from '../components/App'
+import ServiceWorkerProvider from '../components/ServiceWorker'
+import { ApolloProvider } from '@apollo/react-hooks'
+import createApolloClient from '../apollo/client'
 
 const MyApp: NextPage<any> = ({ Component, pageProps }) => {
-    /**
-     * Service Workder
-     */
+    const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
+
     useEffect(() => {
-        if (process.browser) {
-            console.log(`🙌 Luma PWA ${version}.`)
-        }
-
-        if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-            const wb = new Workbox('/service-worker.js')
-
-            wb.addEventListener('activated', _event => {
-                // Get the current page URL + all resources the page loaded.
-                const urlsToCache = [location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
-
-                // Send that list of URLs to your router in the service worker.
-                wb.messageSW({
-                    type: 'CACHE_URLS',
-                    payload: { urlsToCache },
-                })
-            })
-
-            // Register the service worker
-            wb.register()
-        }
+        createApolloClient().then(client => {
+            setApolloClient(client)
+        })
     }, [])
 
+    if (apolloClient === undefined) return <ViewLoader />
+
     return (
-        <AppProvider>
-            <App categoriesParentId={process.env.CATEGORIES_PARENT_ID} footerBlockId={process.env.FOOTER_BLOCK_ID}>
-                <NextNprogress
-                    color="rgba(161, 74, 36, 1)"
-                    startPosition={0.4}
-                    stopDelayMs={200}
-                    height={3}
-                    options={{ showSpinner: false, easing: 'ease' }}
-                />
-                <Component {...pageProps} />
-            </App>
-        </AppProvider>
+        <ApolloProvider client={apolloClient}>
+            <ServiceWorkerProvider>
+                <AppProvider>
+                    <App
+                        categoriesParentId={process.env.CATEGORIES_PARENT_ID}
+                        footerBlockId={process.env.FOOTER_BLOCK_ID}
+                    >
+                        <NextNprogress
+                            color="rgba(161, 74, 36, 1)"
+                            startPosition={0.4}
+                            stopDelayMs={200}
+                            height={3}
+                            options={{ showSpinner: false, easing: 'ease' }}
+                        />
+                        <Component {...pageProps} />
+                    </App>
+                </AppProvider>
+            </ServiceWorkerProvider>
+        </ApolloProvider>
     )
 }
 
-export default withApollo(MyApp)
+export default MyApp

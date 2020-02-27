@@ -1,15 +1,10 @@
 {
     "version": 2,
     "env": {
-        "PORT": "@port",
-        "MAGENTO_URL": "@magento_url",
-        "HOME_PAGE_ID": "@content_home_page_id",
-        "CATEGORIES_PARENT_ID": "@content_parent_categories_id",
-        "FOOTER_BLOCK_ID": "@content_footer_block_id"
+        "MAGENTO_URL": "@magento_url"
     },
     "build": {
         "env": {
-            "PORT": "@port",
             "MAGENTO_URL": "@magento_url",
             "HOME_PAGE_ID": "@content_home_page_id",
             "CATEGORIES_PARENT_ID": "@content_parent_categories_id",

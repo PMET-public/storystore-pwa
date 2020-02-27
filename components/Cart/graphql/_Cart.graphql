@@ -1,13 +1,19 @@
 fragment Cart on Cart {
-    totalQuantity @client
-    _items: items {
-        id
-        quantity
-    }
+    id
+
+    totalQuantity: total_quantity
 
     items {
         id
         quantity
+
+        price: prices {
+            amount: price {
+                currency
+                value
+            }
+        }
+
         product {
             id
             sku
@@ -17,15 +23,8 @@ fragment Cart on Cart {
                 label
                 url
             }
-            price {
-                regular: regularPrice {
-                    amount {
-                        currency
-                        value
-                    }
-                }
-            }
         }
+
         ... on ConfigurableCartItem {
             options: configurable_options {
                 id
@@ -35,15 +34,24 @@ fragment Cart on Cart {
         }
     }
 
+    appliedCoupons: applied_coupons {
+        code
+    }
+
+    appliedGiftCards: applied_gift_cards {
+        code
+        amount: applied_balance {
+            currency
+            value
+        }
+    }
+
     prices {
         subTotal: subtotal_excluding_tax {
             currency
             value
         }
-        subTotalWithDiscounts: subtotal_with_discount_excluding_tax {
-            currency
-            value
-        }
+
         taxes: applied_taxes {
             label
             amount {
@@ -51,9 +59,31 @@ fragment Cart on Cart {
                 value
             }
         }
+
+        discounts {
+            label
+            amount {
+                currency
+                value
+            }
+        }
+
         total: grand_total {
             currency
             value
+        }
+    }
+
+    shippingAddresses: shipping_addresses {
+        selectedShippingMethod: selected_shipping_method {
+            methodCode: method_code
+            carrierCode: carrier_code
+            methodTitle: method_title
+            carrierTitle: carrier_title
+            amount {
+                currency
+                value
+            }
         }
     }
 }

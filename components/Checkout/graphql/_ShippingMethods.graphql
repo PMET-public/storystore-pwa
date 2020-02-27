@@ -1,9 +1,7 @@
-#import "./_Address.graphql"
+fragment ShippingMethods on Cart {
+    id
 
-fragment ShippingAddresses on Cart {
     shippingAddresses: shipping_addresses {
-        ...Address
-
         availableShippingMethods: available_shipping_methods {
             available
             amount {
@@ -13,11 +11,14 @@ fragment ShippingAddresses on Cart {
             carrierCode: carrier_code
             methodCode: method_code
             methodTitle: method_title
+            carrierTitle: carrier_title
         }
 
         selectedShippingMethod: selected_shipping_method {
             methodCode: method_code
             carrierCode: carrier_code
+            methodTitle: method_title
+            carrierTitle: carrier_title
             amount {
                 currency
                 value

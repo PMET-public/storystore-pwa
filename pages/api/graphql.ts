@@ -1,7 +1,8 @@
-import request, { RequestCallback } from 'request'
+import request from 'request'
 import { URL } from 'url'
+import { NextApiRequest, NextApiResponse } from 'next'
 
-const magentoGraphQlUrl = new URL('graphql', process.env.MAGENTO_URL).href
+const url = new URL('graphql', process.env.MAGENTO_URL).href
 
 export const config = {
     api: {
@@ -9,26 +10,28 @@ export const config = {
     },
 }
 
-export const GraphQLApi: RequestCallback = (req, res) => {
-    return new Promise((resolve, reject) => {
-        if (req.method === 'POST') {
-            req.pipe(request.post(magentoGraphQlUrl))
-                .pipe(res)
-                .on('error', reject)
-                .on('response', resolve)
-        } else {
-            req.pipe(
-                request.get({
-                    qs: req.query,
-                    url: magentoGraphQlUrl,
-                    pool: {
-                        maxSockets: Infinity,
-                    },
-                })
-            )
-                .pipe(res)
-                .on('error', reject)
-                .on('response', resolve)
+export const GraphQLApi = (req: NextApiRequest, res: NextApiResponse) => {
+    return new Promise(resolve => {
+        try {
+            if (req.method === 'POST') {
+                req.pipe(request.post(url)).pipe(res)
+            } else {
+                req.pipe(
+                    request.get({
+                        qs: req.query,
+                        url,
+                        pool: {
+                            maxSockets: Infinity,
+                        },
+                    })
+                )
+                    .pipe(res)
+                    .once('finish', () => resolve())
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).end()
+            return resolve()
         }
     })
 }

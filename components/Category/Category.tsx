@@ -7,13 +7,13 @@ import PRODUCTS_QUERY from './graphql/products.graphql'
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-import useValueUpdated from '../../hooks/useValueUpdated'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
+import { queryDefaultOptions } from '../../apollo/client'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
@@ -39,30 +39,15 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         },
     })
 
-    const { loading, error, data, refetch } = useQuery(CATEGORY_QUERY, {
-        variables: { id },
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
+    const { loading, data } = useQuery(CATEGORY_QUERY, {
+        ...queryDefaultOptions,
+        variables: { id: id.toString() },
     })
 
     const productsQuery = useQuery(PRODUCTS_QUERY, {
+        ...queryDefaultOptions,
         variables: { filters: filterValues },
-        fetchPolicy: 'cache-and-network',
     })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (error && online) {
-            refetch()
-            productsQuery.refetch()
-        }
-    }, online)
 
     /**
      * Update filters on ID change
@@ -110,18 +95,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         }
     }, [scrollY])
 
-    if (error && !online) return <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error)
-        return (
-            <Error type="500" button={{ button: { text: 'Try again', onClick: refetch } }}>
-                {error.message}
-            </Error>
-        )
+    if (!online && !data.page) return <Error type="Offline" />
 
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
-    const { page } = data
+    const page = data.page && data.page[0]
 
     const products = productsQuery.data && productsQuery.data.products
 
@@ -143,9 +123,8 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     keywords={page.metaKeywords}
                 />
             )}
-
             <CategoryTemplate
-                loading={loading}
+                loading={loading && !page}
                 loadingMore={productsQuery.loading}
                 display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
@@ -231,8 +210,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             },
                         },
                         price: {
-                            regular: price.regularPrice.amount.value,
-                            currency: price.regularPrice.amount.currency,
+                            label:
+                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                            regular: price.minimum.regular.value,
+                            special:
+                                price.minimum.discount.amountOff &&
+                                price.minimum.final.value - price.minimum.discount.amountOff,
+                            currency: price.minimum.regular.currency,
                         },
                         title: {
                             text: title,

@@ -1,25 +1,23 @@
-query HomeQuery($id: Int!, $categoriesParentId: Int!) {
-    storeConfig {
-        id
-        baseMediaUrl: secure_base_media_url
-    }
-
-    categories: category(id: $categoriesParentId) {
-        id
-        children {
-            id
-            text: name
-            href: url_path
-            image
-        }
-    }
-
-    page: cmsPage(id: $id) {
-        id: url_key
-        title
-        content
-        metaTitle: meta_title
-        metaDescription: meta_description
-        metaKeywords: meta_keywords
-    }
+query HomeQuery($id: String!, $categoriesParentId: String!) {
+	storeConfig {
+		id
+		baseMediaUrl: secure_base_media_url
+	}
+	categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {
+		id
+		children {
+			id
+			text: name
+			href: url_path
+			image
+		}
+	}
+	page: cmsPage(identifier: $id) {
+		id: url_key
+		title
+		content
+		metaTitle: meta_title
+		metaDescription: meta_description
+		metaKeywords: meta_keywords
+	}
 }

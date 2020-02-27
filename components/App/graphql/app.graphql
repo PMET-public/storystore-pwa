@@ -1,4 +1,4 @@
-query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $hasFooter: Boolean = false) {
+query AppShellQuery($categoriesParentId: String) {
     store: storeConfig {
         id
         metaTitle: default_title
@@ -11,20 +11,12 @@ query AppShellQuery($categoriesParentId: Int!, $footerBlockId: String = "", $has
         copyright
     }
 
-    categories: category(id: $categoriesParentId) {
+    categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {
         id
         children {
             id
             text: name
             href: url_path
-            image
-        }
-    }
-
-    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
-        items {
-            id: identifier
-            html: content
         }
     }
 }

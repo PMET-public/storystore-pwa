@@ -1,13 +1,13 @@
 import React, { FunctionComponent, useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
+import { queryDefaultOptions } from '../../apollo/client'
 
 import SEARCH_QUERY from './graphql/search.graphql'
 
 import { useQuery } from '@apollo/react-hooks'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-import useValueUpdated from '../../hooks/useValueUpdated'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
 import Router from 'next/router'
@@ -36,22 +36,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
 
     const [filters, setFilters] = useState<FilterValues>({})
 
-    const { loading, error, data, refetch, fetchMore } = useQuery(SEARCH_QUERY, {
-        variables: { search: search || undefined, filters }, // undefined to patch a serverside graphql bug
-        returnPartialData: true,
-        fetchPolicy: 'cache-and-network',
+    const { loading, data, fetchMore } = useQuery(SEARCH_QUERY, {
+        ...queryDefaultOptions,
+        variables: { search, filters },
     })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (error && online) refetch()
-    }, online)
 
     /**
      * Infinite Scroll Effect
@@ -95,15 +83,6 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
     }, [search])
 
-    if (error && !online) return <Error type="Offline" />
-
-    if (error)
-        return (
-            <Error type="500" button={{ text: 'Try again', onClick: refetch }}>
-                {error.message}
-            </Error>
-        )
-
     const { products, store, meta } = data
 
     const getProductCount = useCallback(() => {
@@ -129,7 +108,6 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
         (newQuery: string) => {
             if (newQuery.length === 0 || newQuery.length > 2) {
                 setSearch(newQuery)
-                setFilters({})
                 window.scrollTo(0, 0)
             }
         },
@@ -144,6 +122,10 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     //         },
     //     })
     // }
+
+    const online = useNetworkStatus()
+
+    if (!online && !products) return <Error type="Offline" />
 
     return (
         <React.Fragment>
@@ -198,8 +180,13 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                             },
                         },
                         price: {
-                            regular: price.regularPrice.amount.value,
-                            currency: price.regularPrice.amount.currency,
+                            label:
+                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                            regular: price.minimum.regular.value,
+                            special:
+                                price.minimum.discount.amountOff &&
+                                price.minimum.final.value - price.minimum.discount.amountOff,
+                            currency: price.minimum.regular.currency,
                         },
                         title: {
                             text: title,

@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useHome } from './useHome'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
 import DocumentMetadata from '../DocumentMetadata'
@@ -17,11 +18,11 @@ type HomeProps = {
 }
 
 export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) => {
-    const { loading, error, data, online, refetch } = useHome({ id, categoriesParentId })
+    const { loading, data } = useHome({ id, categoriesParentId })
 
-    if (error && !online) return <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (!online && !data.page) return <Error type="Offline" />
 
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
 
@@ -39,23 +40,27 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
             <HomeTemplate
                 loading={loading && !page}
-                stories={{
-                    loading: loading && !categories,
-                    items: categories?.children?.map(({ id, text, href, image }: any) => ({
-                        as: Link,
-                        urlResolver: {
-                            type: 'CATEGORY',
-                            id,
-                        },
-                        href,
-                        image: image &&
-                            storeConfig?.baseMediaUrl && {
-                                alt: text,
-                                src: resolveImage(`${storeConfig.baseMediaUrl}catalog/category/${image}`),
+                stories={
+                    categories && {
+                        loading: loading && !categories,
+                        items: categories[0].children.map(({ id, text, href, image }: any) => ({
+                            as: Link,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
                             },
-                        text,
-                    })),
-                }}
+                            href,
+                            image: image &&
+                                storeConfig?.baseMediaUrl && {
+                                    alt: text,
+                                    src: resolveImage(image),
+                                    width: '100px',
+                                    height: '100px',
+                                },
+                            text,
+                        })),
+                    }
+                }
             >
                 {page?.content && <PageBuilder html={page.content} />}
             </HomeTemplate>

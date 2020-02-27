@@ -9,6 +9,7 @@ import DocumentMetadata from '../DocumentMetadata'
 import Link from '../Link'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
 const Error = dynamic(() => import('../Error'))
@@ -16,7 +17,7 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const { loading, updating, removing, error, online, data, api, refetch } = useCart()
+    const { loading, updating, removing, data, api, applyingCoupon, removingCoupon, couponError } = useCart()
 
     const router = useRouter()
 
@@ -24,22 +25,20 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
         router.push('/checkout').then(() => window.scrollTo(0, 0))
     }, [])
 
-    if (error && !online) return <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: refetch }} />
+    if (!online && !data) return <Error type="Offline" />
 
-    if (!data && !loading) return <Error type="500" />
+    if (!loading && !data) return <Error type="500" />
 
     const { cart } = data
 
-    const { items = [] } = cart || {}
+    const { items = [], appliedCoupons } = cart || {}
 
-    if (cart?.totalQuantity < 1) {
+    if (!cart?.totalQuantity) {
         return (
             <CartLanding
-                title={{
-                    text: 'Your bag is empty.',
-                }}
+                title={{ text: 'Shopping Bag' }}
                 children={
                     <div>
                         <Button as={Link} href="/" style={{ marginTop: '2rem' }}>
@@ -63,7 +62,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                 }}
                 list={{
                     loading: loading && !cart?.totalQuantity,
-                    items: items.map(({ id, quantity, product, options }: any, index: number) => ({
+                    items: items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
                             as: Link,
@@ -94,8 +93,8 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             onRemove: () => api.removeCartItem({ productId: id }),
                         },
                         price: {
-                            currency: product.price.regular.amount.currency,
-                            regular: product.price.regular.amount.value,
+                            currency: price.amount.currency,
+                            regular: price.amount.value,
                         },
                         options: options?.map(({ id, label, value }: any) => ({
                             _id: id,
@@ -108,7 +107,35 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                     title: {
                         text: 'Bag Summary',
                     },
+                    coupons: {
+                        label: 'Apply Coupons',
+                        open: !!appliedCoupons,
+                        items: [
+                            {
+                                field: {
+                                    label: 'Coupon Code',
+                                    name: 'couponCode',
+                                    error: couponError,
+                                    disabled: !!appliedCoupons,
+                                    defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
+                                },
+                                submitButton: {
+                                    text: appliedCoupons ? 'Remove' : 'Apply',
+                                    type: appliedCoupons ? 'reset' : 'submit',
+                                },
+                                submitting: applyingCoupon || removingCoupon,
+                                onReset: () => {
+                                    api.removeCoupon()
+                                },
+                                onSubmit: (values: any) => {
+                                    const { couponCode } = values
+                                    api.applyCoupon({ couponCode })
+                                },
+                            },
+                        ],
+                    },
                     prices: [
+                        // Sub-total
                         {
                             label: 'Subtotal',
                             price: cart?.prices?.subTotal && {
@@ -116,6 +143,28 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 regular: cart.prices.subTotal.value,
                             },
                         },
+
+                        // Discounts
+                        ...(cart?.prices?.discounts?.map((discount: any) => ({
+                            label: discount.label,
+                            price: {
+                                currency: discount.amount.currency,
+                                regular: -discount.amount.value,
+                            },
+                        })) || []),
+
+                        // Shipping
+                        ...(cart?.shippingAddresses
+                            ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
+                            .map(({ selectedShippingMethod }: any) => ({
+                                label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
+                                price: {
+                                    currency: selectedShippingMethod.amount.currency,
+                                    regular: selectedShippingMethod.amount.value,
+                                },
+                            })) || []),
+
+                        // Taxes
                         {
                             label: 'Estimated Taxes',
                             price: cart?.prices?.taxes[0] && {
@@ -126,6 +175,8 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                                 ),
                             },
                         },
+
+                        // Total
                         {
                             appearance: 'bold',
                             label: 'Total',

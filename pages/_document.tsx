@@ -54,6 +54,7 @@ export default class extends Document<any> {
 
                     {/* Fonts */}
 
+                    <link href="https://p.typekit.net" rel="preconnect" crossOrigin="true" />
                     <link href="https://use.typekit.net" rel="preconnect" crossOrigin="true" />
                     <link rel="stylesheet" href="/static/fonts.css" />
                 </Head>

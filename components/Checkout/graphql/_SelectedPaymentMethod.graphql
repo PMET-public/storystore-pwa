@@ -1,4 +1,6 @@
 fragment SelectedPaymentMethod on Cart {
+    id
+
     selectedPaymentMethod: selected_payment_method {
         code
     }

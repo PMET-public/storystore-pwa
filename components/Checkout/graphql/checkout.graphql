@@ -1,20 +1,13 @@
-#import "./_CheckoutDetails.graphql"
-
-query CheckoutQuery($cartId: String = "", $hasCart: Boolean = false) {
-    cartId @client @export(as: "cartId")
-    hasCart @client @export(as: "hasCart")
-
-    cart(cart_id: $cartId) @include(if: $hasCart) {
-        ...CheckoutDetails
-    }
-
-    countries {
-        id
-        code: id
-        name: full_name_locale
-        regions: available_regions {
-            code
-            name
-        }
-    }
+query __CheckoutQuery {
+	hasCart @client
+	braintreeToken @client
+	countries {
+		id
+		code: id
+		name: full_name_locale
+		regions: available_regions {
+			code
+			name
+		}
+	}
 }

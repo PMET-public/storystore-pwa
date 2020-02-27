@@ -8,10 +8,6 @@ export const typeDefs = gql`
     extend type Query {
         hasCart: Boolean!
         cartId: String!
-    }
-
-    extend type Cart {
-        totalQuantity: Int!
         braintreeToken: String!
     }
 `
@@ -44,7 +40,6 @@ export const resolvers: Resolvers = {
             const cartId = process.browser && getFromLocalStorage('cartId')
             return process.browser && !!cartId
         },
-
         countries({ countries }) {
             /**
              * 🩹Patch:
@@ -71,26 +66,6 @@ export const resolvers: Resolvers = {
                 })
         },
     },
-    Cart: {
-        totalQuantity({ _items }) {
-            /**
-             * 🩹Patch:
-             * return total quantity
-             */
 
-            return _items ? _items.reduce((total: number, item: { quantity: number }) => total + item.quantity, 0) : 0
-        },
-    },
-
-    Mutation: {
-        resetCart: (_root, _variables, { cache }) => {
-            cache.writeData({
-                data: {
-                    hasCart: false,
-                    cartId: null,
-                    cart: null,
-                },
-            })
-        },
-    },
+    Mutation: {},
 }

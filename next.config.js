@@ -1,14 +1,7 @@
 require('dotenv').config()
 
-const { URL } = require('url')
 const path = require('path')
 const withOffline = require('next-offline')
-
-const getRevisionHash = () =>
-    require('crypto')
-        .createHash('md5')
-        .update(Date.now().toString(), 'utf8')
-        .digest('hex')
 
 module.exports = withOffline({
     // Build environment variables
@@ -17,20 +10,11 @@ module.exports = withOffline({
         CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
     },
-    transformManifest: manifest =>
-        // Precaching
-        [
-            { url: '/', revision: getRevisionHash() },
-            { url: '/search', revision: getRevisionHash() },
-            { url: '/cart', revision: getRevisionHash() },
-            { url: '/checkout', revision: getRevisionHash() },
-            { url: '/robots.txt', revision: getRevisionHash() },
-            { url: '/manifest.webmanifest', revision: getRevisionHash() },
-        ].concat(manifest),
+
     dontAutoRegisterSw: true,
     generateSw: false,
     workboxOpts: {
-        swSrc: path.resolve(__dirname, './lib/workboxOptions.js'),
+        swSrc: path.resolve(__dirname, './lib/workbox.ts'),
         swDest: 'static/service-worker.js',
     },
 
