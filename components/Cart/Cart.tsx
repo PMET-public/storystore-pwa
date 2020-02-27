@@ -35,7 +35,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     const { items = [], appliedCoupons } = cart || {}
 
-    if (cart?.totalQuantity < 1) {
+    if (!cart?.totalQuantity) {
         return (
             <CartLanding
                 title={{ text: 'Shopping Bag' }}
