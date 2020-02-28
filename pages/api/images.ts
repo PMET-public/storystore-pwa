@@ -18,9 +18,6 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // if (req.query.webp) transformer.webp()
 
-        /** Use Edge Case in now.sh */
-        res.setHeader('Cache-Control', `max-age=${maxAge}, immutable`)
-
         request
             .get({
                 qs: req.query,
@@ -30,6 +27,9 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
             })
             // .pipe(transformer)
+            .once('success', response => {
+                response.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
+            })
             .pipe(res)
     } catch (error) {
         console.error(error)
