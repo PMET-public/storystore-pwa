@@ -20,9 +20,9 @@ export const resolveImage = (url: string, options?: { width?: number; height?: n
 
         // if (webP) query.push('webp=true')
 
-        if (options?.width) query.push(`width=${options.width}`)
+        // if (options?.width) query.push(`width=${options.width}`)
 
-        if (options?.height) query.push(`height=${options.height}`)
+        // if (options?.height) query.push(`height=${options.height}`)
 
         return `/api/images?${query.join('&')}`
     } else {
