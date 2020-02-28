@@ -83,7 +83,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                             },
                             href: `/${product.urlKey}`,
                             alt: product.thumbnail.label,
-                            src: resolveImage(product.thumbnail.url),
+                            src: resolveImage(product.thumbnail.url, { width: 300 }),
                         },
                         quantity: {
                             value: quantity,

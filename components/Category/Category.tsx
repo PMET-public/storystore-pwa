@@ -164,8 +164,8 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         image: {
                             alt: image.alt,
                             src: {
-                                desktop: resolveImage(image.src),
-                                mobile: resolveImage(image.src),
+                                desktop: resolveImage(image.src, { width: 1260 }),
+                                mobile: resolveImage(image.src, { width: 960 }),
                             },
                         },
                         price: {

@@ -129,8 +129,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     .map(({ label, url }: any) => ({
                         alt: label || product?.title,
                         src: {
-                            desktop: resolveImage(url),
-                            mobile: resolveImage(url),
+                            desktop: resolveImage(url, { width: 1260 }),
+                            mobile: resolveImage(url, { width: 960 }),
                         },
                     }))
                     .sort((a: any, b: any) => a.position - b.position)}
@@ -167,7 +167,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                     value,
                                     image: image && {
                                         alt: image.label || '',
-                                        src: resolveImage(image.url),
+                                        src: resolveImage(image.url, { width: 200 }),
                                         width: 4,
                                         height: 5,
                                     },

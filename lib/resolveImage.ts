@@ -1,5 +1,4 @@
 function canUseWebP() {
-    console.log('running check on webp')
     var elem = document.createElement('canvas')
 
     if (!!(elem.getContext && elem.getContext('2d'))) {
@@ -13,13 +12,17 @@ function canUseWebP() {
 
 const webP = typeof document !== 'undefined' && canUseWebP()
 
-export const resolveImage = (url: string) => {
+export const resolveImage = (url: string, options?: { width?: number; height?: number }) => {
     const { pathname } = new URL(url)
 
     if (pathname) {
         const query = [`url=${pathname}`]
 
         if (webP) query.push('webp=true')
+
+        if (options?.width) query.push(`width=${options.width}`)
+
+        if (options?.height) query.push(`height=${options.height}`)
 
         return `/api/images?${query.join('&')}`
     } else {

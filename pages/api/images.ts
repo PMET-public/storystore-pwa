@@ -11,6 +11,11 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
 
         const transformer = sharp()
 
+        const width = req.query.width ? Number(req.query.width) : undefined
+        const height = req.query.height ? Number(req.query.height) : undefined
+
+        if (width) transformer.resize(width, height)
+
         if (req.query.webp) transformer.webp()
 
         /** Use Edge Case in now.sh */
