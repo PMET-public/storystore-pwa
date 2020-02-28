@@ -27,10 +27,10 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
             })
             // .pipe(transformer)
-            .pipe(res)
             .once('success', response => {
                 response.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
             })
+            .pipe(res)
     } catch (error) {
         console.error(error)
         res.status(500).end()
