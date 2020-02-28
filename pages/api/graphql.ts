@@ -10,30 +10,25 @@ export const config = {
     },
 }
 
-export const GraphQLApi = (req: NextApiRequest, res: NextApiResponse) => {
-    return new Promise(resolve => {
-        try {
-            if (req.method === 'POST') {
-                req.pipe(request.post(url)).pipe(res)
-            } else {
-                req.pipe(
-                    request.get({
-                        qs: req.query,
-                        url,
-                        pool: {
-                            maxSockets: Infinity,
-                        },
-                    })
-                )
-                    .pipe(res)
-                    .once('finish', () => resolve())
-            }
-        } catch (error) {
-            console.error(error)
-            res.status(500).end()
-            return resolve()
+export const GraphQLApi = async (req: NextApiRequest, res: NextApiResponse) => {
+    try {
+        if (req.method === 'POST') {
+            req.pipe(request.post(url)).pipe(res)
+        } else {
+            req.pipe(
+                request.get({
+                    qs: req.query,
+                    url,
+                    pool: {
+                        maxSockets: Infinity,
+                    },
+                })
+            ).pipe(res)
         }
-    })
+    } catch (error) {
+        console.error(error)
+        res.status(500).end()
+    }
 }
 
 export default GraphQLApi
