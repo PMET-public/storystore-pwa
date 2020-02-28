@@ -1,7 +1,7 @@
 import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
-// import sharp from 'sharp'
+import sharp from 'sharp'
 
 const maxAge = 30 * 86400 // 30 days
 
@@ -9,14 +9,14 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const url = req.query.url.toString()
 
-        // const transformer = sharp()
+        const transformer = sharp()
 
-        // const width = req.query.width ? Number(req.query.width) : undefined
-        // const height = req.query.height ? Number(req.query.height) : undefined
+        const width = req.query.width ? Number(req.query.width) : undefined
+        const height = req.query.height ? Number(req.query.height) : undefined
 
-        // if (width) transformer.resize(width, height)
+        if (width) transformer.resize(width, height)
 
-        // if (req.query.webp) transformer.webp()
+        if (req.query.webp) transformer.webp()
 
         /** Use Edge Case in now.sh */
         res.setHeader('Cache-Control', `max-age=${maxAge}, immutable`)
@@ -29,7 +29,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
                     maxSockets: Infinity,
                 },
             })
-            // .pipe(transformer)
+            .pipe(transformer)
             .pipe(res)
     } catch (error) {
         console.error(error)

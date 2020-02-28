@@ -12,7 +12,7 @@
 
 // const webP = typeof document !== 'undefined' && canUseWebP()
 
-export const resolveImage = (url: string, _options?: { width?: number; height?: number }) => {
+export const resolveImage = (url: string, options?: { width?: number; height?: number }) => {
     const { pathname } = new URL(url)
 
     if (pathname) {
@@ -20,9 +20,9 @@ export const resolveImage = (url: string, _options?: { width?: number; height?: 
 
         // if (webP) query.push('webp=true')
 
-        // if (options?.width) query.push(`width=${options.width}`)
+        if (options?.width) query.push(`width=${options.width}`)
 
-        // if (options?.height) query.push(`height=${options.height}`)
+        if (options?.height) query.push(`height=${options.height}`)
 
         return `/api/images?${query.join('&')}`
     } else {
