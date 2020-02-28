@@ -94,7 +94,7 @@ async function create(initialState: any) {
 
     const client = new ApolloClient({
         cache,
-        connectToDevTools: process.browser,
+        // connectToDevTools: process.browser,
         link,
         resolvers,
         ssrMode: !process.browser,
