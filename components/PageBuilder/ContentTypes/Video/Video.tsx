@@ -15,7 +15,7 @@ export const Video: Component<VideoProps> = ({ children, url, ...props }) => {
                 height={360}
                 width={640}
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                allowFullScreen
+                allowFullScreen={true}
                 frameBorder={0}
             />
         </Root>

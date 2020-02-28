@@ -125,7 +125,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
 
     const handlePlaceOrder = useCallback(async () => {
         const { data } = await api.placeOrder()
-        history.push(`/checkout/confirmation`, { orderId: data.placeOrder.order.id })
+        history.push(`/checkout/confirmation?orderId=${data.placeOrder.order.id}`)
     }, [api, history])
 
     const online = useNetworkStatus()

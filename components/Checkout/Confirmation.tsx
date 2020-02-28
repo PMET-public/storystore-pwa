@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -7,7 +7,9 @@ import Button from '@pmet-public/luma-ui/dist/components/Button'
 import Link from '../Link'
 import Head from '../Head'
 
-export const Confirmation = () => {
+export type ConfirmationProps = {}
+
+export const Confirmation: FunctionComponent = () => {
     const { query } = useRouter()
 
     const { orderId } = query
@@ -20,7 +22,7 @@ export const Confirmation = () => {
                 title={{
                     text: 'Thank you for your order!',
                 }}
-                success
+                success={true}
                 children={
                     <div>
                         {orderId && <p>Your order # is: {orderId}.</p>}

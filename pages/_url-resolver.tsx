@@ -35,8 +35,6 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 }
 
 UrlResolver.getInitialProps = async ({ res, query }) => {
-    console.log('Resolving URL')
-
     const graphQLUrl = process.browser
         ? new URL('/api/graphql', location.href).href
         : new URL('graphql', process.env.MAGENTO_URL).href
