@@ -33,7 +33,7 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
                     <Error
                         type="401"
                         button={{ text: 'Login', onClick: () => (window.location.href = '/basic-auth') }}
-                        fullScreen={true}
+                        fullScreen
                     >
                         Authorization Required
                     </Error>
@@ -44,11 +44,7 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
 
     if (!loading && !data) {
         return (
-            <Error
-                type="500"
-                button={{ text: 'Reload App', onClick: () => window.location.reload() }}
-                fullScreen={true}
-            >
+            <Error type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen>
                 No data available.
             </Error>
         )
