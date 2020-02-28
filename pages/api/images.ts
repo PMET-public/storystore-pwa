@@ -1,33 +1,23 @@
 import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
-// import sharp from 'sharp'
 
-const maxAge = 30 * 86400 // 30 days
+const maxAge = 30 * 86400 // 30 days 31536000
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const url = req.query.url.toString()
 
-        // const transformer = sharp()
-
-        // const width = req.query.width ? Number(req.query.width) : undefined
-        // const height = req.query.height ? Number(req.query.height) : undefined
-
-        // if (width) transformer.resize(width, height)
-
-        // if (req.query.webp) transformer.webp()
-
-        request
-            .get({
+        req.pipe(
+            request.get({
                 qs: req.query,
                 url: new URL(url, process.env.MAGENTO_URL).href,
                 pool: {
                     maxSockets: Infinity,
                 },
             })
-            // .pipe(transformer)
-            .once('success', response => {
+        )
+            .once('response', response => {
                 response.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
             })
             .pipe(res)
