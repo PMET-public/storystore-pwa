@@ -12,7 +12,7 @@
 
 // const webP = typeof document !== 'undefined' && canUseWebP()
 
-export const resolveImage = (url: string, options?: { width?: number; height?: number }) => {
+export const resolveImage = (url: string, _options?: { width?: number; height?: number }) => {
     const { pathname } = new URL(url)
 
     if (pathname) {
