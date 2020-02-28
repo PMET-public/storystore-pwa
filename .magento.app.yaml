@@ -11,7 +11,7 @@ web:
 
 hooks:
     build: |
-        npm install
+        npm install --silent
         npm run build
 
 build:
