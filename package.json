@@ -10,7 +10,6 @@
   },
   "scripts": {
     "dev": "NODE_OPTIONS=\"--inspect\" next dev",
-    "prebuild": "yarn tslint",
     "build": "next build",
     "start": "next start",
     "tslint": "tslint -p . -c tslint.json"
