@@ -22,7 +22,7 @@ export const Confirmation: FunctionComponent = () => {
                 title={{
                     text: 'Thank you for your order!',
                 }}
-                success={true}
+                success
                 children={
                     <div>
                         {orderId && <p>Your order # is: {orderId}.</p>}

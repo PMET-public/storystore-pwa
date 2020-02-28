@@ -9,6 +9,7 @@
     "jsRules": {},
     "rules": {
         "prettier": true,
+        "jsx-boolean-value": false,
         "react-hooks-nesting": {
             "severity": "error",
             "options": {}
