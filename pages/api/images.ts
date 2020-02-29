@@ -6,12 +6,12 @@ const maxAge = 30 * 86400 // 30 days 31536000
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-        const url = req.query.url.toString()
+        const url = new URL(req.query.url.toString(), process.env.MAGENTO_URL).href
 
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, process.env.MAGENTO_URL).href,
+                url,
                 pool: {
                     maxSockets: Infinity,
                 },
