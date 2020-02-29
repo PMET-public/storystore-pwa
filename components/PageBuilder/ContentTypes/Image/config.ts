@@ -4,6 +4,7 @@ import { getStyleAsObject } from '../../lib/getStyleAsObject'
 import { LinkProps } from '../../../../components/Link'
 import { ImageProps } from '@pmet-public/luma-ui/dist/components/Image'
 import { LinkType, resolveLink } from '../../../../lib/resolveLink'
+import { resolveImage } from '../../../../lib/resolveImage'
 
 const component = dynamic(() => import('./'))
 
@@ -17,13 +18,13 @@ const props = (elem: HTMLElement) => {
             ? (linkElem.children as HTMLCollectionOf<HTMLElement>)
             : (elem.children as HTMLCollectionOf<HTMLElement>)
 
-    const desktopSrc = imageElement[0].getAttribute('src') || undefined
-    const mobileSrc = imageElement[1].getAttribute('src') || undefined
+    const desktopSrc = imageElement[0].getAttribute('src') || ''
+    const mobileSrc = imageElement[1].getAttribute('src') || ''
 
     const image: ImageProps & { style: {} } = {
         src: {
-            desktop: desktopSrc || '',
-            mobile: mobileSrc !== desktopSrc ? mobileSrc : undefined,
+            desktop: resolveImage(desktopSrc),
+            mobile: mobileSrc !== desktopSrc ? resolveImage(mobileSrc) : undefined,
         },
         alt: imageElement[0].getAttribute('alt') || undefined,
         title: imageElement[0].getAttribute('title') || undefined,
