@@ -23,7 +23,7 @@ export const Image: Component<ImageProps> = ({ children, caption, link, image, .
     const ImageElem = useRef(null)
 
     const { src: _src, ...imageProps } = image
-    const { src } = useImage(ImageElem, _src)
+    const { src } = useImage(ImageElem, _src, { lazyload: { offsetY: 100 } })
 
     return (
         <Root as={link ? (p: any) => <Link {...link} {...p} /> : 'div'} {...props}>

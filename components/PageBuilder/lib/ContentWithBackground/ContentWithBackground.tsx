@@ -18,7 +18,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
 }) => {
     const elemRef = useRef(null)
 
-    const bgImage = useImage(elemRef, backgroundImages)
+    const bgImage = useImage(elemRef, backgroundImages, { lazyload: { offsetY: 100 } })
 
     const styles: { [key: string]: any } = useMemo(() => {
         if (!style) return {}

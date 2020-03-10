@@ -9,7 +9,8 @@
     "node": "10.x"
   },
   "scripts": {
-    "dev": "NODE_OPTIONS=\"--inspect\" next dev",
+    "dev": "next dev",
+    "inspect": "NODE_OPTIONS=\"--inspect\" next dev",
     "build": "next build",
     "start": "next start",
     "tslint": "tslint -p . -c tslint.json"
@@ -33,7 +34,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "html-react-parser": "^0.10.0",
-    "next": "^9.2.1",
+    "next": "^9.2.2",
     "next-offline": "^5.0.0",
     "nextjs-progressbar": "^0.0.4",
     "node-fetch": "^2.6.0",

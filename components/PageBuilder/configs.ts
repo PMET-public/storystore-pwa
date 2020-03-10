@@ -13,6 +13,7 @@ import Column from './ContentTypes/Column/config'
 import Tabs from './ContentTypes/Tabs/config'
 import TabItem from './ContentTypes/TabItem/config'
 import Banner from './ContentTypes/Banner/config'
+import Products from './ContentTypes/Products/config'
 
 export default {
     Row,
@@ -30,4 +31,5 @@ export default {
     Tabs,
     TabItem,
     Banner,
+    Products,
 }
