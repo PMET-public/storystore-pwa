@@ -1,13 +1,13 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { Settings } from 'react-slick'
+import { SlickSliderProps } from '@pmet-public/luma-ui/dist/components/SlickSlider'
 
 const component = dynamic(() => import('./'))
 
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const slider: Settings = {
+    const slider: SlickSliderProps = {
         arrows: elem.dataset.showArrows === 'true',
         autoplay: elem.dataset.autoplay === 'true',
         autoplaySpeed: parseInt(elem.dataset.autoplaySpeed || '400'),
