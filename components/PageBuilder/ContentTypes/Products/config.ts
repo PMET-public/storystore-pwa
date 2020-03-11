@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { Settings } from 'react-slick'
+import { SlickSliderProps } from '@pmet-public/luma-ui/dist/components/SlickSlider'
 
 const component = dynamic(() => import('./'))
 
@@ -11,7 +11,7 @@ const props = (elem: HTMLElement) => {
 
     const { appearance } = elem.dataset
 
-    const slider: Settings | undefined =
+    const slider: SlickSliderProps | undefined =
         appearance === 'carousel'
             ? {
                   arrows: elem.dataset.showArrows === 'true',
