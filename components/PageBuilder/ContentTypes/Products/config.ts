@@ -11,25 +11,25 @@ const props = (elem: HTMLElement) => {
 
     const { appearance } = elem.dataset
 
-    const carousel: Settings | undefined =
+    const slider: Settings | undefined =
         appearance === 'carousel'
             ? {
-                  autoplay: elem.getAttribute('data-autoplay') === 'true',
-                  autoplaySpeed: parseInt(elem.getAttribute('data-autoplay-speed') || '0'),
-                  infinite: elem.getAttribute('data-infinite-loop') === 'true',
-                  arrows: elem.getAttribute('data-show-arrows') === 'true',
-                  dots: elem.getAttribute('data-show-dots') === 'true',
-                  centerMode: elem.getAttribute('data-carousel-mode') === 'continuous',
-                  centerPadding: elem.getAttribute('data-center-padding') || undefined,
+                  arrows: elem.dataset.showArrows === 'true',
+                  autoplay: elem.dataset.autoplay === 'true',
+                  autoplaySpeed: parseInt(elem.dataset.autoplaySpeed || '400'),
+                  centerMode: elem.dataset.carouselMode === 'continuous',
+                  centerPadding: elem.dataset.centerPadding || undefined,
+                  dots: elem.dataset.showDots === 'true',
+                  infinite: elem.dataset.infiniteLoop === 'true',
               }
             : undefined
 
-    const skus = [...(forms as any)].map(form => form.getAttribute('data-product-sku'))
+    const skus = [...(forms as any)].map(form => form.dataset.productSku)
 
     return {
         appearance,
+        slider,
         skus,
-        carousel,
         style,
     }
 }

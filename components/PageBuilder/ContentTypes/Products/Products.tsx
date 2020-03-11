@@ -9,10 +9,10 @@ import { resolveImage } from '../../../../lib/resolveImage'
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
     skus: string[]
-    carousel?: ProductCarouselProps
+    slider?: ProductCarouselProps
 }
 
-export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, carousel, ...props }) => {
+export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, slider, ...props }) => {
     const { loading, data } = useProducts({ skus })
 
     if (appearance === 'carousel') {
@@ -46,7 +46,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         currency: price.minimum.regular.currency,
                     },
                 }))}
-                {...carousel}
+                {...slider}
                 {...props}
             />
         )

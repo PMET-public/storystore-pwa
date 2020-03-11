@@ -14,6 +14,7 @@ import Tabs from './ContentTypes/Tabs/config'
 import TabItem from './ContentTypes/TabItem/config'
 import Banner from './ContentTypes/Banner/config'
 import Products from './ContentTypes/Products/config'
+import Slider from './ContentTypes/Slider/config'
 
 export default {
     Row,
@@ -32,4 +33,6 @@ export default {
     TabItem,
     Banner,
     Products,
+    Slider,
+    Slide: Banner,
 }
