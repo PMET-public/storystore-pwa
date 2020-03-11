@@ -1,28 +1,18 @@
 import React from 'react'
 import { Component } from '@pmet-public/luma-ui/dist/lib'
 import ProductList from '@pmet-public/luma-ui/dist/components/ProductList'
-import ProductCarousel from '@pmet-public/luma-ui/dist/components/ProductCarousel'
+import ProductCarousel, { ProductCarouselProps } from '@pmet-public/luma-ui/dist/components/ProductCarousel'
 import { useProducts } from './useProducts'
 import Link from '../../../Link'
 import { resolveImage } from '../../../../lib/resolveImage'
 
-export type ProductsCarousel = {
-    autoplay?: boolean
-    autoplaySpeed?: number
-    infinite?: boolean
-    arrows?: boolean
-    dots?: boolean
-    carouselMode?: string | null
-    centerPadding?: string | null
-}
-
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
     skus: string[]
-    carousel?: ProductsCarousel
+    carousel?: ProductCarouselProps
 }
 
-export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, carousel, style, ...props }) => {
+export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, carousel, ...props }) => {
     const { loading, data } = useProducts({ skus })
 
     if (appearance === 'carousel') {
@@ -56,6 +46,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         currency: price.minimum.regular.currency,
                     },
                 }))}
+                {...carousel}
                 {...props}
             />
         )
