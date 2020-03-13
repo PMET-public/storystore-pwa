@@ -1,65 +1,46 @@
-import React, { FunctionComponent, useState, useEffect, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
-import SEARCH_QUERY from './graphql/search.graphql'
-
-import { useQuery } from '@apollo/react-hooks'
+import { useSearch } from './useSearch'
 import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
 import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-import useValueUpdated from '../../hooks/useValueUpdated'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { resolveImage } from '../../lib/resolveImage'
 
-import Router from 'next/router'
-import DocumentMetadata from '../DocumentMetadata'
 import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
 import Link from '../Link'
 
+import { useRouter } from 'next/router'
+import Head from '../Head'
+
 const Error = dynamic(() => import('../Error'))
 
-type SearchProps = {
-    query?: string
-}
+type SearchProps = {}
 
-type FilterValues = {
-    [key: string]: {
-        eq: string
-    }
-}
+// type FilterValues = {
+//     [key: string]: {
+//         eq: string
+//     }
+// }
 
-export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
+export const Search: FunctionComponent<SearchProps> = () => {
+    const history = useRouter()
+
+    const { query = '' } = history.query
+
+    const { data, loading, fetchMore, api } = useSearch({ queryString: query?.toString() })
+
     const { scrollY, scrollHeight } = useScroll()
 
     const { height } = useResize()
 
-    const [search, setSearch] = useState(query)
-
-    const [filters, setFilters] = useState<FilterValues>({})
-
-    const { loading, error, data, refetch, fetchMore } = useQuery(SEARCH_QUERY, {
-        variables: { search, filters },
-        returnPartialData: true,
-        fetchPolicy: 'cache-and-network',
-    })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (error && online) refetch()
-    }, online)
+    const { products } = data
 
     /**
      * Infinite Scroll Effect
      */
     useEffect(() => {
         if (loading) return
-
-        const { products } = data
 
         // ignore if it is loading or has no pagination
         if (!products.pagination) return
@@ -84,27 +65,9 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         },
                     }
                 },
-            })
+            }).catch(() => {})
         }
-    }, [scrollY])
-
-    /**
-     * Update query URL
-     */
-    useEffect(() => {
-        Router.push(`/search?query=${search}`, `/search?query=${search}`, { shallow: true })
-    }, [search])
-
-    if (error && !online) return <Error type="Offline" />
-
-    if (error)
-        return (
-            <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }}>
-                {error.message}
-            </Error>
-        )
-
-    const { products, store, meta } = data
+    }, [scrollY, products, fetchMore, height, loading, scrollHeight])
 
     const getProductCount = useCallback(() => {
         if (!products) return
@@ -113,40 +76,25 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
     }, [products])
 
     const getNotResult = useCallback(() => {
-        if (search && products?.count === 0) {
+        if (query && products?.count === 0) {
             return (
                 <Error type="404">
-                    We couldn’t find any results for "{search}". <br />
+                    We couldn’t find any results for "{query}". <br />
                     Please try the field above to search again.
                 </Error>
             )
         } else {
             return null
         }
-    }, [search, products?.count])
+    }, [query, products])
 
-    const handleOnNewSearch = useCallback(
-        (newQuery: string) => {
-            if (newQuery.length === 0 || newQuery.length > 2) {
-                setSearch(newQuery)
-                window.scrollTo(0, 0)
-            }
-        },
-        [setSearch, setFilters]
-    )
+    const online = useNetworkStatus()
 
-    // function handleOnClickFilterValue(key: string, value: string) {
-    //     setFilters({
-    //         ...filters,
-    //         [key]: {
-    //             eq: value,
-    //         },
-    //     })
-    // }
+    if (!online && !products) return <Error type="Offline" />
 
     return (
         <React.Fragment>
-            {store && meta && <DocumentMetadata />}
+            <Head title="Search" />
 
             <CategoryTemplate
                 loading={loading}
@@ -155,8 +103,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                     searchBar: {
                         label: 'Search',
                         count: getProductCount(),
-                        value: search,
-                        onUpdate: handleOnNewSearch,
+                        value: query.toString(),
+                        onUpdate: api.search,
                     },
                     noResult: getNotResult(),
                 }}
@@ -192,8 +140,8 @@ export const Search: FunctionComponent<SearchProps> = ({ query = '' }) => {
                         image: {
                             alt: image.alt,
                             src: {
-                                desktop: resolveImage(image.src),
-                                mobile: resolveImage(image.src),
+                                desktop: resolveImage(image.src, { width: 1260 }),
+                                mobile: resolveImage(image.src, { width: 960 }),
                             },
                         },
                         price: {

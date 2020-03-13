@@ -18,17 +18,17 @@ export type ResolverProps = {
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
     switch (type) {
         case 'CMS_PAGE':
-            return <Page id={contentId} />
+            return <Page key={contentId} id={contentId} />
         case 'CATEGORY':
-            return <Category id={contentId} />
+            return <Category key={contentId} id={contentId} />
         case 'PRODUCT':
-            return <Product urlKey={urlKey} />
+            return <Product key={urlKey} urlKey={urlKey} />
         case '404':
             return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
         default:
             return (
-                <Error type="500" button={{ text: 'Reload', onClick: () => location.reload() }}>
-                    `Internal Error: ${type} is not valid`
+                <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
+                    Internal Error: {type} is not valid
                 </Error>
             )
     }

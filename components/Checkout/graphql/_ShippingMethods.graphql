@@ -1,9 +1,7 @@
-#import "./_Address.graphql"
+fragment ShippingMethods on Cart {
+    id
 
-fragment ShippingAddresses on Cart {
     shippingAddresses: shipping_addresses {
-        ...Address
-
         availableShippingMethods: available_shipping_methods {
             available
             amount {

@@ -1,10 +1,10 @@
-#import "./_CheckoutDetails.graphql"
+#import "./_SelectedPaymentMethod.graphql"
+#import "../../Cart/graphql/_Cart.graphql"
 
 # Braintree!
 
 mutation SetPaymentOnCart($cartId: String = "", $nonce: String!) {
     cartId @client @export(as: "cartId")
-
     payment: setPaymentMethodOnCart(
         input: {
             cart_id: $cartId
@@ -15,7 +15,8 @@ mutation SetPaymentOnCart($cartId: String = "", $nonce: String!) {
         }
     ) {
         cart {
-            ...CheckoutDetails
+            ...SelectedPaymentMethod
+            ...Cart
         }
     }
 }

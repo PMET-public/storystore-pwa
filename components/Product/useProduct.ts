@@ -1,7 +1,6 @@
 import { useCallback, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { useValueUpdated } from '../../hooks/useValueUpdated'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
@@ -40,21 +39,9 @@ export const useProduct = (props: { urlKey: string }) => {
     const { urlKey } = props
 
     const { data, ...restQuery } = useQuery(PRODUCT_QUERY, {
+        ...queryDefaultOptions,
         variables: { urlKey },
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
     })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (restQuery.error && online) restQuery.refetch()
-    }, online)
 
     const { products, ...restData } = data || {}
 
@@ -108,7 +95,7 @@ export const useProduct = (props: { urlKey: string }) => {
             })
 
         return { options, variants }
-    }, [product?.id])
+    }, [product])
 
     /**
      * Handle Select Option
@@ -121,7 +108,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
             const variant = optionsAndVariants.variants.find(v => {
                 return optionsList.reduce((accum: boolean, code) => {
-                    return v[code] == options[code] && accum
+                    return Number(v[code]) === Number(options[code]) && accum
                 }, true)
             })
 
@@ -143,7 +130,7 @@ export const useProduct = (props: { urlKey: string }) => {
                 })
             }
         },
-        [product?.sku, JSON.stringify(optionsAndVariants)]
+        [product, optionsAndVariants]
     )
 
     /**
@@ -161,17 +148,20 @@ export const useProduct = (props: { urlKey: string }) => {
         }
     )
 
-    const handleAddSimpleProductToCart = useCallback(async (variables: { sku: string; quantity: number }) => {
-        const { sku, quantity } = variables
-        const { data } = await addSimpleProductsToCart({
-            variables: {
-                cartId: '', // @client
-                sku,
-                quantity,
-            },
-        })
-        return data
-    }, [])
+    const handleAddSimpleProductToCart = useCallback(
+        async (variables: { sku: string; quantity: number }) => {
+            const { sku, quantity } = variables
+            const { data } = await addSimpleProductsToCart({
+                variables: {
+                    cartId: '', // @client
+                    sku,
+                    quantity,
+                },
+            })
+            return data
+        },
+        [addSimpleProductsToCart]
+    )
 
     /**
      * Handle Add To Cart Configurable Product
@@ -203,12 +193,11 @@ export const useProduct = (props: { urlKey: string }) => {
             })
             return data
         },
-        []
+        [addConfigurableProductsToCart]
     )
 
     return {
         ...restQuery,
-        online,
         data: {
             ...restData,
             product: product

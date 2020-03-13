@@ -1,25 +1,35 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useEffect } from 'react'
 import { Component, Props } from '@pmet-public/luma-ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
 import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
 
+export type ParallaxProps = {
+    speed: number
+}
+
 export type ContentWithBackgroundProps = Props<{
     backgroundImages?: Image
     fullScreen?: boolean
+    parallax?: ParallaxProps
 }>
 
 export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
     backgroundImages,
     fullScreen,
+    parallax,
     children,
     style,
     ...props
 }) => {
     const elemRef = useRef(null)
 
-    const bgImage = useImage(elemRef, backgroundImages)
+    const backgroundRef = useRef(null)
 
+    // Background IMage
+    const bgImage = useImage(elemRef, backgroundImages, { lazyload: { offsetY: 100 } })
+
+    // Styles
     const styles: { [key: string]: any } = useMemo(() => {
         if (!style) return {}
 
@@ -35,7 +45,23 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
             background,
             wrapper,
         }
-    }, [JSON.stringify(style)])
+    }, [style])
+
+    // Parallax
+    useEffect(() => {
+        if (!backgroundRef.current || !parallax) return
+
+        const { jarallax } = require('jarallax')
+
+        const { speed } = parallax
+
+        jarallax(backgroundRef.current, {
+            speed,
+            imgSize: styles.background.backgroundSize,
+            imgPosition: styles.background.backgroundPositionX,
+            imgRepeat: styles.background.backgroundRepeatX ? 'repeat' : 'no-repeat',
+        })
+    }, [backgroundRef, parallax])
 
     return (
         <Root
@@ -46,7 +72,13 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
             {...props}
         >
             {bgImage.src && (
-                <BgImage $src={bgImage.src} $loaded={bgImage.loaded} $error={bgImage.error} style={styles.background} />
+                <BgImage
+                    $src={bgImage.src}
+                    $loaded={bgImage.loaded}
+                    $error={bgImage.error}
+                    ref={backgroundRef}
+                    style={styles.background}
+                />
             )}
             <Content>{children}</Content>
         </Root>

@@ -4,7 +4,10 @@ import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
+import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
+import { QueryHookOptions } from '@apollo/react-hooks'
+import { persistCache } from 'apollo-cache-persist'
 
 let apolloClient: any
 
@@ -14,12 +17,13 @@ if (!process.browser) {
     global.URL = require('url').URL
 }
 
-function create(initialState: any) {
+export const offlineLink = new QueueLink()
+
+async function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: process.browser
             ? new URL('/api/graphql', location.href).href
             : new URL('graphql', process.env.MAGENTO_URL).href,
-        useGETForQueries: true,
         credentials: 'same-origin',
     })
 
@@ -31,7 +35,12 @@ function create(initialState: any) {
         },
         attempts: {
             max: 3,
-            retryIf: error => !!error && (process.browser ? navigator.onLine : false), // retry only on front-end
+            retryIf: error => {
+                if (process.browser) {
+                    return !!error ? navigator.onLine : false
+                }
+                return false
+            }, // retry only on front-end
         },
     })
 
@@ -53,6 +62,7 @@ function create(initialState: any) {
             console.groupEnd()
         }),
         retryLink,
+        offlineLink,
         httpLink,
     ])
 
@@ -63,11 +73,20 @@ function create(initialState: any) {
                 case 'SelectedConfigurableOption':
                     // Fixes cache
                     return object.id ? `${object.id}:${object.value}` : defaultDataIdFromObject(object)
+
                 default:
                     return defaultDataIdFromObject(object)
             }
         },
     }).restore(initialState || {})
+
+    if (process.browser) {
+        // await before instantiating ApolloClient, else queries might run before the cache is persisted
+        await persistCache({
+            cache,
+            storage: localStorage as any,
+        })
+    }
 
     cache.writeData({
         data: { ...defaults },
@@ -75,7 +94,7 @@ function create(initialState: any) {
 
     const client = new ApolloClient({
         cache,
-        connectToDevTools: process.browser,
+        // connectToDevTools: process.browser,
         link,
         resolvers,
         ssrMode: !process.browser,
@@ -85,15 +104,21 @@ function create(initialState: any) {
     return client
 }
 
-export default function initApollo(initialState?: any) {
+export default async function createApolloClient(initialState?: any) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
-    if (!process.browser) return create(initialState)
+    if (!process.browser) return await create(initialState)
 
     // Reuse client on the client-side
     if (!apolloClient) {
-        apolloClient = create(initialState)
+        apolloClient = await create(initialState)
     }
 
     return apolloClient
+}
+
+export const queryDefaultOptions: QueryHookOptions = {
+    fetchPolicy: 'cache-and-network',
+    returnPartialData: true,
+    notifyOnNetworkStatusChange: true,
 }

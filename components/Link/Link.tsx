@@ -1,32 +1,36 @@
 import React, { FunctionComponent, forwardRef } from 'react'
-import NextLink, { LinkProps as _LinkProps } from 'next/link'
 import { Props } from '@pmet-public/luma-ui/dist/lib'
 import styled from 'styled-components'
+import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 
-export type LinkProps = Props<{
-    urlResolver?:
-        | {
-              type: 'CMS_BLOCK' | 'PAGE' | 'PRODUCT'
-              id: number
-          }
-        | boolean
-    linkTagAs?: 'a' | 'button'
-}>
+export type LinkProps = Props<
+    {
+        href: string
+        external?: boolean
+        urlResolver?: {
+            type: 'CMS_BLOCK' | 'PAGE' | 'PRODUCT'
+            id: number
+        }
+    } & NextLinkProps
+>
 
-const ATag = styled.a``
+const LinkElement = styled.a``
 
 export const Link: FunctionComponent<LinkProps> = forwardRef(
     (
         {
             href: _href,
+            external,
+            urlResolver,
+
+            // Next Link Props
             as,
             replace,
             scroll,
             shallow,
             passHref,
             prefetch,
-            urlResolver = false,
-            linkTagAs = 'a',
+            linkTagAs,
             ...props
         },
         ref: any
@@ -35,9 +39,9 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
 
         const query = typeof urlResolver === 'object' ? `type=${urlResolver.type}&contentId=${urlResolver.id}` : ''
 
-        const linkProps = {
-            href: urlResolver ? `/_url-resolver?url=${href}&${query}` : _href,
-            as: urlResolver ? _href : as,
+        const linkProps: NextLinkProps = {
+            href: external === false || urlResolver ? `/_url-resolver?url=${href}&${query}` : href,
+            as: external === false || urlResolver ? href : as,
             replace,
             scroll,
             shallow,
@@ -45,9 +49,11 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
             prefetch,
         }
 
-        return (
+        return external ? (
+            <LinkElement href={href} {...props} />
+        ) : (
             <NextLink {...linkProps}>
-                <ATag as={linkTagAs as any} ref={ref} href={_href as string} {...props} />
+                <LinkElement as={linkTagAs} ref={ref} href={href} {...props} />
             </NextLink>
         )
     }

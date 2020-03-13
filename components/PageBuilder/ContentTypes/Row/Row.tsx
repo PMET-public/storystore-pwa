@@ -6,25 +6,31 @@ import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/Con
 export type RowProps = {
     appearance?: 'contained' | 'full-width' | 'full-bleed' | 'full-screen'
     background?: ContentWithBackgroundProps
-    // enableParallax?: boolean
-    // parallaxSpeed?: number
+    enableParallax?: boolean
+    parallaxSpeed?: number
 }
 
 export const Row: Component<RowProps> = ({
     appearance = 'contained',
     background,
     children,
-    // enableParallax,
-    // parallaxSpeed = 1,
+    enableParallax,
+    parallaxSpeed = 1,
     style,
     ...props
 }) => {
     const contained = appearance === 'contained' || appearance === 'full-width'
+
     const fullScreen = appearance === 'full-screen'
 
     return (
         <Root $contained={appearance === 'contained'} {...props}>
-            <ContentWithBackground fullScreen={fullScreen} {...background} style={style}>
+            <ContentWithBackground
+                parallax={(enableParallax && { speed: parallaxSpeed }) || undefined}
+                fullScreen={fullScreen}
+                {...background}
+                style={style}
+            >
                 <Wrapper $contained={contained} $margin={contained}>
                     {children}
                 </Wrapper>

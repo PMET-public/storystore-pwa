@@ -1,12 +1,19 @@
 {
     "defaultSeverity": "error",
     "extends": [
+        "tslint-react",
+        "tslint-react-hooks",
         "tslint-plugin-prettier",
         "tslint-config-prettier"
     ],
     "jsRules": {},
     "rules": {
-        "prettier": true
+        "prettier": true,
+        "jsx-boolean-value": false,
+        "react-hooks-nesting": {
+            "severity": "error",
+            "options": {}
+        }
     },
     "rulesDirectory": [],
     "linterOptions": {

@@ -11,7 +11,7 @@ web:
 
 hooks:
     build: |
-        npm install
+        npm install --silent
         npm run build
 
 build:
@@ -23,3 +23,7 @@ mounts:
         source_path: run
 
 disk: 4096
+
+variables:
+    env:
+        MAGENTO_URL: https://admin:a6terwtbk67os@forrester-vhjbjgi-a6terwtbk67os.demo.magentosite.cloud/

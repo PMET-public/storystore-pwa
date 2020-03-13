@@ -24,7 +24,7 @@ export const Buttons: Component<ButtonsProps> = ({
 
     const [maxWidth, setMaxWidth] = useState<number>(0)
 
-    const sameWidth = _sameWidth == 'true'
+    const sameWidth = _sameWidth === 'true'
 
     const alignment = useMemo(() => {
         if (!rootElem.current) return 'flex-start'
@@ -38,7 +38,7 @@ export const Buttons: Component<ButtonsProps> = ({
         const { textAlign } = getComputedStyle(rootElem.current)
 
         return alignment[textAlign]
-    }, [rootElem.current])
+    }, [])
 
     return (
         <Root ref={rootElem} $appearance={appearance} $alignment={alignment} $sameWidth={sameWidth} {...props}>

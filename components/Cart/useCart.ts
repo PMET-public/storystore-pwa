@@ -1,4 +1,4 @@
-import { useValueUpdated } from '../../hooks/useValueUpdated'
+import { queryDefaultOptions } from '../../lib/apollo/client'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -8,27 +8,13 @@ import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
 
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
-
 export const useCart = () => {
     /**
      * Data Query
      */
     const query = useQuery(CART_QUERY, {
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
+        ...queryDefaultOptions,
     })
-
-    /**
-     * Refetch when back online
-     */
-    const {
-        state: { online },
-    } = useAppContext()
-
-    useValueUpdated(() => {
-        if (query.error && online) query.refetch()
-    }, online)
 
     /**
      * Handle Update Cart Item Action
@@ -42,14 +28,17 @@ export const useCart = () => {
         },
     })
 
-    const handleUpdateCartItem = useCallback((props: { productId: number; quantity: number }) => {
-        const { productId, quantity } = props
-        return updateCartItems({
-            variables: {
-                items: [{ cart_item_id: productId, quantity }],
-            },
-        })
-    }, [])
+    const handleUpdateCartItem = useCallback(
+        (props: { productId: number; quantity: number }) => {
+            const { productId, quantity } = props
+            return updateCartItems({
+                variables: {
+                    items: [{ cart_item_id: productId, quantity }],
+                },
+            })
+        },
+        [updateCartItems]
+    )
 
     /**
      * Handle Remove Cart Item Action
@@ -63,14 +52,17 @@ export const useCart = () => {
         },
     })
 
-    const handleRemoveCartItem = useCallback((props: { productId: number }) => {
-        const { productId } = props
-        return removeCartItem({
-            variables: {
-                itemId: productId,
-            },
-        })
-    }, [])
+    const handleRemoveCartItem = useCallback(
+        (props: { productId: number }) => {
+            const { productId } = props
+            return removeCartItem({
+                variables: {
+                    itemId: productId,
+                },
+            })
+        },
+        [removeCartItem]
+    )
 
     /**
      * Handle Apply Coupon Code
@@ -84,14 +76,17 @@ export const useCart = () => {
         },
     })
 
-    const handleApplyCoupon = useCallback((props: { couponCode: string }) => {
-        const { couponCode } = props
-        return applyCoupon({
-            variables: {
-                couponCode,
-            },
-        })
-    }, [])
+    const handleApplyCoupon = useCallback(
+        (props: { couponCode: string }) => {
+            const { couponCode } = props
+            return applyCoupon({
+                variables: {
+                    couponCode,
+                },
+            })
+        },
+        [applyCoupon]
+    )
 
     /**
      * Handle Apply Coupon Code
@@ -110,16 +105,15 @@ export const useCart = () => {
 
     const handleRemoveCoupon = useCallback(() => {
         return removeCoupon()
-    }, [])
+    }, [removeCoupon])
 
     return {
         ...query,
-        online,
         updating,
         removing,
         applyingCoupon,
         removingCoupon,
-        couponError: applyingCouponError?.graphQLErrors[0].message || removingCouponError?.graphQLErrors[0].message,
+        couponError: applyingCouponError?.message || removingCouponError?.message,
         api: {
             updateCartItem: handleUpdateCartItem,
             removeCartItem: handleRemoveCartItem,

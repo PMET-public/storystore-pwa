@@ -19,16 +19,15 @@ const props = (elem: HTMLElement) => {
         text: elem.textContent || '',
     }
 
-    const href = buttonElem.getAttribute('href')
-
     const linkType = buttonElem.getAttribute('data-link-type') as LinkType
+    const linkHref = buttonElem.getAttribute('href')
+    const linkTarget = buttonElem.getAttribute('target')
 
     const link: LinkProps | undefined =
-        buttonElem.nodeName === 'A' && href
+        buttonElem.nodeName === 'A' && linkHref
             ? {
-                  href: resolveLink(buttonElem.getAttribute('href') || '', linkType),
-                  urlResolver: true,
-                  target: buttonElem.getAttribute('target') || undefined,
+                  ...resolveLink(linkHref, linkType),
+                  target: linkTarget,
               }
             : undefined
 

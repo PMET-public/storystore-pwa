@@ -2,10 +2,11 @@ import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 
 import { usePage } from './usePage'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 
-import DocumentMetadata from '../../components/DocumentMetadata'
 import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
 import Link from '../Link'
+import Head from '../Head'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../../components/PageBuilder'))
@@ -15,11 +16,11 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, error, data, online, refetch } = usePage({ id })
+    const { loading, data } = usePage({ id })
 
-    if (error && !online) <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
+    if (!online && !data.page) return <Error type="Offline" />
 
     if (!loading && !data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
 
@@ -28,7 +29,7 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
     return (
         <React.Fragment>
             {page && (
-                <DocumentMetadata
+                <Head
                     title={page.metaTitle || page.title}
                     description={page.metaDescription}
                     keywords={page.metaKeywords}

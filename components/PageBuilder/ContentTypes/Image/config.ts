@@ -3,36 +3,43 @@ import { getStyleAsObject } from '../../lib/getStyleAsObject'
 
 import { LinkProps } from '../../../../components/Link'
 import { ImageProps } from '@pmet-public/luma-ui/dist/components/Image'
+import { LinkType, resolveLink } from '../../../../lib/resolveLink'
+import { resolveImage } from '../../../../lib/resolveImage'
 
 const component = dynamic(() => import('./'))
 
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
+    const linkElem = elem.children[0]
+
     const imageElement =
-        elem.children[0].nodeName === 'A'
-            ? (elem.children[0].children as HTMLCollectionOf<HTMLElement>)
+        linkElem.nodeName === 'A'
+            ? (linkElem.children as HTMLCollectionOf<HTMLElement>)
             : (elem.children as HTMLCollectionOf<HTMLElement>)
 
-    const desktopSrc = imageElement[0].getAttribute('src') || undefined
-    const mobileSrc = imageElement[1].getAttribute('src') || undefined
+    const desktopSrc = imageElement[0].getAttribute('src') || ''
+    const mobileSrc = imageElement[1].getAttribute('src') || ''
 
     const image: ImageProps & { style: {} } = {
         src: {
-            desktop: desktopSrc || '',
-            mobile: mobileSrc !== desktopSrc ? mobileSrc : undefined,
+            desktop: resolveImage(desktopSrc),
+            mobile: mobileSrc !== desktopSrc ? resolveImage(mobileSrc) : undefined,
         },
         alt: imageElement[0].getAttribute('alt') || undefined,
         title: imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),
     }
 
+    const linkType = linkElem.getAttribute('data-link-type') as LinkType
+    const linkHref = linkElem.getAttribute('href')
+    const linkTarget = linkElem.getAttribute('target')
+
     const link: LinkProps | undefined =
-        elem.childNodes[0].nodeName === 'A'
+        linkElem?.nodeName === 'A' && linkHref
             ? {
-                  target: elem.children[0].getAttribute('target') || undefined,
-                  type: elem.children[0].getAttribute('data-link-type') || undefined,
-                  href: elem.children[0].getAttribute('href') || undefined,
+                  ...resolveLink(linkHref, linkType),
+                  target: linkTarget,
               }
             : undefined
 

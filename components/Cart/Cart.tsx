@@ -1,52 +1,41 @@
 import React, { FunctionComponent, useCallback } from 'react'
+import { resolveImage } from '../../lib/resolveImage'
 import dynamic from 'next/dynamic'
 
 import { useCart } from './useCart'
-import { useRouter } from 'next/router'
-import { resolveImage } from '../../lib/resolveImage'
+import useNetworkStatus from '../../hooks/useNetworkStatus'
 
-import DocumentMetadata from '../DocumentMetadata'
+import { useRouter } from 'next/router'
 import Link from '../Link'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+import Head from '../Head'
 
 const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
 const Error = dynamic(() => import('../Error'))
 
 type CartProps = {}
 
-export const Cart: FunctionComponent<CartProps> = ({}) => {
-    const {
-        loading,
-        updating,
-        removing,
-        error,
-        online,
-        data,
-        api,
-        refetch,
-        applyingCoupon,
-        removingCoupon,
-        couponError,
-    } = useCart()
+export const Cart: FunctionComponent<CartProps> = () => {
+    const history = useRouter()
 
-    const router = useRouter()
+    const { loading, updating, removing, data, api, applyingCoupon, removingCoupon, couponError } = useCart()
 
     const handleGoToCheckout = useCallback(async () => {
-        router.push('/checkout').then(() => window.scrollTo(0, 0))
-    }, [])
+        history.push('/checkout')
+    }, [history])
 
-    if (error && !online) return <Error type="Offline" />
+    const online = useNetworkStatus()
 
-    if (error) return <Error type="500" button={{ text: 'Try again', onClick: () => refetch() }} />
+    if (!online && !data) return <Error type="Offline" />
 
-    if (!data && !loading) return <Error type="500" />
+    if (!loading && !data) return <Error type="500" />
 
     const { cart } = data
 
     const { items = [], appliedCoupons } = cart || {}
 
-    if (cart?.totalQuantity < 1) {
+    if (!cart?.totalQuantity) {
         return (
             <CartLanding
                 title={{ text: 'Shopping Bag' }}
@@ -63,9 +52,10 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
 
     return (
         <React.Fragment>
-            <DocumentMetadata title="Shopping Bag" />
+            <Head title="Shopping Bag" />
+
             <CartTemplate
-                loading={!process.browser || (loading && !cart)}
+                loading={loading && !cart}
                 breadcrumbs={{
                     loading: false,
                     prefix: '#',
@@ -93,7 +83,7 @@ export const Cart: FunctionComponent<CartProps> = ({}) => {
                             },
                             href: `/${product.urlKey}`,
                             alt: product.thumbnail.label,
-                            src: resolveImage(product.thumbnail.url),
+                            src: resolveImage(product.thumbnail.url, { width: 300 }),
                         },
                         quantity: {
                             value: quantity,

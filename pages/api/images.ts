@@ -2,29 +2,29 @@ import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const maxAge = 30 * 86400 // 30 days
+const maxAge = 30 * 86400 // 30 days 31536000
 
 export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
-    return new Promise((resolve, reject) => {
-        const url = req.query.url.toString()
+    try {
+        const url = new URL(req.query.url.toString(), process.env.MAGENTO_URL).href
 
         req.pipe(
             request.get({
                 qs: req.query,
-                url: new URL(url, process.env.MAGENTO_URL).href,
+                url,
                 pool: {
                     maxSockets: Infinity,
                 },
             })
         )
-            .on('response', res => {
-                /** Use Edge Case in now.sh */
-                res.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
+            .once('response', response => {
+                response.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
             })
             .pipe(res)
-            .on('error', reject)
-            .on('response', resolve)
-    })
+    } catch (error) {
+        console.error(error)
+        res.status(500).end()
+    }
 }
 
 export default ImagesApi

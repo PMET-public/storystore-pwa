@@ -1,11 +1,13 @@
-import { registerRoute } from 'workbox-routing'
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
+import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
+
+const FALLBACK_HTML_URL = '/offline'
 
 const getRevisionHash = require('crypto')
     .createHash('md5')
@@ -21,6 +23,7 @@ precacheAndRoute(
         ...(self as any).__WB_MANIFEST,
 
         // Precached routes
+        { url: FALLBACK_HTML_URL, revision: getRevisionHash },
         { url: '/', revision: getRevisionHash },
         { url: '/search', revision: getRevisionHash },
         { url: '/cart', revision: getRevisionHash },
@@ -35,25 +38,6 @@ cleanupOutdatedCaches()
 /**
  * Routes
  */
-
-// GraphQL API
-registerRoute(
-    /\/api\/graphql/,
-    new NetworkFirst({
-        cacheName: 'api-graphql',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
-        plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
-            new ExpirationPlugin({
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
-    })
-)
 
 // Images API
 registerRoute(
@@ -112,3 +96,33 @@ registerRoute(
         ],
     })
 )
+
+/**
+ * Fallback (default handler)
+ */
+
+setDefaultHandler(args => {
+    if (args.event.request.method === 'GET' && args.event.request.destination === 'document') {
+        return new NetworkFirst({
+            cacheName: 'default',
+            plugins: [
+                new CacheableResponsePlugin({
+                    statuses: [0, 200],
+                }),
+                new ExpirationPlugin({
+                    maxAgeSeconds: 7 * DAY_IN_SECONDS,
+                }),
+            ],
+        }).handle(args)
+    } else {
+        return fetch(args.event.request)
+    }
+})
+
+setCatchHandler(({ event }) => {
+    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+        return matchPrecache(FALLBACK_HTML_URL)
+    } else {
+        return Response.error() as any
+    }
+})

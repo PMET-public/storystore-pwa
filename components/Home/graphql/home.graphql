@@ -1,4 +1,4 @@
-query HomeQuery($id: Int!, $categoriesParentId: String!) {
+query HomeQuery($id: String!, $categoriesParentId: String!) {
     storeConfig {
         id
         baseMediaUrl: secure_base_media_url
@@ -14,7 +14,7 @@ query HomeQuery($id: Int!, $categoriesParentId: String!) {
         }
     }
 
-    page: cmsPage(id: $id) {
+    page: cmsPage(identifier: $id) {
         id: url_key
         title
         content
