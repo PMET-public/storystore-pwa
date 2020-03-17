@@ -5,17 +5,18 @@ import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import { ApolloClient } from 'apollo-client'
+import { getCookie } from '../lib/getCookie'
 
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from '../lib/apollo/client'
 
-const MyApp: NextPage<any> = ({ Component, pageProps }) => {
+const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
     const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
 
     useEffect(() => {
-        createApolloClient().then((client: ApolloClient<any>) => {
+        createApolloClient({}, overrideMagentoUrl).then((client: ApolloClient<any>) => {
             setApolloClient(client)
         })
     }, [])
@@ -43,6 +44,11 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
             </ServiceWorkerProvider>
         </ApolloProvider>
     )
+}
+
+MyApp.getInitialProps = async ({ ctx: { req } }: any) => {
+    const overrideMagentoUrl = req.headers.cookie && getCookie(req.headers.cookie, 'MAGENTO,URL')
+    return { overrideMagentoUrl }
 }
 
 export default MyApp

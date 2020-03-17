@@ -19,11 +19,11 @@ if (!process.browser) {
 
 export const offlineLink = new QueueLink()
 
-async function create(initialState: any) {
+async function create(initialState: any, overrideMagentoUrl?: string) {
     const httpLink = new HttpLink({
         uri: process.browser
             ? new URL('/api/graphql', location.href).href
-            : new URL('graphql', process.env.MAGENTO_URL).href, // TODO – SSR not tested
+            : new URL('graphql', overrideMagentoUrl || process.env.MAGENTO_URL).href, // TODO – SSR not tested
         credentials: 'same-origin',
     })
 
@@ -104,14 +104,14 @@ async function create(initialState: any) {
     return client
 }
 
-export default async function createApolloClient(initialState?: any) {
+export default async function createApolloClient(initialState?: any, overrideMagentoUrl?: string) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
-    if (!process.browser) return await create(initialState)
+    if (!process.browser) return await create(initialState, overrideMagentoUrl)
 
     // Reuse client on the client-side
     if (!apolloClient) {
-        apolloClient = await create(initialState)
+        apolloClient = await create(initialState, overrideMagentoUrl)
     }
 
     return apolloClient
