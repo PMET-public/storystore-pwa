@@ -2,8 +2,6 @@ import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const url = new URL('graphql', process.env.MAGENTO_URL).href
-
 export const config = {
     api: {
         bodyParser: false,
@@ -11,14 +9,16 @@ export const config = {
 }
 
 export const GraphQLApi = async (req: NextApiRequest, res: NextApiResponse) => {
+    const MAGENTO_URL = new URL('graphql', req.cookies.MAGENTO_URL || process.env.MAGENTO_URL).href
+
     try {
         if (req.method === 'POST') {
-            req.pipe(request.post(url)).pipe(res)
+            req.pipe(request.post(MAGENTO_URL)).pipe(res)
         } else {
             req.pipe(
                 request.get({
                     qs: req.query,
-                    url,
+                    url: MAGENTO_URL,
                     pool: {
                         maxSockets: Infinity,
                     },

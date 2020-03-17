@@ -23,7 +23,7 @@ async function create(initialState: any) {
     const httpLink = new HttpLink({
         uri: process.browser
             ? new URL('/api/graphql', location.href).href
-            : new URL('graphql', process.env.MAGENTO_URL).href,
+            : new URL('graphql', process.env.MAGENTO_URL).href, // TODO – SSR not tested
         credentials: 'same-origin',
     })
 
