@@ -1,7 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
-import { getCookie } from '../lib/getCookie'
+import { getCookieValueFromString } from '../lib/cookies'
 
 import Link from '../components/Link'
 
@@ -38,7 +38,8 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
     const graphQLUrl = process.browser
         ? new URL('/api/graphql', location.href).href
-        : new URL('graphql', getCookie(req.headers.cookie, 'MAGENTO,URL') || process.env.MAGENTO_URL).href
+        : new URL('graphql', getCookieValueFromString(req.headers.cookie, 'MAGENTO,URL') || process.env.MAGENTO_URL)
+              .href
 
     const url = query.url ? query.url.toString().split('?')[0] : query[''].join('/')
 

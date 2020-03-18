@@ -5,7 +5,7 @@ import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import { ApolloClient } from 'apollo-client'
-import { getCookie } from '../lib/getCookie'
+import { getCookieValueFromString } from '../lib/cookies'
 
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
@@ -47,7 +47,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
 }
 
 MyApp.getInitialProps = async ({ ctx: { req } }: any) => {
-    const overrideMagentoUrl = req.headers.cookie && getCookie(req.headers.cookie, 'MAGENTO,URL')
+    const overrideMagentoUrl = req.headers.cookie && getCookieValueFromString(req.headers.cookie, 'MAGENTO,URL')
     return { overrideMagentoUrl }
 }
 
