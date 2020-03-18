@@ -3,11 +3,19 @@ import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-
 import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
-import { skipWaiting, clientsClaim } from 'workbox-core'
+import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
 
 const FALLBACK_HTML_URL = '/offline'
+
+const fetchOptions: RequestInit = {
+    credentials: 'same-origin',
+}
+
+const cacheableResponsePlugin: WorkboxPlugin = new CacheableResponsePlugin({
+    statuses: [0, 200],
+})
 
 const getRevisionHash = require('crypto')
     .createHash('md5')
@@ -44,13 +52,9 @@ registerRoute(
     /\/api\/images/,
     new CacheFirst({
         cacheName: 'api-images',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
+        fetchOptions,
         plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
+            cacheableResponsePlugin,
             new ExpirationPlugin({
                 maxEntries: 100,
                 maxAgeSeconds: 7 * DAY_IN_SECONDS,
@@ -64,13 +68,8 @@ registerRoute(
     /.*(?:typekit)\.net.*$/,
     new StaleWhileRevalidate({
         cacheName: 'typekit',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
         plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
+            cacheableResponsePlugin,
             new ExpirationPlugin({
                 maxAgeSeconds: 7 * DAY_IN_SECONDS,
             }),
@@ -83,13 +82,9 @@ registerRoute(
     /\/static\//,
     new StaleWhileRevalidate({
         cacheName: 'static',
-        fetchOptions: {
-            credentials: 'same-origin',
-        },
+        fetchOptions,
         plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
+            cacheableResponsePlugin,
             new ExpirationPlugin({
                 maxAgeSeconds: 7 * DAY_IN_SECONDS,
             }),
@@ -105,10 +100,9 @@ setDefaultHandler(args => {
     if (args.event.request.method === 'GET' && args.event.request.destination === 'document') {
         return new NetworkFirst({
             cacheName: 'default',
+            fetchOptions,
             plugins: [
-                new CacheableResponsePlugin({
-                    statuses: [0, 200],
-                }),
+                cacheableResponsePlugin,
                 new ExpirationPlugin({
                     maxAgeSeconds: 7 * DAY_IN_SECONDS,
                 }),

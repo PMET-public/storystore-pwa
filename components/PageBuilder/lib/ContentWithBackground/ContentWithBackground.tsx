@@ -26,6 +26,8 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
 
     const backgroundRef = useRef(null)
 
+    const backgroundElem = backgroundRef.current
+
     // Background IMage
     const bgImage = useImage(elemRef, backgroundImages, { lazyload: { offsetY: 100 } })
 
@@ -49,19 +51,19 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
 
     // Parallax
     useEffect(() => {
-        if (!backgroundRef.current || !parallax) return
+        if (!backgroundElem || !parallax) return
 
         const { jarallax } = require('jarallax')
 
         const { speed } = parallax
 
-        jarallax(backgroundRef.current, {
+        jarallax(backgroundElem, {
             speed,
             imgSize: styles.background.backgroundSize,
             imgPosition: styles.background.backgroundPositionX,
             imgRepeat: styles.background.backgroundRepeatX ? 'repeat' : 'no-repeat',
         })
-    }, [backgroundRef, parallax])
+    }, [backgroundElem, parallax])
 
     return (
         <Root
