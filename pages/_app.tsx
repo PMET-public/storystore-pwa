@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
+import NextApp from 'next/app'
 
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 import { ApolloClient } from 'apollo-client'
-import { getCookieValueFromString } from '../lib/cookies'
+import { getCookieValueFromString, getCookie } from '../lib/cookies'
 
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
@@ -46,9 +47,14 @@ const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
     )
 }
 
-MyApp.getInitialProps = async ({ ctx: { req } }: any) => {
-    const overrideMagentoUrl = req.headers.cookie && getCookieValueFromString(req.headers.cookie, 'MAGENTO,URL')
-    return { overrideMagentoUrl }
+MyApp.getInitialProps = async appContext => {
+    const { req } = appContext
+    const appProps = await NextApp.getInitialProps(appContext as any)
+
+    const overrideMagentoUrl = process.browser
+        ? getCookie('MAGENTO_URL')
+        : req?.headers.cookie && getCookieValueFromString(req.headers.cookie, 'MAGENTO_URL')
+    return { ...appProps, overrideMagentoUrl }
 }
 
 export default MyApp

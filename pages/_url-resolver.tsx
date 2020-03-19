@@ -17,6 +17,14 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
+    if (!type) {
+        return (
+            <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
+                Missing UrlResolver Type
+            </Error>
+        )
+    }
+
     switch (type) {
         case 'CMS_PAGE':
             return <Page key={contentId} id={contentId} />
@@ -38,8 +46,11 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
     const graphQLUrl = process.browser
         ? new URL('/api/graphql', location.href).href
-        : new URL('graphql', getCookieValueFromString(req.headers.cookie, 'MAGENTO,URL') || process.env.MAGENTO_URL)
-              .href
+        : new URL(
+              'graphql',
+              (req?.headers.cookie && getCookieValueFromString(req.headers.cookie, 'MAGENTO_URL')) ||
+                  process.env.MAGENTO_URL
+          ).href
 
     const url = query.url ? query.url.toString().split('?')[0] : query[''].join('/')
 
