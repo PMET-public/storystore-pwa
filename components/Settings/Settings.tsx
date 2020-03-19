@@ -4,6 +4,7 @@ import { setCookie, getCookie, deleteCookie } from '../../lib/cookies'
 import { version } from '../../package.json'
 
 import { useSettings } from './useSettings'
+import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
 import Form, { Input } from '@pmet-public/luma-ui/dist/components/Form'
 import Loader from '@pmet-public/luma-ui/dist/components/Loader'
@@ -16,6 +17,7 @@ export type SettingsProps = {
 }
 
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+    const { toast } = useAppContext()
     const [overrideMagentoUrl, setOverrideMagentoUrl] = useState(getCookie('MAGENTO_URL') ?? undefined)
 
     const { data, loading, fetchDetails } = useSettings()
@@ -32,6 +34,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
         ({ magentoUrl }) => {
             setOverrideMagentoUrl(magentoUrl)
             handleClearCache()
+            toast.success('Changes Saved')
         },
         [setOverrideMagentoUrl]
     )

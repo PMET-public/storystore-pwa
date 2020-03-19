@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import NextApp from 'next/app'
 
+import 'react-toastify/dist/ReactToastify.css'
+
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
