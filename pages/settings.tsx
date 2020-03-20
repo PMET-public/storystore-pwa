@@ -3,17 +3,22 @@ import { NextPage } from 'next'
 
 import SettingsTemplate, { SettingsProps } from '../components/Settings'
 
-const Home: NextPage<SettingsProps> = ({ ...props }) => {
+const Settings: NextPage<SettingsProps> = ({ ...props }) => {
     return <SettingsTemplate {...props} />
 }
 
-Home.getInitialProps = async ({}) => {
-    const magentoUrl = process.env.MAGENTO_URL
+Settings.getInitialProps = async () => {
+    const { MAGENTO_URL, HOME_PAGE_ID, CATEGORIES_PARENT_ID, FOOTER_BLOCK_ID, GOOGLE_MAPS_API_KEY } = process.env
+
     return {
         defaults: {
-            magentoUrl,
+            MAGENTO_URL,
+            HOME_PAGE_ID,
+            CATEGORIES_PARENT_ID,
+            FOOTER_BLOCK_ID,
+            GOOGLE_MAPS_API_KEY,
         },
     }
 }
 
-export default Home
+export default Settings

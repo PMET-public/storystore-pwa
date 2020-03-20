@@ -15,7 +15,7 @@ import ServiceWorkerProvider from '../components/ServiceWorker'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from '../lib/apollo/client'
 
-const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
+const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl, footerBlockId, categoriesParentId }) => {
     const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
 
     useEffect(() => {
@@ -30,10 +30,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
         <ApolloProvider client={apolloClient}>
             <ServiceWorkerProvider>
                 <AppProvider>
-                    <App
-                        categoriesParentId={process.env.CATEGORIES_PARENT_ID}
-                        footerBlockId={process.env.FOOTER_BLOCK_ID}
-                    >
+                    <App categoriesParentId={categoriesParentId} footerBlockId={footerBlockId}>
                         <NextNprogress
                             color="rgba(161, 74, 36, 1)"
                             startPosition={0.4}
@@ -50,13 +47,32 @@ const MyApp: NextPage<any> = ({ Component, pageProps, overrideMagentoUrl }) => {
 }
 
 MyApp.getInitialProps = async appContext => {
-    const { req } = appContext
+    const { req } = (appContext as any).ctx
+
     const appProps = await NextApp.getInitialProps(appContext as any)
 
     const overrideMagentoUrl = process.browser
         ? getCookie('MAGENTO_URL')
         : req?.headers.cookie && getCookieValueFromString(req.headers.cookie, 'MAGENTO_URL')
-    return { ...appProps, overrideMagentoUrl }
+
+    const footerBlockId =
+        (process.browser
+            ? getCookie('FOOTER_BLOCK_ID')
+            : req?.headers.cookie && getCookieValueFromString(req.headers.cookie, 'FOOTER_BLOCK_ID')) ||
+        process.env.FOOTER_BLOCK_ID
+
+    const categoriesParentId =
+        (process.browser
+            ? getCookie('CATEGORIES_PARENT_ID')
+            : req?.headers.cookie && getCookieValueFromString(req.headers.cookie, 'CATEGORIES_PARENT_ID')) ||
+        process.env.CATEGORIES_PARENT_ID
+
+    return {
+        ...appProps,
+        overrideMagentoUrl,
+        footerBlockId,
+        categoriesParentId,
+    }
 }
 
 export default MyApp

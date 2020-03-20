@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
+import { getCookie } from '../../../../lib/cookies'
 
 const component = dynamic(() => import('.'))
 
@@ -56,7 +57,7 @@ const props = (elem: HTMLElement) => {
     const controls = elem.dataset.showControls === 'true'
 
     return {
-        apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        apiKey: process.browser && (getCookie('GOOGLE_MAPS_API_KEY') || process.env.GOOGLE_MAPS_API_KEY),
         locations,
         controls,
         style,
