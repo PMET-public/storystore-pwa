@@ -136,6 +136,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                         urlResolver: {
                             type: 'PRODUCT',
                             id,
+                            urlKey,
                         },
                         image: {
                             alt: image.alt,

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Root = styled.div`
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: max-content max-content;
     grid-gap: 2rem;
     height: 100%;
     align-items: flex-start;
@@ -35,6 +35,7 @@ export const Details = styled.div`
     padding: 2rem;
     grid-gap: 0.6rem;
     align-items: center;
+    min-height: 30rem;
 
     @media ${props => props.theme.breakpoints.large} {
         grid-template-columns: auto 1fr;

@@ -29,6 +29,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     urlResolver: {
                         type: 'PRODUCT',
                         id,
+                        urlKey,
                     },
                     image: {
                         alt: image.alt,
@@ -66,6 +67,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     urlResolver: {
                         type: 'PRODUCT',
                         id,
+                        urlKey,
                     },
                     image: {
                         alt: image.alt,

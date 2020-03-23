@@ -1,9 +1,10 @@
 import React, { FunctionComponent, useCallback, Reducer, useReducer } from 'react'
 import { Root, Buttons, Title, Overrides, Details, Label, Value } from './Settings.styled'
-import { setCookie, getCookie, deleteCookie } from '../../lib/cookies'
+import { setCookie, getCookie } from '../../lib/cookies'
+import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
+
 import { version } from '../../package.json'
 import { version as lumaUIVersion } from '@pmet-public/luma-ui/package.json'
-
 import { useSettings } from './useSettings'
 import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
 
@@ -34,13 +35,7 @@ type ReducerActions = {
     payload: ReducerState
 }
 
-const initialState: ReducerState = {
-    MAGENTO_URL: (process.browser && getCookie('MAGENTO_URL')) || undefined,
-    HOME_PAGE_ID: (process.browser && getCookie('HOME_PAGE_ID')) || undefined,
-    CATEGORIES_PARENT_ID: (process.browser && getCookie('CATEGORIES_PARENT_ID')) || undefined,
-    FOOTER_BLOCK_ID: (process.browser && getCookie('FOOTER_BLOCK_ID')) || undefined,
-    GOOGLE_MAPS_API_KEY: (process.browser && getCookie('GOOGLE_MAPS_API_KEY')) || undefined,
-}
+const initialState: ReducerState = process.browser ? JSON.parse(getCookie(SETTINGS_OVERRIDE_COOKIE) ?? '{}') : {}
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
@@ -67,14 +62,14 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
             try {
                 dispatch({ type: 'save', payload })
 
+                const values: any = {}
+
                 Object.keys(payload).forEach(key => {
                     const value = payload[key]
-                    if (value) {
-                        setCookie(key, value, 365)
-                    } else {
-                        deleteCookie(key)
-                    }
+                    if (value) values[key] = value
                 })
+
+                setCookie(SETTINGS_OVERRIDE_COOKIE, JSON.stringify(values), 365)
 
                 localStorage.clear()
 
@@ -82,7 +77,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
                 toast.success('Saved!')
             } catch (e) {
-                toast.error('Oops! There was an issue. Trye again.')
+                console.error(e)
+                toast.error('Oops! There was an issue. Try again.')
             }
         },
         [dispatch]
@@ -115,12 +111,13 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
                 <Overrides>
                     <Title>Overrides</Title>
-                    <Form onSubmit={handleSaveOverrides}>
+                    <Form autoComplete="false" onSubmit={handleSaveOverrides}>
                         <Input
                             name="MAGENTO_URL"
                             label="Magento URL"
                             defaultValue={state.MAGENTO_URL}
                             placeholder={defaults.MAGENTO_URL}
+                            rules={{}}
                             style={{ textOverflow: 'ellipsis' }}
                         />
 
