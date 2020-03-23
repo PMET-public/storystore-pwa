@@ -30,7 +30,9 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { hasCart, product } = data
+    const { hasCart, product, store } = data
+
+    const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
     const handleOnChange = useCallback(
         (values: { options: { [key: string]: string } }) => {
@@ -120,7 +122,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                 type: 'CATEGORY',
                                 id,
                             },
-                            href: '/' + href,
+                            href: '/' + href + categoryUrlSuffix,
                             text,
                         })),
                 }}

@@ -31,9 +31,11 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     if (!loading && !data) return <Error type="500" />
 
-    const { cart } = data
+    const { store, cart } = data
 
     const { items = [], appliedCoupons } = cart || {}
+
+    const productUrlSuffix = store?.productUrlSuffix ?? ''
 
     if (!cart?.totalQuantity) {
         return (
@@ -69,9 +71,9 @@ export const Cart: FunctionComponent<CartProps> = () => {
                             as: Link,
                             urlResolver: {
                                 type: 'PRODUCT',
-                                id,
+                                urlKey: product.urlKey,
                             },
-                            href: `/${product.urlKey}`,
+                            href: `/${product.urlKey}${productUrlSuffix}`,
                             text: product.name,
                         },
                         sku: `SKU. ${product.sku}`,
@@ -79,9 +81,9 @@ export const Cart: FunctionComponent<CartProps> = () => {
                             as: Link,
                             urlResolver: {
                                 type: 'PRODUCT',
-                                id,
+                                urlKey: product.urlKey,
                             },
-                            href: `/${product.urlKey}`,
+                            href: `/${product.urlKey}${productUrlSuffix}`,
                             alt: product.thumbnail.label,
                             src: resolveImage(product.thumbnail.url, { width: 300 }),
                         },

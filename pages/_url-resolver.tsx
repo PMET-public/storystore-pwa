@@ -1,6 +1,7 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
+import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 
 import Link from '../components/Link'
 
@@ -9,13 +10,28 @@ const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
 const Product = dynamic(() => import('../components/Product'))
 
+export enum CONTENT_TYPE {
+    CMS_PAGE = 'CMS_PAGE',
+    CATEGORY = 'CATEGORY',
+    PRODUCT = 'PRODUCT',
+    NOT_FOUND = '404',
+}
+
 export type ResolverProps = {
     contentId: number
     urlKey: string
-    type: 'CMS_PAGE' | 'CATEGORY' | 'PRODUCT' | '404'
+    type: CONTENT_TYPE
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
+    if (!type) {
+        return (
+            <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
+                Missing UrlResolver Type
+            </Error>
+        )
+    }
+
     switch (type) {
         case 'CMS_PAGE':
             return <Page key={contentId} id={contentId} />
@@ -34,39 +50,58 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
     }
 }
 
-UrlResolver.getInitialProps = async ({ res, query }) => {
-    const graphQLUrl = process.browser
-        ? new URL('/api/graphql', location.href).href
-        : new URL('graphql', process.env.MAGENTO_URL).href
+UrlResolver.getInitialProps = async ({ ctx: { req, res, query } }) => {
+    let { type, contentId, urlKey } = query
 
-    const url = query.url ? query.url.toString().split('?')[0] : query[''].join('/')
-
-    const urlKey =
-        url
-            .split('/')
-            .pop()
-            .split('.')[0] || ''
-
-    if (query.type) {
-        const type = query.type
-        const contentId = Number(query.contentId)
+    if (type && (contentId || urlKey)) {
         return { type, contentId, urlKey }
     }
 
-    const graphQlQuery = `query%20%7B%0A%20%20urlResolver(url:%20"${url}")%20%7B%0A%20%20%20%20contentId:%20id%0A%20%20%20%20type%0A%20%20%7D%0A%7D`
+    const settings = {
+        MAGENTO_URL: process.env.MAGENTO_URL,
+        ...overrideSettingsFromCookie('MAGENTO_URL')(req?.headers),
+    }
+
     try {
+        const graphQLUrl = process.browser
+            ? new URL('/api/graphql', location.href).href
+            : new URL('graphql', settings.MAGENTO_URL).href
+
+        const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
+
+        const graphQlQuery = encodeURI(
+            `
+                query {
+                    urlResolver(url: "${url}") {
+                        id
+                        contentId: id
+                        type
+                    }
+                }
+            `
+                .replace(/ +(?= )/g, '')
+                .replace(/\n/g, '')
+        )
+
         const page = await fetch(`${graphQLUrl}?query=${graphQlQuery}`)
 
         const { data = {} } = await page.json()
 
-        const { type = '404', contentId } = data.urlResolver || {}
+        type = data.urlResolver.type || CONTENT_TYPE.NOT_FOUND
+
+        contentId = data.urlResolver.contentId
+
+        urlKey = url
+            .split('/')
+            .pop()
+            .split('.')[0]
 
         if (type === '404') res.statusCode = 404
-
-        return { type, contentId, urlKey }
     } catch (e) {
         res.statusCode = 500
     }
+
+    return { type, contentId, urlKey }
 }
 
 export default UrlResolver

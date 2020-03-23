@@ -15,6 +15,8 @@ export type ProductsProps = {
 export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, slider, ...props }) => {
     const { loading, data } = useProducts({ skus })
 
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
+
     if (appearance === 'carousel') {
         return (
             <ProductCarousel
@@ -25,10 +27,10 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         text: title,
                     },
                     as: Link,
-                    href: `/${urlKey}`,
+                    href: `/${urlKey}${productUrlSuffix}`,
                     urlResolver: {
                         type: 'PRODUCT',
-                        id,
+                        urlKey,
                     },
                     image: {
                         alt: image.alt,
@@ -62,10 +64,10 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         text: title,
                     },
                     as: Link,
-                    href: `/${urlKey}`,
+                    href: `/${urlKey}${productUrlSuffix}`,
                     urlResolver: {
                         type: 'PRODUCT',
-                        id,
+                        urlKey,
                     },
                     image: {
                         alt: image.alt,

@@ -1,8 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import dynamic from 'next/dynamic'
 
 import ErrorTemplate, { ErrorTypes } from '@pmet-public/luma-ui/dist/components/Error'
 import { ButtonProps } from '@pmet-public/luma-ui/dist/components/Button'
+import { Component } from '@pmet-public/luma-ui/dist/lib'
 
 const Button = dynamic(() => import('@pmet-public/luma-ui/dist/components/Button'))
 
@@ -19,14 +20,19 @@ const messages = {
     '404': `Oops! The page you landed on doesn't exist.`,
 }
 
-export const Error: FunctionComponent<ErrorProps> = ({
+export const Error: Component<ErrorProps> = ({
     type = '500',
     fullScreen = false,
     button,
     children = messages[type],
+    ...props
 }) => {
     return (
-        <ErrorTemplate type={type} style={fullScreen ? { position: 'fixed', top: 0, left: 0, right: 0 } : {}}>
+        <ErrorTemplate
+            type={type}
+            style={fullScreen ? { position: 'fixed', top: 0, left: 0, right: 0 } : {}}
+            {...props}
+        >
             <div>{children}</div>
             {button && <Button {...button} style={{ marginTop: '2rem' }} />}
         </ErrorTemplate>

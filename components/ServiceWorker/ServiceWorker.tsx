@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useMemo, createContext, useContext, FunctionComponent } from 'react'
 import { Workbox } from 'workbox-window'
-import { useMemo, createContext, FunctionComponent } from 'react'
 
-export const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
+const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
+
+export const useServiceWorker = () => useContext(ServiceWorkerContext)
 
 export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInDev?: boolean }> = ({
     children,

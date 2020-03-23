@@ -1,8 +1,7 @@
 import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
-
-const url = new URL('graphql', process.env.MAGENTO_URL).href
+import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
 
 export const config = {
     api: {
@@ -11,14 +10,21 @@ export const config = {
 }
 
 export const GraphQLApi = async (req: NextApiRequest, res: NextApiResponse) => {
+    const settings = {
+        MAGENTO_URL: process.env.MAGENTO_URL,
+        ...JSON.parse(req.cookies[SETTINGS_OVERRIDE_COOKIE] || '{}'),
+    }
+
+    const MAGENTO_URL = new URL('graphql', settings.MAGENTO_URL).href
+
     try {
         if (req.method === 'POST') {
-            req.pipe(request.post(url)).pipe(res)
+            req.pipe(request.post(MAGENTO_URL)).pipe(res)
         } else {
             req.pipe(
                 request.get({
                     qs: req.query,
-                    url,
+                    url: MAGENTO_URL,
                     pool: {
                         maxSockets: Infinity,
                     },

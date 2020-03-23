@@ -1,0 +1,7 @@
+query Settings {
+    storeConfig {
+        id
+        locale
+        baseUrl: base_url
+    }
+}

@@ -4,6 +4,11 @@ query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
+    store: storeConfig {
+        id
+        productUrlSuffix: product_url_suffix
+    }
+
     cart(cart_id: $cartId) @include(if: $hasCart) {
         ...Cart
     }

@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
+import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
+import createApolloClient from '../lib/apollo/client'
+import { ApolloProvider } from '@apollo/react-hooks'
+import { ApolloClient } from 'apollo-client'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
-import { ApolloClient } from 'apollo-client'
-
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
-import { ApolloProvider } from '@apollo/react-hooks'
-import createApolloClient from '../lib/apollo/client'
+import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
-const MyApp: NextPage<any> = ({ Component, pageProps }) => {
-    const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
+const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_ID, CATEGORIES_PARENT_ID }) => {
+    const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
 
     useEffect(() => {
-        createApolloClient().then((client: ApolloClient<any>) => {
-            setApolloClient(client)
-        })
-    }, [])
+        createApolloClient(MAGENTO_URL).then(client => setClient(client))
+    }, [MAGENTO_URL, setClient])
 
-    if (apolloClient === undefined) return <ViewLoader />
+    if (client === undefined) return <ViewLoader />
 
     return (
-        <ApolloProvider client={apolloClient}>
+        <ApolloProvider client={client}>
             <ServiceWorkerProvider>
                 <AppProvider>
-                    <App
-                        categoriesParentId={process.env.CATEGORIES_PARENT_ID}
-                        footerBlockId={process.env.FOOTER_BLOCK_ID}
-                    >
+                    <App categoriesParentId={CATEGORIES_PARENT_ID} footerBlockId={FOOTER_BLOCK_ID}>
                         <NextNprogress
                             color="rgba(161, 74, 36, 1)"
                             startPosition={0.4}
@@ -37,12 +34,30 @@ const MyApp: NextPage<any> = ({ Component, pageProps }) => {
                             height={3}
                             options={{ showSpinner: false, easing: 'ease' }}
                         />
-                        <Component {...pageProps} />
+                        <Component apolloClient={client} {...pageProps} />
                     </App>
                 </AppProvider>
             </ServiceWorkerProvider>
         </ApolloProvider>
     )
+}
+
+MyApp.getInitialProps = async appContext => {
+    const MAGENTO_URL = process.env.MAGENTO_URL
+
+    const { req } = (appContext as any).ctx
+
+    const { Component } = appContext as any
+
+    const pageProps = Component.getInitialProps ? await Component.getInitialProps(appContext) : {}
+
+    return {
+        pageProps,
+        MAGENTO_URL,
+        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
+        CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
+        ...overrideSettingsFromCookie('MAGENTO_URL', 'FOOTER_BLOCK_ID', 'CATEGORIES_PARENT_ID')(req?.headers),
+    }
 }
 
 export default MyApp

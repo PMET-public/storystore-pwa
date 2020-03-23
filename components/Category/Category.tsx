@@ -70,7 +70,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const page = data.page && data.page[0]
 
-    const products = productsQuery.data && productsQuery.data.products
+    const products = productsQuery.data?.products
+
+    const categoryUrlSuffix = productsQuery.data?.store?.categoryUrlSuffix ?? ''
+
+    const productUrlSuffix = productsQuery.data?.store?.productUrlSuffix ?? ''
 
     return (
         <React.Fragment>
@@ -97,7 +101,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             type: 'CATEGORY',
                             id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
                         },
-                        href: page.breadcrumbs[page.breadcrumbs.length - 1].href,
+                        href: '/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix,
                     }
                 }
                 breadcrumbs={
@@ -111,7 +115,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                 type: 'CATEGORY',
                                 id,
                             },
-                            href: '/' + href,
+                            href: '/' + href + categoryUrlSuffix,
                             text,
                         })),
                     }
@@ -127,7 +131,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                             },
                             count,
                             text,
-                            href: '/' + href,
+                            href: '/' + href + categoryUrlSuffix,
                         })),
                     }
                 }
@@ -156,10 +160,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                     items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
                         _id: `${id}--${index}`,
                         as: Link,
-                        href: `/${urlKey}`,
+                        href: `/${urlKey + productUrlSuffix}`,
                         urlResolver: {
                             type: 'PRODUCT',
                             id,
+                            urlKey,
                         },
                         image: {
                             alt: image.alt,

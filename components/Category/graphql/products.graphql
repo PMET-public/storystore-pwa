@@ -1,4 +1,10 @@
 query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
+    store: storeConfig {
+        id
+        productUrlSuffix: product_url_suffix
+        categoryUrlSuffix: category_url_suffix
+    }
+
     products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         pagination: page_info {
             current: current_page

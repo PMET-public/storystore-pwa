@@ -2,6 +2,7 @@ query HomeQuery($id: String!, $categoriesParentId: String!) {
     storeConfig {
         id
         baseMediaUrl: secure_base_media_url
+        categoryUrlSuffix: category_url_suffix
     }
 
     categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {

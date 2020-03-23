@@ -9,6 +9,7 @@ query AppShellQuery($categoriesParentId: String) {
         logoAlt: logo_alt
         homePath: cms_home_page
         copyright
+        categoryUrlSuffix: category_url_suffix
     }
 
     categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {

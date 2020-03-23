@@ -24,9 +24,9 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
     if (!online && !data.page) return <Error type="Offline" />
 
-    if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
-
     const { page, categories, storeConfig } = data
+
+    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
     return (
         <React.Fragment>
@@ -49,7 +49,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
                                 type: 'CATEGORY',
                                 id,
                             },
-                            href,
+                            href: href + categoryUrlSuffix,
                             image: image &&
                                 storeConfig?.baseMediaUrl && {
                                     alt: text,
@@ -62,7 +62,13 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
                     }
                 }
             >
-                {page?.content && <PageBuilder html={page.content} />}
+                {!loading && !data.page ? (
+                    <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
+                        Missing Home Page
+                    </Error>
+                ) : (
+                    page?.content && <PageBuilder html={page.content} />
+                )}
             </HomeTemplate>
         </React.Fragment>
     )
