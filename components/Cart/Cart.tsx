@@ -37,8 +37,6 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const productUrlSuffix = store?.productUrlSuffix ?? ''
 
-    console.log({ productUrlSuffix, data })
-
     if (!cart?.totalQuantity) {
         return (
             <CartLanding

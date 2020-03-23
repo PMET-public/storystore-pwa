@@ -24,7 +24,6 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
-    console.log({ urlKey, contentId, type })
     if (!type) {
         return (
             <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
