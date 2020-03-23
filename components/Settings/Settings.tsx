@@ -117,8 +117,10 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                             label="Magento URL"
                             defaultValue={state.MAGENTO_URL}
                             placeholder={defaults.MAGENTO_URL}
-                            rules={{}}
                             style={{ textOverflow: 'ellipsis' }}
+                            rules={{
+                                pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+                            }}
                         />
 
                         <Input
