@@ -20,6 +20,7 @@ export type SettingsProps = {
         FOOTER_BLOCK_ID?: string
         GOOGLE_MAPS_API_KEY?: string
     }
+    apolloClient?: any
 }
 
 type ReducerState = {
@@ -50,12 +51,12 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const { toast } = useAppContext()
 
-    const { data, loading, refetch } = useSettings()
+    const { data, loading } = useSettings()
 
     const handleSaveOverrides = useCallback(
         payload => {
@@ -73,7 +74,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
                 localStorage.clear()
 
-                refetch() // fetch new data
+                apolloClient.resetStore()
 
                 toast.success('Saved!')
             } catch (e) {
