@@ -36,6 +36,8 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { products } = data
 
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
+
     /**
      * Infinite Scroll Effect
      */
@@ -132,7 +134,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
                         _id: `${id}--${index}`,
                         as: Link,
-                        href: `/${urlKey}`,
+                        href: `/${urlKey}${productUrlSuffix}`,
                         urlResolver: {
                             type: 'PRODUCT',
                             id,

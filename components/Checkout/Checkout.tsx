@@ -301,22 +301,10 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                     items: cart?.items?.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
-                            as: Link,
-                            urlResolver: {
-                                type: 'PRODUCT',
-                                id,
-                            },
-                            href: `/${product.urlKey}`,
                             text: product.name,
                         },
                         sku: `SKU. ${product.sku}`,
                         thumbnail: {
-                            as: Link,
-                            urlResolver: {
-                                type: 'PRODUCT',
-                                id,
-                            },
-                            href: `/${product.urlKey}`,
                             alt: product.thumbnail.label,
                             src: resolveImage(product.thumbnail.url, { width: 300 }),
                         },

@@ -28,6 +28,8 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
     const { page, categories, storeConfig } = data
 
+    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
+
     return (
         <React.Fragment>
             {page && (
@@ -49,7 +51,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
                                 type: 'CATEGORY',
                                 id,
                             },
-                            href,
+                            href: href + categoryUrlSuffix,
                             image: image &&
                                 storeConfig?.baseMediaUrl && {
                                     alt: text,

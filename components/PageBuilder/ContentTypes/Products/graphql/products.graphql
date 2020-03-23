@@ -1,4 +1,9 @@
 query GetProductsBySku($skus: [String], $pageSize: Int!) {
+    store: storeConfig {
+        id
+        productUrlSuffix: product_url_suffix
+    }
+
     products(filter: { sku: { in: $skus } }, pageSize: $pageSize) {
         items {
             id

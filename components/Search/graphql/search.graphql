@@ -1,8 +1,7 @@
 query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
         id
-        titlePrefix: title_prefix
-        titleSuffix: title_suffix
+        productUrlSuffix: product_url_suffix
     }
 
     meta: storeConfig {

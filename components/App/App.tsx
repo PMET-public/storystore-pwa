@@ -52,6 +52,8 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
 
     const { store, categories = [], cart } = data
 
+    const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
+
     return (
         <React.Fragment>
             {store && (
@@ -79,16 +81,20 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
                     href: '/',
                     text: 'Home',
                 }}
-                menu={categories[0]?.children.map(({ id, text, href }: any) => ({
-                    active: isUrlActive('/' + href),
-                    as: Link,
-                    urlResolver: {
-                        type: 'CATEGORY',
-                        id,
-                    },
-                    href: '/' + href,
-                    text,
-                }))}
+                menu={categories[0]?.children.map(({ id, text, href: _href }: any) => {
+                    const href = _href + categoryUrlSuffix
+
+                    return {
+                        active: isUrlActive('/' + href),
+                        as: Link,
+                        urlResolver: {
+                            type: 'CATEGORY',
+                            id,
+                        },
+                        href: '/' + href,
+                        text,
+                    }
+                })}
                 search={{
                     active: isUrlActive('/search'),
                     as: Link,

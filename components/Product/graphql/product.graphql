@@ -1,6 +1,11 @@
 query ProductQuery($urlKey: String!) {
     hasCart @client
 
+    store: storeConfig {
+        id
+        categoryUrlSuffix: category_url_suffix
+    }
+
     products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
