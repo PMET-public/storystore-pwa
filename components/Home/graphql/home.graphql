@@ -1,11 +1,15 @@
-query HomeQuery($id: String!, $categoriesParentId: String!) {
+query HomeQuery($id: String!, $categoriesRootId: String, $hasCategoryRootId: Boolean = false) {
     storeConfig {
         id
         baseMediaUrl: secure_base_media_url
         categoryUrlSuffix: category_url_suffix
+
+        root_category_id
+        hasCategoryRootId @client @export(as: "hasCategoryRootId")
+        categoryRootId @client @export(as: "categoriesRootId")
     }
 
-    categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {
+    categories: categoryList(filters: { ids: { eq: $categoriesRootId } }) @include(if: $hasCategoryRootId) {
         id
         children {
             id

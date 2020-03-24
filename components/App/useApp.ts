@@ -8,18 +8,9 @@ import FOOTER_QUERY from './graphql/footer.graphql'
 import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-export const useApp = ({
-    categoriesParentId,
-    footerBlockId,
-}: {
-    categoriesParentId: string
-    footerBlockId: string
-}) => {
+export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     const query = useQuery(APP_QUERY, {
         ...queryDefaultOptions,
-        variables: {
-            categoriesParentId,
-        },
     })
 
     const footerQuery = useQuery(FOOTER_QUERY, {

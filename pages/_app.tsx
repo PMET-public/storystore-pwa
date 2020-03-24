@@ -11,7 +11,7 @@ import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
-const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_ID, CATEGORIES_PARENT_ID }) => {
+const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_ID }) => {
     const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
 
     useEffect(() => {
@@ -24,7 +24,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_
         <ApolloProvider client={client}>
             <ServiceWorkerProvider>
                 <AppProvider>
-                    <App categoriesParentId={CATEGORIES_PARENT_ID} footerBlockId={FOOTER_BLOCK_ID}>
+                    <App footerBlockId={FOOTER_BLOCK_ID}>
                         <NextNprogress
                             color="rgba(161, 74, 36, 1)"
                             startPosition={0.4}
@@ -53,8 +53,7 @@ MyApp.getInitialProps = async appContext => {
         pageProps,
         MAGENTO_URL,
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-        CATEGORIES_PARENT_ID: process.env.CATEGORIES_PARENT_ID,
-        ...overrideSettingsFromCookie('MAGENTO_URL', 'FOOTER_BLOCK_ID', 'CATEGORIES_PARENT_ID')(req?.headers),
+        ...overrideSettingsFromCookie('MAGENTO_URL', 'FOOTER_BLOCK_ID')(req?.headers),
     }
 }
 

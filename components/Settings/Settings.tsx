@@ -16,7 +16,6 @@ export type SettingsProps = {
     defaults: {
         MAGENTO_URL?: string
         HOME_PAGE_ID?: string
-        CATEGORIES_PARENT_ID?: string
         FOOTER_BLOCK_ID?: string
         GOOGLE_MAPS_API_KEY?: string
     }
@@ -26,7 +25,6 @@ export type SettingsProps = {
 type ReducerState = {
     MAGENTO_URL?: string
     HOME_PAGE_ID?: string
-    CATEGORIES_PARENT_ID?: string
     FOOTER_BLOCK_ID?: string
     GOOGLE_MAPS_API_KEY?: string
 }
@@ -101,9 +99,6 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
 
                             <Label>Base URL</Label>
                             <Value>{data.storeConfig.baseUrl}</Value>
-
-                            <Label>Locale</Label>
-                            <Value>{data.storeConfig.locale}</Value>
                         </React.Fragment>
                     )}
                 </Details>
@@ -127,14 +122,6 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                             label="Home Page ID"
                             defaultValue={state.HOME_PAGE_ID}
                             placeholder={defaults.HOME_PAGE_ID}
-                            style={{ textOverflow: 'ellipsis' }}
-                        />
-
-                        <Input
-                            name="CATEGORIES_PARENT_ID"
-                            label="Categories Parent ID"
-                            defaultValue={state.CATEGORIES_PARENT_ID}
-                            placeholder={defaults.CATEGORIES_PARENT_ID}
                             style={{ textOverflow: 'ellipsis' }}
                         />
 

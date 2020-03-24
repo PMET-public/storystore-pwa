@@ -1,4 +1,4 @@
-query AppShellQuery($categoriesParentId: String) {
+query AppShellQuery($categoriesRootId: String, $hasCategoryRootId: Boolean = false) {
     store: storeConfig {
         id
         metaTitle: default_title
@@ -10,9 +10,13 @@ query AppShellQuery($categoriesParentId: String) {
         homePath: cms_home_page
         copyright
         categoryUrlSuffix: category_url_suffix
+
+        root_category_id
+        hasCategoryRootId @client @export(as: "hasCategoryRootId")
+        categoryRootId @client @export(as: "categoriesRootId")
     }
 
-    categories: categoryList(filters: { ids: { eq: $categoriesParentId } }) {
+    categories: categoryList(filters: { ids: { eq: $categoriesRootId } }) @include(if: $hasCategoryRootId) {
         id
         children {
             id

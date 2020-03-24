@@ -15,12 +15,11 @@ import Head from '../Head'
 const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {
-    categoriesParentId: string
     footerBlockId: string
 }
 
-export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId, footerBlockId }) => {
-    const { loading, error, data, footer } = useApp({ categoriesParentId, footerBlockId })
+export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) => {
+    const { loading, error, data, footer } = useApp({ footerBlockId })
     const isUrlActive = useIsUrlActive()
     const online = useNetworkStatus()
 
@@ -69,7 +68,7 @@ export const App: FunctionComponent<AppProps> = ({ children, categoriesParentId,
             )}
 
             <AppTemplate
-                loading={loading && !store}
+                loading={loading && !(store && categories[0])}
                 logo={{
                     as: Link,
                     href: '/',

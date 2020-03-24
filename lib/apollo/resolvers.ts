@@ -10,6 +10,11 @@ export const typeDefs = gql`
         cartId: String!
         braintreeToken: String!
     }
+
+    extend type StoreConfig {
+        hasCategoryRootId: Boolean!
+        categoryRootId: String
+    }
 `
 
 const isBrowser = process.browser
@@ -66,6 +71,16 @@ export const resolvers: Resolvers = {
                     }
                     return comparison
                 })
+        },
+    },
+
+    StoreConfig: {
+        // Make Category Root ID available from cache and as a string
+        hasCategoryRootId({ root_category_id }) {
+            return !!root_category_id
+        },
+        categoryRootId({ root_category_id }) {
+            return root_category_id?.toString()
         },
     },
 

@@ -14,11 +14,10 @@ const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 type HomeProps = {
     id: string
-    categoriesParentId: string
 }
 
-export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) => {
-    const { loading, data } = useHome({ id, categoriesParentId })
+export const Home: FunctionComponent<HomeProps> = ({ id }) => {
+    const { loading, data } = useHome({ id })
 
     const online = useNetworkStatus()
 
@@ -40,27 +39,27 @@ export const Home: FunctionComponent<HomeProps> = ({ id, categoriesParentId }) =
 
             <HomeTemplate
                 loading={loading && !page}
-                stories={
-                    categories && {
-                        loading: loading && !categories,
-                        items: categories[0].children.map(({ id, text, href, image }: any) => ({
-                            as: Link,
-                            urlResolver: {
-                                type: 'CATEGORY',
-                                id,
-                            },
-                            href: href + categoryUrlSuffix,
-                            image: image &&
-                                storeConfig?.baseMediaUrl && {
-                                    alt: text,
-                                    src: resolveImage(image, { width: 200, height: 200 }),
-                                    width: '100px',
-                                    height: '100px',
-                                },
-                            text,
-                        })),
-                    }
-                }
+                stories={{
+                    loading: loading && !categories,
+                    items: categories
+                        ? categories[0].children.map(({ id, text, href, image }: any) => ({
+                              as: Link,
+                              urlResolver: {
+                                  type: 'CATEGORY',
+                                  id,
+                              },
+                              href: href + categoryUrlSuffix,
+                              image: image &&
+                                  storeConfig?.baseMediaUrl && {
+                                      alt: text,
+                                      src: resolveImage(image, { width: 200, height: 200 }),
+                                      width: '100px',
+                                      height: '100px',
+                                  },
+                              text,
+                          }))
+                        : [],
+                }}
             >
                 {!loading && !data.page ? (
                     <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
