@@ -5,8 +5,6 @@ import createApolloClient from '../lib/apollo/client'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { ApolloClient } from 'apollo-client'
 
-import 'react-toastify/dist/ReactToastify.css'
-
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'

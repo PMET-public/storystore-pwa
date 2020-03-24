@@ -6,7 +6,7 @@ import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
 import { version } from '../../package.json'
 import { version as lumaUIVersion } from '@pmet-public/luma-ui/package.json'
 import { useSettings } from './useSettings'
-import { useAppContext } from '@pmet-public/luma-ui/dist/AppProvider'
+import { toast } from '@pmet-public/luma-ui/dist/lib'
 
 import Form, { Input } from '@pmet-public/luma-ui/dist/components/Form'
 import Loader from '@pmet-public/luma-ui/dist/components/Loader'
@@ -53,8 +53,6 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-
-    const { toast } = useAppContext()
 
     const { data, loading } = useSettings()
 
