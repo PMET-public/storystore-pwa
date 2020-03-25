@@ -20,7 +20,9 @@ type AppProps = {
 
 export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) => {
     const { loading, error, data, footer } = useApp({ footerBlockId })
+
     const isUrlActive = useIsUrlActive()
+
     const online = useNetworkStatus()
 
     if (online && error) {
@@ -111,7 +113,13 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                 }}
                 footer={{
                     loading: footer.loading,
-                    html: footer.data?.footer && <PageBuilder html={footer.data.footer.items[0].html} />,
+                    html: footer.data?.footer?.items[0]?.html ? (
+                        <PageBuilder html={footer.data.footer.items[0].html} />
+                    ) : (
+                        <div style={{ padding: '2rem', textAlign: 'center', fontSize: '1.4rem', opacity: '0.7' }}>
+                            {store?.copyright}
+                        </div>
+                    ),
                 }}
             >
                 {children}

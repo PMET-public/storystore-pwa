@@ -15,6 +15,7 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
 
     const footerQuery = useQuery(FOOTER_QUERY, {
         ...queryDefaultOptions,
+        errorPolicy: 'all',
         variables: {
             hasFooter: !!footerBlockId,
             footerBlockId,

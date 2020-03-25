@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useCallback, Reducer, useReducer } from 'react'
-import { Root, Buttons, Title, Overrides, Details, Label, Value } from './Settings.styled'
+import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
+import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { setCookie, getCookie } from '../../lib/cookies'
 import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
-
+import { toast } from '@pmet-public/luma-ui/dist/lib'
 import { version } from '../../package.json'
 import { version as lumaUIVersion } from '@pmet-public/luma-ui/package.json'
-import { useSettings } from './useSettings'
-import { toast } from '@pmet-public/luma-ui/dist/lib'
 
-import Form, { Input } from '@pmet-public/luma-ui/dist/components/Form'
-import Loader from '@pmet-public/luma-ui/dist/components/Loader'
+import { useSettings } from './useSettings'
+
+import Form, { Input, FormContext } from '@pmet-public/luma-ui/dist/components/Form'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
+import ApolloClient from 'apollo-client'
 
 export type SettingsProps = {
     defaults: {
@@ -19,7 +19,7 @@ export type SettingsProps = {
         FOOTER_BLOCK_ID?: string
         GOOGLE_MAPS_API_KEY?: string
     }
-    apolloClient?: any
+    apolloClient?: ApolloClient<any>
 }
 
 type ReducerState = {
@@ -50,103 +50,121 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 }
 
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
+    const formRef = useRef<FormContext>()
+
+    const [saving, setSaving] = useState(false)
+
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const { data, loading } = useSettings()
+    const { footer, home } = useSettings({
+        homePageId: state.HOME_PAGE_ID || defaults.HOME_PAGE_ID || '',
+        footerBlockId: state.FOOTER_BLOCK_ID || defaults.FOOTER_BLOCK_ID || '',
+    })
+
+    /**
+     * Initial Values
+     */
+    useEffect(() => {
+        formRef.current?.setValue(Object.keys(initialState).map(key => ({ [key]: (state as any)[key] })))
+    }, [formRef])
 
     const handleSaveOverrides = useCallback(
-        payload => {
+        async payload => {
+            setSaving(true)
+
             try {
                 dispatch({ type: 'save', payload })
 
-                const values: any = {}
-
-                Object.keys(payload).forEach(key => {
+                const values: ReducerState = Object.keys(payload).reduce((result, key) => {
                     const value = payload[key]
-                    if (value) values[key] = value
-                })
+                    return value ? { ...result, [key]: value } : { ...result }
+                }, {})
 
                 setCookie(SETTINGS_OVERRIDE_COOKIE, JSON.stringify(values), 365)
 
-                localStorage.clear()
+                // localStorage.clear()
 
-                apolloClient.resetStore()
-
-                toast.success('Saved!')
+                if (apolloClient) {
+                    await apolloClient.cache.reset()
+                    await apolloClient.resetStore()
+                }
             } catch (e) {
                 console.error(e)
                 toast.error('Oops! There was an issue. Try again.')
             }
+
+            setSaving(false)
         },
-        [dispatch]
+        [dispatch, apolloClient, setSaving]
     )
 
+    const handleOnResetToDefaults = useCallback(() => {
+        formRef.current?.reset()
+        handleSaveOverrides({})
+    }, [formRef, handleSaveOverrides])
+
     return (
-        <React.Fragment>
-            <Root>
+        <Root>
+            <Title>Storefront Settings</Title>
+            <Wrapper>
                 <Details>
-                    {loading || !data?.storeConfig ? (
-                        <Loader arial-label="loading server details" />
-                    ) : (
-                        <React.Fragment>
-                            <Label>Version</Label>
-                            <Value>
-                                {version} / Storybook {lumaUIVersion}
-                            </Value>
-
-                            <Label>Store ID</Label>
-                            <Value>{data.storeConfig.id}</Value>
-
-                            <Label>Base URL</Label>
-                            <Value>{data.storeConfig.baseUrl}</Value>
-                        </React.Fragment>
-                    )}
+                    <Label>Version</Label>
+                    <Value>
+                        {version} (Storybook {lumaUIVersion})
+                    </Value>
                 </Details>
+                <Form onSubmit={handleSaveOverrides} ref={formRef}>
+                    <Input
+                        name="MAGENTO_URL"
+                        label="Magento URL"
+                        placeholder={defaults.MAGENTO_URL}
+                        style={{ textOverflow: 'ellipsis' }}
+                        rules={{
+                            pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+                        }}
+                    />
 
-                <Overrides>
-                    <Title>Overrides</Title>
-                    <Form autoComplete="false" onSubmit={handleSaveOverrides}>
-                        <Input
-                            name="MAGENTO_URL"
-                            label="Magento URL"
-                            defaultValue={state.MAGENTO_URL}
-                            placeholder={defaults.MAGENTO_URL}
-                            style={{ textOverflow: 'ellipsis' }}
-                            rules={{
-                                pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
-                            }}
-                        />
+                    <Input
+                        name="GOOGLE_MAPS_API_KEY"
+                        label="Google Maps API Key"
+                        placeholder={defaults.GOOGLE_MAPS_API_KEY}
+                        style={{ textOverflow: 'ellipsis' }}
+                    />
 
-                        <Input
-                            name="HOME_PAGE_ID"
-                            label="Home Page ID"
-                            defaultValue={state.HOME_PAGE_ID}
-                            placeholder={defaults.HOME_PAGE_ID}
-                            style={{ textOverflow: 'ellipsis' }}
-                        />
+                    <Input
+                        name="HOME_PAGE_ID"
+                        label="Home Page URL Key"
+                        placeholder={defaults.HOME_PAGE_ID}
+                        style={{ textOverflow: 'ellipsis' }}
+                        error={
+                            home.loading || home.data?.page
+                                ? undefined
+                                : `🏡 Couldn't find page in your Magento instance.`
+                        }
+                    />
 
-                        <Input
-                            name="FOOTER_BLOCK_ID"
-                            label="Footer Block ID"
-                            defaultValue={state.FOOTER_BLOCK_ID}
-                            placeholder={defaults.FOOTER_BLOCK_ID}
-                            style={{ textOverflow: 'ellipsis' }}
-                        />
+                    <Input
+                        name="FOOTER_BLOCK_ID"
+                        label="Footer Block ID"
+                        placeholder={defaults.FOOTER_BLOCK_ID}
+                        style={{ textOverflow: 'ellipsis' }}
+                        error={
+                            footer.loading || footer.data?.footer?.items[0]?.id
+                                ? undefined
+                                : `🦶 Couldn't find footer in your Magento instance.`
+                        }
+                    />
 
-                        <Input
-                            name="GOOGLE_MAPS_API_KEY"
-                            label="Google Maps API Key"
-                            defaultValue={state.GOOGLE_MAPS_API_KEY}
-                            placeholder={defaults.GOOGLE_MAPS_API_KEY}
-                            style={{ textOverflow: 'ellipsis' }}
-                        />
-
-                        <Buttons>
-                            <Button type="submit">Save Changes</Button>
-                        </Buttons>
-                    </Form>
-                </Overrides>
-            </Root>
-        </React.Fragment>
+                    <Buttons>
+                        <Button type="submit" loading={saving}>
+                            Save Changes
+                        </Button>
+                        <Button disabled={saving} type="button" secondary onClick={handleOnResetToDefaults}>
+                            Reset to Defaults
+                        </Button>
+                    </Buttons>
+                </Form>
+            </Wrapper>
+        </Root>
     )
 }
