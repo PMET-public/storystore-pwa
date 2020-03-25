@@ -11,6 +11,7 @@ import { useSettings } from './useSettings'
 import Form, { Input, FormContext } from '@pmet-public/luma-ui/dist/components/Form'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import ApolloClient from 'apollo-client'
+import { useRouter } from 'next/router'
 
 export type SettingsProps = {
     defaults: {
@@ -50,6 +51,8 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 }
 
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
+    const router = useRouter()
+
     const formRef = useRef<FormContext>()
 
     const [saving, setSaving] = useState(false)
@@ -82,15 +85,14 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
 
                 setCookie(SETTINGS_OVERRIDE_COOKIE, JSON.stringify(values), 365)
 
-                // localStorage.clear()
+                localStorage.clear()
 
-                if (apolloClient) {
-                    await apolloClient.cache.reset()
-                    await apolloClient.resetStore()
-                }
+                await apolloClient?.resetStore()
+
+                router.push('/settings')
             } catch (e) {
                 console.error(e)
-                toast.error('Oops! There was an issue. Try again.')
+                toast.error('💩 Oops! There was an issue. Try again.')
             }
 
             setSaving(false)
