@@ -96,6 +96,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
             }
 
             setSaving(false)
+
             toast.success('👍 Saved!')
         },
         [dispatch, apolloClient, setSaving]
