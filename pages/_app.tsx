@@ -11,8 +11,10 @@ import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
-const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_ID }) => {
+const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
     const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
+
+    const { MAGENTO_URL } = env
 
     useEffect(() => {
         createApolloClient(MAGENTO_URL).then(client => setClient(client))
@@ -24,7 +26,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_
         <ApolloProvider client={client}>
             <ServiceWorkerProvider>
                 <AppProvider>
-                    <App footerBlockId={FOOTER_BLOCK_ID}>
+                    <App footerBlockId={env.FOOTER_BLOCK_ID}>
                         <NextNprogress
                             color="rgba(161, 74, 36, 1)"
                             startPosition={0.4}
@@ -32,7 +34,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_
                             height={3}
                             options={{ showSpinner: false, easing: 'ease' }}
                         />
-                        <Component apolloClient={client} {...pageProps} />
+                        <Component apolloClient={client} env={env} {...pageProps} />
                     </App>
                 </AppProvider>
             </ServiceWorkerProvider>
@@ -42,6 +44,9 @@ const MyApp: NextPage<any> = ({ Component, pageProps, MAGENTO_URL, FOOTER_BLOCK_
 
 MyApp.getInitialProps = async appContext => {
     const MAGENTO_URL = process.env.MAGENTO_URL
+    const HOME_PAGE_ID = process.env.HOME_PAGE_ID
+    const FOOTER_BLOCK_ID = process.env.FOOTER_BLOCK_ID
+    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY
 
     const { req } = (appContext as any).ctx
 
@@ -51,9 +56,18 @@ MyApp.getInitialProps = async appContext => {
 
     return {
         pageProps,
-        MAGENTO_URL,
-        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-        ...overrideSettingsFromCookie('MAGENTO_URL', 'FOOTER_BLOCK_ID')(req?.headers),
+        env: {
+            MAGENTO_URL,
+            HOME_PAGE_ID,
+            FOOTER_BLOCK_ID,
+            GOOGLE_MAPS_API_KEY,
+            ...overrideSettingsFromCookie(
+                'MAGENTO_URL',
+                'HOME_PAGE_ID',
+                'FOOTER_BLOCK_ID',
+                'GOOGLE_MAPS_API_KEY'
+            )(req?.headers),
+        },
     }
 }
 
