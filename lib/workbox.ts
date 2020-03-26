@@ -17,10 +17,7 @@ const cacheableResponsePlugin: WorkboxPlugin = new CacheableResponsePlugin({
     statuses: [0, 200],
 })
 
-const getRevisionHash = require('crypto')
-    .createHash('md5')
-    .update(Date.now().toString(), 'utf8')
-    .digest('hex')
+const getRevisionHash = require('crypto').createHash('md5').update(Date.now().toString(), 'utf8').digest('hex')
 
 clientsClaim()
 

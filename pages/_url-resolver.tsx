@@ -91,10 +91,7 @@ UrlResolver.getInitialProps = async ({ ctx: { req, res, query } }) => {
 
         contentId = data.urlResolver.contentId
 
-        urlKey = url
-            .split('/')
-            .pop()
-            .split('.')[0]
+        urlKey = url.split('/').pop().split('.')[0]
 
         if (type === '404') res.statusCode = 404
     } catch (e) {
