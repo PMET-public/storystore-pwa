@@ -117,6 +117,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         {version} (Storybook {lumaUIVersion})
                     </Value>
                 </Details>
+
                 <Form onSubmit={handleSaveOverrides} ref={formRef}>
                     <Input
                         name="MAGENTO_URL"

@@ -1,9 +1,7 @@
 query HomeQuery($id: String!, $categoriesRootId: String, $hasCategoryRootId: Boolean = false) {
     storeConfig {
         id
-        baseMediaUrl: secure_base_media_url
         categoryUrlSuffix: category_url_suffix
-
         root_category_id
         hasCategoryRootId @client @export(as: "hasCategoryRootId")
         categoryRootId @client @export(as: "categoriesRootId")
