@@ -5,6 +5,7 @@ query HomeQuery($id: String!, $categoriesRootId: String, $hasCategoryRootId: Boo
         root_category_id
         hasCategoryRootId @client @export(as: "hasCategoryRootId")
         categoryRootId @client @export(as: "categoriesRootId")
+        homePage: cms_home_page
     }
 
     categories: categoryList(filters: { ids: { eq: $categoriesRootId } }) @include(if: $hasCategoryRootId) {
