@@ -118,7 +118,14 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                     </Value>
                 </Details>
 
-                <Form onSubmit={handleSaveOverrides} ref={formRef}>
+                <Form
+                    options={{
+                        mode: 'onSubmit',
+                        reValidateMode: 'onSubmit',
+                    }}
+                    onSubmit={handleSaveOverrides}
+                    ref={formRef}
+                >
                     <Input
                         name="MAGENTO_URL"
                         label="Magento URL"
@@ -126,6 +133,12 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         style={{ textOverflow: 'ellipsis' }}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+                            validate: async url => {
+                                const res = await fetch(`/api/check-endpoint?url=${url}`)
+                                if (!res.ok) return `📡 Magento endpoint not found. Try again.`
+                                const data = await res.json()
+                                return data?.success ? true : `📡 Magento endpoint not valid. Try again`
+                            },
                         }}
                     />
 
