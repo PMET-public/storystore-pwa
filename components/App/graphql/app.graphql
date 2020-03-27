@@ -1,27 +1,22 @@
-query AppShellQuery($categoriesRootId: String, $hasCategoryRootId: Boolean = false) {
-    store: storeConfig {
-        id
-        metaTitle: default_title
-        metaTitlePrefix: title_prefix
-        metaTitleSuffix: title_suffix
-        metaDescription: default_description
-        metaKeywords: default_keywords
-        logoAlt: logo_alt
-        homePath: cms_home_page
-        copyright
-        categoryUrlSuffix: category_url_suffix
-
-        root_category_id
-        hasCategoryRootId @client @export(as: "hasCategoryRootId")
-        categoryRootId @client @export(as: "categoriesRootId")
-    }
-
-    categories: categoryList(filters: { ids: { eq: $categoriesRootId } }) @include(if: $hasCategoryRootId) {
-        id
-        children {
-            id
-            text: name
-            href: url_path
-        }
-    }
+query AppShellQuery {
+	store: storeConfig {
+		id
+		metaTitle: default_title
+		metaTitlePrefix: title_prefix
+		metaTitleSuffix: title_suffix
+		metaDescription: default_description
+		metaKeywords: default_keywords
+		logoAlt: logo_alt
+		homePath: cms_home_page
+		copyright
+		categoryUrlSuffix: category_url_suffix
+	}
+	categories: categoryList {
+		id
+		children {
+			id
+			text: name
+			href: url_path
+		}
+	}
 }
