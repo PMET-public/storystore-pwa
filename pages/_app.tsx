@@ -16,6 +16,19 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
 
     const { MAGENTO_URL } = env
 
+    /**
+     * TypeKit (Fonts)
+     */
+    useEffect(() => {
+        const myCSS = document.createElement('link')
+        myCSS.rel = 'stylesheet'
+        myCSS.href = '/static/fonts.css'
+        document.head.insertBefore(myCSS, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
+    }, [])
+
+    /**
+     * Apollo Client (GraphQl)
+     */
     useEffect(() => {
         createApolloClient(MAGENTO_URL).then(client => setClient(client))
     }, [MAGENTO_URL, setClient])

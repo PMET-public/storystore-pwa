@@ -8,7 +8,7 @@ import { version as lumaUIVersion } from '@pmet-public/luma-ui/package.json'
 
 import { useSettings } from './useSettings'
 
-import Form, { Input, FormContext } from '@pmet-public/luma-ui/dist/components/Form'
+import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/dist/components/Form'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import ApolloClient from 'apollo-client'
 import { useRouter } from 'next/router'
@@ -140,6 +140,11 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                                 return data?.success ? true : `📡 Magento endpoint not valid. Try again`
                             },
                         }}
+                        error={
+                            home.error?.networkError
+                                ? '🔌 There is an issue connecting to your instance. Please check the url, and try again.'
+                                : undefined
+                        }
                     />
 
                     <Input
@@ -157,8 +162,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         error={
                             home.loading || home.data?.page
                                 ? undefined
-                                : `🏡 Couldn't find page in your Magento instance.`
+                                : `🏡 No Home page found. Did you mean to use "${home.data?.storeConfig?.homePage}"?`
                         }
+                        color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
                     />
 
                     <Input
@@ -169,7 +175,12 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         error={
                             footer.loading || footer.data?.footer?.items[0]?.id
                                 ? undefined
-                                : `🦶 Couldn't find footer in your Magento instance.`
+                                : `🦶 No Footer block found. Using Copyright message instead.`
+                        }
+                        color={
+                            footer.loading || footer.data?.footer?.items[0]?.id
+                                ? FieldColors.default
+                                : FieldColors.notice
                         }
                     />
 

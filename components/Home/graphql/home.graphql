@@ -1,26 +1,23 @@
 query HomeQuery($id: String!) {
-	storeConfig {
-		id
-		categoryUrlSuffix: category_url_suffix
-		root_category_id
-		hasCategoryRootId @client @export(as: "hasCategoryRootId")
-		categoryRootId @client @export(as: "categoriesRootId")
-	}
-	categories: categoryList {
-		id
-		children {
-			id
-			text: name
-			href: url_path
-			image
-		}
-	}
-	page: cmsPage(identifier: $id) {
-		id: url_key
-		title
-		content
-		metaTitle: meta_title
-		metaDescription: meta_description
-		metaKeywords: meta_keywords
-	}
+    storeConfig {
+        id
+        categoryUrlSuffix: category_url_suffix
+    }
+    categories: categoryList {
+        id
+        children {
+            id
+            text: name
+            href: url_path
+            image
+        }
+    }
+    page: cmsPage(identifier: $id) {
+        id: url_key
+        title
+        content
+        metaTitle: meta_title
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+    }
 }
