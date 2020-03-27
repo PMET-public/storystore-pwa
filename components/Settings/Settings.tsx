@@ -127,6 +127,11 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
                         }}
+                        error={
+                            home.error?.networkError
+                                ? '🔌 There is an issue connecting to your instance. Please check the url, and try again.'
+                                : undefined
+                        }
                     />
 
                     <Input
@@ -144,7 +149,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         error={
                             home.loading || home.data?.page
                                 ? undefined
-                                : `🏡 No Home page found. Did you mean to use "${home.data?.storeConfig.homePage}"?`
+                                : `🏡 No Home page found. Did you mean to use "${home.data?.storeConfig?.homePage}"?`
                         }
                         color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
                     />
