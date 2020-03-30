@@ -145,6 +145,8 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             })
         }
 
+        console.error(error)
+
         return res.status(500).send({
             errors: [
                 {
