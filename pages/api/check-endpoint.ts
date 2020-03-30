@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
