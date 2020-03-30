@@ -12,6 +12,7 @@ import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/dist
 import Button from '@pmet-public/luma-ui/dist/components/Button'
 import ApolloClient from 'apollo-client'
 import { useRouter } from 'next/router'
+import { Response } from '../../pages/api/check-endpoint'
 
 export type SettingsProps = {
     defaults: {
@@ -76,6 +77,21 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
             setSaving(true)
 
             try {
+                // Validate
+                if (payload.MAGENTO_URL) {
+                    const res = await fetch(`/api/check-endpoint?url=${payload.MAGENTO_URL}`)
+
+                    const data: Response = await res.json()
+
+                    if (data?.errors) {
+                        data.errors.forEach(error => {
+                            formRef.current?.setError(error.key, error.level, error.message)
+                        })
+                        throw Error
+                    }
+                }
+
+                // Save Changes
                 dispatch({ type: 'save', payload })
 
                 const values: ReducerState = Object.keys(payload).reduce((result, key) => {
@@ -85,21 +101,21 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
 
                 setCookie(SETTINGS_OVERRIDE_COOKIE, JSON.stringify(values), 365)
 
+                // Reset
                 localStorage.clear()
-
                 await apolloClient?.resetStore()
 
+                // Refresh
                 router.push('/settings')
+                toast.success('👍 Saved!')
             } catch (e) {
                 console.error(e)
-                toast.error('💩 Oops! There was an issue. Try again.')
+                toast.error('💩 There was an issue. Try again.')
             }
 
             setSaving(false)
-
-            toast.success('👍 Saved!')
         },
-        [dispatch, apolloClient, setSaving]
+        [dispatch, apolloClient, setSaving, formRef]
     )
 
     const handleOnResetToDefaults = useCallback(() => {
@@ -133,18 +149,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                         style={{ textOverflow: 'ellipsis' }}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
-                            validate: async url => {
-                                const res = await fetch(`/api/check-endpoint?url=${url}`)
-                                if (!res.ok) return `📡 Magento endpoint not found. Try again.`
-                                const data = await res.json()
-                                return data?.success ? true : `📡 Magento endpoint not valid. Try again`
-                            },
                         }}
-                        error={
-                            home.error?.networkError
-                                ? '🔌 There is an issue connecting to your instance. Please check the url, and try again.'
-                                : undefined
-                        }
                     />
 
                     <Input
