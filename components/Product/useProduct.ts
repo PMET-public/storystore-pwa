@@ -69,7 +69,8 @@ export const useProduct = (props: { urlKey: string }) => {
             ?.sort((a: any, b: any) => b.position - a.position)
             .map((option: any) => {
                 const { id, label, code, items } = option
-                const type = code === 'color' ? 'thumb' : 'text'
+                const thumbKey = /color/.test(code) ? code : undefined
+                const type = thumbKey ? 'thumb' : 'text'
 
                 return {
                     id,
@@ -81,14 +82,12 @@ export const useProduct = (props: { urlKey: string }) => {
 
                         const { id, value, label } = item
 
-                        const { product } = variants.find((x: any) => x.color === value) || {}
-
                         return {
                             id,
                             value,
                             label,
                             disabled,
-                            image: product && product.thumbnail,
+                            image: thumbKey && variants.find((x: any) => x[thumbKey] === value).product.thumbnail,
                         }
                     }),
                 }
