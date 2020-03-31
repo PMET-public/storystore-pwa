@@ -1,5 +1,8 @@
-import React, { useMemo, createContext, useContext, FunctionComponent } from 'react'
+import React, { useMemo, createContext, useContext, FunctionComponent, useCallback } from 'react'
 import { Workbox } from 'workbox-window'
+import { toast } from '@pmet-public/luma-ui/dist/lib'
+import { useRouter } from 'next/router'
+import { version } from '../../package.json'
 
 const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
 
@@ -10,6 +13,12 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
     url = '/service-worker.js',
     disableInDev = true,
 }) => {
+    const router = useRouter()
+
+    const handleReloadApp = useCallback(() => {
+        router.reload()
+    }, [router])
+
     const wb = useMemo(() => {
         if (
             typeof navigator === 'undefined' ||
@@ -29,6 +38,11 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
         wb.addEventListener('installed', event => {
             if (event.isUpdate) {
                 console.log('A new version available. Please reload the app.')
+                toast.info(
+                    <>
+                        A new update ({version}) is available. <button onClick={handleReloadApp}>Reload</button>.
+                    </>
+                )
             }
         })
 
