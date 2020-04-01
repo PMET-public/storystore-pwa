@@ -100,12 +100,7 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
 
-
- 
-    if (
-        request.method === 'GET' &&
-        request.destination === 'document' &&
-    ) {
+    if (request.method === 'GET' && request.destination === 'document') {
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
