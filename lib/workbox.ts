@@ -56,7 +56,7 @@ registerRoute(
 )
 
 registerRoute(
-    getRoutePaths(['/basic-auth']), // other pages
+    getRoutePaths(['/basic-auth']), // http basic auth route
     new NetworkOnly({
         fetchOptions,
         plugins,
