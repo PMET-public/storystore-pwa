@@ -34,7 +34,7 @@ precacheAndRoute(
 
         // Precached routes
         { url: FALLBACK_HTML_URL, revision: getRevisionHash },
-        { url: '/', revision: getRevisionHash },
+        // { url: '/', revision: getRevisionHash },
         { url: '/search', revision: getRevisionHash },
         { url: '/cart', revision: getRevisionHash },
         { url: '/checkout', revision: getRevisionHash },
@@ -85,7 +85,6 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
     if (request.method === 'GET' && request.destination === 'document') {
-        console.log('In', request)
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
