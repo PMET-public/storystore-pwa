@@ -59,8 +59,6 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
                 ...performance.getEntriesByType('resource').map(r => r.name),
             ]
 
-            console.log({ urlsToCache })
-
             // Send that list of URLs to your router in the service worker.
             wb.messageSW({
                 type: 'CACHE_URLS',

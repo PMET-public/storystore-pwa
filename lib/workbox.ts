@@ -1,6 +1,6 @@
 import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst, NetworkOnly } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -55,14 +55,6 @@ registerRoute(
     })
 )
 
-registerRoute(
-    getRoutePaths(['/basic-auth']), // http basic auth route
-    new NetworkOnly({
-        fetchOptions,
-        plugins,
-    })
-)
-
 // Images API
 registerRoute(
     getRoutePaths(['/api/images']),
@@ -108,12 +100,13 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
     if (request.method === 'GET' && request.destination === 'document') {
+        console.log('in', request)
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
-            plugins,
         }).handle(args)
     } else {
+        console.log('fetching', request)
         return fetch(request, fetchOptions)
     }
 })
