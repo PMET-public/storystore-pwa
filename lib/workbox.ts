@@ -13,9 +13,14 @@ const fetchOptions: RequestInit = {
     credentials: 'same-origin',
 }
 
-const cacheableResponsePlugin: WorkboxPlugin = new CacheableResponsePlugin({
-    statuses: [0, 200],
-})
+const plugins: WorkboxPlugin[] = [
+    new CacheableResponsePlugin({
+        statuses: [200],
+    }),
+    new ExpirationPlugin({
+        maxAgeSeconds: 7 * DAY_IN_SECONDS,
+    }),
+]
 
 const getRevisionHash = require('crypto').createHash('md5').update(Date.now().toString(), 'utf8').digest('hex')
 
@@ -50,13 +55,7 @@ registerRoute(
     new CacheFirst({
         cacheName: 'api-images',
         fetchOptions,
-        plugins: [
-            cacheableResponsePlugin,
-            new ExpirationPlugin({
-                maxEntries: 100,
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
+        plugins,
     })
 )
 
@@ -65,12 +64,7 @@ registerRoute(
     /.*(?:typekit)\.net.*$/,
     new StaleWhileRevalidate({
         cacheName: 'typekit',
-        plugins: [
-            cacheableResponsePlugin,
-            new ExpirationPlugin({
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
+        plugins,
     })
 )
 
@@ -80,12 +74,7 @@ registerRoute(
     new StaleWhileRevalidate({
         cacheName: 'static',
         fetchOptions,
-        plugins: [
-            cacheableResponsePlugin,
-            new ExpirationPlugin({
-                maxAgeSeconds: 7 * DAY_IN_SECONDS,
-            }),
-        ],
+        plugins,
     })
 )
 
@@ -94,16 +83,12 @@ registerRoute(
  */
 
 setDefaultHandler(args => {
+    console.log({ args })
     if (args.event.request.method === 'GET' && args.event.request.destination === 'document') {
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
-            plugins: [
-                cacheableResponsePlugin,
-                new ExpirationPlugin({
-                    maxAgeSeconds: 7 * DAY_IN_SECONDS,
-                }),
-            ],
+            plugins,
         }).handle(args)
     } else {
         return fetch(args.event.request)
