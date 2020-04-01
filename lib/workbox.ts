@@ -91,6 +91,7 @@ setDefaultHandler(args => {
             plugins,
         }).handle(args)
     } else {
+        console.log('setDefaultHandler', request)
         return fetch(request, fetchOptions)
     }
 })
