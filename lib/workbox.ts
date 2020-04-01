@@ -7,8 +7,6 @@ import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
 
-const FALLBACK_HTML_URL = '/offline'
-
 const fetchOptions: RequestInit = {
     credentials: 'include',
 }
@@ -22,36 +20,43 @@ const plugins: WorkboxPlugin[] = [
     }),
 ]
 
-const getRevisionHash = require('crypto').createHash('md5').update(Date.now().toString(), 'utf8').digest('hex')
-
 clientsClaim()
 
 skipWaiting()
 
-precacheAndRoute(
-    [
-        ...(self as any).__WB_MANIFEST,
-
-        // Precached routes
-        { url: FALLBACK_HTML_URL, revision: getRevisionHash },
-        { url: '/', revision: getRevisionHash },
-        { url: '/search', revision: getRevisionHash },
-        { url: '/cart', revision: getRevisionHash },
-        { url: '/checkout', revision: getRevisionHash },
-        { url: '/robots.txt', revision: getRevisionHash },
-        { url: '/manifest.webmanifest', revision: getRevisionHash },
-    ] || []
-)
+precacheAndRoute((self as any).__WB_MANIFEST || [])
 
 cleanupOutdatedCaches()
 
+const getRoutePaths = (paths: string[]) => {
+    return new RegExp('(' + paths.map(path => new URL(path, self.location.href).href).join('|') + ')')
+}
 /**
  * Routes
  */
 
+//  Pages
+
+registerRoute(
+    new RegExp(new URL('/', self.location.href).href + '$'), // home page
+    new StaleWhileRevalidate({
+        cacheName: 'pages',
+        fetchOptions,
+        plugins,
+    })
+)
+
+registerRoute(
+    getRoutePaths(['/search', '/cart', '/checkout', 'offline']), // other pages
+    new StaleWhileRevalidate({
+        cacheName: 'pages',
+        fetchOptions,
+        plugins,
+    })
+)
 // Images API
 registerRoute(
-    /\/api\/images/,
+    getRoutePaths(['/api/images']),
     new CacheFirst({
         cacheName: 'api-images',
         fetchOptions,
@@ -70,9 +75,18 @@ registerRoute(
 
 // Static resources
 registerRoute(
-    /\/static\//,
+    getRoutePaths(['/static']),
     new StaleWhileRevalidate({
         cacheName: 'static',
+        fetchOptions,
+        plugins,
+    })
+)
+
+registerRoute(
+    getRoutePaths(['/robots.txt', 'manifest.webmanifest']),
+    new StaleWhileRevalidate({
+        cacheName: 'pages',
         fetchOptions,
         plugins,
     })
@@ -97,7 +111,7 @@ setDefaultHandler(args => {
 
 setCatchHandler(({ event }) => {
     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
-        return matchPrecache(FALLBACK_HTML_URL)
+        return matchPrecache('/offline')
     } else {
         return Response.error() as any
     }

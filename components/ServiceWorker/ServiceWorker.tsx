@@ -49,16 +49,24 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
         /**
          * On Activation
          */
-        // wb.addEventListener('activated', _event => {
-        //     // Get the current page URL + all resources the page loaded.
-        //     const urlsToCache = [window.location.href, ...performance.getEntriesByType('resource').map(r => r.name)]
+        wb.addEventListener('activated', _event => {
+            // Get the current page URL + all resources the page loaded.
+            const urlsToCache = [
+                window.location.href,
+                ...['/', '/search', '/cart', '/checkout', 'offline'].map(
+                    path => new URL(path, window.location.href).href
+                ),
+                ...performance.getEntriesByType('resource').map(r => r.name),
+            ]
 
-        //     // Send that list of URLs to your router in the service worker.
-        //     wb.messageSW({
-        //         type: 'CACHE_URLS',
-        //         payload: { urlsToCache },
-        //     })
-        // })
+            console.log({ urlsToCache })
+
+            // Send that list of URLs to your router in the service worker.
+            wb.messageSW({
+                type: 'CACHE_URLS',
+                payload: { urlsToCache },
+            })
+        })
 
         // Register the service worker
         wb.register()
