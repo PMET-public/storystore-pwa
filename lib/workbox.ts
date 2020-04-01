@@ -1,6 +1,6 @@
 import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -13,7 +13,7 @@ const fetchOptions: RequestInit = {
 
 const plugins: WorkboxPlugin[] = [
     new CacheableResponsePlugin({
-        statuses: [200],
+        statuses: [0, 200],
     }),
     new ExpirationPlugin({
         maxAgeSeconds: 7 * DAY_IN_SECONDS,
@@ -100,26 +100,18 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
 
-    if (request.method === 'GET' && request.destination === 'document') {
-        return new NetworkOnly({
+
+ 
+    if (
+        request.method === 'GET' &&
+        request.destination === 'document' &&
+    ) {
+        return new NetworkFirst({
+            cacheName: 'default',
             fetchOptions,
             plugins,
         }).handle(args)
     }
-    // const { url } = args
-
-    // if (
-    //     request.method === 'GET' &&
-    //     request.destination === 'document' &&
-    //     url?.href !== new URL('/basic-auth', self.location.href).href
-    // ) {
-    //     return new NetworkFirst({
-    //         cacheName: 'default',
-    //         fetchOptions,
-    //         plugins,
-    //     }).handle(args)
-    // }
-
     return fetch(request, fetchOptions)
 })
 
