@@ -53,7 +53,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
             // Get the current page URL + all resources the page loaded.
             const urlsToCache = [
                 window.location.href,
-                ...['/', '/search', '/cart', '/checkout', '/offline', 'basic-auth'].map(
+                ...['/', '/search', '/cart', '/checkout', '/offline', '/basic-auth'].map(
                     path => new URL(path, window.location.href).href
                 ),
                 ...performance.getEntriesByType('resource').map(r => r.name),
