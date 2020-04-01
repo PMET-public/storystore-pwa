@@ -99,16 +99,21 @@ registerRoute(
 
 setDefaultHandler(args => {
     const { request } = args.event
-    if (request.method === 'GET' && request.destination === 'document') {
-        console.log('in', request)
+    const { url } = args
+
+    if (
+        url?.href !== new URL('/basic-auth', self.location.href).href &&
+        request.method === 'GET' &&
+        request.destination === 'document'
+    ) {
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
+            plugins,
         }).handle(args)
-    } else {
-        console.log('fetching', request)
-        return fetch(request, fetchOptions)
     }
+
+    return fetch(request, fetchOptions)
 })
 
 setCatchHandler(({ event }) => {
