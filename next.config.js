@@ -19,15 +19,15 @@ module.exports = withOffline({
     },
 
     experimental: {
-        // async redirects() {
-        //     return [
-        //         {
-        //             source: `/basic-auth`,
-        //             destination: '/',
-        //             permanent: false,
-        //         },
-        //     ]
-        // },
+        async redirects() {
+            return [
+                {
+                    source: `/basic-auth`,
+                    destination: '/',
+                    permanent: false,
+                },
+            ]
+        },
         async rewrites() {
             return [
                 {

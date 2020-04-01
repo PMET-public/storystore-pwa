@@ -10,7 +10,7 @@ const DAY_IN_SECONDS = 86400
 const FALLBACK_HTML_URL = '/offline'
 
 const fetchOptions: RequestInit = {
-    credentials: 'same-origin',
+    credentials: 'include',
 }
 
 const plugins: WorkboxPlugin[] = [
@@ -83,15 +83,15 @@ registerRoute(
  */
 
 setDefaultHandler(args => {
-    console.log({ args })
-    if (args.event.request.method === 'GET' && args.event.request.destination === 'document') {
+    const { request } = args.event
+    if (request.method === 'GET' && request.destination === 'document') {
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
             plugins,
         }).handle(args)
     } else {
-        return fetch(args.event.request)
+        return fetch(request, fetchOptions)
     }
 })
 
