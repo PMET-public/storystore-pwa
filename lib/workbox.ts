@@ -1,10 +1,6 @@
 import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import {
-    CacheFirst,
-    StaleWhileRevalidate,
-    // NetworkFirst
-} from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -103,6 +99,13 @@ registerRoute(
 
 setDefaultHandler(args => {
     const { request } = args.event
+
+    if (request.method === 'GET' && request.destination === 'document') {
+        return new NetworkOnly({
+            fetchOptions,
+            plugins,
+        }).handle(args)
+    }
     // const { url } = args
 
     // if (
