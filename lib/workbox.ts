@@ -1,17 +1,6 @@
-import {
-    registerRoute,
-    // setCatchHandler, setDefaultHandler
-} from 'workbox-routing'
-import {
-    precacheAndRoute,
-    cleanupOutdatedCaches,
-    // matchPrecache
-} from 'workbox-precaching'
-import {
-    CacheFirst,
-    StaleWhileRevalidate,
-    // NetworkFirst
-} from 'workbox-strategies'
+import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
+import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -93,24 +82,24 @@ registerRoute(
  * Fallback (default handler)
  */
 
-// setDefaultHandler(args => {
-//     const { request } = args.event
-//     if (request.method === 'GET' && request.destination === 'document') {
-//         return new NetworkFirst({
-//             cacheName: 'default',
-//             fetchOptions,
-//             plugins,
-//         }).handle(args)
-//     } else {
-//         console.log('setDefaultHandler', request)
-//         return fetch(request, fetchOptions)
-//     }
-// })
+setDefaultHandler(args => {
+    const { request } = args.event
+    if (request.method === 'GET' && request.destination === 'document') {
+        console.log('In', request)
+        return new NetworkFirst({
+            cacheName: 'default',
+            fetchOptions,
+            plugins,
+        }).handle(args)
+    } else {
+        return fetch(request, fetchOptions)
+    }
+})
 
-// setCatchHandler(({ event }) => {
-//     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
-//         return matchPrecache(FALLBACK_HTML_URL)
-//     } else {
-//         return Response.error() as any
-//     }
-// })
+setCatchHandler(({ event }) => {
+    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+        return matchPrecache(FALLBACK_HTML_URL)
+    } else {
+        return Response.error() as any
+    }
+})
