@@ -55,6 +55,15 @@ registerRoute(
     })
 )
 
+registerRoute(
+    getRoutePaths(['/basic-auth']), // other pages
+    new CacheFirst({
+        cacheName: 'pages',
+        fetchOptions,
+        plugins,
+    })
+)
+
 // Images API
 registerRoute(
     getRoutePaths(['/api/images']),
