@@ -3,8 +3,7 @@ import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings
 import { setCookie, getCookie } from '../../lib/cookies'
 import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
 import { toast } from '@pmet-public/luma-ui/dist/lib'
-import { version } from '../../package.json'
-import { version as lumaUIVersion } from '@pmet-public/luma-ui/package.json'
+import { version, dependencies } from '../../package.json'
 
 import { useSettings } from './useSettings'
 
@@ -130,7 +129,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
                 <Details>
                     <Label>Version</Label>
                     <Value>
-                        {version} (Storybook {lumaUIVersion})
+                        {version} (Storybook {dependencies['@pmet-public/luma-ui']})
                     </Value>
                 </Details>
 
