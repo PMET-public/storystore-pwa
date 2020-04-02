@@ -65,6 +65,8 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
                     </Toast>,
                     {
                         autoClose: false,
+                        closeButton: false,
+                        onClose: handleReloadApp,
                     }
                 )
             }
