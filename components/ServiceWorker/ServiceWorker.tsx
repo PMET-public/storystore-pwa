@@ -40,7 +40,11 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
                 console.log('A new version available. Please reload the app.')
                 toast.info(
                     <>
-                        A new update ({version}) is available. <button onClick={handleReloadApp}>Reload</button>.
+                        🎉 A new update ({version}) is available.{' '}
+                        <button className="button" onClick={handleReloadApp}>
+                            Reload App
+                        </button>
+                        .
                     </>
                 )
             }
