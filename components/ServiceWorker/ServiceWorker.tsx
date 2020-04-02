@@ -3,6 +3,24 @@ import { Workbox } from 'workbox-window'
 import { toast } from '@pmet-public/luma-ui/dist/lib'
 import { useRouter } from 'next/router'
 import { version } from '../../package.json'
+import styled from 'styled-components'
+
+const Toast = styled.div`
+    display: grid;
+    grid-gap: 1rem;
+
+    & > button {
+        background-color: #fff;
+        border-radius: 2.4rem;
+        box-sizing: border-box;
+        color: #222;
+        cursor: pointer;
+        display: inline-flex;
+        font-weight: 800;
+        padding: 1rem 2.2rem;
+        place-content: center;
+    }
+`
 
 const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
 
@@ -39,13 +57,15 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
             if (event.isUpdate) {
                 console.log('A new version available. Please reload the app.')
                 toast.info(
-                    <>
-                        🎉 A new update ({version}) is available.{' '}
+                    <Toast>
+                        🎉 A new update ({version}) is available.
                         <button className="button" onClick={handleReloadApp}>
-                            Reload App
-                        </button>
-                        .
-                    </>
+                            Reload
+                        </button>{' '}
+                    </Toast>,
+                    {
+                        autoClose: false,
+                    }
                 )
             }
         })
