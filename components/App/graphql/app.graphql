@@ -1,22 +1,24 @@
 query AppShellQuery {
-	store: storeConfig {
-		id
-		metaTitle: default_title
-		metaTitlePrefix: title_prefix
-		metaTitleSuffix: title_suffix
-		metaDescription: default_description
-		metaKeywords: default_keywords
-		logoAlt: logo_alt
-		homePath: cms_home_page
-		copyright
-		categoryUrlSuffix: category_url_suffix
-	}
-	categories: categoryList {
-		id
-		children {
-			id
-			text: name
-			href: url_path
-		}
-	}
+    store: storeConfig {
+        id
+        metaTitle: default_title
+        metaTitlePrefix: title_prefix
+        metaTitleSuffix: title_suffix
+        metaDescription: default_description
+        metaKeywords: default_keywords
+        baseMediaUrl: base_media_url
+        logoSrc: header_logo_src
+        logoAlt: logo_alt
+        homePath: cms_home_page
+        copyright
+        categoryUrlSuffix: category_url_suffix
+    }
+    categories: categoryList {
+        id
+        children {
+            id
+            text: name
+            href: url_path
+        }
+    }
 }

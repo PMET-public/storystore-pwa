@@ -50,6 +50,14 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
+const addCredentialsToMagentoUrls = (url: string) => {
+    const noCredentialsRegex = /^((?!@).)*$/
+    const magentoCloudRegex = /^https?:\/\/.*\-.*\-(.*)\.demo\.magentosite\.cloud/
+    const $p = ((noCredentialsRegex.test(url) && url.match(magentoCloudRegex)) || [])[1]
+
+    return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
+}
+
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
     const router = useRouter()
 
@@ -78,6 +86,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloCli
             try {
                 // Validate
                 if (payload.MAGENTO_URL) {
+                    payload.MAGENTO_URL = addCredentialsToMagentoUrls(payload.MAGENTO_URL)
+
                     const res = await fetch(`/api/check-endpoint?url=${payload.MAGENTO_URL}`)
 
                     const data: Response = await res.json()

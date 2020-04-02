@@ -3,6 +3,7 @@ import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 
 import { useApp } from './useApp'
+import { resolveImage } from '../../lib/resolveImage'
 import { useIsUrlActive } from '../../lib/resolveLink'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
@@ -62,6 +63,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                         titlePrefix: store.metaTitlePrefix,
                         titleSuffix: store.metaTitleSuffix,
                         description: store.metaDescription,
+
                         keywords: store.metaKeywords,
                     }}
                 />
@@ -71,6 +73,14 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                 loading={loading && !(store && categories[0])}
                 logo={{
                     as: Link,
+                    svg: store?.logoSrc
+                        ? () => (
+                              <img
+                                  style={{ maxHeight: '3rem', maxWidth: '15rem' }}
+                                  src={resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc)}
+                              />
+                          )
+                        : undefined,
                     href: '/',
                     title: store?.logoAlt || 'Luma',
                 }}
