@@ -1,6 +1,6 @@
-import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
-import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst, NetworkOnly } from 'workbox-strategies'
+import { registerRoute, setDefaultHandler } from 'workbox-routing'
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -50,14 +50,6 @@ registerRoute(
     getRoutePaths(['/search', '/cart', '/checkout', '/offline']), // other pages
     new StaleWhileRevalidate({
         cacheName: 'pages',
-        fetchOptions,
-        plugins,
-    })
-)
-
-registerRoute(
-    getRoutePaths(['/basic-auth']), // other pages
-    new NetworkOnly({
         fetchOptions,
         plugins,
     })
@@ -115,13 +107,14 @@ setDefaultHandler(args => {
             plugins,
         }).handle(args)
     }
+
     return fetch(request, fetchOptions)
 })
 
-setCatchHandler(({ event }) => {
-    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
-        return matchPrecache('/offline')
-    } else {
-        return Response.error() as any
-    }
-})
+// setCatchHandler(({ event }) => {
+//     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+//         return matchPrecache('/offline')
+//     } else {
+//         return Response.error() as any
+//     }
+// })
