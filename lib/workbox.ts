@@ -3,7 +3,7 @@ import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
-import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
+import { skipWaiting, clientsClaim, WorkboxPlugin, RouteMatchCallback } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
 
@@ -36,9 +36,13 @@ const getRoutePaths = (paths: string[]) => {
  */
 
 //  Pages
+const matchPages: RouteMatchCallback = ({ url, event }) => {
+    const { request } = event
+    return url.pathname !== '/basic-auth' && request.method === 'GET' && request.destination === 'document'
+}
 
 registerRoute(
-    new RegExp(new URL('/', self.location.href).href + '$'), // home page
+    matchPages,
     new StaleWhileRevalidate({
         cacheName: 'pages',
         fetchOptions,
@@ -46,14 +50,14 @@ registerRoute(
     })
 )
 
-registerRoute(
-    getRoutePaths(['/search', '/cart', '/checkout', '/offline']), // other pages
-    new StaleWhileRevalidate({
-        cacheName: 'pages',
-        fetchOptions,
-        plugins,
-    })
-)
+// registerRoute(
+//     getRoutePaths(['/search', '/cart', '/checkout', '/offline']), // other pages
+//     new StaleWhileRevalidate({
+//         cacheName: 'pages',
+//         fetchOptions,
+//         plugins,
+//     })
+// )
 
 // Images API
 registerRoute(
@@ -105,7 +109,7 @@ registerRoute(
 //     if (request.method === 'GET' && request.destination === 'document') {
 //         console.log('inside')
 
-//         return new NetworkFirst({
+//         return new StaleWhileRevalidate({
 //             cacheName: 'default',
 //             fetchOptions,
 //             plugins,
