@@ -1,4 +1,4 @@
-import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
+import { registerRoute, setCatchHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
 import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
@@ -35,6 +35,25 @@ const getRoutePaths = (paths: string[]) => {
  * Routes
  */
 
+//  Pages
+registerRoute(
+    new URL('/', self.location.href).href,
+    new NetworkFirst({
+        cacheName: 'pages',
+        fetchOptions,
+        plugins,
+    })
+)
+
+registerRoute(
+    getRoutePaths(['/search', '/cart', '/checkout', '/offline']),
+    new CacheFirst({
+        cacheName: 'pages',
+        fetchOptions,
+        plugins,
+    })
+)
+
 // Images API
 registerRoute(
     getRoutePaths(['/api/images']),
@@ -65,9 +84,9 @@ registerRoute(
 )
 
 registerRoute(
-    getRoutePaths(['/robots.txt', 'manifest.webmanifest']),
+    getRoutePaths(['/robots.txt', '/manifest.webmanifest']),
     new StaleWhileRevalidate({
-        cacheName: 'pages',
+        cacheName: 'static',
         fetchOptions,
         plugins,
     })
@@ -77,30 +96,28 @@ registerRoute(
  * Fallback (default handler)
  */
 
-setDefaultHandler(args => {
-    const { url, event } = args
+// setDefaultHandler(args => {
+//     const { event } = args
+//     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+//         return new NetworkFirst({
+//             cacheName: 'pages',
+//             fetchOptions,
+//             plugins,
+//         }).handle(args)
+//     }
 
-    if (
-        url?.pathname !== '/basic-auth' &&
-        event?.request.method === 'GET' &&
-        event?.request.destination === 'document'
-    ) {
-        return new NetworkFirst({
-            cacheName: 'pages',
-            fetchOptions,
-            plugins,
-        }).handle(args)
-    }
-
-    console.log(event?.request, fetchOptions)
-    return fetch(event?.request, fetchOptions)
-})
+//     return fetch(event?.request)
+// })
 
 setCatchHandler(({ event }) => {
-    const { request } = event
-    if (request.method === 'GET' && request.destination === 'document') {
-        return matchPrecache('/offline')
-    } else {
-        return Response.error() as any
+    switch (event.request.destination) {
+        case 'document':
+            // If using precached URLs:
+            // return matchPrecache(FALLBACK_HTML_URL);
+            return matchPrecache('/offline')
+
+        default:
+            // If we don't have a fallback, just return an error response.
+            return Response.error() as any
     }
 })
