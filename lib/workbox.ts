@@ -36,6 +36,7 @@ const getRoutePaths = (paths: string[]) => {
  */
 
 //  Pages
+
 registerRoute(
     new URL('/', self.location.href).href,
     new NetworkFirst({
@@ -47,7 +48,7 @@ registerRoute(
 
 registerRoute(
     getRoutePaths(['/search', '/cart', '/checkout', '/offline']),
-    new CacheFirst({
+    new NetworkFirst({
         cacheName: 'pages',
         fetchOptions,
         plugins,
@@ -91,23 +92,6 @@ registerRoute(
         plugins,
     })
 )
-
-/**
- * Fallback (default handler)
- */
-
-// setDefaultHandler(args => {
-//     const { event } = args
-//     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
-//         return new NetworkFirst({
-//             cacheName: 'pages',
-//             fetchOptions,
-//             plugins,
-//         }).handle(args)
-//     }
-
-//     return fetch(event?.request)
-// })
 
 setCatchHandler(({ event }) => {
     switch (event.request.destination) {
