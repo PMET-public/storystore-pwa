@@ -100,7 +100,11 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
 
+    console.group()
+    console.log(args)
     if (request.method === 'GET' && request.destination === 'document') {
+        console.log('inside')
+
         return new NetworkFirst({
             cacheName: 'default',
             fetchOptions,
@@ -108,6 +112,9 @@ setDefaultHandler(args => {
         }).handle(args)
     }
 
+    console.log('outside')
+
+    console.groupEnd()
     return fetch(request, fetchOptions)
 })
 
