@@ -1,6 +1,6 @@
-import { registerRoute, setDefaultHandler } from 'workbox-routing'
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
+import { registerRoute, setCatchHandler } from 'workbox-routing'
+import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -97,31 +97,31 @@ registerRoute(
  * Fallback (default handler)
  */
 
-setDefaultHandler(args => {
-    const { request } = args.event
+// setDefaultHandler(args => {
+//     const { request } = args.event
 
-    console.group()
-    console.log(args)
-    if (request.method === 'GET' && request.destination === 'document') {
-        console.log('inside')
+//     console.group()
+//     console.log(args)
+//     if (request.method === 'GET' && request.destination === 'document') {
+//         console.log('inside')
 
-        return new NetworkFirst({
-            cacheName: 'default',
-            fetchOptions,
-            plugins,
-        }).handle(args)
-    }
-
-    console.log('outside')
-
-    console.groupEnd()
-    return fetch(request, fetchOptions)
-})
-
-// setCatchHandler(({ event }) => {
-//     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
-//         return matchPrecache('/offline')
-//     } else {
-//         return Response.error() as any
+//         return new NetworkFirst({
+//             cacheName: 'default',
+//             fetchOptions,
+//             plugins,
+//         }).handle(args)
 //     }
+
+//     console.log('outside')
+
+//     console.groupEnd()
+//     return fetch(request, fetchOptions)
 // })
+
+setCatchHandler(({ event }) => {
+    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+        return matchPrecache('/offline')
+    } else {
+        return Response.error() as any
+    }
+})
