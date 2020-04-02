@@ -26,20 +26,18 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
     const online = useNetworkStatus()
 
     if (online && error) {
-        const networkError = error.networkError as ServerError
+        const networkError = error?.networkError as ServerError
 
-        if (networkError) {
-            if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
-                return (
-                    <Error
-                        type="401"
-                        button={{ text: 'Login', onClick: () => (window.location.href = '/basic-auth') }}
-                        fullScreen
-                    >
-                        Authorization Required
-                    </Error>
-                )
-            }
+        if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
+            return (
+                <Error
+                    type="401"
+                    button={{ text: 'Login', onClick: () => (window.location.href = '/basic-auth') }}
+                    fullScreen
+                >
+                    Authorization Required
+                </Error>
+            )
         }
     }
 

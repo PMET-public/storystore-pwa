@@ -28,11 +28,7 @@ export const Error: Component<ErrorProps> = ({
     ...props
 }) => {
     return (
-        <ErrorTemplate
-            type={type}
-            style={fullScreen ? { position: 'fixed', top: 0, left: 0, right: 0 } : {}}
-            {...props}
-        >
+        <ErrorTemplate type={type} style={fullScreen ? { width: '100vw', height: '100vh' } : {}} {...props}>
             <div>{children}</div>
             {button && <Button {...button} style={{ marginTop: '2rem' }} />}
         </ErrorTemplate>
