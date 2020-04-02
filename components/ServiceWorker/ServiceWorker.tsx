@@ -52,10 +52,10 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
         wb.addEventListener('activated', _event => {
             // Get the current page URL + all resources the page loaded.
             const urlsToCache = [
-                window.location.href,
-                ...['/', '/search', '/cart', '/checkout', '/offline'].map(
-                    path => new URL(path, window.location.href).href
-                ),
+                new URL('/', window.location.href).href,
+                new URL('/search', window.location.href).href,
+                new URL('/cart', window.location.href).href,
+                new URL('/checkout', window.location.href).href,
                 ...performance.getEntriesByType('resource').map(r => r.name),
             ]
 

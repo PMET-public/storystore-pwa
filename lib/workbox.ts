@@ -43,7 +43,8 @@ registerRoute(
         cacheName: 'pages',
         fetchOptions,
         plugins,
-    })
+    }),
+    'GET'
 )
 
 registerRoute(
@@ -52,7 +53,8 @@ registerRoute(
         cacheName: 'pages',
         fetchOptions,
         plugins,
-    })
+    }),
+    'GET'
 )
 
 // Images API
@@ -62,7 +64,8 @@ registerRoute(
         cacheName: 'api-images',
         fetchOptions,
         plugins,
-    })
+    }),
+    'GET'
 )
 
 // Adobe Fonts (Typekit)
@@ -71,7 +74,8 @@ registerRoute(
     new StaleWhileRevalidate({
         cacheName: 'typekit',
         plugins,
-    })
+    }),
+    'GET'
 )
 
 // Static resources
@@ -81,7 +85,8 @@ registerRoute(
         cacheName: 'static',
         fetchOptions,
         plugins,
-    })
+    }),
+    'GET'
 )
 
 registerRoute(
@@ -90,14 +95,14 @@ registerRoute(
         cacheName: 'static',
         fetchOptions,
         plugins,
-    })
+    }),
+    'GET'
 )
 
 setCatchHandler(({ event }) => {
     switch (event.request.destination) {
         case 'document':
             // If using precached URLs:
-            // return matchPrecache(FALLBACK_HTML_URL);
             return matchPrecache('/offline')
 
         default:
