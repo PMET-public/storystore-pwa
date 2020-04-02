@@ -3,7 +3,7 @@ import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-
 import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
-import { skipWaiting, clientsClaim, WorkboxPlugin, RouteMatchCallback } from 'workbox-core'
+import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
 
