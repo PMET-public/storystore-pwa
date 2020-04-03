@@ -14,7 +14,11 @@ import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
 import ReactGA from 'react-ga'
 
-ReactGA.initialize('UA-162672258-1')
+const isProduction = process.env.NODE_ENV === 'production'
+
+if (isProduction) {
+    ReactGA.initialize('UA-162672258-1')
+}
 
 const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
     const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
@@ -42,17 +46,11 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
      * Google Analytics
      */
     useEffect(() => {
-        if (!env.MAGENTO_URL) return
-
-        ReactGA.event({
-            category: 'Magento Url',
-            action: new URL(env.MAGENTO_URL).host,
-        })
-
-        ReactGA.event({
-            category: 'Version',
-            action: version,
-        })
+        if (!isProduction) return
+        ReactGA.set({ dimension1: version }) // verion
+        ReactGA.set({ dimension2: window.location.host }) // release
+        ReactGA.set({ dimension3: new URL(env.MAGENTO_URL).host }) // endpoint
+        ReactGA.pageview(window.location.pathname)
     }, [env])
 
     if (client === undefined) return <ViewLoader />

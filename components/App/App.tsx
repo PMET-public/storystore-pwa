@@ -63,7 +63,6 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                         titlePrefix: store.metaTitlePrefix,
                         titleSuffix: store.metaTitleSuffix,
                         description: store.metaDescription,
-
                         keywords: store.metaKeywords,
                     }}
                 />
@@ -78,11 +77,12 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                               <img
                                   style={{ maxHeight: '3rem', maxWidth: '15rem' }}
                                   src={resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc)}
+                                  alt={store?.logoAlt || 'PWA Story Store'}
                               />
                           )
                         : undefined,
                     href: '/',
-                    title: store?.logoAlt || 'Luma',
+                    title: store?.logoAlt || 'PWA Story Store',
                 }}
                 home={{
                     active: isUrlActive('/'),
