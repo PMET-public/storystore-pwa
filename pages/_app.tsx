@@ -12,7 +12,7 @@ import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
 
-const ReactGA = require('react-ga')
+import ReactGA from 'react-ga'
 
 ReactGA.initialize('UA-162672258-1')
 
