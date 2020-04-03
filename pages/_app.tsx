@@ -4,12 +4,17 @@ import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import createApolloClient from '../lib/apollo/client'
 import { ApolloProvider } from '@apollo/react-hooks'
 import { ApolloClient } from 'apollo-client'
+import { version } from '../package.json'
 
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
 import ServiceWorkerProvider from '../components/ServiceWorker'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
+
+const ReactGA = require('react-ga')
+
+ReactGA.initialize('UA-162672258-1')
 
 const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
     const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
@@ -32,6 +37,23 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
     useEffect(() => {
         createApolloClient(MAGENTO_URL).then(client => setClient(client))
     }, [MAGENTO_URL, setClient])
+
+    /**
+     * Google Analytics
+     */
+    useEffect(() => {
+        if (!env.MAGENTO_URL) return
+
+        ReactGA.event({
+            category: 'Magento Url',
+            action: new URL(env.MAGENTO_URL).host,
+        })
+
+        ReactGA.event({
+            category: 'Version',
+            action: version,
+        })
+    }, [env])
 
     if (client === undefined) return <ViewLoader />
 
