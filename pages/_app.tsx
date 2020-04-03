@@ -48,8 +48,13 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
     useEffect(() => {
         if (!isProduction) return
         ReactGA.set({ dimension1: version }) // verion
+
         ReactGA.set({ dimension2: window.location.host }) // release
-        ReactGA.set({ dimension3: new URL(env.MAGENTO_URL).host }) // endpoint
+
+        if (env.MAGENTO_URL) {
+            ReactGA.set({ dimension3: new URL(env.MAGENTO_URL).host }) // endpoint
+        }
+
         ReactGA.pageview(window.location.pathname)
     }, [env])
 
