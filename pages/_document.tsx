@@ -1,8 +1,8 @@
-import Document, { Head, Main, NextScript } from 'next/document'
+import Document, { Head, Main, NextScript, DocumentContext } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 
 export default class extends Document<any> {
-    static async getInitialProps(ctx: any) {
+    static async getInitialProps(ctx: DocumentContext) {
         const sheet = new ServerStyleSheet()
         const originalRenderPage = ctx.renderPage
 
@@ -14,6 +14,7 @@ export default class extends Document<any> {
             }
 
             const initialProps = await Document.getInitialProps(ctx)
+
             return {
                 ...initialProps,
                 styles: (
@@ -53,9 +54,12 @@ export default class extends Document<any> {
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
                     {/* Fonts */}
-
-                    <link href="https://p.typekit.net" rel="preconnect" crossOrigin="true" />
                     <link href="https://use.typekit.net" rel="preconnect" crossOrigin="true" />
+                    {/* <link href="/static/fonts.css" rel="preload" as="style" crossOrigin="true" /> */}
+                    <script />
+
+                    <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="true" />
+                    <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="true" />
                 </Head>
 
                 <body>

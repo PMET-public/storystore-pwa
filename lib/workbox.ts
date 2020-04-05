@@ -1,15 +1,22 @@
 import { registerRoute, setCatchHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
 
 const DAY_IN_SECONDS = 86400
 
+const FALLBACK_HTML_URL = '/offline'
+
 const fetchOptions: RequestInit = {
     credentials: 'include',
 }
+
+const getRevisionHash = require('crypto')
+    .createHash('md5')
+    .update(Date.now().toString(), 'utf8')
+    .digest('hex')
 
 const plugins: WorkboxPlugin[] = [
     new CacheableResponsePlugin({
@@ -20,52 +27,51 @@ const plugins: WorkboxPlugin[] = [
     }),
 ]
 
+const matchPath = (path: string) => new RegExp(new URL(path, self.location.href).href)
+
 clientsClaim()
 
 skipWaiting()
 
-precacheAndRoute((self as any).__WB_MANIFEST || [])
+precacheAndRoute(
+    [
+        ...(self as any).__WB_MANIFEST,
+
+        // Precached routes
+        { url: FALLBACK_HTML_URL, revision: getRevisionHash },
+        { url: '/', revision: getRevisionHash },
+        { url: '/search', revision: getRevisionHash },
+        { url: '/cart', revision: getRevisionHash },
+        { url: '/checkout', revision: getRevisionHash },
+        { url: '/robots.txt', revision: getRevisionHash },
+        { url: '/manifest.webmanifest', revision: getRevisionHash },
+    ] || []
+)
 
 cleanupOutdatedCaches()
 
-const getRoutePaths = (paths: string[]) => {
-    return new RegExp('(' + paths.map(path => new URL(path, self.location.href).href).join('|') + ')')
-}
 /**
  * Routes
  */
 
-//  Pages
-
-registerRoute(
-    new URL('/', self.location.href).href,
-    new NetworkFirst({
-        cacheName: 'pages',
-        fetchOptions,
-        plugins,
-    }),
-    'GET'
-)
-
-registerRoute(
-    getRoutePaths(['/search', '/cart', '/checkout', '/offline']),
-    new NetworkFirst({
-        cacheName: 'pages',
-        fetchOptions,
-        plugins,
-    }),
-    'GET'
-)
-
 // Images API
 registerRoute(
-    getRoutePaths(['/api/images']),
+    matchPath('/api/images'),
     new CacheFirst({
         cacheName: 'api-images',
         fetchOptions,
         plugins,
-    }),
-    'GET'
+    })
+)
+
+// Static resources
+registerRoute(
+    matchPath('/static'),
+    new StaleWhileRevalidate({
+        cacheName: 'static',
+        fetchOptions,
+        plugins,
+    })
 )
 
 // Adobe Fonts (Typekit)
@@ -74,39 +80,13 @@ registerRoute(
     new StaleWhileRevalidate({
         cacheName: 'typekit',
         plugins,
-    }),
-    'GET'
-)
-
-// Static resources
-registerRoute(
-    getRoutePaths(['/static']),
-    new StaleWhileRevalidate({
-        cacheName: 'static',
-        fetchOptions,
-        plugins,
-    }),
-    'GET'
-)
-
-registerRoute(
-    getRoutePaths(['/robots.txt', '/manifest.webmanifest']),
-    new StaleWhileRevalidate({
-        cacheName: 'static',
-        fetchOptions,
-        plugins,
-    }),
-    'GET'
+    })
 )
 
 setCatchHandler(({ event }) => {
-    switch (event.request.destination) {
-        case 'document':
-            // If using precached URLs:
-            return matchPrecache('/offline')
-
-        default:
-            // If we don't have a fallback, just return an error response.
-            return Response.error() as any
+    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+        return matchPrecache(FALLBACK_HTML_URL)
     }
+
+    return Response.error() as any
 })

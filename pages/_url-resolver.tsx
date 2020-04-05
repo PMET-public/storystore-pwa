@@ -50,7 +50,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
     }
 }
 
-UrlResolver.getInitialProps = async ({ ctx: { req, res, query } }) => {
+UrlResolver.getInitialProps = async ({ req, res, query }) => {
     let { type, contentId, urlKey } = query
 
     if (type && (contentId || urlKey)) {

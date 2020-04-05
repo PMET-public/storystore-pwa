@@ -20,7 +20,7 @@ type AppProps = {
 }
 
 export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) => {
-    const { loading, error, data, footer } = useApp({ footerBlockId })
+    const { loading, error, data } = useApp({ footerBlockId })
 
     const isUrlActive = useIsUrlActive()
 
@@ -50,7 +50,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         )
     }
 
-    const { store, categories = [], cart } = data
+    const { store, categories = [], cart, footer, footerLoading } = data
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -69,13 +69,14 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
             )}
 
             <AppTemplate
-                loading={loading && !(store && categories[0])}
+                loading={loading && !store}
                 logo={{
+                    // loading: loading && !store?.logoSrc,
+                    loading: false,
                     as: Link,
                     svg: store?.logoSrc
                         ? () => (
                               <img
-                                  style={{ maxHeight: '3rem', maxWidth: '15rem' }}
                                   src={resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc)}
                                   alt={store?.logoAlt || 'PWA Story Store'}
                               />
@@ -120,9 +121,9 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                     },
                 }}
                 footer={{
-                    loading: footer.loading,
-                    html: footer.data?.footer?.items[0]?.html ? (
-                        <PageBuilder html={footer.data.footer.items[0].html} />
+                    loading: footerLoading,
+                    html: footer?.html ? (
+                        <PageBuilder html={footer.html} />
                     ) : (
                         <div style={{ padding: '2rem', textAlign: 'center', fontSize: '1.4rem', opacity: '0.7' }}>
                             {store?.copyright}

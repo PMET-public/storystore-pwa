@@ -54,11 +54,11 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
 
     return {
         ...query,
-        footer: { ...footerQuery },
         data: {
-            ...cart?.data,
             ...query?.data,
-            footer: query.data?.footer?.items[0],
+            ...cart?.data,
+            footerLoading: footerQuery.loading,
+            footer: footerQuery.data?.footer?.items[0],
         },
     }
 }

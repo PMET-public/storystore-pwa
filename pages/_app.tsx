@@ -1,46 +1,65 @@
-import React, { useState, useEffect } from 'react'
-import { NextPage } from 'next'
+import React, { useEffect, useState } from 'react'
+import { NextPage, GetServerSideProps } from 'next'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import createApolloClient from '../lib/apollo/client'
 import { ApolloProvider } from '@apollo/react-hooks'
-import { ApolloClient } from 'apollo-client'
 import { version } from '../package.json'
+import ReactGA from 'react-ga'
+import ServiceWorkerProvider from 'components/ServiceWorker'
+import ApolloClient from 'apollo-client'
 
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
-import ServiceWorkerProvider from '../components/ServiceWorker'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
-
-import ReactGA from 'react-ga'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-if (isProduction) {
-    ReactGA.initialize('UA-162672258-1')
-}
-
-const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
-    const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
-
-    const { MAGENTO_URL } = env
+if (process.browser) {
+    if (isProduction) {
+        /**
+         * Google Analytics
+         */
+        ReactGA.initialize('UA-162672258-1')
+    }
 
     /**
-     * TypeKit (Fonts)
+     * WebFonts
      */
-    useEffect(() => {
-        const myCSS = document.createElement('link')
-        myCSS.rel = 'stylesheet'
-        myCSS.href = '/static/fonts.css'
-        document.head.insertBefore(myCSS, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
-    }, [])
+    const WebFont = require('webfontloader')
+
+    WebFont.load({
+        custom: {
+            families: 'source-sans-pro, rucksack',
+            urls: ['/static/fonts.css'],
+        },
+    })
+}
+
+const MyApp: NextPage<any> = ({ Component, req, pageProps }) => {
+    const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
+
+    const env = {
+        MAGENTO_URL: process.env.MAGENTO_URL,
+        HOME_PAGE_ID: process.env.HOME_PAGE_ID,
+        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+        ...overrideSettingsFromCookie(
+            'MAGENTO_URL',
+            'HOME_PAGE_ID',
+            'FOOTER_BLOCK_ID',
+            'GOOGLE_MAPS_API_KEY'
+        )(req?.headers),
+    }
 
     /**
      * Apollo Client (GraphQl)
      */
+    const { MAGENTO_URL } = env
+
     useEffect(() => {
-        createApolloClient(MAGENTO_URL).then(client => setClient(client))
-    }, [MAGENTO_URL, setClient])
+        createApolloClient(MAGENTO_URL).then(client => setApolloClient(client))
+    }, [MAGENTO_URL, setApolloClient])
 
     /**
      * Google Analytics
@@ -58,11 +77,11 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
         ReactGA.pageview(window.location.pathname)
     }, [env])
 
-    if (client === undefined) return <ViewLoader />
+    if (!apolloClient) return <ViewLoader />
 
     return (
-        <ApolloProvider client={client}>
-            <ServiceWorkerProvider>
+        <ServiceWorkerProvider>
+            <ApolloProvider client={apolloClient}>
                 <AppProvider>
                     <App footerBlockId={env.FOOTER_BLOCK_ID}>
                         <NextNprogress
@@ -72,39 +91,18 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
                             height={3}
                             options={{ showSpinner: false, easing: 'ease' }}
                         />
-                        <Component apolloClient={client} env={env} {...pageProps} />
+                        <Component apolloClient={apolloClient} env={env} {...pageProps} />
                     </App>
                 </AppProvider>
-            </ServiceWorkerProvider>
-        </ApolloProvider>
+            </ApolloProvider>
+        </ServiceWorkerProvider>
     )
 }
 
-MyApp.getInitialProps = async appContext => {
-    const MAGENTO_URL = process.env.MAGENTO_URL
-    const HOME_PAGE_ID = process.env.HOME_PAGE_ID
-    const FOOTER_BLOCK_ID = process.env.FOOTER_BLOCK_ID
-    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY
-
-    const { req } = (appContext as any).ctx
-
-    const { Component } = appContext as any
-
-    const pageProps = Component.getInitialProps ? await Component.getInitialProps(appContext) : {}
-
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     return {
-        pageProps,
-        env: {
-            MAGENTO_URL,
-            HOME_PAGE_ID,
-            FOOTER_BLOCK_ID,
-            GOOGLE_MAPS_API_KEY,
-            ...overrideSettingsFromCookie(
-                'MAGENTO_URL',
-                'HOME_PAGE_ID',
-                'FOOTER_BLOCK_ID',
-                'GOOGLE_MAPS_API_KEY'
-            )(req?.headers),
+        props: {
+            req,
         },
     }
 }
