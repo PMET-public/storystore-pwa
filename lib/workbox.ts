@@ -1,6 +1,6 @@
-import { registerRoute, setCatchHandler } from 'workbox-routing'
+import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -82,6 +82,25 @@ registerRoute(
         plugins,
     })
 )
+
+/**
+ * Fallback (default handler)
+ */
+setDefaultHandler(args => {
+    const { request } = args.event
+
+    if (request.method === 'GET' && request.destination === 'document') {
+        console.log('inside')
+
+        return new NetworkFirst({
+            cacheName: 'pages',
+            fetchOptions,
+            plugins,
+        }).handle(args)
+    }
+
+    return fetch(request, fetchOptions)
+})
 
 setCatchHandler(({ event }) => {
     if (event?.request.method === 'GET' && event?.request.destination === 'document') {
