@@ -6,12 +6,14 @@ import PAGE_QUERY from './graphql/page.graphql'
 export const usePage = (props: { id: number }) => {
     const { id } = props
 
-    const query = useQuery(PAGE_QUERY, {
+    const page = useQuery(PAGE_QUERY, {
         ...queryDefaultOptions,
         variables: { id },
     })
 
     return {
-        ...query,
+        queries: {
+            page,
+        },
     }
 }

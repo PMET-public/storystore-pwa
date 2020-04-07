@@ -1,8 +1,0 @@
-query AppFooterQuery($footerBlockId: String = "", $hasFooter: Boolean = false) {
-    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
-        items {
-            id: identifier
-            html: content
-        }
-    }
-}

@@ -4,16 +4,10 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
-import FOOTER_QUERY from './graphql/footer.graphql'
-import CART_QUERY from './graphql/cart.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
-    const query = useQuery(APP_QUERY, {
-        ...queryDefaultOptions,
-    })
-
-    const footerQuery = useQuery(FOOTER_QUERY, {
+    const app = useQuery(APP_QUERY, {
         ...queryDefaultOptions,
         errorPolicy: 'all',
         variables: {
@@ -25,8 +19,6 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     /**
      * No Cart no problem. Let's create one
      */
-
-    const cart = useQuery(CART_QUERY, { ...queryDefaultOptions })
 
     const [createEmptyCart, { data: newCartData, loading: creatingEmptyCart }] = useMutation(
         CREATE_EMPTY_CART_MUTATION,
@@ -43,8 +35,10 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
         }
     )
 
+    const { cart } = app.data
+
     useEffect(() => {
-        if (cart.loading || creatingEmptyCart || !!newCartData?.cartId) return
+        if (app.loading || creatingEmptyCart || !!newCartData?.cartId) return
 
         if (cart.error || cart.data?.hasCart === false) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
@@ -53,12 +47,8 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     }, [cart, newCartData, createEmptyCart, creatingEmptyCart])
 
     return {
-        ...query,
-        data: {
-            ...query?.data,
-            ...cart?.data,
-            footerLoading: footerQuery.loading,
-            footer: footerQuery.data?.footer?.items[0],
+        queries: {
+            app,
         },
     }
 }

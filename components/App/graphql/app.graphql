@@ -1,4 +1,9 @@
-query AppShellQuery {
+query AppShellQuery(
+    $cartId: String = ""
+    $hasCart: Boolean = false
+    $footerBlockId: String = ""
+    $hasFooter: Boolean = false
+) {
     store: storeConfig {
         id
         metaTitle: default_title
@@ -13,6 +18,12 @@ query AppShellQuery {
         copyright
         categoryUrlSuffix: category_url_suffix
     }
+
+    cart(cart_id: $cartId) @include(if: $hasCart) {
+        id
+        totalQuantity: total_quantity
+    }
+
     categories: categoryList {
         id
         children {
@@ -20,6 +31,13 @@ query AppShellQuery {
             text: name
             href: url_path
             image
+        }
+    }
+
+    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
+        items {
+            id: identifier
+            html: content
         }
     }
 }

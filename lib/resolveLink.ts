@@ -20,7 +20,5 @@ export const useIsUrlActive = () => {
     const { pathname, query } = useRouter()
     const { url = pathname } = query
 
-    return (href: string) => {
-        return href === url
-    }
+    return (href: string) => href === url
 }

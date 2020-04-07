@@ -7,12 +7,11 @@ import { resolveImage } from '../../lib/resolveImage'
 import { useIsUrlActive } from '../../lib/resolveLink'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
-import Link from '../Link'
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import PageBuilder from '../../components/PageBuilder'
 
-import Head from '../Head'
-
+const Head = dynamic(() => import('../../components/Head'))
+const Link = dynamic(() => import('../../components/Link'))
 const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {
@@ -20,14 +19,14 @@ type AppProps = {
 }
 
 export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) => {
-    const { loading, error, data } = useApp({ footerBlockId })
+    const { queries } = useApp({ footerBlockId })
 
     const isUrlActive = useIsUrlActive()
 
     const online = useNetworkStatus()
 
-    if (online && error) {
-        const networkError = error?.networkError as ServerError
+    if (online && queries.app.error) {
+        const networkError = queries.app.error?.networkError as ServerError
 
         if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
             return (
@@ -42,7 +41,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         }
     }
 
-    if (!loading && !data) {
+    if (!queries.app.loading && !queries.app.data) {
         return (
             <Error type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen>
                 No data available.
@@ -50,7 +49,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         )
     }
 
-    const { store, categories = [], cart, footer, footerLoading } = data
+    const { store, cart, categories = [], footer } = queries.app.data
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -69,9 +68,9 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
             )}
 
             <AppTemplate
-                loading={loading && !store}
+                loading={queries.app.loading && !store}
                 logo={{
-                    loading: loading && !store?.logoSrc,
+                    loading: queries.app.loading && !store?.logoSrc,
                     as: Link,
                     svg: store?.logoSrc
                         ? () => (
@@ -120,9 +119,9 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                     },
                 }}
                 footer={{
-                    loading: footerLoading,
-                    html: footer?.html ? (
-                        <PageBuilder html={footer.html} />
+                    loading: queries.app.loading,
+                    html: footer?.items[0]?.html ? (
+                        <PageBuilder html={footer.items[0].html} />
                     ) : (
                         <div style={{ padding: '2rem', textAlign: 'center', fontSize: '1.4rem', opacity: '0.7' }}>
                             {store?.copyright}

@@ -3,8 +3,7 @@ import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 
-import Link from '../components/Link'
-
+const Link = dynamic(() => import('../components/Link'))
 const Error = dynamic(() => import('../components/Error'))
 const Page = dynamic(() => import('../components/Page '))
 const Category = dynamic(() => import('../components/Category'))
@@ -57,15 +56,16 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
         return { type, contentId, urlKey }
     }
 
-    const settings = {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        ...overrideSettingsFromCookie('MAGENTO_URL')(req?.headers),
-    }
-
     try {
         const graphQLUrl = process.browser
             ? new URL('/api/graphql', location.href).href
-            : new URL('graphql', settings.MAGENTO_URL).href
+            : new URL(
+                  'graphql',
+                  {
+                      MAGENTO_URL: process.env.MAGENTO_URL,
+                      ...overrideSettingsFromCookie('MAGENTO_URL')(req?.headers.cookie),
+                  }.MAGENTO_URL
+              ).href
 
         const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
 
@@ -74,8 +74,8 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
                 query {
                     urlResolver(url: "${url}") {
                         id
-                        contentId: id
                         type
+                        contentId: id
                     }
                 }
             `
@@ -87,13 +87,13 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
 
         const { data = {} } = await page.json()
 
-        type = data.urlResolver.type || CONTENT_TYPE.NOT_FOUND
+        type = data.urlResolver?.type || CONTENT_TYPE.NOT_FOUND
 
-        contentId = data.urlResolver.contentId
+        contentId = data.urlResolver?.contentId
 
         urlKey = url.split('/').pop().split('.')[0]
 
-        if (type === '404') res.statusCode = 404
+        if (type === CONTENT_TYPE.NOT_FOUND) res.statusCode = 404
     } catch (e) {
         res.statusCode = 500
     }

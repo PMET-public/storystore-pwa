@@ -5,9 +5,9 @@ import { usePage } from './usePage'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
-import Link from '../Link'
-import Head from '../Head'
 
+const Head = dynamic(() => import('../Head'))
+const Link = dynamic(() => import('../Link'))
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../../components/PageBuilder'))
 
@@ -16,16 +16,17 @@ type PageProps = {
 }
 
 export const Page: FunctionComponent<PageProps> = ({ id }) => {
-    const { loading, data } = usePage({ id })
-
     const online = useNetworkStatus()
 
-    if (!online && !data.page) return <Error type="Offline" />
+    const { queries } = usePage({ id })
 
-    if (!loading && !data.page) return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
+    const { page } = queries.page.data
 
-    const { page } = data
+    if (!online && !page) return <Error type="Offline" />
 
+    if (!queries.page.loading && !page) {
+        return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
+    }
     return (
         <React.Fragment>
             {page && (
@@ -36,7 +37,9 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
                 />
             )}
 
-            <PageTemplate loading={loading}>{page?.content && <PageBuilder html={page.content} />}</PageTemplate>
+            <PageTemplate loading={queries.page.loading}>
+                {page?.content && <PageBuilder html={page.content} />}
+            </PageTemplate>
         </React.Fragment>
     )
 }

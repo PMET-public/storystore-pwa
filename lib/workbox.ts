@@ -13,10 +13,7 @@ const fetchOptions: RequestInit = {
     credentials: 'include',
 }
 
-const getRevisionHash = require('crypto')
-    .createHash('md5')
-    .update(Date.now().toString(), 'utf8')
-    .digest('hex')
+const getRevisionHash = require('crypto').createHash('md5').update(Date.now().toString(), 'utf8').digest('hex')
 
 const plugins: WorkboxPlugin[] = [
     new CacheableResponsePlugin({
@@ -87,8 +84,6 @@ setDefaultHandler(args => {
     const { request } = args.event
 
     if (request.method === 'GET' && request.destination === 'document') {
-        console.log('inside')
-
         return new NetworkFirst({
             cacheName: 'pages',
             fetchOptions,
