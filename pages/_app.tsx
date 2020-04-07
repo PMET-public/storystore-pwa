@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { NextPage, GetServerSideProps } from 'next'
+import React, { useEffect } from 'react'
+import { NextPage } from 'next'
+import { withApollo } from '../lib/apollo/withApollo'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
-import createApolloClient from '../lib/apollo/client'
-import { ApolloProvider } from '@apollo/react-hooks'
 import { version } from '../package.json'
 import ReactGA from 'react-ga'
 import ServiceWorkerProvider from 'components/ServiceWorker'
-import ApolloClient from 'apollo-client'
 
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
 import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
+import { useApolloClient } from '@apollo/react-hooks'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -22,23 +21,9 @@ if (process.browser) {
          */
         ReactGA.initialize('UA-162672258-1')
     }
-
-    /**
-     * WebFonts
-     */
-    const WebFont = require('webfontloader')
-
-    WebFont.load({
-        custom: {
-            families: 'source-sans-pro, rucksack',
-            urls: ['/static/fonts.css'],
-        },
-    })
 }
 
 const MyApp: NextPage<any> = ({ Component, req, pageProps }) => {
-    const [apolloClient, setApolloClient] = useState<ApolloClient<any> | undefined>(undefined)
-
     const env = {
         MAGENTO_URL: process.env.MAGENTO_URL,
         HOME_PAGE_ID: process.env.HOME_PAGE_ID,
@@ -52,14 +37,20 @@ const MyApp: NextPage<any> = ({ Component, req, pageProps }) => {
         )(req?.headers),
     }
 
-    /**
-     * Apollo Client (GraphQl)
-     */
-    const { MAGENTO_URL } = env
+    const apolloClient = useApolloClient()
 
+    /**
+     * TypeKit
+     */
+    /**
+     * TypeKit (Fonts)
+     */
     useEffect(() => {
-        createApolloClient(MAGENTO_URL).then(client => setApolloClient(client))
-    }, [MAGENTO_URL, setApolloClient])
+        const myCSS = document.createElement('link')
+        myCSS.rel = 'stylesheet'
+        myCSS.href = '/static/fonts.css'
+        document.head.insertBefore(myCSS, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
+    }, [])
 
     /**
      * Google Analytics
@@ -77,12 +68,10 @@ const MyApp: NextPage<any> = ({ Component, req, pageProps }) => {
         ReactGA.pageview(window.location.pathname)
     }, [env])
 
-    if (!apolloClient) return <ViewLoader />
-
     return (
         <ServiceWorkerProvider>
-            <ApolloProvider client={apolloClient}>
-                <AppProvider>
+            <AppProvider>
+                {apolloClient ? (
                     <App footerBlockId={env.FOOTER_BLOCK_ID}>
                         <NextNprogress
                             color="rgba(161, 74, 36, 1)"
@@ -91,20 +80,20 @@ const MyApp: NextPage<any> = ({ Component, req, pageProps }) => {
                             height={3}
                             options={{ showSpinner: false, easing: 'ease' }}
                         />
-                        <Component apolloClient={apolloClient} env={env} {...pageProps} />
+                        <Component env={env} {...pageProps} />
                     </App>
-                </AppProvider>
-            </ApolloProvider>
+                ) : (
+                    <ViewLoader />
+                )}
+            </AppProvider>
         </ServiceWorkerProvider>
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+MyApp.getInitialProps = async ({ req }) => {
     return {
-        props: {
-            req,
-        },
+        req,
     }
 }
 
-export default MyApp
+export default withApollo(MyApp)

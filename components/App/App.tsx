@@ -71,8 +71,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
             <AppTemplate
                 loading={loading && !store}
                 logo={{
-                    // loading: loading && !store?.logoSrc,
-                    loading: false,
+                    loading: loading && !store?.logoSrc,
                     as: Link,
                     svg: store?.logoSrc
                         ? () => (

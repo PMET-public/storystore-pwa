@@ -81,7 +81,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
             // Send that list of URLs to your router in the service worker.
             wb.messageSW({
                 type: 'CACHE_URLS',
-                payload: { urlsToCache },
+                payload: { urlsToCache: [window.location.href, ...urlsToCache] },
             })
         },
         [wb]

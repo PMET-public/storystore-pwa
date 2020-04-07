@@ -27,7 +27,7 @@ const plugins: WorkboxPlugin[] = [
     }),
 ]
 
-const matchPath = (path: string) => new RegExp(new URL(path, self.location.href).href)
+const matchPaths = (paths: string[]) => new RegExp(paths.map(path => new URL(path, self.location.href).href).join('|'))
 
 clientsClaim()
 
@@ -35,16 +35,13 @@ skipWaiting()
 
 precacheAndRoute(
     [
-        ...(self as any).__WB_MANIFEST,
-
         // Precached routes
         { url: FALLBACK_HTML_URL, revision: getRevisionHash },
-        { url: '/', revision: getRevisionHash },
-        { url: '/search', revision: getRevisionHash },
-        { url: '/cart', revision: getRevisionHash },
-        { url: '/checkout', revision: getRevisionHash },
-        { url: '/robots.txt', revision: getRevisionHash },
-        { url: '/manifest.webmanifest', revision: getRevisionHash },
+        // { url: '/', revision: getRevisionHash },
+        // { url: '/search', revision: getRevisionHash },
+        // { url: '/cart', revision: getRevisionHash },
+        // { url: '/checkout', revision: getRevisionHash },
+        ...(self as any).__WB_MANIFEST,
     ] || []
 )
 
@@ -56,7 +53,7 @@ cleanupOutdatedCaches()
 
 // Images API
 registerRoute(
-    matchPath('/api/images'),
+    matchPaths(['/api/images']),
     new CacheFirst({
         cacheName: 'api-images',
         fetchOptions,
@@ -66,7 +63,7 @@ registerRoute(
 
 // Static resources
 registerRoute(
-    matchPath('/static'),
+    matchPaths(['/static', '/robots.txt', '/manifest.webmanifest']),
     new StaleWhileRevalidate({
         cacheName: 'static',
         fetchOptions,

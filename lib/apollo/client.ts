@@ -19,10 +19,13 @@ if (!process.browser) {
 
 export const offlineLink = new QueueLink()
 
-async function create(MAGENTO_URL?: string, initialState: any = {}) {
+function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
+    const headers = cookie ? { cookie } : undefined
+
     const httpLink = new HttpLink({
         uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', MAGENTO_URL).href,
         credentials: 'same-origin',
+        headers,
     })
 
     const retryLink = new RetryLink({
@@ -64,6 +67,7 @@ async function create(MAGENTO_URL?: string, initialState: any = {}) {
         httpLink,
     ])
 
+
     const cache = new InMemoryCache({
         // https://github.com/apollographql/react-apollo/issues/2387
         dataIdFromObject: (object: any) => {
@@ -80,7 +84,7 @@ async function create(MAGENTO_URL?: string, initialState: any = {}) {
 
     if (process.browser) {
         // await before instantiating ApolloClient, else queries might run before the cache is persisted
-        await persistCache({
+        persistCache({
             cache,
             storage: localStorage as any,
         })
@@ -102,16 +106,20 @@ async function create(MAGENTO_URL?: string, initialState: any = {}) {
     return client
 }
 
-export default async function createApolloClient(MAGENTO_URL: string = process.env.MAGENTO_URL, initialState?: any) {
+export default function createApolloClient(
+    MAGENTO_URL: string = process.env.MAGENTO_URL,
+    initialState?: any,
+    cookie?: string
+) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
     if (!process.browser) {
-        return await create(MAGENTO_URL, initialState)
+        return create(MAGENTO_URL, initialState, cookie)
     }
 
     // Reuse client on the client-side
     if (!apolloClient) {
-        apolloClient = await create(MAGENTO_URL, initialState)
+        apolloClient = create(MAGENTO_URL, initialState, cookie)
     }
 
     return apolloClient

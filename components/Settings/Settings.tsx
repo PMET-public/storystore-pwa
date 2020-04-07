@@ -12,6 +12,7 @@ import Button from '@pmet-public/luma-ui/dist/components/Button'
 import ApolloClient from 'apollo-client'
 import { useRouter } from 'next/router'
 import { Response } from '../../pages/api/check-endpoint'
+import { useApolloClient } from '@apollo/react-hooks'
 
 export type SettingsProps = {
     defaults: {
@@ -58,7 +59,9 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaults, apolloClient }) => {
+export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+    const apolloClient = useApolloClient()
+
     const router = useRouter()
 
     const formRef = useRef<FormContext>()

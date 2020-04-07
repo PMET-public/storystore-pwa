@@ -54,12 +54,11 @@ export default class extends Document<any> {
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
                     {/* Fonts */}
-                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="true" />
-                    {/* <link href="/static/fonts.css" rel="preload" as="style" crossOrigin="true" /> */}
-                    <script />
+                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
+                    {/* <link rel="preload" href="/static/fonts.css" as="style" crossOrigin="use-credentials" /> */}
 
-                    <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="true" />
-                    <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="true" />
+                    <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="anonymous" />
+                    <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="anonymous" />
                 </Head>
 
                 <body>
