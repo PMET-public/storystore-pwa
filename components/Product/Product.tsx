@@ -22,7 +22,7 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
-    const { loading, addingToCart, data, api } = useProduct({ urlKey })
+    const { queries, api } = useProduct({ urlKey })
 
     const history = useRouter()
 
@@ -30,7 +30,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { hasCart, product, store } = data
+    const { hasCart, store, product } = queries.product.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -74,7 +74,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     if (!online && !product) return <ErrorComponent type="Offline" />
 
-    if (!loading && !product) {
+    if (!queries.product.loading && !product) {
         return (
             <ErrorComponent
                 type="404"
@@ -100,7 +100,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             )}
 
             <ProductTemplate
-                loading={loading && !product}
+                loading={queries.product.loading && !product}
                 onAddToCart={handleAddToCart}
                 onChange={handleOnChange}
                 title={{
@@ -182,7 +182,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     as: 'button',
                     text: product?.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
                     disabled: !hasCart || product?.stock === 'OUT_OF_STOCK',
-                    loading: addingToCart,
+                    loading: api.addingSimpleProductsToCart.loading || api.addingConfigurableProductToCart.loading,
                 }}
                 shortDescription={product?.shortDescription && product?.shortDescription.html}
                 description={product?.description && product?.description.html}

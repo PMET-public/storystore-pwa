@@ -6,7 +6,7 @@ query ProductQuery($urlKey: String!) {
         categoryUrlSuffix: category_url_suffix
     }
 
-    products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
+    product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
 

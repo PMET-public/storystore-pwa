@@ -38,34 +38,35 @@ type OptionsAndVariants =
 export const useProduct = (props: { urlKey: string }) => {
     const { urlKey } = props
 
-    const { data, ...restQuery } = useQuery(PRODUCT_QUERY, {
+    const product = useQuery(PRODUCT_QUERY, {
         ...queryDefaultOptions,
         variables: { urlKey },
     })
 
-    const { products, ...restData } = data || {}
-
-    const product = products?.items[0]
-
     const [productVariant, setProductVariant] = useState<ProductVariant>()
+
+    const _product = product.data?.product?.items[0]
 
     /**
      * Fix Options Data
      */
     const optionsAndVariants: OptionsAndVariants = useMemo(() => {
-        if (!product) return
+        if (!_product) return
 
-        const variants = product.variants?.reduce((accumVariants: [], currentVariant: any) => {
-            return [
-                ...accumVariants,
-                currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
-                    const { code, value } = currentAttribute
-                    return { ...accumAttributes, [code]: value, product: currentVariant.product }
-                }, {}),
-            ]
-        }, [])
+        const variants = _product.variants?.reduce(
+            (accumVariants: [], currentVariant: any) => {
+                return [
+                    ...accumVariants,
+                    currentVariant.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
+                        const { code, value } = currentAttribute
+                        return { ...accumAttributes, [code]: value, product: currentVariant.product }
+                    }, {}),
+                ]
+            },
+            [_product]
+        )
 
-        const options = product.options
+        const options = _product.options
             ?.sort((a: any, b: any) => b.position - a.position)
             .map((option: any) => {
                 const { id, label, code, items } = option
@@ -94,14 +95,14 @@ export const useProduct = (props: { urlKey: string }) => {
             })
 
         return { options, variants }
-    }, [product])
+    }, [_product])
 
     /**
      * Handle Select Option
      */
     const handleSelectVariant = useCallback(
         (options: { [code: string]: string }) => {
-            if (!product || !optionsAndVariants) return
+            if (!_product || !optionsAndVariants) return
 
             const optionsList = Object.keys(options)
 
@@ -121,7 +122,7 @@ export const useProduct = (props: { urlKey: string }) => {
                         gallery.length === 1 // if only one variant image
                             ? [
                                   gallery[0], // add first variant pic
-                                  ...product.gallery.slice(1), // but keep showing the rest
+                                  ..._product.gallery.slice(1), // but keep showing the rest
                               ]
                             : [...gallery], // otherwise replace by variant image
                     specialPrice,
@@ -129,23 +130,20 @@ export const useProduct = (props: { urlKey: string }) => {
                 })
             }
         },
-        [product, optionsAndVariants]
+        [_product, setProductVariant, optionsAndVariants]
     )
 
     /**
      * Handle Add To Cart Simple Product
      */
-    const [addSimpleProductsToCart, { loading: addingSimpleProductToCart }] = useMutation(
-        ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION,
-        {
-            update(cache, { data: { addToCart } }) {
-                const { cart } = addToCart
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
+    const [addSimpleProductsToCart, addingSimpleProductsToCart] = useMutation(ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION, {
+        update(cache, { data: { addToCart } }) {
+            const { cart } = addToCart
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
 
     const handleAddSimpleProductToCart = useCallback(
         async (variables: { sku: string; quantity: number }) => {
@@ -165,7 +163,7 @@ export const useProduct = (props: { urlKey: string }) => {
     /**
      * Handle Add To Cart Configurable Product
      */
-    const [addConfigurableProductsToCart, { loading: addingConfigurableProductsToCart }] = useMutation(
+    const [addConfigurableProductsToCart, addingConfigurableProductToCart] = useMutation(
         ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION,
         {
             update(cache, { data: { addToCart } }) {
@@ -196,22 +194,27 @@ export const useProduct = (props: { urlKey: string }) => {
     )
 
     return {
-        ...restQuery,
-        data: {
-            ...restData,
-            product: product
-                ? {
-                      ...product,
-                      ...productVariant,
-                      ...optionsAndVariants,
-                  }
-                : undefined,
+        queries: {
+            product: {
+                ...product,
+                data: {
+                    ...product.data,
+                    product: _product
+                        ? {
+                              ..._product,
+                              ...productVariant,
+                              ...optionsAndVariants,
+                          }
+                        : undefined,
+                },
+            },
         },
-        addingToCart: addingSimpleProductToCart || addingConfigurableProductsToCart,
         api: {
             selectVariant: handleSelectVariant,
             addSimpleProductToCart: handleAddSimpleProductToCart,
+            addingSimpleProductsToCart,
             addConfigurableProductToCart: handleAddConfigurableProductToCart,
+            addingConfigurableProductToCart,
         },
     }
 }
