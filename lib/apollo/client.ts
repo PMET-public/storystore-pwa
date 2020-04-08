@@ -8,7 +8,6 @@ import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
 import { QueryHookOptions } from '@apollo/react-hooks'
 import { persistCache } from 'apollo-cache-persist'
-import https from 'https'
 
 let apolloClient: any
 
@@ -27,9 +26,6 @@ function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
         uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', MAGENTO_URL).href,
         credentials: 'same-origin',
         headers,
-        fetchOptions: {
-            agent: new https.Agent({ rejectUnauthorized: false }),
-        },
     })
 
     const retryLink = new RetryLink({

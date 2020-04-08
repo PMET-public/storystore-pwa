@@ -95,6 +95,7 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
 
         if (type === CONTENT_TYPE.NOT_FOUND) res.statusCode = 404
     } catch (e) {
+        console.error(e)
         res.statusCode = 500
     }
 
