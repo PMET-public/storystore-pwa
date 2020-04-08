@@ -28,48 +28,50 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { query = '' } = history.query
 
-    const { data, loading, fetchMore, api } = useSearch({ queryString: query?.toString() })
+    const { queries, api } = useSearch({ queryString: query?.toString() })
 
     const { scrollY, scrollHeight } = useScroll()
 
     const { height } = useResize()
 
-    const { products } = data
+    const products = queries.search.data?.products
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
+    const productUrlSuffix = queries.search.data?.store?.productUrlSuffix ?? ''
 
     /**
      * Infinite Scroll Effect
      */
     useEffect(() => {
-        if (loading) return
+        if (queries.search.loading) return
 
         // ignore if it is loading or has no pagination
-        if (!products.pagination) return
+        if (!products?.pagination) return
 
         // don't run if it's in the last page
         if (!(products.pagination.current < products.pagination.total)) return
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            }).catch(() => {})
+            queries.search
+                .fetchMore({
+                    variables: {
+                        currentPage: products.pagination.current + 1, // next page
+                    },
+                    updateQuery: (prev: any, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) return prev
+                        return {
+                            ...prev,
+                            products: {
+                                ...prev.products,
+                                ...fetchMoreResult.products,
+                                items: [...prev.products.items, ...fetchMoreResult.products.items],
+                            },
+                        }
+                    },
+                })
+                .catch(() => {})
         }
-    }, [scrollY, products, fetchMore, height, loading, scrollHeight])
+    }, [scrollY, products, queries, height, scrollHeight])
 
     const getProductCount = useCallback(() => {
         if (!products) return
@@ -99,8 +101,8 @@ export const Search: FunctionComponent<SearchProps> = () => {
             <Head title="Search" />
 
             <CategoryTemplate
-                loading={loading}
-                loadingMore={loading}
+                loading={queries.search.loading}
+                loadingMore={queries.search.loading}
                 search={{
                     searchBar: {
                         label: 'Search',

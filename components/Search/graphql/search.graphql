@@ -4,14 +4,6 @@ query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageS
         productUrlSuffix: product_url_suffix
     }
 
-    meta: storeConfig {
-        id
-        titlePrefix: title_prefix
-        titleSuffix: title_suffix
-        description: default_description
-        keywords: default_keywords
-    }
-
     products: products(search: $search, filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         pagination: page_info {
             current: current_page
@@ -22,10 +14,14 @@ query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageS
 
         items @connection(key: "items") {
             id
+            title: name
+            urlKey: url_key
+
             image {
                 alt: label
                 src: url
             }
+
             price: price_range {
                 minimum: minimum_price {
                     discount {
@@ -47,8 +43,6 @@ query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageS
                     }
                 }
             }
-            title: name
-            urlKey: url_key
         }
     }
 }

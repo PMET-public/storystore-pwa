@@ -17,13 +17,13 @@ type HomeProps = {
 }
 
 export const Home: FunctionComponent<HomeProps> = ({ id }) => {
-    const { loading, data } = useHome({ id })
+    const { queries } = useHome({ id })
 
     const online = useNetworkStatus()
 
-    if (!online && !data.page) return <Error type="Offline" />
+    if (!online && !queries.home.data.page) return <Error type="Offline" />
 
-    const { page, categories, storeConfig } = data
+    const { page, categories, storeConfig } = queries.home.data
 
     const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
@@ -38,9 +38,9 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
             )}
 
             <HomeTemplate
-                loading={loading && !page}
+                loading={queries.home.loading && !page}
                 stories={{
-                    loading: loading && !categories,
+                    loading: queries.home.loading && !categories,
                     items: categories
                         ? categories[0].children.map(({ id, text, href, image }: any) => ({
                               as: Link,
@@ -60,7 +60,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
                         : [],
                 }}
             >
-                {!loading && !data.page ? (
+                {!queries.home.loading && !page ? (
                     <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
                         Missing Home Page
                     </Error>

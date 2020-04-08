@@ -18,7 +18,7 @@ export const useSearch = (props: { queryString?: string }) => {
 
     const [filters] = useState<FilterValues>({})
 
-    const query = useQuery(SEARCH_QUERY, {
+    const search = useQuery(SEARCH_QUERY, {
         ...queryDefaultOptions,
         variables: { search: queryString, filters },
     })
@@ -34,7 +34,9 @@ export const useSearch = (props: { queryString?: string }) => {
     )
 
     return {
-        ...query,
+        queries: {
+            search,
+        },
         api: {
             search: handleOnNewSearch,
         },

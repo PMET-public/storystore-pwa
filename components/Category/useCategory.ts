@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { queryDefaultOptions } from '../../lib/apollo/client'
 import { useQuery } from '@apollo/react-hooks'
 
@@ -14,7 +14,7 @@ type FilterValues = {
 export const useCategory = (props: { id: number }) => {
     const { id } = props
 
-    const query = useQuery(CATEGORY_QUERY, {
+    const category = useQuery(CATEGORY_QUERY, {
         ...queryDefaultOptions,
         variables: { id: id.toString() },
     })
@@ -34,25 +34,16 @@ export const useCategory = (props: { id: number }) => {
         })
     }
 
-    const productsQuery = useQuery(PRODUCTS_QUERY, {
+    const products = useQuery(PRODUCTS_QUERY, {
         ...queryDefaultOptions,
         variables: { filters: filterValues },
     })
 
-    /**
-     * Filters
-     */
-    useEffect(() => {
-        setFilterValues({
-            category_id: {
-                eq: id.toString(),
-            },
-        })
-    }, [id])
-
     return {
-        ...query,
-        products: { ...productsQuery },
+        queries: {
+            category,
+            products,
+        },
         api: {
             setFilter: handleOnClickFilterValue,
         },

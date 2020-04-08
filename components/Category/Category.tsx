@@ -19,7 +19,7 @@ type CategoryProps = {
 }
 
 export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
-    const { data, loading, products: productsQuery, api } = useCategory({ id })
+    const { queries, api } = useCategory({ id })
 
     const { scrollY, scrollHeight } = useScroll()
 
@@ -29,9 +29,9 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
      * Infinite Scroll Effect
      */
     useEffect(() => {
-        if (productsQuery.loading) return
+        if (queries.products.loading) return
 
-        const { products } = productsQuery.data
+        const { products } = queries.products.data
 
         // ignore if it is loading or has no pagination
         if (!products.pagination) return
@@ -41,7 +41,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
         // load more products when the scroll reach half of the viewport height
         if (scrollY + height > scrollHeight / 2) {
-            productsQuery
+            queries.products
                 .fetchMore({
                     variables: {
                         currentPage: products.pagination.current + 1, // next page
@@ -60,21 +60,23 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 })
                 .catch(() => {})
         }
-    }, [scrollY, height, productsQuery, scrollHeight])
+    }, [scrollY, height, queries, scrollHeight])
 
     const online = useNetworkStatus()
 
-    if (!online && !data.page) return <Error type="Offline" />
+    if (!online && !queries.category.data.page) return <Error type="Offline" />
 
-    if (!loading && !data.page) return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
+    if (!queries.category.loading && !queries.category.data.page) {
+        return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
+    }
 
-    const page = data.page && data.page[0]
+    const page = queries.category.data?.page && queries.category.data.page[0]
 
-    const products = productsQuery.data?.products
+    const products = queries.products.data?.products
 
-    const categoryUrlSuffix = productsQuery.data?.store?.categoryUrlSuffix ?? ''
+    const categoryUrlSuffix = queries.category.data?.store?.categoryUrlSuffix ?? ''
 
-    const productUrlSuffix = productsQuery.data?.store?.productUrlSuffix ?? ''
+    const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
 
     return (
         <React.Fragment>
@@ -87,8 +89,8 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
             )}
 
             <CategoryTemplate
-                loading={loading && !page}
-                loadingMore={productsQuery.loading}
+                loading={queries.category.loading && !page}
+                loadingMore={queries.products.loading}
                 display={page?.mode || 'PRODUCTS_AND_PAGE'}
                 title={{
                     as: 'h2',
