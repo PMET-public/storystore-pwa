@@ -19,13 +19,19 @@ type CheckoutProps = {}
 export const Checkout: FunctionComponent<CheckoutProps> = () => {
     const history = useRouter()
 
-    const { loading, data, api, contactInfo, shippingMethods, paymentMethod, placeOrder } = useCheckout()
+    const {
+        queries: { checkout, contactInfo, shippingMethods },
+        api,
+    } = useCheckout()
 
-    const { applyingCoupon, removingCoupon, couponError, api: cartApi, data: cartData } = useCart()
+    const {
+        queries: { cart: cartQuery },
+        api: cartApi,
+    } = useCart()
 
-    const { cart } = cartData || {}
+    const { cart } = cartQuery.data || {}
 
-    const { braintreeToken, countries } = data || {}
+    const { braintreeToken, countries } = checkout.data || {}
 
     const { email } = contactInfo.data?.cart || {}
 
@@ -38,8 +44,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (!data.hasCart || cart?.items.length === 0) history.push('/cart')
-    }, [data, cart, history])
+        if (!checkout.data.hasCart || cart?.items?.length === 0) history.push('/cart')
+    }, [checkout, cart, history])
 
     /**
      * Steps
@@ -102,9 +108,9 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
      */
     const handleSetShippingMethod = useCallback(
         async formData => {
-            const { shippingMethod: methodCode } = formData
+            const { methodCode, carrierCode } = JSON.parse(formData.shippingMethod)
 
-            await api.setShippingMethod({ methodCode })
+            await api.setShippingMethod({ methodCode, carrierCode })
 
             setStep(3)
         },
@@ -130,7 +136,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !data) return <Error type="Offline" />
+    if (!online && !checkout.data) return <Error type="Offline" />
 
     return (
         <React.Fragment>
@@ -150,8 +156,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                     title: 'Contact Information',
                     edit: step < 2,
                     loading: contactInfo.loading,
-                    submitting: contactInfo.settingContactInfo,
-                    error: contactInfo.setContactInfoError,
+                    submitting: api.settingContactInfo.loading,
+                    error: api.settingContactInfo.error?.message,
                     fields: {
                         email: {
                             name: 'email',
@@ -242,18 +248,18 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                     title: 'Shipping Method',
                     edit: step < 3,
                     loading: shippingMethods.loading,
-                    submitting: shippingMethods.settingShippingMethod,
-                    error: shippingMethods.setShippingMethodError,
+                    submitting: api.settingShippingMethod.loading,
+                    error: api.settingShippingMethod.error?.message,
                     fields: {
                         shippingMethod: {
                             name: 'shippingMethod',
                             items: availableShippingMethods?.map(
-                                ({ carrierTitle, methodTitle, methodCode, available, amount }: any) => ({
+                                ({ carrierTitle, methodTitle, methodCode, carrierCode, available, amount }: any) => ({
                                     text: `${carrierTitle} (${methodTitle}) ${amount.value.toLocaleString('en-US', {
                                         style: 'currency',
                                         currency: amount.currency,
                                     })}`,
-                                    value: methodCode,
+                                    value: JSON.stringify({ methodCode, carrierCode }),
                                     defaultChecked: methodCode === selectedShippingMethod?.methodCode,
                                     disabled: !available,
                                 })
@@ -271,8 +277,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                 }}
                 paymentMethod={{
                     title: 'Payment',
-                    submitting: paymentMethod.settingPaymentMethod,
-                    error: paymentMethod.setPaymentMethodError,
+                    submitting: api.settingPaymentMethod.loading,
+                    error: api.settingPaymentMethod.error?.message,
                     braintree: {
                         authorization: braintreeToken,
                         vaultManager: true,
@@ -288,16 +294,16 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                 }}
                 placeOrder={{
                     title: 'Finish',
-                    loading,
-                    submitting: placeOrder.placingOrder,
-                    error: placeOrder.placeOrderError,
+                    loading: checkout.loading,
+                    submitting: api.placingOrder.loading,
+                    error: api.placingOrder.error?.message,
                     submitButton: {
                         text: 'Place Order',
                     },
                     onSubmit: handlePlaceOrder,
                 }}
                 list={{
-                    loading: loading && !cart?.totalQuantity,
+                    loading: cartQuery.loading && !cart?.totalQuantity,
                     items: cart?.items?.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
@@ -334,7 +340,8 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                                 field: {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
-                                    error: couponError,
+                                    error:
+                                        cartApi.applyingCoupon.error?.message || cartApi.removingCoupon.error?.message,
                                     disabled: !!cart?.appliedCoupons,
                                     defaultValue: cart?.appliedCoupons ? cart.appliedCoupons[0].code : undefined,
                                 },
@@ -342,7 +349,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                                     text: cart?.appliedCoupons ? 'Remove' : 'Apply',
                                     type: cart?.appliedCoupons ? 'reset' : 'submit',
                                 },
-                                submitting: applyingCoupon || removingCoupon,
+                                submitting: cartApi.applyingCoupon.loading || cartApi.removingCoupon.loading,
                                 onReset: () => {
                                     cartApi.removeCoupon()
                                 },

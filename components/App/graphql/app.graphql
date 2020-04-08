@@ -19,6 +19,9 @@ query AppShellQuery(
         categoryUrlSuffix: category_url_suffix
     }
 
+    hasCart @client @export(as: "hasCart")
+    cartId @client @export(as: "cartId")
+
     cart(cart_id: $cartId) @include(if: $hasCart) {
         id
         totalQuantity: total_quantity

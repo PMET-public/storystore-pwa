@@ -12,14 +12,14 @@ export const useCart = () => {
     /**
      * Data Query
      */
-    const query = useQuery(CART_QUERY, {
+    const cart = useQuery(CART_QUERY, {
         ...queryDefaultOptions,
     })
 
     /**
      * Handle Update Cart Item Action
      */
-    const [updateCartItems, { loading: updating }] = useMutation(UPDATE_CART_ITEMS_MUTATION, {
+    const [updateCartItem, updatingCartItem] = useMutation(UPDATE_CART_ITEMS_MUTATION, {
         update(cache, { data: { updateCartItems } }) {
             const { cart } = updateCartItems
             cache.writeData({
@@ -31,19 +31,19 @@ export const useCart = () => {
     const handleUpdateCartItem = useCallback(
         (props: { productId: number; quantity: number }) => {
             const { productId, quantity } = props
-            return updateCartItems({
+            return updateCartItem({
                 variables: {
                     items: [{ cart_item_id: productId, quantity }],
                 },
             })
         },
-        [updateCartItems]
+        [updateCartItem]
     )
 
     /**
      * Handle Remove Cart Item Action
      */
-    const [removeCartItem, { loading: removing }] = useMutation(REMOVE_CART_ITEM_MUTATION, {
+    const [removeCartItem, removingCartItem] = useMutation(REMOVE_CART_ITEM_MUTATION, {
         update(cache, { data: { removeItemFromCart } }) {
             const { cart } = removeItemFromCart
             cache.writeData({
@@ -67,7 +67,7 @@ export const useCart = () => {
     /**
      * Handle Apply Coupon Code
      */
-    const [applyCoupon, { error: applyingCouponError, loading: applyingCoupon }] = useMutation(APPLY_COUPON_MUTATION, {
+    const [applyCoupon, applyingCoupon] = useMutation(APPLY_COUPON_MUTATION, {
         update(cache, { data: { applyCouponToCart } }) {
             const { cart } = applyCouponToCart
             cache.writeData({
@@ -91,34 +91,32 @@ export const useCart = () => {
     /**
      * Handle Apply Coupon Code
      */
-    const [removeCoupon, { loading: removingCoupon, error: removingCouponError }] = useMutation(
-        REMOVE_COUPON_MUTATION,
-        {
-            update(cache, { data: { removeCouponFromCart } }) {
-                const { cart } = removeCouponFromCart
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
+    const [removeCoupon, removingCoupon] = useMutation(REMOVE_COUPON_MUTATION, {
+        update(cache, { data: { removeCouponFromCart } }) {
+            const { cart } = removeCouponFromCart
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
 
     const handleRemoveCoupon = useCallback(() => {
         return removeCoupon()
     }, [removeCoupon])
 
     return {
-        ...query,
-        updating,
-        removing,
-        applyingCoupon,
-        removingCoupon,
-        couponError: applyingCouponError?.message || removingCouponError?.message,
+        queries: {
+            cart,
+        },
         api: {
             updateCartItem: handleUpdateCartItem,
+            updatingCartItem,
             removeCartItem: handleRemoveCartItem,
+            removingCartItem,
             applyCoupon: handleApplyCoupon,
+            applyingCoupon,
             removeCoupon: handleRemoveCoupon,
+            removingCoupon,
         },
     }
 }

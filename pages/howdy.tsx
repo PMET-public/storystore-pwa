@@ -9,7 +9,7 @@ const Howdy = styled.div`
     width: 100%;
     height: 100%;
     font-family: ${props => props.theme.typography.heading.family};
-    font-weight: ${props => props.theme.typography.heading.weight.bolder};
+    font-weight: ${props => props.theme.typography.heading.weight.bold};
 `
 
 export default () => <Howdy>🤠 Howdy!</Howdy>

@@ -16,35 +16,31 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
         },
     })
 
+    const storeId = app.data?.store?.id
+
     /**
      * No Cart no problem. Let's create one
      */
+    const [createEmptyCart, creatingEmptyCart] = useMutation(CREATE_EMPTY_CART_MUTATION, {
+        update: (cache, { data: { cartId } }) => {
+            writeInLocalStorage('cartId', cartId)
 
-    const [createEmptyCart, { data: newCartData, loading: creatingEmptyCart }] = useMutation(
-        CREATE_EMPTY_CART_MUTATION,
-        {
-            update: (cache, { data: { cartId } }) => {
-                writeInLocalStorage('cartId', cartId)
-
-                cache.writeData({
-                    data: {
-                        cartId,
-                    },
-                })
-            },
-        }
-    )
-
-    const { cart } = app.data
+            cache.writeData({
+                data: {
+                    cartId,
+                },
+            })
+        },
+    })
 
     useEffect(() => {
-        if (app.loading || creatingEmptyCart || !!newCartData?.cartId) return
+        if (!storeId || app.loading || creatingEmptyCart.loading || !!creatingEmptyCart.data?.cartId) return
 
-        if (cart.error || cart.data?.hasCart === false) {
+        if ((app.error && !app.data?.cart) || app.data?.hasCart === false) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
-            createEmptyCart().then(() => cart.refetch())
+            createEmptyCart()
         }
-    }, [cart, newCartData, createEmptyCart, creatingEmptyCart])
+    }, [storeId, app, createEmptyCart, creatingEmptyCart])
 
     return {
         queries: {

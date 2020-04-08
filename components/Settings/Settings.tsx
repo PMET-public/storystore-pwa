@@ -70,7 +70,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const { footer, home } = useSettings({
+    const {
+        queries: { footer, home },
+    } = useSettings({
         homePageId: state.HOME_PAGE_ID || defaults.HOME_PAGE_ID || '',
         footerBlockId: state.FOOTER_BLOCK_ID || defaults.FOOTER_BLOCK_ID || '',
     })

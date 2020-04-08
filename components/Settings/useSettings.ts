@@ -28,7 +28,9 @@ export const useSettings = ({ homePageId, footerBlockId }: Props) => {
     })
 
     return {
-        home,
-        footer,
+        queries: {
+            home,
+            footer,
+        },
     }
 }

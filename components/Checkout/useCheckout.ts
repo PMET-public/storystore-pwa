@@ -22,7 +22,7 @@ export const useCheckout = () => {
     /**
      * Data Query
      */
-    const query = useQuery(CHECKOUT_QUERY, {
+    const checkout = useQuery(CHECKOUT_QUERY, {
         ...queryDefaultOptions,
     })
 
@@ -50,16 +50,13 @@ export const useCheckout = () => {
         fetchPolicy: 'no-cache',
     })
 
-    const [setContactInfo, { loading: settingContactInfo, error: setContactInfoError }] = useMutation(
-        SET_CONTACT_INFO_MUTATION,
-        {
-            update(cache, { data: { billingAddress } }) {
-                cache.writeData({
-                    data: { ...billingAddress },
-                })
-            },
-        }
-    )
+    const [setContactInfo, settingContactInfo] = useMutation(SET_CONTACT_INFO_MUTATION, {
+        update(cache, { data: { billingAddress } }) {
+            cache.writeData({
+                data: { ...billingAddress },
+            })
+        },
+    })
 
     const handleSetContactInfo = useCallback(
         (props: {
@@ -116,24 +113,21 @@ export const useCheckout = () => {
         ...queryDefaultOptions,
     })
 
-    const [setShippingMethod, { loading: settingShippingMethod, error: setShippingMethodError }] = useMutation(
-        SET_SHIPPING_METHOD_MUTATION,
-        {
-            update(cache, { data: { setShippingMethodsOnCart } }) {
-                const { cart } = setShippingMethodsOnCart
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
+    const [setShippingMethod, settingShippingMethod] = useMutation(SET_SHIPPING_METHOD_MUTATION, {
+        update(cache, { data: { setShippingMethodsOnCart } }) {
+            const { cart } = setShippingMethodsOnCart
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
 
     const handleSetShippingMethod = useCallback(
-        (props: { methodCode: string }) => {
-            const { methodCode } = props
+        (props: { methodCode: string; carrierCode: string }) => {
+            const { methodCode, carrierCode } = props
             return setShippingMethod({
                 variables: {
-                    shippingMethods: [{ carrier_code: methodCode, method_code: methodCode }],
+                    shippingMethods: [{ carrier_code: carrierCode, method_code: methodCode }],
                 },
             })
         },
@@ -147,9 +141,7 @@ export const useCheckout = () => {
         ...queryDefaultOptions,
     })
 
-    const [setPaymentMethod, { loading: settingPaymentMethod, error: setPaymentMethodError }] = useMutation(
-        SET_PAYMENT_METHOD_MUTATION
-    )
+    const [setPaymentMethod, settingPaymentMethod] = useMutation(SET_PAYMENT_METHOD_MUTATION)
 
     const handleSetPaymentMethod = useCallback(
         async (props: { nonce: string }) => {
@@ -175,7 +167,7 @@ export const useCheckout = () => {
         },
     })
 
-    const [placeOrder, { loading: placingOrder, error: placeOrderError }] = useMutation(PLACE_ORDER_MUTATION)
+    const [placeOrder, placingOrder] = useMutation(PLACE_ORDER_MUTATION)
 
     const handlePlaceOrder = useCallback(async () => {
         const res = await placeOrder()
@@ -184,31 +176,22 @@ export const useCheckout = () => {
     }, [placeOrder, resetCart])
 
     return {
-        ...query,
-        contactInfo: {
-            ...contactInfo,
-            settingContactInfo,
-            setContactInfoError: setContactInfoError?.message,
-        },
-        shippingMethods: {
-            ...shippingMethods,
-            settingShippingMethod,
-            setShippingMethodError: setShippingMethodError?.message,
-        },
-        paymentMethod: {
-            ...paymentMethod,
-            settingPaymentMethod,
-            setPaymentMethodError: setPaymentMethodError?.message,
-        },
-        placeOrder: {
-            placingOrder,
-            placeOrderError: placeOrderError?.message,
+        queries: {
+            checkout,
+            contactInfo,
+            shippingMethods,
+            paymentMethod,
+            placeOrder,
         },
         api: {
-            setShippingMethod: handleSetShippingMethod,
             setContactInfo: handleSetContactInfo,
+            settingContactInfo,
+            setShippingMethod: handleSetShippingMethod,
+            settingShippingMethod,
             setPaymentMethod: handleSetPaymentMethod,
+            settingPaymentMethod,
             placeOrder: handlePlaceOrder,
+            placingOrder,
         },
     }
 }

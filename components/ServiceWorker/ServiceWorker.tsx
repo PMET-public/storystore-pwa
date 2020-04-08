@@ -73,7 +73,7 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
 
     const handleServiceWorkerActivated = useCallback(
         _event => {
-            if (!wb) return
+            if (!process.browser || !wb) return
 
             // Get the current page URL + all resources the page loaded.
             const urlsToCache = [...performance.getEntriesByType('resource').map(r => r.name)]
@@ -81,7 +81,9 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
             // Send that list of URLs to your router in the service worker.
             wb.messageSW({
                 type: 'CACHE_URLS',
-                payload: { urlsToCache: [window.location.href, ...urlsToCache] },
+                payload: {
+                    urlsToCache: [window.location.href, ...urlsToCache],
+                },
             })
         },
         [wb]

@@ -23,6 +23,7 @@ export const GraphQLApi = async (req: NextApiRequest, res: NextApiResponse) => {
                 url: MAGENTO_URL,
                 qs: req.query,
                 method: req.method,
+                rejectUnauthorized: false,
                 pool: {
                     maxSockets: Infinity,
                 },

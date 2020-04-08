@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import NextApp, { AppProps } from 'next/app'
+import { AppProps } from 'next/app'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import { version } from '../package.json'
 import ReactGA from 'react-ga'
@@ -97,14 +97,14 @@ const MyApp: NextComponentType<
     )
 }
 
-MyApp.getInitialProps = async appContext => {
-    const { req } = appContext.ctx
-    const appProps = await NextApp.getInitialProps(appContext as any)
+// MyApp.getInitialProps = async appContext => {
+//     const { req } = appContext.ctx
+//     const appProps = await NextApp.getInitialProps(appContext as any)
 
-    return {
-        ...appProps,
-        cookie: req?.headers.cookie,
-    }
-}
+//     return {
+//         ...appProps,
+//         cookie: req?.headers.cookie,
+//     }
+// }
 
 export default MyApp

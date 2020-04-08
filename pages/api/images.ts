@@ -20,6 +20,7 @@ export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
             {
                 qs: req.query,
                 url: MAGENTO_URL,
+                rejectUnauthorized: false,
                 pool: {
                     maxSockets: Infinity,
                 },

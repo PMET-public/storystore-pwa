@@ -34,10 +34,6 @@ precacheAndRoute(
     [
         // Precached routes
         { url: FALLBACK_HTML_URL, revision: getRevisionHash },
-        // { url: '/', revision: getRevisionHash },
-        // { url: '/search', revision: getRevisionHash },
-        // { url: '/cart', revision: getRevisionHash },
-        // { url: '/checkout', revision: getRevisionHash },
         ...(self as any).__WB_MANIFEST,
     ] || []
 )
@@ -83,7 +79,9 @@ registerRoute(
 setDefaultHandler(args => {
     const { request } = args.event
 
-    if (request.method === 'GET' && request.destination === 'document') {
+    const belongsToWebApp = new URL(request.url).host === self.location.host
+
+    if (belongsToWebApp && request.method === 'GET' && request.destination === 'document') {
         return new NetworkFirst({
             cacheName: 'pages',
             fetchOptions,
@@ -91,11 +89,13 @@ setDefaultHandler(args => {
         }).handle(args)
     }
 
-    return fetch(request, fetchOptions)
+    return fetch(request)
 })
 
 setCatchHandler(({ event }) => {
-    if (event?.request.method === 'GET' && event?.request.destination === 'document') {
+    const belongsToWebApp = !!event && new URL(event.request.url).host === self.location.host
+
+    if (belongsToWebApp && event?.request.method === 'GET' && event?.request.destination === 'document') {
         return matchPrecache(FALLBACK_HTML_URL)
     }
 

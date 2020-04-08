@@ -9,9 +9,9 @@ import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import PageBuilder from '../../components/PageBuilder'
+import Head from '../../components/Head'
+import Link from '../../components/Link'
 
-const Head = dynamic(() => import('../../components/Head'))
-const Link = dynamic(() => import('../../components/Link'))
 const Error = dynamic(() => import('../../components/Error'))
 
 type AppProps = {
@@ -70,7 +70,6 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
             <AppTemplate
                 loading={queries.app.loading && !store}
                 logo={{
-                    loading: queries.app.loading && !store?.logoSrc,
                     as: Link,
                     svg: store?.logoSrc
                         ? () => (

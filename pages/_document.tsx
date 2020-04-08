@@ -39,26 +39,24 @@ export default class extends Document<any> {
                     <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
                     <meta name="theme-color" content="#222222" />
                     <link rel="shortcut icon" href="/static/favicon.ico" />
-
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
-
                     <link
                         rel="apple-touch-icon"
                         href="https://luma-pwa.fnhipster.now.sh/static/icons/apple-touch-icon.png"
                     />
-
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
-                    {/* Fonts */}
-                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
-                    {/* <link rel="preload" href="/static/fonts.css" as="style" crossOrigin="use-credentials" /> */}
-
+                    {/* Google Analytics */}
                     <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="anonymous" />
                     <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="anonymous" />
+
+                    {/* Adobe Fonts */}
+                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
+                    <link href="https://p.typekit.net" rel="preconnect" crossOrigin="anonymous" />
                 </Head>
 
                 <body>

@@ -19,7 +19,7 @@ type CartProps = {}
 export const Cart: FunctionComponent<CartProps> = () => {
     const history = useRouter()
 
-    const { loading, updating, removing, data, api, applyingCoupon, removingCoupon, couponError } = useCart()
+    const { queries, api } = useCart()
 
     const handleGoToCheckout = useCallback(async () => {
         history.push('/checkout')
@@ -27,11 +27,11 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !data) return <Error type="Offline" />
+    if (!online && !queries.cart.data) return <Error type="Offline" />
 
-    if (!loading && !data) return <Error type="500" />
+    if (!queries.cart.loading && !queries.cart.data) return <Error type="500" />
 
-    const { store, cart } = data
+    const { store, cart } = queries.cart.data
 
     const { items = [], appliedCoupons } = cart || {}
 
@@ -57,14 +57,14 @@ export const Cart: FunctionComponent<CartProps> = () => {
             <Head title="Shopping Bag" />
 
             <CartTemplate
-                loading={loading && !cart}
+                loading={queries.cart.loading && !cart}
                 breadcrumbs={{
                     loading: false,
                     prefix: '#',
                     items: [{ text: 'Shopping Bag', as: Link, href: '/cart' }],
                 }}
                 list={{
-                    loading: loading && !cart?.totalQuantity,
+                    loading: queries.cart.loading && !cart?.totalQuantity,
                     items: items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                         _id: id || index,
                         title: {
@@ -118,7 +118,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 field: {
                                     label: 'Coupon Code',
                                     name: 'couponCode',
-                                    error: couponError,
+                                    error: api.applyingCoupon.error?.message || api.removingCoupon.error?.message,
                                     disabled: !!appliedCoupons,
                                     defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
                                 },
@@ -126,7 +126,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                     text: appliedCoupons ? 'Remove' : 'Apply',
                                     type: appliedCoupons ? 'reset' : 'submit',
                                 },
-                                submitting: applyingCoupon || removingCoupon,
+                                submitting: api.applyingCoupon.loading || api.removingCoupon.loading,
                                 onReset: () => {
                                     api.removeCoupon()
                                 },
@@ -195,7 +195,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                     onClick: handleGoToCheckout,
                     disabled: items.length === 0,
                     text: 'Checkout',
-                    loading: updating || removing,
+                    loading: api.updatingCartItem.loading || api.removingCartItem.loading,
                 }}
             />
         </React.Fragment>
