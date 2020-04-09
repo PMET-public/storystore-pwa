@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react'
 import { AppProps } from 'next/app'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import { version } from '../package.json'
-import ReactGA from 'react-ga'
 import ServiceWorkerProvider from 'components/ServiceWorker'
 import { ApolloProvider } from '@apollo/react-hooks'
 import NextNprogress from 'nextjs-progressbar'
@@ -13,6 +12,7 @@ import { NextComponentType } from 'next'
 import createApolloClient from '../lib/apollo/client'
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
 import ApolloClient from 'apollo-client'
+import ReactGA from 'react-ga'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -47,15 +47,6 @@ const MyApp: NextComponentType<
         apolloState,
         env,
     ])
-    /**
-     * TypeKit (Fonts)
-     */
-    useEffect(() => {
-        const myCSS = document.createElement('link')
-        myCSS.rel = 'stylesheet'
-        myCSS.href = '/static/fonts.css'
-        document.head.insertBefore(myCSS, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
-    }, [])
 
     /**
      * Google Analytics
@@ -73,38 +64,32 @@ const MyApp: NextComponentType<
         ReactGA.pageview(window.location.pathname)
     }, [env])
 
-    return (
-        <ServiceWorkerProvider>
+    if (!apolloClient) {
+        return (
             <AppProvider>
-                {apolloClient ? (
-                    <ApolloProvider client={apolloClient}>
-                        <App footerBlockId={env.FOOTER_BLOCK_ID}>
-                            <NextNprogress
-                                color="rgba(161, 74, 36, 1)"
-                                startPosition={0.4}
-                                stopDelayMs={200}
-                                height={3}
-                                options={{ showSpinner: false, easing: 'ease' }}
-                            />
-                            <Component env={env} {...pageProps} />
-                        </App>
-                    </ApolloProvider>
-                ) : (
-                    <ViewLoader />
-                )}
+                <ViewLoader />
             </AppProvider>
-        </ServiceWorkerProvider>
+        )
+    }
+
+    return (
+        <AppProvider>
+            <ApolloProvider client={apolloClient}>
+                <App footerBlockId={env.FOOTER_BLOCK_ID}>
+                    <NextNprogress
+                        color="rgba(161, 74, 36, 1)"
+                        startPosition={0.4}
+                        stopDelayMs={200}
+                        height={3}
+                        options={{ showSpinner: false, easing: 'ease' }}
+                    />
+                    <ServiceWorkerProvider>
+                        <Component env={env} {...pageProps} />
+                    </ServiceWorkerProvider>
+                </App>
+            </ApolloProvider>
+        </AppProvider>
     )
 }
-
-// MyApp.getInitialProps = async appContext => {
-//     const { req } = appContext.ctx
-//     const appProps = await NextApp.getInitialProps(appContext as any)
-
-//     return {
-//         ...appProps,
-//         cookie: req?.headers.cookie,
-//     }
-// }
 
 export default MyApp

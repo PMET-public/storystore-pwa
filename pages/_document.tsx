@@ -56,7 +56,6 @@ export default class extends Document<any> {
 
                     {/* Adobe Fonts */}
                     <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
-                    <link href="https://p.typekit.net" rel="preconnect" crossOrigin="anonymous" />
                 </Head>
 
                 <body>

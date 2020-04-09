@@ -66,7 +66,7 @@ registerRoute(
 
 // Adobe Fonts (Typekit)
 registerRoute(
-    /.*(?:typekit)\.net.*$/,
+    /"^https:\/\/use.typekit.net/,
     new StaleWhileRevalidate({
         cacheName: 'typekit',
         plugins,

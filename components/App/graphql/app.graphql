@@ -22,7 +22,7 @@ query AppShellQuery(
     hasCart @client @export(as: "hasCart")
     cartId @client @export(as: "cartId")
 
-    cart(cart_id: $cartId) @include(if: $hasCart) {
+    cart(cart_id: $cartId) @include(if: $hasCart) @connection(key: "appCart") {
         id
         totalQuantity: total_quantity
     }

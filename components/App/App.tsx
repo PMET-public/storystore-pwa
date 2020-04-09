@@ -7,6 +7,7 @@ import { resolveImage } from '../../lib/resolveImage'
 import { useIsUrlActive } from '../../lib/resolveLink'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
+import FontStyles from './FontStyles'
 import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
 import PageBuilder from '../../components/PageBuilder'
 import Head from '../../components/Head'
@@ -130,6 +131,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
             >
                 {children}
             </AppTemplate>
+            <FontStyles />
         </React.Fragment>
     )
 }

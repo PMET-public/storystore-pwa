@@ -9,7 +9,7 @@ query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
         productUrlSuffix: product_url_suffix
     }
 
-    cart(cart_id: $cartId) @include(if: $hasCart) {
+    cart(cart_id: $cartId) @include(if: $hasCart) @connection(key: "appCart") {
         ...Cart
     }
 }
