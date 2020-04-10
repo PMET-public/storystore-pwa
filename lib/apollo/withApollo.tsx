@@ -3,7 +3,7 @@ import Head from 'next/head'
 import App, { AppInitialProps } from 'next/app'
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
 import ApolloClient from 'apollo-client'
-import { NextComponentType, NextPageContext } from 'next'
+import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
 import { overrideSettingsFromCookie } from '../overrideFromCookie'
@@ -46,9 +46,7 @@ export const initOnContext = (ctx: any) => {
     return ctx
 }
 
-export const withApollo = ({ ssr = false } = {}) => (
-    PageComponent: NextComponentType<NextPageContext, any, AppInitialProps>
-) => {
+export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any>) => {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: IApolloProps & AppInitialProps) => {
         const { MAGENTO_URL } = {
             MAGENTO_URL: process.env.MAGENTO_URL,

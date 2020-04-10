@@ -8,7 +8,7 @@ import App from '../components/App'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
 import { NextComponentType, NextPageContext } from 'next'
-import { withApollo } from 'lib/apollo/withApollo'
+import { withApollo } from '../lib/apollo/withApollo'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -92,4 +92,4 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
     )
 }
 
-export default withApollo({ ssr: true })(MyApp)
+export default withApollo({ ssr: false })(MyApp)
