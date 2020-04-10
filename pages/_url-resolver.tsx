@@ -1,13 +1,12 @@
 import React from 'react'
-import dynamic from 'next/dynamic'
 import { NextComponentType } from 'next'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 
-const Link = dynamic(() => import('../components/Link'))
-const Error = dynamic(() => import('../components/Error'))
-const Page = dynamic(() => import('../components/Page '))
-const Category = dynamic(() => import('../components/Category'))
-const Product = dynamic(() => import('../components/Product'))
+import Link from '../components/Link'
+import Error from '../components/Error'
+import Page from '../components/Page '
+import Category from '../components/Category'
+import Product from '../components/Product'
 
 export enum CONTENT_TYPE {
     CMS_PAGE = 'CMS_PAGE',

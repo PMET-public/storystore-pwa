@@ -7,7 +7,7 @@ import { onError } from 'apollo-link-error'
 import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
 import { QueryHookOptions } from '@apollo/react-hooks'
-import { persistCache } from 'apollo-cache-persist'
+import { persistCacheSync } from 'apollo-cache-persist-dev'
 
 let apolloClient: any
 
@@ -87,7 +87,7 @@ function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
 
     if (process.browser) {
         // await before instantiating ApolloClient, else queries might run before the cache is persisted
-        persistCache({
+        persistCacheSync({
             cache,
             storage: localStorage as any,
         })
