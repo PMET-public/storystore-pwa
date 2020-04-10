@@ -20,7 +20,7 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
 
     const { queries } = usePage({ id })
 
-    const { page } = queries.page.data
+    const { page } = queries.page.data || {}
 
     if (!online && !page) return <Error type="Offline" />
 

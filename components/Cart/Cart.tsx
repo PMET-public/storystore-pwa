@@ -31,7 +31,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     if (!queries.cart.loading && !queries.cart.data) return <Error type="500" />
 
-    const { store, cart } = queries.cart.data
+    const { store, cart } = queries.cart.data || {}
 
     const { items = [], appliedCoupons } = cart || {}
 

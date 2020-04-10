@@ -50,7 +50,7 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         )
     }
 
-    const { store, cart, categories = [], footer } = queries.app.data
+    const { store, cart, categories = [], footer } = queries.app.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 

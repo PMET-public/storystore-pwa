@@ -1,6 +1,6 @@
 import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkOnly, NetworkFirst } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -52,24 +52,6 @@ registerRoute(
     })
 )
 
-// GraphQL Api
-registerRoute(
-    matchPaths(['/api/graphql']),
-    new NetworkOnly({
-        fetchOptions,
-        plugins,
-    }),
-    'POST'
-)
-
-registerRoute(
-    matchPaths(['/api/graphql']),
-    new NetworkOnly({
-        fetchOptions,
-        plugins,
-    }),
-    'GET'
-)
 // Static resources
 registerRoute(
     matchPaths(['/static', '/robots.txt', '/manifest.webmanifest']),
@@ -95,10 +77,10 @@ registerRoute(
 
 setDefaultHandler(args => {
     const { url } = args
+    const request = args.request as any
 
-    const isNextStatic = url?.pathname.match(/\/_next\/static/)
-
-    if (!isNextStatic && url?.hostname === self.location.hostname) {
+    if (url?.hostname === self.location.hostname && request?.method === 'GET') {
+        // console.log(`⚙️ Running ${url.pathname} through offline cache.`, request)
         return new NetworkFirst({
             cacheName: 'offline',
             fetchOptions,
@@ -106,14 +88,14 @@ setDefaultHandler(args => {
         }).handle(args)
     }
 
-    return fetch(args.event.request)
+    return fetch(args.event.request || args.request)
 })
 
 setCatchHandler(args => {
     const { url, request } = args as any
 
     if (url.host === self.location.host && request.method === 'GET' && request.destination === 'document') {
-        console.log(`Serving Offline page for ${url.pathname}.`)
+        // console.log(`⚙️ Serving Offline Page for ${url.pathname}.`)
         return matchPrecache(FALLBACK_HTML_URL)
     }
 

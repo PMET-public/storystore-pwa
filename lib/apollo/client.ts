@@ -100,7 +100,7 @@ function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
         // connectToDevTools: process.browser,
         link,
         resolvers,
-        ssrMode: false, //!process.browser
+        ssrMode: !process.browser,
         typeDefs,
     })
 

@@ -1,19 +1,14 @@
-import React, { useEffect, useMemo, useCallback } from 'react'
-import { AppProps } from 'next/app'
+import React, { useEffect, useCallback } from 'react'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import { version } from '../package.json'
 import { useServiceWorker } from 'hooks/useServiceWorker'
-import { ApolloProvider } from '@apollo/react-hooks'
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
-import ViewLoader from '@pmet-public/luma-ui/dist/components/ViewLoader'
-import { NextComponentType } from 'next'
-import createApolloClient from '../lib/apollo/client'
-import { NormalizedCacheObject } from 'apollo-cache-inmemory'
-import ApolloClient from 'apollo-client'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
+import { NextComponentType, NextPageContext } from 'next'
+import { withApollo } from 'lib/apollo/withApollo'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -26,15 +21,7 @@ if (process.browser) {
     }
 }
 
-const MyApp: NextComponentType<
-    any,
-    any,
-    AppProps & {
-        apolloClient?: ApolloClient<NormalizedCacheObject> | null
-        apolloState?: NormalizedCacheObject
-        cookie?: string
-    }
-> = ({ Component, apolloState, apolloClient: _apolloClient, cookie, pageProps }) => {
+const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pageProps }) => {
     const workbox = useServiceWorker()
 
     const env = {
@@ -42,14 +29,8 @@ const MyApp: NextComponentType<
         HOME_PAGE_ID: process.env.HOME_PAGE_ID,
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
         GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-        ...overrideSettingsFromCookie('MAGENTO_URL', 'HOME_PAGE_ID', 'FOOTER_BLOCK_ID', 'GOOGLE_MAPS_API_KEY')(cookie),
+        ...overrideSettingsFromCookie('MAGENTO_URL', 'HOME_PAGE_ID', 'FOOTER_BLOCK_ID', 'GOOGLE_MAPS_API_KEY')(),
     }
-
-    const apolloClient = useMemo(() => _apolloClient || createApolloClient(env.MAGENTO_URL, apolloState), [
-        _apolloClient,
-        apolloState,
-        env,
-    ])
 
     /**
      * Update SW Cache on Route change
@@ -95,30 +76,20 @@ const MyApp: NextComponentType<
         ReactGA.pageview(window.location.pathname)
     }, [env])
 
-    if (!apolloClient) {
-        return (
-            <AppProvider>
-                <ViewLoader />
-            </AppProvider>
-        )
-    }
-
     return (
         <AppProvider>
-            <ApolloProvider client={apolloClient}>
-                <App footerBlockId={env.FOOTER_BLOCK_ID}>
-                    <NextNprogress
-                        color="rgba(161, 74, 36, 1)"
-                        startPosition={0.4}
-                        stopDelayMs={200}
-                        height={3}
-                        options={{ showSpinner: false, easing: 'ease' }}
-                    />
-                    <Component env={env} {...pageProps} />
-                </App>
-            </ApolloProvider>
+            <App footerBlockId={env.FOOTER_BLOCK_ID}>
+                <NextNprogress
+                    color="rgba(161, 74, 36, 1)"
+                    startPosition={0.4}
+                    stopDelayMs={200}
+                    height={3}
+                    options={{ showSpinner: false, easing: 'ease' }}
+                />
+                <Component env={env} {...pageProps} />
+            </App>
         </AppProvider>
     )
 }
 
-export default MyApp
+export default withApollo({ ssr: true })(MyApp)

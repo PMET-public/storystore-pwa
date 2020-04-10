@@ -23,7 +23,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
 
     if (!online && !queries.home.data.page) return <Error type="Offline" />
 
-    const { page, categories, storeConfig } = queries.home.data
+    const { page, categories, storeConfig } = queries.home.data || {}
 
     const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
