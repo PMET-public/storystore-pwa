@@ -2,7 +2,7 @@ import React, { FunctionComponent, forwardRef } from 'react'
 import { Props } from '@pmet-public/luma-ui/dist/lib'
 import styled from 'styled-components'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
-import { CONTENT_TYPE } from '../../pages/_url-resolver'
+import { CONTENT_TYPE } from '../../pages/[...]'
 
 export type LinkProps = Props<
     {
@@ -45,7 +45,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
                 : ''
 
         const linkProps: NextLinkProps = {
-            href: external === false || urlResolver ? `/_url-resolver?url=${href}&${query}` : href,
+            href: external === false || urlResolver ? `/[...]?url=${href}&${query}` : href,
             as: external === false || urlResolver ? href : as,
             replace,
             scroll,
