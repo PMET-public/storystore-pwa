@@ -1,6 +1,6 @@
 import { registerRoute, setCatchHandler, setDefaultHandler } from 'workbox-routing'
 import { precacheAndRoute, cleanupOutdatedCaches, matchPrecache } from 'workbox-precaching'
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies'
+import { CacheFirst, StaleWhileRevalidate, NetworkOnly, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
@@ -12,8 +12,6 @@ const FALLBACK_HTML_URL = '/offline'
 const fetchOptions: RequestInit = {
     credentials: 'include',
 }
-
-const getRevisionHash = require('crypto').createHash('md5').update(Date.now().toString(), 'utf8').digest('hex')
 
 const plugins: WorkboxPlugin[] = [
     new CacheableResponsePlugin({
@@ -33,7 +31,7 @@ skipWaiting()
 precacheAndRoute(
     [
         // Precached routes
-        { url: FALLBACK_HTML_URL, revision: getRevisionHash },
+        { url: FALLBACK_HTML_URL, revision: Date.now() },
         ...(self as any).__WB_MANIFEST,
     ] || []
 )
@@ -54,6 +52,24 @@ registerRoute(
     })
 )
 
+// GraphQL Api
+registerRoute(
+    matchPaths(['/api/graphql']),
+    new NetworkOnly({
+        fetchOptions,
+        plugins,
+    }),
+    'POST'
+)
+
+registerRoute(
+    matchPaths(['/api/graphql']),
+    new NetworkOnly({
+        fetchOptions,
+        plugins,
+    }),
+    'GET'
+)
 // Static resources
 registerRoute(
     matchPaths(['/static', '/robots.txt', '/manifest.webmanifest']),
@@ -66,7 +82,7 @@ registerRoute(
 
 // Adobe Fonts (Typekit)
 registerRoute(
-    /"^https:\/\/use.typekit.net/,
+    /^https:\/\/use.typekit.net/,
     new StaleWhileRevalidate({
         cacheName: 'typekit',
         plugins,
@@ -76,26 +92,28 @@ registerRoute(
 /**
  * Fallback (default handler)
  */
+
 setDefaultHandler(args => {
-    const { request } = args.event
+    const { url } = args
 
-    const belongsToWebApp = new URL(request.url).host === self.location.host
+    const isNextStatic = url?.pathname.match(/\/_next\/static/)
 
-    if (belongsToWebApp && request.method === 'GET' && request.destination === 'document') {
+    if (!isNextStatic && url?.hostname === self.location.hostname) {
         return new NetworkFirst({
-            cacheName: 'pages',
+            cacheName: 'offline',
             fetchOptions,
             plugins,
         }).handle(args)
     }
 
-    return fetch(request)
+    return fetch(args.event.request)
 })
 
-setCatchHandler(({ event }) => {
-    const belongsToWebApp = !!event && new URL(event.request.url).host === self.location.host
+setCatchHandler(args => {
+    const { url, request } = args as any
 
-    if (belongsToWebApp && event?.request.method === 'GET' && event?.request.destination === 'document') {
+    if (url.host === self.location.host && request.method === 'GET' && request.destination === 'document') {
+        console.log(`Serving Offline page for ${url.pathname}.`)
         return matchPrecache(FALLBACK_HTML_URL)
     }
 

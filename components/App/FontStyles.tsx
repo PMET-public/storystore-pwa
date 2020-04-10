@@ -1,30 +1,6 @@
 import { createGlobalStyle } from 'styled-components'
 
 export default createGlobalStyle`
-    /*
-    * The Typekit service used to deliver this font or fonts for use on websites
-    * is provided by Adobe and is subject to these Terms of Use
-    * http://www.adobe.com/products/eulas/tou_typekit. For font license
-    * information, see the list below.
-    *
-    * rucksack:
-    *   - http://typekit.com/eulas/000000000000000000017746
-    *   - http://typekit.com/eulas/000000000000000000017742
-    *   - http://typekit.com/eulas/000000000000000000017744
-    *   - http://typekit.com/eulas/000000000000000000017743
-    * source-sans-pro:
-    *   - http://typekit.com/eulas/00000000000000003b9b3d63
-    *   - http://typekit.com/eulas/00000000000000003b9b3d67
-    *   - http://typekit.com/eulas/00000000000000003b9b3d68
-    *   - http://typekit.com/eulas/00000000000000003b9b3d64
-    *   - http://typekit.com/eulas/00000000000000003b9b3d65
-    *
-    * © 2009-2019 Adobe Systems Incorporated. All Rights Reserved.
-    */
-
-    /*{"last_published":"2019-11-21 03:10:39 UTC"}*/
-
-    /* @import url("https://p.typekit.net/p.css?s=1&k=ssh7gal&ht=tk&f=17265.17267.17268.17269.17272.25166.25168.25169.25171&a=21158527&app=typekit&e=css"); */
     @font-face {
         font-family: 'source-sans-pro';
         src: url('https://use.typekit.net/af/61f808/00000000000000003b9b3d63/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3')

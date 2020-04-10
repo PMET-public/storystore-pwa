@@ -1,8 +1,8 @@
-import React, { useMemo, createContext, useContext, FunctionComponent, useEffect, useCallback } from 'react'
-import { Workbox } from 'workbox-window'
+import React, { useMemo, useEffect, useCallback, useRef } from 'react'
 import { toast } from '@pmet-public/luma-ui/dist/lib'
-import { useRouter } from 'next/router'
+import { Workbox } from 'workbox-window'
 import { version } from '../../package.json'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
 const Toast = styled.div`
@@ -22,28 +22,18 @@ const Toast = styled.div`
     }
 `
 
-const ServiceWorkerContext = createContext<Workbox | undefined>(undefined)
-
-export const useServiceWorker = () => useContext(ServiceWorkerContext)
-
-export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInDev?: boolean }> = ({
-    children,
-    url = '/service-worker.js',
-    disableInDev = true,
-}) => {
+export const useServiceWorker = () => {
     const router = useRouter()
 
-    const wb = useMemo(() => {
-        if (
-            typeof navigator === 'undefined' ||
-            !('serviceWorker' in navigator) ||
-            (disableInDev && process.env.NODE_ENV !== 'production')
-        ) {
-            return undefined
-        }
+    const wb = useRef<Workbox | undefined>()
 
-        return new Workbox(url)
-    }, [url, disableInDev])
+    wb.current = useMemo(() => {
+        if (process.env.NODE_ENV !== 'production' || !process.browser || !navigator?.serviceWorker) return
+
+        if (wb.current) return wb.current
+
+        return new Workbox('/service-worker.js')
+    }, [])
 
     const handleReloadApp = useCallback(() => {
         router.reload()
@@ -73,13 +63,13 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
 
     const handleServiceWorkerActivated = useCallback(
         _event => {
-            if (!process.browser || !wb) return
+            if (!wb.current) return
 
             // Get the current page URL + all resources the page loaded.
             const urlsToCache = [...performance.getEntriesByType('resource').map(r => r.name)]
 
             // Send that list of URLs to your router in the service worker.
-            wb.messageSW({
+            wb.current.messageSW({
                 type: 'CACHE_URLS',
                 payload: {
                     urlsToCache: [window.location.href, ...urlsToCache],
@@ -90,21 +80,21 @@ export const ServiceWorkerProvider: FunctionComponent<{ url?: string; disableInD
     )
 
     useEffect(() => {
-        if (!wb) return
-
-        wb.addEventListener('installed', handleServiceWorkerInstalled)
-        wb.addEventListener('activated', handleServiceWorkerActivated)
+        if (!wb.current) return
+        wb.current.addEventListener('installed', handleServiceWorkerInstalled)
+        wb.current.addEventListener('activated', handleServiceWorkerActivated)
 
         // Register the service worker
-        wb.register().then(() => {
+        wb.current.register().then(() => {
             console.log(`🙌 Luma PWA.`)
         })
 
         return () => {
-            wb.removeEventListener('installed', handleServiceWorkerInstalled)
-            wb.removeEventListener('activated', handleServiceWorkerActivated)
+            if (!wb.current) return
+            wb.current.removeEventListener('installed', handleServiceWorkerInstalled)
+            wb.current.removeEventListener('activated', handleServiceWorkerActivated)
         }
-    }, [wb])
+    }, [wb.current])
 
-    return <ServiceWorkerContext.Provider value={wb}>{children}</ServiceWorkerContext.Provider>
+    return wb.current
 }

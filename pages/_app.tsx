@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useCallback } from 'react'
 import { AppProps } from 'next/app'
 import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import { version } from '../package.json'
-import ServiceWorkerProvider from 'components/ServiceWorker'
+import { useServiceWorker } from 'hooks/useServiceWorker'
 import { ApolloProvider } from '@apollo/react-hooks'
 import NextNprogress from 'nextjs-progressbar'
 import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
@@ -13,6 +13,7 @@ import createApolloClient from '../lib/apollo/client'
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
 import ApolloClient from 'apollo-client'
 import ReactGA from 'react-ga'
+import Router from 'next/router'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -34,6 +35,8 @@ const MyApp: NextComponentType<
         cookie?: string
     }
 > = ({ Component, apolloState, apolloClient: _apolloClient, cookie, pageProps }) => {
+    const workbox = useServiceWorker()
+
     const env = {
         MAGENTO_URL: process.env.MAGENTO_URL,
         HOME_PAGE_ID: process.env.HOME_PAGE_ID,
@@ -49,10 +52,38 @@ const MyApp: NextComponentType<
     ])
 
     /**
+     * Update SW Cache on Route change
+     */
+    const handleRouteChange = useCallback(
+        (url, error?: any) => {
+            if (error || !workbox) return
+
+            workbox.messageSW({
+                type: 'CACHE_URLS',
+                payload: {
+                    urlsToCache: [url],
+                },
+            })
+
+            ReactGA.pageview(url)
+        },
+        [workbox]
+    )
+
+    useEffect(() => {
+        Router.events.on('routeChangeComplete', handleRouteChange)
+
+        return () => {
+            Router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [])
+
+    /**
      * Google Analytics
      */
     useEffect(() => {
         if (!isProduction) return
+
         ReactGA.set({ dimension1: version }) // verion
 
         ReactGA.set({ dimension2: window.location.host }) // release
@@ -83,9 +114,7 @@ const MyApp: NextComponentType<
                         height={3}
                         options={{ showSpinner: false, easing: 'ease' }}
                     />
-                    <ServiceWorkerProvider>
-                        <Component env={env} {...pageProps} />
-                    </ServiceWorkerProvider>
+                    <Component env={env} {...pageProps} />
                 </App>
             </ApolloProvider>
         </AppProvider>
