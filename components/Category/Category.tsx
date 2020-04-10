@@ -34,7 +34,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         const { products } = queries.products.data
 
         // ignore if it is loading or has no pagination
-        if (!products.pagination) return
+        if (!products?.pagination) return
 
         // don't run if it's in the last page
         if (!(products.pagination.current < products.pagination.total)) return
