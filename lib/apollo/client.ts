@@ -47,20 +47,22 @@ function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
 
     const link = ApolloLink.from([
         onError(({ graphQLErrors, networkError, response }) => {
-            console.groupCollapsed('🚨 GraphQL Error')
-            console.log('Response: ', response)
-            if (graphQLErrors) {
-                graphQLErrors.forEach(({ message, locations, path }) => {
-                    console.info(`Message: ${message}`)
-                    console.info('Location: ', locations)
-                    console.info('Path: ', path)
-                })
-            }
+            if (process.env.NODE_ENV !== 'production') {
+                console.groupCollapsed('🚨 GraphQL Error')
+                console.log('Response: ', response)
+                if (graphQLErrors) {
+                    graphQLErrors.forEach(({ message, locations, path }) => {
+                        console.info(`Message: ${message}`)
+                        console.info('Location: ', locations)
+                        console.info('Path: ', path)
+                    })
+                }
 
-            if (networkError) {
-                console.info('Network error: ', networkError)
+                if (networkError) {
+                    console.info('Network error: ', networkError)
+                }
+                console.groupEnd()
             }
-            console.groupEnd()
         }),
         retryLink,
         offlineLink,

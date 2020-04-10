@@ -31,7 +31,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
             scroll,
             shallow,
             passHref,
-            prefetch = false,
+            prefetch,
             linkTagAs,
             ...props
         },
