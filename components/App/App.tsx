@@ -72,14 +72,10 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                 loading={queries.app.loading && !store}
                 logo={{
                     as: Link,
-                    svg: store?.logoSrc
-                        ? () => (
-                              <img
-                                  src={resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc)}
-                                  alt={store?.logoAlt || 'PWA Story Store'}
-                              />
-                          )
-                        : undefined,
+                    image: store?.logoSrc && {
+                        src: resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc),
+                        alt: store?.logoAlt || 'PWA Story Store',
+                    },
                     href: '/',
                     title: store?.logoAlt || 'PWA Story Store',
                 }}
