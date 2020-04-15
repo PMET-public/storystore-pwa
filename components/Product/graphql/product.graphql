@@ -1,6 +1,4 @@
 query ProductQuery($urlKey: String!) {
-    hasCart @client
-
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix

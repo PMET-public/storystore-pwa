@@ -9,20 +9,9 @@ import { useSettings } from './useSettings'
 
 import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/dist/components/Form'
 import Button from '@pmet-public/luma-ui/dist/components/Button'
-import ApolloClient from 'apollo-client'
 import { useRouter } from 'next/router'
 import { Response } from '../../pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'
-
-export type SettingsProps = {
-    defaults: {
-        MAGENTO_URL?: string
-        HOME_PAGE_ID?: string
-        FOOTER_BLOCK_ID?: string
-        GOOGLE_MAPS_API_KEY?: string
-    }
-    apolloClient?: ApolloClient<any>
-}
 
 type ReducerState = {
     MAGENTO_URL?: string
@@ -36,7 +25,17 @@ type ReducerActions = {
     payload: ReducerState
 }
 
-const initialState: ReducerState = process.browser ? JSON.parse(getCookie(SETTINGS_OVERRIDE_COOKIE) ?? '{}') : {}
+export type SettingsProps = {
+    defaults: {
+        MAGENTO_URL?: string
+        HOME_PAGE_ID?: string
+        FOOTER_BLOCK_ID?: string
+        GOOGLE_MAPS_API_KEY?: string
+    }
+    state: ReducerState
+}
+
+const initialState: ReducerState = process.browser ? JSON.parse(getCookie(SETTINGS_OVERRIDE_COOKIE) ?? '{}') : null
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
@@ -59,7 +58,7 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _state }) => {
     const apolloClient = useApolloClient()
 
     const router = useRouter()
@@ -68,7 +67,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
     const [saving, setSaving] = useState(false)
 
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState || _state)
 
     const {
         queries: { footer, home },

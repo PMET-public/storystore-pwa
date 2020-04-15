@@ -63,6 +63,10 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
             imgPosition: styles.background.backgroundPositionX,
             imgRepeat: styles.background.backgroundRepeatX ? 'repeat' : 'no-repeat',
         })
+
+        return () => {
+            jarallax(backgroundElem, 'destroy')
+        }
     }, [backgroundElem, parallax])
 
     return (

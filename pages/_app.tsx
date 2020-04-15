@@ -3,12 +3,12 @@ import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
 import { version } from '../package.json'
 import { useServiceWorker } from 'hooks/useServiceWorker'
 import NextNprogress from 'nextjs-progressbar'
-import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 import App from '../components/App'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
 import { NextComponentType, NextPageContext } from 'next'
 import { withApollo } from '../lib/apollo/withApollo'
+import { AppProvider } from '@pmet-public/luma-ui/dist/AppProvider'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -21,16 +21,8 @@ if (process.browser) {
     }
 }
 
-const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pageProps }) => {
+const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pageProps, env }) => {
     const workbox = useServiceWorker()
-
-    const env = {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        HOME_PAGE_ID: process.env.HOME_PAGE_ID,
-        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-        ...overrideSettingsFromCookie('MAGENTO_URL', 'HOME_PAGE_ID', 'FOOTER_BLOCK_ID', 'GOOGLE_MAPS_API_KEY')(),
-    }
 
     /**
      * Update SW Cache on Route change
@@ -92,4 +84,24 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
     )
 }
 
-export default withApollo({ ssr: false })(MyApp)
+MyApp.getInitialProps = async ({ ctx, Component }: any) => {
+    const env = {
+        MAGENTO_URL: process.env.MAGENTO_URL,
+        HOME_PAGE_ID: process.env.HOME_PAGE_ID,
+        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+        ...overrideSettingsFromCookie(
+            'MAGENTO_URL',
+            'HOME_PAGE_ID',
+            'FOOTER_BLOCK_ID',
+            'GOOGLE_MAPS_API_KEY'
+        )(ctx.req?.headers.cookie),
+    }
+
+    return {
+        pageProps: Component.getInitialProps ? await Component.getInitialProps(ctx) : undefined,
+        env,
+    }
+}
+
+export default withApollo({ ssr: true })(MyApp)

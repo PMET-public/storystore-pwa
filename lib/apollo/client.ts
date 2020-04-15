@@ -117,7 +117,7 @@ export default function createApolloClient(
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
     if (!process.browser) {
-        return create(MAGENTO_URL, initialState, cookie)
+        return create(MAGENTO_URL, {}, cookie)
     }
 
     // Reuse client on the client-side
@@ -129,7 +129,7 @@ export default function createApolloClient(
 }
 
 export const queryDefaultOptions: QueryHookOptions = {
-    fetchPolicy: 'cache-and-network',
-    returnPartialData: true,
+    // fetchPolicy: 'cache-and-network',
+    // returnPartialData: true,
     notifyOnNetworkStatusChange: true,
 }

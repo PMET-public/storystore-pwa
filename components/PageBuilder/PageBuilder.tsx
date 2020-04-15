@@ -43,9 +43,11 @@ export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => 
     const usePageBuilder = useMemo(() => isPageBuilderHtml(html), [html])
 
     const items = useMemo(() => {
-        if (!html || !usePageBuilder) return
+        if (!process.browser || !html || !usePageBuilder) return
         return htmlToProps(html).items
     }, [html, usePageBuilder])
+
+    if (!process.browser) return null
 
     return (
         <Root {...props}>

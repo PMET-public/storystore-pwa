@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState } from 'react'
+import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useProduct } from './useProduct'
@@ -30,7 +30,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { hasCart, store, product } = queries.product.data || {}
+    const { store, product } = queries.product.data || {}
+
+    /**
+     * Re-render if Cart in client
+     */
+    const { hasCart } = queries.client.data || {}
+    useEffect(() => {}, [hasCart])
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -181,7 +187,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 addToCartButton={{
                     as: 'button',
                     text: product?.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                    disabled: !hasCart || product?.stock === 'OUT_OF_STOCK',
+                    disabled: hasCart === false || product?.stock === 'OUT_OF_STOCK',
                     loading: api.addingSimpleProductsToCart.loading || api.addingConfigurableProductToCart.loading,
                 }}
                 shortDescription={product?.shortDescription && product?.shortDescription.html}

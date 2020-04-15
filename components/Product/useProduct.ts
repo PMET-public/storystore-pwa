@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '../../lib/apollo/client'
 
 import PRODUCT_QUERY from './graphql/product.graphql'
+import CLIENT_QUERY from './graphql/client.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
 
@@ -41,6 +42,11 @@ export const useProduct = (props: { urlKey: string }) => {
     const product = useQuery(PRODUCT_QUERY, {
         ...queryDefaultOptions,
         variables: { urlKey },
+    })
+
+    const client = useQuery(CLIENT_QUERY, {
+        ...queryDefaultOptions,
+        ssr: false,
     })
 
     const [productVariant, setProductVariant] = useState<ProductVariant>()
@@ -195,6 +201,7 @@ export const useProduct = (props: { urlKey: string }) => {
 
     return {
         queries: {
+            client,
             product: {
                 ...product,
                 data: {
