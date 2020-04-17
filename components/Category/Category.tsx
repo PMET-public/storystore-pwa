@@ -1,15 +1,36 @@
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
+import { resolveImage } from '~/lib/resolveImage'
+
+import {
+    Root,
+    TopBar,
+    TopBarWrapper,
+    Heading,
+    Title,
+    BackButton,
+    BackIcon,
+    // TopBarFilterButton,
+    // FiltersIcon,
+    Content,
+    ProductListWrapper,
+    // FiltersWrapper,
+    // FiltersButtons,
+    // FiltersScreen,
+} from './Category.styled'
 
 import { useCategory } from './useCategory'
-import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
-import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
-import { useNetworkStatus } from '../../hooks/useNetworkStatus'
-import { resolveImage } from '../../lib/resolveImage'
+import { useInfiniteScrolling } from '@pmet-public/luma-ui/dist/hooks/useInfiniteScrolling'
+import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
-import Link from '../Link'
-import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
-import Head from '../Head'
+import Link from '~/components/Link'
+import Head from '~/components/Head'
+import ProductList from '@pmet-public/luma-ui/dist/components/ProductList'
+// import Filters from '@pmet-public/luma-ui/dist/components/Filters'
+import Breadcrumbs from '@pmet-public/luma-ui/dist/components/Breadcrumbs'
+import Pills from '@pmet-public/luma-ui/dist/components/Pills'
+// import Button from '@pmet-public/luma-ui/dist/components/Button'
+import { Skeleton } from '@pmet-public/luma-ui/dist/components/Skeleton'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'))
@@ -18,17 +39,21 @@ type CategoryProps = {
     id: number
 }
 
+const TitleSkeleton = ({ ...props }) => {
+    return (
+        <Skeleton height={16} width={200} {...props}>
+            <rect x="0" y="0" width="200" height="16" />
+        </Skeleton>
+    )
+}
+
 export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
-    const { queries, api } = useCategory({ id })
-
-    const { scrollY, scrollHeight } = useScroll()
-
-    const { height } = useResize()
+    const { queries } = useCategory({ id })
 
     /**
      * Infinite Scroll Effect
      */
-    useEffect(() => {
+    useInfiniteScrolling(() => {
         if (queries.products.loading) return
 
         const { products } = queries.products.data
@@ -39,28 +64,26 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
         // don't run if it's in the last page
         if (!(products.pagination.current < products.pagination.total)) return
 
-        // load more products when the scroll reach half of the viewport height
-        if (scrollY + height > scrollHeight / 2) {
-            queries.products
-                .fetchMore({
-                    variables: {
-                        currentPage: products.pagination.current + 1, // next page
-                    },
-                    updateQuery: (prev: any, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) return prev
-                        return {
-                            ...prev,
-                            products: {
-                                ...prev.products,
-                                ...fetchMoreResult.products,
-                                items: [...prev.products.items, ...fetchMoreResult.products.items],
-                            },
-                        }
-                    },
-                })
-                .catch(() => {})
-        }
-    }, [scrollY, height, queries, scrollHeight])
+        // load more products
+        queries.products
+            .fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
+                        },
+                    }
+                },
+            })
+            .catch(() => {})
+    })
 
     const online = useNetworkStatus()
 
@@ -78,8 +101,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
 
+    const loading = queries.category.loading && !page
+
     return (
         <React.Fragment>
+            {/* Head Metadata */}
             {page && (
                 <Head
                     title={page.metaTitle || page.title}
@@ -88,110 +114,149 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                 />
             )}
 
-            <CategoryTemplate
-                loading={queries.category.loading && !page}
-                loadingMore={queries.products.loading}
-                display={page?.mode || 'PRODUCTS_AND_PAGE'}
-                title={{
-                    as: 'h2',
-                    text: page?.title,
-                }}
-                backButton={
-                    page?.breadcrumbs && {
-                        as: Link,
-                        urlResolver: {
-                            type: 'CATEGORY',
-                            id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
-                        },
-                        href: '/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix,
-                    }
-                }
-                breadcrumbs={
-                    page &&
-                    (!page.categories || page.categories?.length === 0) &&
-                    page.breadcrumbs && {
-                        items: page.breadcrumbs.map(({ id, text, href }: any) => ({
-                            _id: id,
-                            as: Link,
-                            urlResolver: {
-                                type: 'CATEGORY',
-                                id,
-                            },
-                            href: '/' + href + categoryUrlSuffix,
-                            text,
-                        })),
-                    }
-                }
-                categories={
-                    page?.categories && {
-                        items: page.categories.map(({ id, text, count, href }: any) => ({
-                            _id: id,
-                            as: Link,
-                            urlResolver: {
-                                type: 'CATEGORY',
-                                id,
-                            },
-                            count,
-                            text,
-                            href: '/' + href + categoryUrlSuffix,
-                        })),
-                    }
-                }
-                filters={
-                    products?.filters && {
-                        label: 'Filters',
-                        closeButton: {
-                            text: 'Done',
-                        },
-                        groups: products.filters.map(({ name, key, items }: any) => ({
-                            title: name,
-                            items: items.map(({ label, count, value }: any) => ({
-                                as: 'a',
-                                count,
-                                href: '#',
-                                text: label,
-                                onClick: (e: Event) => {
-                                    e.preventDefault()
-                                    api.setFilter(key, value)
-                                },
-                            })),
-                        })),
-                    }
-                }
-                products={{
-                    items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                        _id: `${id}--${index}`,
-                        as: Link,
-                        href: `/${urlKey + productUrlSuffix}`,
-                        urlResolver: {
-                            type: 'PRODUCT',
-                            id,
-                            urlKey,
-                        },
-                        image: {
-                            alt: image.alt,
-                            src: {
-                                desktop: resolveImage(image.src, { width: 1260 }),
-                                mobile: resolveImage(image.src, { width: 960 }),
-                            },
-                        },
-                        price: {
-                            label:
-                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                            regular: price.minimum.regular.value,
-                            special:
-                                price.minimum.discount.amountOff &&
-                                price.minimum.final.value - price.minimum.discount.amountOff,
-                            currency: price.minimum.regular.currency,
-                        },
-                        title: {
-                            text: title,
-                        },
-                    })),
-                }}
-            >
-                {page && <PageBuilder html={page.cmsBlock} />}
-            </CategoryTemplate>
+            <Root>
+                {/* PageBuilder Content */}
+                {page?.cmsBlock && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && (
+                    <PageBuilder html={page.cmsBlock} />
+                )}
+
+                {/* Product List */}
+                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PRODUCTS') && (
+                    <>
+                        <TopBar>
+                            <TopBarWrapper $margin>
+                                <Heading>
+                                    {page.title && (
+                                        <Title>
+                                            {page.breadcrumbs && (
+                                                <BackButton
+                                                    as={Link}
+                                                    urlResolver={{
+                                                        type: 'CATEGORY',
+                                                        id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
+                                                    }}
+                                                    href={
+                                                        '/' +
+                                                        page.breadcrumbs[page.breadcrumbs.length - 1].href +
+                                                        categoryUrlSuffix
+                                                    }
+                                                >
+                                                    <BackIcon />
+                                                </BackButton>
+                                            )}
+                                            {!page.title && loading ? <TitleSkeleton /> : page.title.text}
+                                        </Title>
+                                    )}
+
+                                    {/* Breadcrumbs */}
+                                    {page.categories?.length === 0 && page.breadcrumbs && (
+                                        <Breadcrumbs
+                                            prefix="#"
+                                            loading={!page.breadcrumbs && loading}
+                                            items={page.breadcrumbs.map(({ id, text, href }: any) => ({
+                                                _id: id,
+                                                as: Link,
+                                                urlResolver: {
+                                                    type: 'CATEGORY',
+                                                    id,
+                                                },
+                                                href: '/' + href + categoryUrlSuffix,
+                                                text,
+                                            }))}
+                                        />
+                                    )}
+
+                                    {/* Sub-Categories */}
+                                    {page.categories && (
+                                        <Pills
+                                            loading={!page.categories && loading}
+                                            items={page.categories.map(({ id, text, count, href }: any) => ({
+                                                _id: id,
+                                                as: Link,
+                                                urlResolver: {
+                                                    type: 'CATEGORY',
+                                                    id,
+                                                },
+                                                count,
+                                                text,
+                                                href: '/' + href + categoryUrlSuffix,
+                                            }))}
+                                        />
+                                    )}
+                                </Heading>
+
+                                {/* TODO: Integrate Filters
+                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                    <span>
+                                        <FiltersIcon aria-label="Filters" />
+                                    </span>
+                                </TopBarFilterButton> 
+                                */}
+                            </TopBarWrapper>
+                        </TopBar>
+
+                        <Content>
+                            {products && (
+                                <ProductListWrapper $margin>
+                                    <ProductList
+                                        loadingMore={queries.products.loading}
+                                        items={products.items?.map(
+                                            ({ id, image, price, title, urlKey }: any, index: number) => ({
+                                                _id: `${id}--${index}`,
+                                                as: Link,
+                                                href: `/${urlKey + productUrlSuffix}`,
+                                                urlResolver: {
+                                                    type: 'PRODUCT',
+                                                    id,
+                                                    urlKey,
+                                                },
+                                                image: {
+                                                    alt: image.alt,
+                                                    src: {
+                                                        desktop: resolveImage(image.src, { width: 1260 }),
+                                                        mobile: resolveImage(image.src, { width: 960 }),
+                                                    },
+                                                },
+                                                price: {
+                                                    label:
+                                                        price.maximum.regular.value > price.minimum.regular.value
+                                                            ? 'Starting at'
+                                                            : undefined,
+                                                    regular: price.minimum.regular.value,
+                                                    special:
+                                                        price.minimum.discount.amountOff &&
+                                                        price.minimum.final.value - price.minimum.discount.amountOff,
+                                                    currency: price.minimum.regular.currency,
+                                                },
+                                                title: {
+                                                    text: title,
+                                                },
+                                            })
+                                        )}
+                                    />
+                                </ProductListWrapper>
+                            )}
+                        </Content>
+
+                        {/* TODO: Integrate Filters */}
+                        {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
+                            <Filters {...filters} />
+                            {filters.closeButton && (
+                                <FiltersButtons>
+                                    <Button
+                                        as="button"
+                                        type="button"
+                                        onClick={handleCloseFilters}
+                                        {...filters.closeButton}
+                                    />
+                                </FiltersButtons>
+                            )}
+                        </FiltersWrapper>
+
+                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} */}
+                    </>
+                )}
+            </Root>
         </React.Fragment>
     )
 }

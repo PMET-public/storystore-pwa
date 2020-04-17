@@ -26,7 +26,12 @@
         "forceConsistentCasingInFileNames": true,
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "paths": {
+            "~/*": [
+                "./*"
+            ]
+        }
     },
     "exclude": [
         "node_modules"

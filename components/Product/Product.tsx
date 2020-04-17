@@ -1,17 +1,53 @@
-import React, { FunctionComponent, useCallback, useState, useEffect } from 'react'
+import React, {
+    FunctionComponent,
+    useCallback,
+    useState,
+    useEffect,
+    // MutableRefObject,
+    useRef,
+    useMemo,
+} from 'react'
 import dynamic from 'next/dynamic'
+import {
+    Root,
+    Wrapper,
+    Images,
+    // CarouselWrapper,
+    ImageWrapper,
+    GalleryGrid,
+    InfoWrapper,
+    InfoInnerWrapper,
+    InfoOptions,
+    Field,
+    Info,
+    Header,
+    Title,
+    Sku,
+    Buttons,
+    ShortDescription,
+    Description,
+    ThumbSwatchesWrapper,
+} from './Product.styled'
 
-import { useProduct } from './useProduct'
 import { useRouter } from 'next/router'
-import useNetworkStatus from '../../hooks/useNetworkStatus'
-import { resolveImage } from '../../lib/resolveImage'
+import { useProduct } from './useProduct'
+import useNetworkStatus from '~/hooks/useNetworkStatus'
+import { resolveImage } from '~/lib/resolveImage'
 
-import ProductTemplate from '@pmet-public/luma-ui/dist/templates/Product'
+import Head from '~/components/Head'
+import Link from '~/components/Link'
+import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
+// import { ProductImageSkeleton } from './ProductImage.skeleton'
+// import Carousel from '@pmet-public/luma-ui/dist/components/Carousel'
+import Image from '@pmet-public/luma-ui/dist/components/Image'
+import Price from '@pmet-public/luma-ui/dist/components/Price'
+import Button from '@pmet-public/luma-ui/dist/components/Button'
+import Breadcrumbs from '@pmet-public/luma-ui/dist/components/Breadcrumbs'
+import TextSwatches from '@pmet-public/luma-ui/dist/components/Form/TextSwatches'
+import ThumbSwatches from '@pmet-public/luma-ui/dist/components/Form/ThumbSwatches'
+import Form, { Input } from '@pmet-public/luma-ui/dist/components/Form'
 
-import Link from '../Link'
-import Head from '../Head'
-
-const ErrorComponent = dynamic(() => import('../Error'))
+const ErrorComponent = dynamic(() => import('~/components/Error'))
 
 export type ProductProps = {
     urlKey: string
@@ -78,6 +114,35 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [api, product, history])
 
+    // const [scrollerRef, setScrollerRef] = useState<MutableRefObject<Element>>()
+
+    const infoRef = useRef<HTMLDivElement>(null)
+
+    /**
+     * Scroll to top if there are any errors
+     */
+    const handleOnErrors = useCallback(
+        errors => {
+            if (Object.entries(errors).length > 0 && infoRef.current) {
+                infoRef.current.scrollIntoView({ behavior: 'smooth' })
+            }
+        },
+        [infoRef.current]
+    )
+
+    const gallery = useMemo(() => {
+        return product?.gallery
+            ?.filter((x: any) => x.type === 'ProductImage')
+            .map(({ label, url }: any) => ({
+                alt: label || product?.title,
+                src: {
+                    desktop: resolveImage(url, { width: 1260 }),
+                    mobile: resolveImage(url, { width: 960 }),
+                },
+            }))
+            .sort((a: any, b: any) => a.position - b.position)
+    }, [product])
+
     if (!online && !product) return <ErrorComponent type="Offline" />
 
     if (!queries.product.loading && !product) {
@@ -105,94 +170,220 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 />
             )}
 
-            <ProductTemplate
-                loading={queries.product.loading && !product}
-                onAddToCart={handleAddToCart}
-                onChange={handleOnChange}
-                title={{
-                    text: product?.title,
-                }}
-                sku={
-                    product?.sku && {
-                        text: `SKU. ${product.sku}`,
-                    }
-                }
-                categories={{
-                    items: product?.categories
-                        ?.slice(0, 4) // limit to 3
-                        .filter((x: any) => !!x.href)
-                        .map(({ id, text, href }: any) => ({
-                            _id: id,
-                            as: Link,
-                            urlResolver: {
-                                type: 'CATEGORY',
-                                id,
-                            },
-                            href: '/' + href + categoryUrlSuffix,
-                            text,
-                        })),
-                }}
-                gallery={product?.gallery
-                    ?.filter((x: any) => x.type === 'ProductImage')
-                    .map(({ label, url }: any) => ({
-                        alt: label || product?.title,
-                        src: {
-                            desktop: resolveImage(url, { width: 1260 }),
-                            mobile: resolveImage(url, { width: 960 }),
-                        },
-                    }))
-                    .sort((a: any, b: any) => a.position - b.position)}
-                price={
-                    product?.price && {
-                        label:
-                            product.price.maximum.regular.value > product.price.minimum.regular.value
-                                ? 'Starting at'
-                                : undefined,
-                        regular: product.price.minimum.regular.value,
-                        special:
-                            product.price.minimum.discount.amountOff &&
-                            product.price.minimum.final.value - product.price.minimum.discount.amountOff,
-                        currency: product.price.minimum.regular.currency,
-                    }
-                }
-                options={product?.options
-                    ?.map(({ id, type, label, required = true, code, items }: any) => {
-                        const selected = items.find((x: any) => {
-                            return code === x.code || x.value.toString() === selectedOptions[code]
-                        })
+            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors}>
+                <Wrapper>
+                    <Images>
+                        {/* Mobile Gallery Carousel */}
+                        {/* <CarouselWrapper
+                            as={Carousel}
+                            scrollerRef={setScrollerRef}
+                            gap={1}
+                            padding={3}
+                            show={1}
+                            snap
+                            hideScrollBar
+                        >
+                            {!gallery ? (
+                                <CarouselItem as={Carousel.Item}>
+                                    <ProductImageSkeleton style={{ width: '100%' }} />
+                                </CarouselItem>
+                            ) : (
+                                gallery.map((image: any, index: number) => (
+                                    <CarouselItem key={index} as={Carousel.Item}>
+                                        <Image
+                                            {...image}
+                                            transition
+                                            vignette={10}
+                                            lazyload={{
+                                                container: scrollerRef,
+                                                offsetY: 100,
+                                                offsetX: 50,
+                                                ...image.lazyload,
+                                            }}
+                                        />
+                                    </CarouselItem>
+                                ))
+                            )}
+                        </CarouselWrapper> */}
 
-                        return {
-                            _id: id,
-                            type,
-                            swatches: {
-                                label: selected ? `${label}: ${selected.label}` : label,
-                                name: `options.${code}`,
-                                rules: { required },
-                                items: items?.map(({ id, label, value, image }: any) => ({
-                                    _id: id,
-                                    text: label,
-                                    type: 'radio',
-                                    value,
-                                    image: image && {
-                                        alt: image.label || '',
-                                        src: resolveImage(image.url, { width: 200 }),
-                                        width: 4,
-                                        height: 5,
-                                    },
-                                })),
-                            },
-                        }
-                    })
-                    .sort((a: any, b: any) => b.position - a.position)}
-                addToCartButton={{
-                    as: 'button',
-                    text: product?.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out',
-                    disabled: hasCart === false || product?.stock === 'OUT_OF_STOCK',
-                    loading: api.addingSimpleProductsToCart.loading || api.addingConfigurableProductToCart.loading,
-                }}
-                shortDescription={product?.shortDescription && product?.shortDescription.html}
-                description={product?.description && product?.description.html}
-            />
+                        {/* Tablet and Desktop Gallery Grid */}
+                        <GalleryGrid>
+                            {queries.product.loading && !gallery ? (
+                                <>⏱ Loading...</>
+                            ) : (
+                                gallery?.map((image: any, index: number) => (
+                                    <ImageWrapper key={index}>
+                                        <Image
+                                            key={index}
+                                            {...image}
+                                            transition
+                                            vignette={10}
+                                            lazyload={{ offsetY: 100, ...image.lazyload }}
+                                        />
+                                    </ImageWrapper>
+                                ))
+                            )}
+
+                            {/* {!gallery ? (
+                                <>
+                                    <CarouselItem as={Carousel.Item}>
+                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
+                                    </CarouselItem>
+                                    <CarouselItem as={Carousel.Item}>
+                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
+                                    </CarouselItem>
+                                </>
+                            ) : (
+                                gallery.map((image: any, index: number) => (
+                                    <CarouselItem key={index}>
+                                        <Image
+                                            {...image}
+                                            transition
+                                            vignette={10}
+                                            lazyload={{ offsetY: 100, ...image.lazyload }}
+                                        />
+                                    </CarouselItem>
+                                ))
+                            )} */}
+                        </GalleryGrid>
+                    </Images>
+
+                    <InfoWrapper ref={infoRef}>
+                        <InfoInnerWrapper>
+                            <Info>
+                                {queries.product.loading && !product ? (
+                                    <ProductDetailsSkeleton
+                                        style={{ width: '56rem', minWidth: '100%', maxWidth: '100%' }}
+                                    />
+                                ) : (
+                                    <React.Fragment>
+                                        <Header>
+                                            {product.categories && (
+                                                <Breadcrumbs
+                                                    prefix="#"
+                                                    items={product.categories
+                                                        .slice(0, 4) // limit to 3
+                                                        .filter((x: any) => !!x.href)
+                                                        .map(({ id, text, href }: any) => ({
+                                                            _id: id,
+                                                            as: Link,
+                                                            urlResolver: {
+                                                                type: 'CATEGORY',
+                                                                id,
+                                                            },
+                                                            href: '/' + href + categoryUrlSuffix,
+                                                            text,
+                                                        }))}
+                                                />
+                                            )}
+
+                                            <Title>{product.title}</Title>
+
+                                            <Price
+                                                label={
+                                                    product.price.maximum.regular.value >
+                                                    product.price.minimum.regular.value
+                                                        ? 'Starting at'
+                                                        : undefined
+                                                }
+                                                regular={product.price.minimum.regular.value}
+                                                special={
+                                                    product.price.minimum.discount.amountOff &&
+                                                    product.price.minimum.final.value -
+                                                        product.price.minimum.discount.amountOff
+                                                }
+                                                currency={product.price.minimum.regular.currency}
+                                            />
+                                            {product.sku && <Sku>SKU. {product.sku}</Sku>}
+                                        </Header>
+
+                                        {product.shortDescription?.html && (
+                                            <ShortDescription
+                                                dangerouslySetInnerHTML={{ __html: product.shortDescription.html }}
+                                            />
+                                        )}
+
+                                        {product.options && (
+                                            <InfoOptions>
+                                                {product.options
+                                                    .map(({ id, type, label, required = true, code, items }: any) => {
+                                                        const selected = items.find((x: any) => {
+                                                            return (
+                                                                code === x.code ||
+                                                                x.value.toString() === selectedOptions[code]
+                                                            )
+                                                        })
+
+                                                        return {
+                                                            _id: id,
+                                                            type,
+                                                            swatches: {
+                                                                label: selected ? `${label}: ${selected.label}` : label,
+                                                                name: `options.${code}`,
+                                                                rules: { required },
+                                                                items: items?.map(
+                                                                    ({ id, label, value, image }: any) => ({
+                                                                        _id: id,
+                                                                        text: label,
+                                                                        type: 'radio',
+                                                                        value,
+                                                                        image: image && {
+                                                                            alt: image.label || '',
+                                                                            src: resolveImage(image.url, {
+                                                                                width: 200,
+                                                                            }),
+                                                                            width: 4,
+                                                                            height: 5,
+                                                                        },
+                                                                    })
+                                                                ),
+                                                            },
+                                                        }
+                                                    })
+                                                    .sort((a: any, b: any) => b.position - a.position)
+                                                    .map(({ _id, type, swatches }: any, index: number) => {
+                                                        return (
+                                                            <fieldset key={_id || index}>
+                                                                <Field>
+                                                                    {type === 'text' && <TextSwatches {...swatches} />}
+                                                                    {type === 'thumb' && (
+                                                                        <ThumbSwatchesWrapper>
+                                                                            <ThumbSwatches {...swatches} />
+                                                                        </ThumbSwatchesWrapper>
+                                                                    )}
+                                                                </Field>
+                                                            </fieldset>
+                                                        )
+                                                    })}
+                                            </InfoOptions>
+                                        )}
+
+                                        <Buttons>
+                                            <Button
+                                                as="button"
+                                                text={product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out'}
+                                                disabled={hasCart === false || product.stock === 'OUT_OF_STOCK'}
+                                                loading={
+                                                    api.addingSimpleProductsToCart.loading ||
+                                                    api.addingConfigurableProductToCart.loading
+                                                }
+                                            />
+                                        </Buttons>
+
+                                        <Input type="hidden" name="quantity" value={1} rules={{ required: true }} />
+
+                                        {product.description?.html && (
+                                            <Description
+                                                dangerouslySetInnerHTML={{ __html: product.description.html }}
+                                            />
+                                        )}
+                                    </React.Fragment>
+                                )}
+                            </Info>
+                        </InfoInnerWrapper>
+                    </InfoWrapper>
+                </Wrapper>
+            </Root>
         </React.Fragment>
     )
 }

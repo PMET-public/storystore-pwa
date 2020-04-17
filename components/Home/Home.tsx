@@ -1,16 +1,18 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
+import { Root, Stories } from './Home.styled'
 
 import { useHome } from './useHome'
-import { useNetworkStatus } from '../../hooks/useNetworkStatus'
-import { resolveImage } from '../../lib/resolveImage'
+import { useNetworkStatus } from '~/hooks/useNetworkStatus'
+import { resolveImage } from '~/lib/resolveImage'
 
-import Link from '../Link'
-import HomeTemplate from '@pmet-public/luma-ui/dist/templates/Home'
-import Head from '../Head'
+import Link from '~/components/Link'
+import Head from '~/components/Head'
+import { HomeSkeleton } from './Home.skeleton'
+import BubbleCarousel from '@pmet-public/luma-ui/dist/components/BubbleCarousel'
 
-const Error = dynamic(() => import('../Error'))
-const PageBuilder = dynamic(() => import('../PageBuilder'))
+const Error = dynamic(() => import('~/components/Error'))
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
 
 type HomeProps = {
     id: string
@@ -37,37 +39,40 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
                 />
             )}
 
-            <HomeTemplate
-                loading={queries.home.loading && !page}
-                stories={{
-                    loading: queries.home.loading && !categories,
-                    items: categories
-                        ? categories[0].children.map(({ id, text, href, image }: any) => ({
-                              as: Link,
-                              urlResolver: {
-                                  type: 'CATEGORY',
-                                  id,
-                              },
-                              href: href + categoryUrlSuffix,
-                              image: image && {
-                                  alt: text,
-                                  src: resolveImage(image, { width: 200, height: 200 }),
-                                  width: '100px',
-                                  height: '100px',
-                              },
-                              text,
-                          }))
-                        : [],
-                }}
-            >
-                {!queries.home.loading && !page ? (
+            <Root>
+                {categories && (
+                    <Stories>
+                        <BubbleCarousel
+                            loading={queries.home.loading && !categories}
+                            items={categories[0].children.map(({ id, text, href, image }: any) => ({
+                                as: Link,
+                                urlResolver: {
+                                    type: 'CATEGORY',
+                                    id,
+                                },
+                                href: href + categoryUrlSuffix,
+                                image: image && {
+                                    alt: text,
+                                    src: resolveImage(image, { width: 200, height: 200 }),
+                                    width: '100px',
+                                    height: '100px',
+                                },
+                                text,
+                            }))}
+                        />
+                    </Stories>
+                )}
+
+                {queries.home.loading && !page ? (
+                    <HomeSkeleton />
+                ) : !queries.home.loading && !page ? (
                     <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
                         Missing Home Page
                     </Error>
                 ) : (
                     page?.content && <PageBuilder html={page.content} />
                 )}
-            </HomeTemplate>
+            </Root>
         </React.Fragment>
     )
 }

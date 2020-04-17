@@ -1,27 +1,34 @@
-import React, { FunctionComponent, useEffect, useCallback } from 'react'
+import React, { FunctionComponent, useMemo } from 'react'
 import dynamic from 'next/dynamic'
+import { resolveImage } from '~/lib/resolveImage'
+
+import {
+    Root,
+    TopBar,
+    TopBarWrapper,
+    // TopBarFilterButton,
+    // FiltersIcon,
+    Content,
+    ProductListWrapper,
+    // FiltersWrapper,
+    // FiltersButtons,
+    // FiltersScreen,
+    NoResult,
+} from './Search.styled'
 
 import { useSearch } from './useSearch'
-import { useScroll } from '@pmet-public/luma-ui/dist/hooks/useScroll'
-import { useResize } from '@pmet-public/luma-ui/dist/hooks/useResize'
-import { useNetworkStatus } from '../../hooks/useNetworkStatus'
-import { resolveImage } from '../../lib/resolveImage'
-
-import CategoryTemplate from '@pmet-public/luma-ui/dist/templates/Category'
-import Link from '../Link'
-
+import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
-import Head from '../Head'
+import { useInfiniteScrolling } from '@pmet-public/luma-ui/dist/hooks/useInfiniteScrolling'
 
-const Error = dynamic(() => import('../Error'))
+import Link from '~/components/Link'
+import Head from '~/components/Head'
+import SearchBar from '@pmet-public/luma-ui/dist/components/SearchBar'
+import ProductList from '@pmet-public/luma-ui/dist//components/ProductList'
+
+const Error = dynamic(() => import('~/components/Error'))
 
 type SearchProps = {}
-
-// type FilterValues = {
-//     [key: string]: {
-//         eq: string
-//     }
-// }
 
 export const Search: FunctionComponent<SearchProps> = () => {
     const history = useRouter()
@@ -30,10 +37,6 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { queries, api } = useSearch({ queryString: query?.toString() })
 
-    const { scrollY, scrollHeight } = useScroll()
-
-    const { height } = useResize()
-
     const products = queries.search.data?.products
 
     const productUrlSuffix = queries.search.data?.store?.productUrlSuffix ?? ''
@@ -41,8 +44,10 @@ export const Search: FunctionComponent<SearchProps> = () => {
     /**
      * Infinite Scroll Effect
      */
-    useEffect(() => {
+    useInfiniteScrolling(() => {
         if (queries.search.loading) return
+
+        const { products } = queries.search.data
 
         // ignore if it is loading or has no pagination
         if (!products?.pagination) return
@@ -50,47 +55,32 @@ export const Search: FunctionComponent<SearchProps> = () => {
         // don't run if it's in the last page
         if (!(products.pagination.current < products.pagination.total)) return
 
-        // load more products when the scroll reach half of the viewport height
-        if (scrollY + height > scrollHeight / 2) {
-            queries.search
-                .fetchMore({
-                    variables: {
-                        currentPage: products.pagination.current + 1, // next page
-                    },
-                    updateQuery: (prev: any, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) return prev
-                        return {
-                            ...prev,
-                            products: {
-                                ...prev.products,
-                                ...fetchMoreResult.products,
-                                items: [...prev.products.items, ...fetchMoreResult.products.items],
-                            },
-                        }
-                    },
-                })
-                .catch(() => {})
-        }
-    }, [scrollY, products, queries, height, scrollHeight])
+        // load more products
+        queries.search
+            .fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
+                        },
+                    }
+                },
+            })
+            .catch(() => {})
+    })
 
-    const getProductCount = useCallback(() => {
+    const productsCount = useMemo(() => {
         if (!products) return
         const { count = 0 } = products
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
     }, [products])
-
-    const getNotResult = useCallback(() => {
-        if (query && products?.count === 0) {
-            return (
-                <Error type="404">
-                    We couldn’t find any results for "{query}". <br />
-                    Please try the field above to search again.
-                </Error>
-            )
-        } else {
-            return null
-        }
-    }, [query, products])
 
     const online = useNetworkStatus()
 
@@ -100,7 +90,99 @@ export const Search: FunctionComponent<SearchProps> = () => {
         <React.Fragment>
             <Head title="Search" />
 
-            <CategoryTemplate
+            <Root>
+                <TopBar>
+                    <TopBarWrapper $margin>
+                        <SearchBar
+                            loading={queries.search.loading}
+                            label="Search"
+                            count={productsCount}
+                            value={query.toString()}
+                            onUpdate={api.search}
+                        />
+
+                        {/* TODO: Integrate Filters
+                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                    <span>
+                                        <FiltersIcon aria-label="Filters" />
+                                    </span>
+                                </TopBarFilterButton> 
+                                */}
+                    </TopBarWrapper>
+                </TopBar>
+                <Content>
+                    {products && (
+                        <ProductListWrapper $margin>
+                            <ProductList
+                                loadingMore={queries.search.loading}
+                                items={products.items?.map(
+                                    ({ id, image, price, title, urlKey }: any, index: number) => ({
+                                        _id: `${id}--${index}`,
+                                        as: Link,
+                                        href: `/${urlKey + productUrlSuffix}`,
+                                        urlResolver: {
+                                            type: 'PRODUCT',
+                                            id,
+                                            urlKey,
+                                        },
+                                        image: {
+                                            alt: image.alt,
+                                            src: {
+                                                desktop: resolveImage(image.src, { width: 1260 }),
+                                                mobile: resolveImage(image.src, { width: 960 }),
+                                            },
+                                        },
+                                        price: {
+                                            label:
+                                                price.maximum.regular.value > price.minimum.regular.value
+                                                    ? 'Starting at'
+                                                    : undefined,
+                                            regular: price.minimum.regular.value,
+                                            special:
+                                                price.minimum.discount.amountOff &&
+                                                price.minimum.final.value - price.minimum.discount.amountOff,
+                                            currency: price.minimum.regular.currency,
+                                        },
+                                        title: {
+                                            text: title,
+                                        },
+                                    })
+                                )}
+                            />
+                        </ProductListWrapper>
+                    )}
+                </Content>
+                {/* TODO: Integrate Filters */}
+                {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
+                            <Filters {...filters} />
+                            {filters.closeButton && (
+                                <FiltersButtons>
+                                    <Button
+                                        as="button"
+                                        type="button"
+                                        onClick={handleCloseFilters}
+                                        {...filters.closeButton}
+                                    />
+                                </FiltersButtons>
+                            )}
+                        </FiltersWrapper>
+
+                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} */}
+                )}
+            </Root>
+
+            {query && products?.count === 0 && (
+                <NoResult $margin>
+                    <Error type="404">
+                        We couldn’t find any results for "{query}". <br />
+                        Please try the field above to search again.
+                    </Error>
+                </NoResult>
+            )}
+
+            {/* Delete Below */}
+
+            {/* <CategoryTemplate
                 loading={queries.search.loading}
                 loadingMore={queries.search.loading}
                 search={{
@@ -112,26 +194,6 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     },
                     noResult: getNotResult(),
                 }}
-                // filters={{
-                //     label: 'Filters',
-                //     closeButton: {
-                //         text: 'Done',
-                //     },
-                //     groups:
-                //         products?.filters?.map(({ name, key, items }: any) => ({
-                //             title: name,
-                //             items: items.map(({ label, count, value }: any) => ({
-                //                 as: 'a',
-                //                 count,
-                //                 href: '#',
-                //                 text: label,
-                //                 onClick: (e: Event) => {
-                //                     e.preventDefault()
-                //                     handleOnClickFilterValue(key, value)
-                //                 },
-                //             })),
-                //         })),
-                // }}
                 products={{
                     items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
                         _id: `${id}--${index}`,
@@ -163,7 +225,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                         },
                     })),
                 }}
-            />
+            /> */}
         </React.Fragment>
     )
 }

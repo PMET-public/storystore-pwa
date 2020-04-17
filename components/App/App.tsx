@@ -2,18 +2,28 @@ import React, { FunctionComponent } from 'react'
 import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 
+import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
+
 import { useApp } from './useApp'
-import { resolveImage } from '../../lib/resolveImage'
-import { useIsUrlActive } from '../../lib/resolveLink'
-import useNetworkStatus from '../../hooks/useNetworkStatus'
+import { resolveImage } from '~/lib/resolveImage'
+import { useIsUrlActive } from '~/lib/resolveLink'
+import useNetworkStatus from '~/hooks/useNetworkStatus'
 
-import FontStyles from './FontStyles'
-import AppTemplate from '@pmet-public/luma-ui/dist/components/App'
-import PageBuilder from '../../components/PageBuilder'
-import Head from '../../components/Head'
-import Link from '../../components/Link'
+import PageBuilder from '~/components/PageBuilder'
+import Head from '~/components/Head'
+import Link from '~/components/Link'
+import Header from '@pmet-public/luma-ui/dist/components/Header'
+import TabBar from '@pmet-public/luma-ui/dist/components/TabBar'
+import Footer from '@pmet-public/luma-ui/dist/components/Footer'
 
-const Error = dynamic(() => import('../../components/Error'))
+import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
+import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
+import IconBagSvg from 'remixicon/icons/Finance/shopping-bag-line.svg'
+import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
+import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
+import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
+
+const Error = dynamic(() => import('~/components/Error'))
 
 type AppProps = {
     footerBlockId: string
@@ -54,8 +64,11 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
+    const loading = queries.app.loading && !store
+
     return (
         <React.Fragment>
+            {/* Head Metadata */}
             {store && (
                 <Head
                     defaults={{
@@ -68,66 +81,118 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
                 />
             )}
 
-            <AppTemplate
-                loading={queries.app.loading && !store}
-                logo={{
-                    as: Link,
-                    image: store?.logoSrc && {
-                        src: resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc),
-                        alt: store?.logoAlt || 'PWA Story Store',
-                    },
-                    href: '/',
-                    title: store?.logoAlt || 'PWA Story Store',
-                }}
-                home={{
-                    active: isUrlActive('/'),
-                    as: Link,
-                    href: '/',
-                    text: 'Home',
-                }}
-                menu={categories[0]?.children.map(({ id, text, href: _href }: any) => {
-                    const href = _href + categoryUrlSuffix
+            <Root>
+                <HeaderContainer as="header" $margin>
+                    <Header
+                        loading={loading}
+                        logo={{
+                            as: Link,
+                            image: store?.logoSrc && {
+                                src: resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc),
+                                alt: store?.logoAlt || 'PWA Story Store',
+                            },
+                            href: '/',
+                            title: store?.logoAlt || 'PWA Story Store',
+                        }}
+                        menu={{
+                            items: categories[0]?.children.map(({ id, text, href: _href }: any) => {
+                                const href = _href + categoryUrlSuffix
 
-                    return {
-                        active: isUrlActive('/' + href),
-                        as: Link,
-                        urlResolver: {
-                            type: 'CATEGORY',
-                            id,
-                        },
-                        href: '/' + href,
-                        text,
-                    }
-                })}
-                search={{
-                    active: isUrlActive('/search'),
-                    as: Link,
-                    href: '/search',
-                    text: 'Search',
-                }}
-                cart={{
-                    active: isUrlActive('/cart'),
-                    as: Link,
-                    href: '/cart',
-                    text: 'Bag',
-                    icon: {
-                        count: cart?.totalQuantity || 0,
-                    },
-                }}
-                footer={{
-                    loading: queries.app.loading,
-                    html: footer?.items[0]?.html ? (
-                        <PageBuilder html={footer.items[0].html} />
-                    ) : (
-                        <div style={{ padding: '2rem', textAlign: 'center', fontSize: '1.4rem', opacity: '0.7' }}>
-                            {store?.copyright}
-                        </div>
-                    ),
-                }}
-            >
-                {children}
-            </AppTemplate>
-            <FontStyles />
+                                return {
+                                    active: isUrlActive('/' + href),
+                                    as: Link,
+                                    urlResolver: {
+                                        type: 'CATEGORY',
+                                        id,
+                                    },
+                                    href: '/' + href,
+                                    text,
+                                }
+                            }),
+                        }}
+                        utilities={{
+                            items: [
+                                {
+                                    active: isUrlActive('/search'),
+                                    as: Link,
+                                    className: 'breakpoint-smallOnly-hidden',
+                                    href: '/search',
+                                    text: 'Search',
+                                    'aria-label': 'Search',
+                                    icon: {
+                                        svg: isUrlActive('/search') ? IconSearchActiveSvg : IconSearchSvg,
+                                    },
+                                },
+                                {
+                                    active: isUrlActive('/cart'),
+                                    as: Link,
+                                    className: 'breakpoint-smallOnly-hidden',
+                                    href: '/cart',
+                                    text: 'Bag',
+                                    'aria-label': 'Bag',
+                                    icon: {
+                                        svg: isUrlActive('/cart') ? IconBagActiveSvg : IconBagSvg,
+                                        count: cart?.totalQuantity || 0,
+                                    },
+                                },
+                            ],
+                        }}
+                    />
+                </HeaderContainer>
+
+                <Main>{children}</Main>
+
+                <FooterContainer as="footer">
+                    <Footer
+                        loading={queries.app.loading}
+                        html={
+                            footer?.items[0]?.html ? (
+                                <PageBuilder html={footer.items[0].html} />
+                            ) : (
+                                <Copyright>{store?.copyright}</Copyright>
+                            )
+                        }
+                    />
+                </FooterContainer>
+
+                <TabBarContainer as="nav">
+                    <TabBar
+                        items={[
+                            {
+                                active: isUrlActive('/'),
+                                as: Link,
+                                href: '/',
+                                text: 'Home',
+                                'aria-label': 'Home',
+                                icon: {
+                                    svg: isUrlActive('/') ? IconHomeActiveSvg : IconHomeSvg,
+                                },
+                            },
+                            {
+                                active: isUrlActive('/search'),
+                                as: Link,
+                                href: '/search',
+                                text: 'Search',
+                                'aria-label': 'Search',
+                                icon: {
+                                    svg: isUrlActive('/search') ? IconSearchActiveSvg : IconSearchSvg,
+                                },
+                            },
+                            {
+                                active: isUrlActive('/cart'),
+                                as: Link,
+                                href: '/cart',
+                                text: 'Bag',
+                                'aria-label': 'Bag',
+                                icon: {
+                                    svg: isUrlActive('/cart') ? IconBagActiveSvg : IconBagSvg,
+                                    count: cart?.totalQuantity || 0,
+                                },
+                            },
+                        ]}
+                    />
+                </TabBarContainer>
+            </Root>
         </React.Fragment>
     )
 }

@@ -1,15 +1,16 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
+import { Root } from './Page.styled'
 
 import { usePage } from './usePage'
-import useNetworkStatus from '../../hooks/useNetworkStatus'
+import useNetworkStatus from '~/hooks/useNetworkStatus'
 
-import PageTemplate from '@pmet-public/luma-ui/dist/templates/Page'
+import { PageSkeleton } from './Page.skeleton'
 
-const Head = dynamic(() => import('../Head'))
-const Link = dynamic(() => import('../Link'))
-const Error = dynamic(() => import('../Error'))
-const PageBuilder = dynamic(() => import('../../components/PageBuilder'))
+const Head = dynamic(() => import('~/components/Head'))
+const Link = dynamic(() => import('~/components/Link'))
+const Error = dynamic(() => import('~/components/Error'))
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
 
 type PageProps = {
     id: number
@@ -37,9 +38,9 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
                 />
             )}
 
-            <PageTemplate loading={queries.page.loading}>
-                {page?.content && <PageBuilder html={page.content} />}
-            </PageTemplate>
+            <Root>
+                {queries.page.loading && !page?.content ? <PageSkeleton /> : <PageBuilder html={page.content} />}
+            </Root>
         </React.Fragment>
     )
 }

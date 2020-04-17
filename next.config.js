@@ -52,7 +52,6 @@ module.exports = withOffline({
          */
         config.module.rules.push({
             test: /\.(graphql|gql)$/,
-            exclude: /node_modules/,
             loader: 'graphql-tag/loader',
         })
 
@@ -62,6 +61,11 @@ module.exports = withOffline({
          */
         config.node = {
             fs: 'empty',
+        }
+
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            '~': path.resolve(__dirname),
         }
 
         return config
