@@ -64,9 +64,11 @@
     "@types/request": "^2.48.2",
     "@types/styled-components": "5.1.0",
     "@types/workbox-window": "^4.3.3",
+    "add": "^2.0.6",
     "babel-plugin-inline-react-svg": "^1.1.1",
     "babel-plugin-styled-components": "1.10.7",
     "html-webpack-plugin": "^4.0.2",
+    "next-transpile-modules": "^3.2.0",
     "prettier": "^2.0.2",
     "react-is": "^16.13.1",
     "react-svg-loader": "^3.0.3",
@@ -77,6 +79,7 @@
     "tslint-react": "^4.2.0",
     "tslint-react-hooks": "^2.2.1",
     "typescript": "^3.7.3",
-    "webpack": "^4.41.2"
+    "webpack": "^4.41.2",
+    "yarn": "^1.22.4"
   }
 }

@@ -1,8 +1,8 @@
 import React, { useMemo, useRef, useEffect } from 'react'
-import { Component, Props } from '@pmet-public/luma-ui/dist/lib'
+import { Component, Props } from '@pmet-public/luma-ui/src/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
-import { Image, useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
+import { Image, useImage } from '@pmet-public/luma-ui/src/hooks/useImage'
 
 export type ParallaxProps = {
     speed: number

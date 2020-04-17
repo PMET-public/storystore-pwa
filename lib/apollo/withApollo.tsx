@@ -109,6 +109,7 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
                         // Since AppComponents and PageComponents have different context types
                         // we need to modify their props a little.
                         let props
+
                         if (inAppContext) {
                             props = { ...pageProps, apolloClient }
                         } else {

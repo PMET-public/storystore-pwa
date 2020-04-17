@@ -1,9 +1,9 @@
 import React, { useRef } from 'react'
-import { Component } from '@pmet-public/luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/src/lib'
 import { Root, Caption } from './Image.styled'
 
 import Link, { LinkProps } from '../../../Link'
-import { useImage } from '@pmet-public/luma-ui/dist/hooks/useImage'
+import { useImage } from '@pmet-public/luma-ui/src/hooks/useImage'
 
 export type ImageProps = {
     image: {

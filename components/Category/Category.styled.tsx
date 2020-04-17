@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { Wrapper as ContainerWrapper } from '@pmet-public/luma-ui/dist/components/Container/Container.styled'
-import { Root as FiltersRoot } from '@pmet-public/luma-ui/dist/components/Filters/Filters.styled'
+import { Wrapper as ContainerWrapper } from '@pmet-public/luma-ui/src/components/Container/Container.styled'
+import { Root as FiltersRoot } from '@pmet-public/luma-ui/src/components/Filters/Filters.styled'
 
 import FiltersIconSvg from 'remixicon/icons/Media/equalizer-line.svg'
 import BackIconSvg from 'remixicon/icons/System/arrow-left-line.svg'

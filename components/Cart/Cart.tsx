@@ -7,11 +7,11 @@ import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 import { useRouter } from 'next/router'
 import Link from '../Link'
-import Button from '@pmet-public/luma-ui/dist/components/Button'
-import CartTemplate from '@pmet-public/luma-ui/dist/templates/Cart'
+import Button from '@pmet-public/luma-ui/src/components/Button'
+import CartTemplate from '@pmet-public/luma-ui/src/templates/Cart'
 import Head from '../Head'
 
-const CartLanding = dynamic(() => import('@pmet-public/luma-ui/dist/templates/CartLanding'))
+const CartLanding = dynamic(() => import('@pmet-public/luma-ui/src/templates/CartLanding'))
 const Error = dynamic(() => import('../Error'))
 
 type CartProps = {}

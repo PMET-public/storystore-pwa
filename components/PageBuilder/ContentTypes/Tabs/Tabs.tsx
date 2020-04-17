@@ -1,7 +1,7 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/src/lib'
 
-import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/luma-ui/dist/components/Tabs'
+import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/luma-ui/src/components/Tabs'
 
 export type TabsProps = {
     activeTab: number

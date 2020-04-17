@@ -2,13 +2,13 @@ import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, u
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { setCookie, getCookie } from '../../lib/cookies'
 import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
-import { toast } from '@pmet-public/luma-ui/dist/lib'
+import { toast } from '@pmet-public/luma-ui/src/lib'
 import { version, dependencies } from '../../package.json'
 
 import { useSettings } from './useSettings'
 
-import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/dist/components/Form'
-import Button from '@pmet-public/luma-ui/dist/components/Button'
+import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/src/components/Form'
+import Button from '@pmet-public/luma-ui/src/components/Button'
 import { useRouter } from 'next/router'
 import { Response } from '../../pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'

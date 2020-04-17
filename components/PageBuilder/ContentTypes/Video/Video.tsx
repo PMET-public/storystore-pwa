@@ -1,5 +1,5 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/dist/lib'
+import { Component } from '@pmet-public/luma-ui/src/lib'
 import { Root } from './Video.styled'
 
 export type VideoProps = {

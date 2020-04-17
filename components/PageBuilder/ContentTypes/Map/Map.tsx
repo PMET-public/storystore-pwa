@@ -1,6 +1,6 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/dist/lib'
-import MapComponent from '@pmet-public/luma-ui/dist/components/Map'
+import { Component } from '@pmet-public/luma-ui/src/lib'
+import MapComponent from '@pmet-public/luma-ui/src/components/Map'
 
 type Location = {
     _id: number

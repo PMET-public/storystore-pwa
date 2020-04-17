@@ -9,18 +9,9 @@ import Router from 'next/router'
 import { NextComponentType, NextPageContext, GetServerSideProps } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
-import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/dist/theme'
+import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/src/theme'
 
 const isProduction = process.env.NODE_ENV === 'production'
-
-if (process.browser) {
-    if (isProduction) {
-        /**
-         * Google Analytics
-         */
-        ReactGA.initialize('UA-162672258-1')
-    }
-}
 
 const FontStyles = createGlobalStyle`
     @font-face {
@@ -180,12 +171,21 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
     )
 
     useEffect(() => {
+        if (isProduction) {
+            /**
+             * Google Analytics
+             */
+            ReactGA.initialize('UA-162672258-1')
+        }
+    })
+
+    useEffect(() => {
         Router.events.on('routeChangeComplete', handleRouteChange)
 
         return () => {
             Router.events.off('routeChangeComplete', handleRouteChange)
         }
-    }, [])
+    }, [handleRouteChange])
 
     /**
      * Google Analytics

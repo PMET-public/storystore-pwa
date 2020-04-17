@@ -38,15 +38,15 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
 // import { ProductImageSkeleton } from './ProductImage.skeleton'
-// import Carousel from '@pmet-public/luma-ui/dist/components/Carousel'
-import Image from '@pmet-public/luma-ui/dist/components/Image'
-import Price from '@pmet-public/luma-ui/dist/components/Price'
-import Button from '@pmet-public/luma-ui/dist/components/Button'
-import Breadcrumbs from '@pmet-public/luma-ui/dist/components/Breadcrumbs'
-import TextSwatches from '@pmet-public/luma-ui/dist/components/Form/TextSwatches'
-import ThumbSwatches from '@pmet-public/luma-ui/dist/components/Form/ThumbSwatches'
-import Form, { Input } from '@pmet-public/luma-ui/dist/components/Form'
+// import Carousel from '@pmet-public/luma-ui/src/components/Carousel'
+import Price from '@pmet-public/luma-ui/src/components/Price'
+import Button from '@pmet-public/luma-ui/src/components/Button'
+import Breadcrumbs from '@pmet-public/luma-ui/src/components/Breadcrumbs'
+import Image from '@pmet-public/luma-ui/src/components/Image'
+import Form, { Input } from '@pmet-public/luma-ui/src/components/Form'
 
+const TextSwatches = dynamic(() => import('@pmet-public/luma-ui/src/components/Form/TextSwatches'))
+const ThumbSwatches = dynamic(() => import('@pmet-public/luma-ui/src/components/Form/ThumbSwatches'))
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
 export type ProductProps = {
