@@ -64,7 +64,6 @@
     "@types/request": "^2.48.2",
     "@types/styled-components": "5.1.0",
     "@types/workbox-window": "^4.3.3",
-    "add": "^2.0.6",
     "babel-plugin-inline-react-svg": "^1.1.1",
     "babel-plugin-styled-components": "1.10.7",
     "html-webpack-plugin": "^4.0.2",
