@@ -1,5 +1,5 @@
 #import "./_SelectedPaymentMethod.graphql"
-#import "../../Cart/graphql/_Cart.graphql"
+#import "~/graphql/_CartContent.graphql"
 
 # Braintree!
 
@@ -16,7 +16,7 @@ mutation SetPaymentOnCart($cartId: String = "", $nonce: String!) {
     ) {
         cart {
             ...SelectedPaymentMethod
-            ...Cart
+            ...CartContent
         }
     }
 }

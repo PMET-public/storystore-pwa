@@ -24,7 +24,7 @@ function create(MAGENTO_URL?: string, initialState: any = {}, cookie?: string) {
 
     const httpLink = new HttpLink({
         uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', MAGENTO_URL).href,
-        credentials: 'same-origin',
+        credentials: 'include',
         headers,
     })
 
@@ -131,5 +131,6 @@ export default function createApolloClient(
 export const queryDefaultOptions: QueryHookOptions = {
     // fetchPolicy: 'cache-and-network',
     // returnPartialData: true,
+    errorPolicy: 'all',
     notifyOnNetworkStatusChange: true,
 }

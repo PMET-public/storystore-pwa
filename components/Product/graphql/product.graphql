@@ -1,8 +1,14 @@
-query ProductQuery($urlKey: String!) {
+#import "~/graphql/_cart.graphql"
+#import "~/graphql/_price.graphql"
+#import "~/graphql/_Gallery.graphql"
+
+query ProductQuery($urlKey: String!, $cartId: String = "", $hasCart: Boolean = false) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
     }
+
+    ...cart
 
     product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
@@ -22,32 +28,10 @@ query ProductQuery($urlKey: String!) {
                 href: url_path
             }
 
-            price: price_range {
-                minimum: minimum_price {
-                    discount {
-                        amountOff: amount_off
-                    }
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                    final: final_price {
-                        value
-                        currency
-                    }
-                }
-                maximum: maximum_price {
-                    regular: regular_price {
-                        value
-                    }
-                }
-            }
+            ...price
 
             gallery: media_gallery {
-                id: url
-                label
-                url
-                type: __typename
+                ...Gallery
             }
 
             shortDescription: short_description {
@@ -82,27 +66,7 @@ query ProductQuery($urlKey: String!) {
                         variantSku: sku
                         stock: stock_status
 
-                        price: price_range {
-                            minimum: minimum_price {
-                                discount {
-                                    amountOff: amount_off
-                                }
-                                regular: regular_price {
-                                    value
-                                    currency
-                                }
-                                final: final_price {
-                                    value
-                                    currency
-                                }
-                            }
-                            maximum: maximum_price {
-                                regular: regular_price {
-                                    value
-                                    currency
-                                }
-                            }
-                        }
+                        ...price
 
                         thumbnail {
                             label
@@ -110,10 +74,7 @@ query ProductQuery($urlKey: String!) {
                         }
 
                         gallery: media_gallery {
-                            id: url
-                            label
-                            url
-                            type: __typename
+                            ...Gallery
                         }
                     }
                 }

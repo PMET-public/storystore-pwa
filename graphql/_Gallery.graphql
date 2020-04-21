@@ -1,0 +1,6 @@
+fragment Gallery on MediaGalleryInterface {
+    id: url
+    label
+    url
+    type: __typename
+}

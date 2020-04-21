@@ -9,7 +9,6 @@ import { resolveImage } from '~/lib/resolveImage'
 import { useIsUrlActive } from '~/lib/resolveLink'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 
-import PageBuilder from '~/components/PageBuilder'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@pmet-public/luma-ui/src/components/Header'
@@ -24,6 +23,7 @@ import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 
 const Error = dynamic(() => import('~/components/Error'))
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
 type AppProps = {
     footerBlockId: string
@@ -60,7 +60,8 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         )
     }
 
-    const { store, cart, categories = [], footer } = queries.app.data || {}
+    const { store, cart, categories = [] } = queries.app.data || {}
+    const { footer } = queries.footer.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 

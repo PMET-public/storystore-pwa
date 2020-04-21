@@ -1,11 +1,11 @@
-#import "./_Cart.graphql"
+#import "~/graphql/_CartContent.graphql"
 
 mutation ApplyCoupon($cartId: String = "", $couponCode: String!) {
     cartId @client @export(as: "cartId")
 
     applyCouponToCart(input: { cart_id: $cartId, coupon_code: $couponCode }) {
         cart {
-            ...Cart
+            ...CartContent
         }
     }
 }

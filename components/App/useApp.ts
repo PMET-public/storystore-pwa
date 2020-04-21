@@ -4,16 +4,21 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { writeInLocalStorage } from '../../lib/localStorage'
 
 import APP_QUERY from './graphql/app.graphql'
+import FOOTER_QUERY from './graphql/footer.graphql'
 import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
 export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     const app = useQuery(APP_QUERY, {
         ...queryDefaultOptions,
-        errorPolicy: 'all',
+    })
+
+    const footer = useQuery(FOOTER_QUERY, {
+        ...queryDefaultOptions,
         variables: {
             hasFooter: !!footerBlockId,
             footerBlockId,
         },
+        ssr: false,
     })
 
     const storeId = app.data?.store?.id
@@ -45,6 +50,7 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     return {
         queries: {
             app,
+            footer,
         },
     }
 }

@@ -40,13 +40,13 @@ export const Images = styled.div`
     }
 `
 
-// export const CarouselWrapper = styled.div`
-//     @media ${props => props.theme.breakpoints.medium} {
-//         display: none;
-//     }
+export const CarouselWrapper = styled.div`
+    @media ${props => props.theme.breakpoints.medium} {
+        display: none;
+    }
 
-//     padding: 0;
-// `
+    padding: 0;
+`
 
 export const ImageWrapper = styled.div`
     display: grid;

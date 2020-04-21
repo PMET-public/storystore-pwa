@@ -1,0 +1,6 @@
+fragment pagination on Products {
+    pagination: page_info {
+        current: current_page
+        total: total_pages
+    }
+}

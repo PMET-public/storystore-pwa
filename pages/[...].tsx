@@ -92,10 +92,10 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
 
         urlKey = url.split('/').pop().split('.')[0]
 
-        if (type === CONTENT_TYPE.NOT_FOUND) res.statusCode = 404
+        if (res && type === CONTENT_TYPE.NOT_FOUND) res.statusCode = 404
     } catch (e) {
         console.error(e)
-        res.statusCode = 500
+        if (res) res.statusCode = 500
     }
 
     return { type, contentId, urlKey }

@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/router'
 
-import CartLanding from '@pmet-public/luma-ui/src/templates/CartLanding'
+import CartLanding from '@pmet-public/luma-ui/src/components/CartLanding'
 import Button from '@pmet-public/luma-ui/src/components/Button'
 import Link from '../Link'
 import Head from '../Head'

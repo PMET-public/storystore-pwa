@@ -1,3 +1,6 @@
+#import "~/graphql/_pagination.graphql"
+#import "~/graphql/_price.graphql"
+
 query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
         id
@@ -5,43 +8,19 @@ query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageS
     }
 
     products: products(search: $search, filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
-        pagination: page_info {
-            current: current_page
-            total: total_pages
-        }
-
         count: total_count
+
+        ...pagination
 
         items @connection(key: "items") {
             id
             title: name
             urlKey: url_key
+            ...price
 
             image {
                 alt: label
                 src: url
-            }
-
-            price: price_range {
-                minimum: minimum_price {
-                    discount {
-                        amountOff: amount_off
-                    }
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                    final: final_price {
-                        value
-                        currency
-                    }
-                }
-                maximum: maximum_price {
-                    regular: regular_price {
-                        value
-                        currency
-                    }
-                }
             }
         }
     }

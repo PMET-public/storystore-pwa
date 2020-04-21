@@ -1,11 +1,11 @@
-#import "./_Cart.graphql"
+#import "~/graphql/_CartContent.graphql"
 
 mutation UpdateCartItems($cartId: String = "", $items: [CartItemUpdateInput]!) {
     cartId @client @export(as: "cartId")
 
     updateCartItems(input: { cart_id: $cartId, cart_items: $items }) {
         cart {
-            ...Cart
+            ...CartContent
         }
     }
 }

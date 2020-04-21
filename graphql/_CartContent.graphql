@@ -1,4 +1,4 @@
-fragment Cart on Cart {
+fragment CartContent on Cart {
     id
 
     totalQuantity: total_quantity

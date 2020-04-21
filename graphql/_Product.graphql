@@ -1,0 +1,55 @@
+fragment Product on ProductInterface {
+    id
+
+    metaDescription: meta_description
+    metaKeywords: meta_keyword
+    metaTitle: meta_title
+
+    sku
+    stock: stock_status
+    type: __typename
+    title: name
+
+    categories {
+        id
+        text: name
+        href: url_path
+    }
+
+    price: price_range {
+        minimum: minimum_price {
+            discount {
+                amountOff: amount_off
+            }
+            regular: regular_price {
+                value
+                currency
+            }
+            final: final_price {
+                value
+                currency
+            }
+        }
+        maximum: maximum_price {
+            regular: regular_price {
+                value
+                currency
+            }
+        }
+    }
+
+    gallery: media_gallery {
+        id: url
+        label
+        url
+        type: __typename
+    }
+
+    shortDescription: short_description {
+        html
+    }
+
+    description: description {
+        html
+    }
+}

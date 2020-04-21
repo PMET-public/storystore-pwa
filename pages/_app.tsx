@@ -6,7 +6,8 @@ import NextNprogress from 'nextjs-progressbar'
 import App from '~/components/App'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
-import { NextComponentType, NextPageContext, GetServerSideProps } from 'next'
+import NextApp from 'next/app'
+import { NextComponentType, NextPageContext } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/src/theme'
@@ -223,11 +224,14 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+MyApp.getInitialProps = async appContext => {
+    const { req } = (appContext as any).ctx
+
+    const appProps = await NextApp.getInitialProps(appContext as any)
+
     return {
-        props: {
-            cookie: req?.headers.cookie,
-        },
+        ...appProps,
+        cookie: req?.headers.cookie,
     }
 }
 

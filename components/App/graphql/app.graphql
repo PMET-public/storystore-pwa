@@ -1,46 +1,10 @@
-query AppShellQuery(
-    $cartId: String = ""
-    $hasCart: Boolean = false
-    $footerBlockId: String = ""
-    $hasFooter: Boolean = false
-) {
-    store: storeConfig {
-        id
-        metaTitle: default_title
-        metaTitlePrefix: title_prefix
-        metaTitleSuffix: title_suffix
-        metaDescription: default_description
-        metaKeywords: default_keywords
-        baseMediaUrl: base_media_url
-        logoSrc: header_logo_src
-        logoAlt: logo_alt
-        homePath: cms_home_page
-        copyright
-        categoryUrlSuffix: category_url_suffix
-    }
+#import "~/graphql/_store.graphql"
+#import "~/graphql/_categoryList.graphql"
+#import "~/graphql/_cart.graphql"
+#import "~/graphql/_store.graphql"
 
-    hasCart @client @export(as: "hasCart")
-    cartId @client @export(as: "cartId")
-
-    cart(cart_id: $cartId) @include(if: $hasCart) @connection(key: "appCart") {
-        id
-        totalQuantity: total_quantity
-    }
-
-    categories: categoryList {
-        id
-        children {
-            id
-            text: name
-            href: url_path
-            image
-        }
-    }
-
-    footer: cmsBlocks(identifiers: [$footerBlockId]) @include(if: $hasFooter) {
-        items {
-            id: identifier
-            html: content
-        }
-    }
+query AppShellQuery($cartId: String = "", $hasCart: Boolean = false) {
+    ...store
+    ...cart
+    ...categoryList
 }

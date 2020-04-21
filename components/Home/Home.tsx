@@ -12,7 +12,7 @@ import { HomeSkeleton } from './Home.skeleton'
 import BubbleCarousel from '@pmet-public/luma-ui/src/components/BubbleCarousel'
 
 const Error = dynamic(() => import('~/components/Error'))
-const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
 type HomeProps = {
     id: string
@@ -23,7 +23,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.home.data.page) return <Error type="Offline" />
+    if (!online && !queries.home.data?.page) return <Error type="Offline" />
 
     const { page, categories, storeConfig } = queries.home.data || {}
 
@@ -64,7 +64,7 @@ export const Home: FunctionComponent<HomeProps> = ({ id }) => {
                 )}
 
                 {queries.home.loading && !page ? (
-                    <HomeSkeleton />
+                    <HomeSkeleton uniqueKey={`HomeSkeleton-${queries.home.loading}`} />
                 ) : !queries.home.loading && !page ? (
                     <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
                         Missing Home Page

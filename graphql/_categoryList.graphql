@@ -1,0 +1,11 @@
+fragment categoryList on Query {
+    categories: categoryList {
+        id
+        children {
+            id
+            text: name
+            href: url_path
+            image
+        }
+    }
+}

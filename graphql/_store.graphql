@@ -1,0 +1,17 @@
+fragment store on Query {
+    store: storeConfig {
+        id
+        baseMediaUrl: base_media_url
+        categoryUrlSuffix: category_url_suffix
+        copyright
+        homePage: cms_home_page
+        homePath: cms_home_page
+        logoAlt: logo_alt
+        logoSrc: header_logo_src
+        metaDescription: default_description
+        metaKeywords: default_keywords
+        metaTitle: default_title
+        metaTitlePrefix: title_prefix
+        metaTitleSuffix: title_suffix
+    }
+}

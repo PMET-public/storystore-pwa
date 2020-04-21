@@ -111,46 +111,42 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     </TopBarWrapper>
                 </TopBar>
                 <Content>
-                    {products && (
-                        <ProductListWrapper $margin>
-                            <ProductList
-                                loadingMore={queries.search.loading}
-                                items={products.items?.map(
-                                    ({ id, image, price, title, urlKey }: any, index: number) => ({
-                                        _id: `${id}--${index}`,
-                                        as: Link,
-                                        href: `/${urlKey + productUrlSuffix}`,
-                                        urlResolver: {
-                                            type: 'PRODUCT',
-                                            id,
-                                            urlKey,
-                                        },
-                                        image: {
-                                            alt: image.alt,
-                                            src: {
-                                                desktop: resolveImage(image.src, { width: 1260 }),
-                                                mobile: resolveImage(image.src, { width: 960 }),
-                                            },
-                                        },
-                                        price: {
-                                            label:
-                                                price.maximum.regular.value > price.minimum.regular.value
-                                                    ? 'Starting at'
-                                                    : undefined,
-                                            regular: price.minimum.regular.value,
-                                            special:
-                                                price.minimum.discount.amountOff &&
-                                                price.minimum.final.value - price.minimum.discount.amountOff,
-                                            currency: price.minimum.regular.currency,
-                                        },
-                                        title: {
-                                            text: title,
-                                        },
-                                    })
-                                )}
-                            />
-                        </ProductListWrapper>
-                    )}
+                    <ProductListWrapper $margin>
+                        <ProductList
+                            loadingMore={queries.search.loading}
+                            items={products?.items?.map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                                _id: `${id}--${index}`,
+                                as: Link,
+                                href: `/${urlKey + productUrlSuffix}`,
+                                urlResolver: {
+                                    type: 'PRODUCT',
+                                    id,
+                                    urlKey,
+                                },
+                                image: {
+                                    alt: image.alt,
+                                    src: {
+                                        desktop: resolveImage(image.src, { width: 1260 }),
+                                        mobile: resolveImage(image.src, { width: 960 }),
+                                    },
+                                },
+                                price: {
+                                    label:
+                                        price.maximum.regular.value > price.minimum.regular.value
+                                            ? 'Starting at'
+                                            : undefined,
+                                    regular: price.minimum.regular.value,
+                                    special:
+                                        price.minimum.discount.amountOff &&
+                                        price.minimum.final.value - price.minimum.discount.amountOff,
+                                    currency: price.minimum.regular.currency,
+                                },
+                                title: {
+                                    text: title,
+                                },
+                            }))}
+                        />
+                    </ProductListWrapper>
                 </Content>
                 {/* TODO: Integrate Filters */}
                 {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
@@ -167,8 +163,8 @@ export const Search: FunctionComponent<SearchProps> = () => {
                             )}
                         </FiltersWrapper>
 
-                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} */}
-                )}
+                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} 
+                )}*/}
             </Root>
 
             {query && products?.count === 0 && (
@@ -179,53 +175,6 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     </Error>
                 </NoResult>
             )}
-
-            {/* Delete Below */}
-
-            {/* <CategoryTemplate
-                loading={queries.search.loading}
-                loadingMore={queries.search.loading}
-                search={{
-                    searchBar: {
-                        label: 'Search',
-                        count: getProductCount(),
-                        value: query.toString(),
-                        onUpdate: api.search,
-                    },
-                    noResult: getNotResult(),
-                }}
-                products={{
-                    items: products?.items.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                        _id: `${id}--${index}`,
-                        as: Link,
-                        href: `/${urlKey}${productUrlSuffix}`,
-                        urlResolver: {
-                            type: 'PRODUCT',
-                            id,
-                            urlKey,
-                        },
-                        image: {
-                            alt: image.alt,
-                            src: {
-                                desktop: resolveImage(image.src, { width: 1260 }),
-                                mobile: resolveImage(image.src, { width: 960 }),
-                            },
-                        },
-                        price: {
-                            label:
-                                price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                            regular: price.minimum.regular.value,
-                            special:
-                                price.minimum.discount.amountOff &&
-                                price.minimum.final.value - price.minimum.discount.amountOff,
-                            currency: price.minimum.regular.currency,
-                        },
-                        title: {
-                            text: title,
-                        },
-                    })),
-                }}
-            /> */}
         </React.Fragment>
     )
 }

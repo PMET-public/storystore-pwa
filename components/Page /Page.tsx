@@ -10,7 +10,7 @@ import { PageSkeleton } from './Page.skeleton'
 const Head = dynamic(() => import('~/components/Head'))
 const Link = dynamic(() => import('~/components/Link'))
 const Error = dynamic(() => import('~/components/Error'))
-const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
 type PageProps = {
     id: number

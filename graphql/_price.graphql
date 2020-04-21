@@ -1,0 +1,22 @@
+fragment price on ProductInterface {
+    price: price_range {
+        minimum: minimum_price {
+            discount {
+                amountOff: amount_off
+            }
+            regular: regular_price {
+                value
+                currency
+            }
+            final: final_price {
+                value
+                currency
+            }
+        }
+        maximum: maximum_price {
+            regular: regular_price {
+                value
+            }
+        }
+    }
+}

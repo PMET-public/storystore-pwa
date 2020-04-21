@@ -1,18 +1,10 @@
-import React, {
-    FunctionComponent,
-    useCallback,
-    useState,
-    useEffect,
-    // MutableRefObject,
-    useRef,
-    useMemo,
-} from 'react'
+import React, { FunctionComponent, useCallback, useState, MutableRefObject, useRef, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import {
     Root,
     Wrapper,
     Images,
-    // CarouselWrapper,
+    CarouselWrapper,
     ImageWrapper,
     GalleryGrid,
     InfoWrapper,
@@ -37,8 +29,8 @@ import { resolveImage } from '~/lib/resolveImage'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
-// import { ProductImageSkeleton } from './ProductImage.skeleton'
-// import Carousel from '@pmet-public/luma-ui/src/components/Carousel'
+import { ProductImageSkeleton } from './ProductImage.skeleton'
+import Carousel from '@pmet-public/luma-ui/src/components/Carousel'
 import Price from '@pmet-public/luma-ui/src/components/Price'
 import Button from '@pmet-public/luma-ui/src/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/src/components/Breadcrumbs'
@@ -66,13 +58,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { store, product } = queries.product.data || {}
-
-    /**
-     * Re-render if Cart in client
-     */
-    const { hasCart } = queries.client.data || {}
-    useEffect(() => {}, [hasCart])
+    const { store, product, cart } = queries.product.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -114,7 +100,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [api, product, history])
 
-    // const [scrollerRef, setScrollerRef] = useState<MutableRefObject<Element>>()
+    const [scrollerRef, setScrollerRef] = useState<MutableRefObject<Element>>()
 
     const infoRef = useRef<HTMLDivElement>(null)
 
@@ -174,7 +160,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 <Wrapper>
                     <Images>
                         {/* Mobile Gallery Carousel */}
-                        {/* <CarouselWrapper
+                        <CarouselWrapper
                             as={Carousel}
                             scrollerRef={setScrollerRef}
                             gap={1}
@@ -184,12 +170,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             hideScrollBar
                         >
                             {!gallery ? (
-                                <CarouselItem as={Carousel.Item}>
+                                <ImageWrapper as={Carousel.Item}>
                                     <ProductImageSkeleton style={{ width: '100%' }} />
-                                </CarouselItem>
+                                </ImageWrapper>
                             ) : (
                                 gallery.map((image: any, index: number) => (
-                                    <CarouselItem key={index} as={Carousel.Item}>
+                                    <ImageWrapper key={index} as={Carousel.Item}>
                                         <Image
                                             {...image}
                                             transition
@@ -201,20 +187,26 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                 ...image.lazyload,
                                             }}
                                         />
-                                    </CarouselItem>
+                                    </ImageWrapper>
                                 ))
                             )}
-                        </CarouselWrapper> */}
+                        </CarouselWrapper>
 
                         {/* Tablet and Desktop Gallery Grid */}
                         <GalleryGrid>
-                            {queries.product.loading && !gallery ? (
-                                <>⏱ Loading...</>
+                            {!gallery ? (
+                                <>
+                                    <ImageWrapper as={Carousel.Item}>
+                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
+                                    </ImageWrapper>
+                                    <ImageWrapper as={Carousel.Item}>
+                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
+                                    </ImageWrapper>
+                                </>
                             ) : (
-                                gallery?.map((image: any, index: number) => (
+                                gallery.map((image: any, index: number) => (
                                     <ImageWrapper key={index}>
                                         <Image
-                                            key={index}
                                             {...image}
                                             transition
                                             vignette={10}
@@ -223,28 +215,6 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                     </ImageWrapper>
                                 ))
                             )}
-
-                            {/* {!gallery ? (
-                                <>
-                                    <CarouselItem as={Carousel.Item}>
-                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </CarouselItem>
-                                    <CarouselItem as={Carousel.Item}>
-                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </CarouselItem>
-                                </>
-                            ) : (
-                                gallery.map((image: any, index: number) => (
-                                    <CarouselItem key={index}>
-                                        <Image
-                                            {...image}
-                                            transition
-                                            vignette={10}
-                                            lazyload={{ offsetY: 100, ...image.lazyload }}
-                                        />
-                                    </CarouselItem>
-                                ))
-                            )} */}
                         </GalleryGrid>
                     </Images>
 
@@ -362,7 +332,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                             <Button
                                                 as="button"
                                                 text={product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out'}
-                                                disabled={hasCart === false || product.stock === 'OUT_OF_STOCK'}
+                                                disabled={!cart?.id || product.stock === 'OUT_OF_STOCK'}
                                                 loading={
                                                     api.addingSimpleProductsToCart.loading ||
                                                     api.addingConfigurableProductToCart.loading

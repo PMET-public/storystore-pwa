@@ -1,3 +1,0 @@
-query ProductClient {
-    hasCart @client
-}
