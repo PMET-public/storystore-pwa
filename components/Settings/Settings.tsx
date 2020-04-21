@@ -1,23 +1,23 @@
 import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
-import { setCookie, getCookie } from '../../lib/cookies'
-import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
 import { toast } from '@pmet-public/luma-ui/src/lib'
-import { version, dependencies } from '../../package.json'
+import { version, dependencies } from '~/package.json'
 
 import { useSettings } from './useSettings'
+import { useCart } from '~/components/Cart/useCart'
 
 import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/src/components/Form'
 import Button from '@pmet-public/luma-ui/src/components/Button'
 import { useRouter } from 'next/router'
-import { Response } from '../../pages/api/check-endpoint'
+import { Response } from '~/pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'
+import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
 type ReducerState = {
-    MAGENTO_URL?: string
-    HOME_PAGE_ID?: string
-    FOOTER_BLOCK_ID?: string
-    GOOGLE_MAPS_API_KEY?: string
+    magentoUrl?: string
+    homePageId?: string
+    footerBlockId?: string
+    googleMapsApiKey?: string
 }
 
 type ReducerActions = {
@@ -27,15 +27,12 @@ type ReducerActions = {
 
 export type SettingsProps = {
     defaults: {
-        MAGENTO_URL?: string
-        HOME_PAGE_ID?: string
-        FOOTER_BLOCK_ID?: string
-        GOOGLE_MAPS_API_KEY?: string
+        magentoUrl?: string
+        homePageId?: string
+        footerBlockId?: string
+        googleMapsApiKey?: string
     }
-    state: ReducerState
 }
-
-const initialState: ReducerState = process.browser ? JSON.parse(getCookie(SETTINGS_OVERRIDE_COOKIE) ?? '{}') : null
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
@@ -58,7 +55,9 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _state }) => {
+export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+    const { settings, setSettings } = useStoryStore()
+
     const apolloClient = useApolloClient()
 
     const router = useRouter()
@@ -67,20 +66,22 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
 
     const [saving, setSaving] = useState(false)
 
-    const [state, dispatch] = useReducer(reducer, initialState || _state)
+    const [state, dispatch] = useReducer(reducer, settings)
 
     const {
         queries: { footer, home },
     } = useSettings({
-        homePageId: state.HOME_PAGE_ID || defaults.HOME_PAGE_ID || '',
-        footerBlockId: state.FOOTER_BLOCK_ID || defaults.FOOTER_BLOCK_ID || '',
+        homePageId: state.homePageId || defaults.homePageId || '',
+        footerBlockId: state.footerBlockId || defaults.footerBlockId || '',
     })
+
+    const { api: cartApi } = useCart()
 
     /**
      * Initial Values
      */
     useEffect(() => {
-        formRef.current?.setValue(Object.keys(initialState).map(key => ({ [key]: (state as any)[key] })))
+        formRef.current?.setValue(Object.keys(settings).map(key => ({ [key]: (state as any)[key] })))
     }, [formRef])
 
     const handleSaveOverrides = useCallback(
@@ -89,10 +90,10 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
 
             try {
                 // Validate
-                if (payload.MAGENTO_URL) {
-                    payload.MAGENTO_URL = addCredentialsToMagentoUrls(payload.MAGENTO_URL)
+                if (payload.magentoUrl) {
+                    payload.magentoUrl = addCredentialsToMagentoUrls(payload.magentoUrl)
 
-                    const res = await fetch(`/api/check-endpoint?url=${payload.MAGENTO_URL}`)
+                    const res = await fetch(`/api/check-endpoint?url=${payload.magentoUrl}`)
 
                     const data: Response = await res.json()
 
@@ -102,6 +103,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
                         })
                         throw Error
                     }
+
+                    // Reset Store Cart
+                    await cartApi.createCart()
                 }
 
                 // Save Changes
@@ -112,7 +116,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
                     return value ? { ...result, [key]: value } : { ...result }
                 }, {})
 
-                setCookie(SETTINGS_OVERRIDE_COOKIE, JSON.stringify(values), 365)
+                // Save in StoryStore Context
+                setSettings(values)
 
                 // Reset
                 localStorage.clear()
@@ -128,7 +133,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
 
             setSaving(false)
         },
-        [dispatch, apolloClient, setSaving, formRef]
+        [dispatch, apolloClient, setSaving, formRef, cartApi]
     )
 
     const handleOnResetToDefaults = useCallback(() => {
@@ -156,9 +161,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
                     ref={formRef}
                 >
                     <Input
-                        name="MAGENTO_URL"
+                        name="magentoUrl"
                         label="Magento URL"
-                        placeholder={defaults.MAGENTO_URL}
+                        placeholder={defaults.magentoUrl}
                         style={{ textOverflow: 'ellipsis' }}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
@@ -166,29 +171,29 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults, state: _s
                     />
 
                     <Input
-                        name="GOOGLE_MAPS_API_KEY"
+                        name="googleMapsApiKey"
                         label="Google Maps API Key"
-                        placeholder={defaults.GOOGLE_MAPS_API_KEY}
+                        placeholder={defaults.googleMapsApiKey}
                         style={{ textOverflow: 'ellipsis' }}
                     />
 
                     <Input
-                        name="HOME_PAGE_ID"
+                        name="homePageId"
                         label="Home Page URL Key"
-                        placeholder={defaults.HOME_PAGE_ID}
+                        placeholder={defaults.homePageId}
                         style={{ textOverflow: 'ellipsis' }}
                         error={
                             home.loading || home.data?.page
                                 ? undefined
-                                : `🏡 No Home page found. Did you mean to use "${home.data?.storeConfig?.homePage}"?`
+                                : `🏡 No Home page found. Did you mean to use "${home.data?.store?.homePage}"?`
                         }
                         color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
                     />
 
                     <Input
-                        name="FOOTER_BLOCK_ID"
+                        name="footerBlockId"
                         label="Footer Block ID"
-                        placeholder={defaults.FOOTER_BLOCK_ID}
+                        placeholder={defaults.footerBlockId}
                         style={{ textOverflow: 'ellipsis' }}
                         error={
                             footer.loading || footer.data?.footer?.items[0]?.id

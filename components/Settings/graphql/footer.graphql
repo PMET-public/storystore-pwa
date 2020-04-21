@@ -1,4 +1,4 @@
-query AppShellFooterQuery($footerBlockId: String!) {
+query SettingsFooterQuery($footerBlockId: String!) {
     footer: cmsBlocks(identifiers: [$footerBlockId]) {
         items {
             id: identifier

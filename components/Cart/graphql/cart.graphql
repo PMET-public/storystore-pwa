@@ -1,9 +1,6 @@
 #import "~/graphql/_cart.graphql"
 
-query CartQuery($hasCart: Boolean = false, $cartId: String = "") {
-    hasCart @client @export(as: "hasCart")
-    cartId @client @export(as: "cartId")
-
+query CartQuery($cartId: String = "") {
     store: storeConfig {
         id
         productUrlSuffix: product_url_suffix

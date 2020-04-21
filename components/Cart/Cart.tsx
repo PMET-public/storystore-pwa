@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { Root, SummaryWrapper, CartSummaryWrapper, ProductList, StickyButtonWrapper } from './Cart.styled'
 
 import { useCart } from './useCart'
+import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 
 import { useRouter } from 'next/router'
@@ -20,9 +21,11 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = () => {
+    const { cartId } = useStoryStore()
+
     const history = useRouter()
 
-    const { queries, api } = useCart()
+    const { queries, api } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
         history.push('/checkout')
@@ -32,7 +35,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     if (!online && !queries.cart.data) return <Error type="Offline" />
 
-    if (!queries.cart.loading && !queries.cart.data) return <Error type="500" />
+    if (!queries.cart.loading && queries.cart.error) return <Error type="500" />
 
     const { store, cart } = queries.cart.data || {}
 
@@ -91,8 +94,8 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 addLabel: `Add another ${product.name} from shopping bag`,
                                 substractLabel: `Remove one ${product.name} from shopping bag`,
                                 removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => api.updateCartItem({ productId: id, quantity }),
-                                onRemove: () => api.removeCartItem({ productId: id }),
+                                onUpdate: (quantity: number) => api.updateCartItem({ cartId, productId: id, quantity }),
+                                onRemove: () => api.removeCartItem({ cartId, productId: id }),
                             },
                             price: {
                                 currency: price.amount.currency,
@@ -132,11 +135,11 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                         },
                                         submitting: api.applyingCoupon.loading || api.removingCoupon.loading,
                                         onReset: () => {
-                                            api.removeCoupon()
+                                            api.removeCoupon({ cartId })
                                         },
                                         onSubmit: (values: any) => {
                                             const { couponCode } = values
-                                            api.applyCoupon({ couponCode })
+                                            api.applyCoupon({ cartId, couponCode })
                                         },
                                     },
                                 ],

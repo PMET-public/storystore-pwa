@@ -1,10 +1,7 @@
 #import "~/graphql/_store.graphql"
 #import "~/graphql/_categoryList.graphql"
-#import "~/graphql/_cart.graphql"
-#import "~/graphql/_store.graphql"
 
-query AppShellQuery($cartId: String = "", $hasCart: Boolean = false) {
+query AppShellQuery {
     ...store
-    ...cart
     ...categoryList
 }

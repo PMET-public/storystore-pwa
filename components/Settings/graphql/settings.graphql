@@ -1,6 +1,0 @@
-query Settings {
-    storeConfig {
-        id
-        baseUrl: base_url
-    }
-}

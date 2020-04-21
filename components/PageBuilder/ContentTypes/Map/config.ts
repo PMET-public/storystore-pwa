@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
-import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { overrideSettingsFromCookie } from '../../../../lib/overrideFromCookie'
+import { getStyleAsObject } from '~/components/PageBuilder/lib/getStyleAsObject'
+import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
 
 const component = dynamic(() => import('.'))
 
@@ -57,14 +57,13 @@ const props = (elem: HTMLElement) => {
     const controls = elem.dataset.showControls === 'true'
 
     const settings = process.browser
-        ? {
-              GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-              ...overrideSettingsFromCookie('GOOGLE_MAPS_API_KEY')(),
-          }
+        ? updateSettingsFromCookie({
+              googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+          })
         : undefined
 
     return {
-        apiKey: settings?.GOOGLE_MAPS_API_KEY,
+        apiKey: settings?.googleMapsApiKey,
         locations,
         controls,
         style,

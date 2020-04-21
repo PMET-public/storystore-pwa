@@ -36,6 +36,7 @@ import Button from '@pmet-public/luma-ui/src/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/src/components/Breadcrumbs'
 import Image from '@pmet-public/luma-ui/src/components/Image'
 import Form, { Input } from '@pmet-public/luma-ui/src/components/Form'
+import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
 const TextSwatches = dynamic(() => import('@pmet-public/luma-ui/src/components/Form/TextSwatches'))
 const ThumbSwatches = dynamic(() => import('@pmet-public/luma-ui/src/components/Form/ThumbSwatches'))
@@ -50,6 +51,8 @@ type SelectedOptions = {
 }
 
 export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
+    const { cartId } = useStoryStore()
+
     const { queries, api } = useProduct({ urlKey })
 
     const history = useRouter()
@@ -58,7 +61,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { store, product, cart } = queries.product.data || {}
+    const { store, product } = queries.product.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -81,15 +84,15 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
     )
 
     const handleAddToCart = useCallback(async () => {
-        if (!product) return
+        if (!product || !cartId) return
 
         const { type, sku, variantSku } = product
 
         try {
             if (type === 'ConfigurableProduct') {
-                await api.addConfigurableProductToCart({ sku, variantSku, quantity: 1 })
+                await api.addConfigurableProductToCart({ cartId, sku, variantSku, quantity: 1 })
             } else if (type === 'SimpleProduct') {
-                await api.addSimpleProductToCart({ sku, quantity: 1 })
+                await api.addSimpleProductToCart({ cartId, sku, quantity: 1 })
             } else {
                 throw Error('Product type not supported')
             }
@@ -332,7 +335,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                             <Button
                                                 as="button"
                                                 text={product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out'}
-                                                disabled={!cart?.id || product.stock === 'OUT_OF_STOCK'}
+                                                disabled={!cartId || product.stock === 'OUT_OF_STOCK'}
                                                 loading={
                                                     api.addingSimpleProductsToCart.loading ||
                                                     api.addingConfigurableProductToCart.loading

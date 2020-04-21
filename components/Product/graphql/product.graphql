@@ -1,14 +1,11 @@
-#import "~/graphql/_cart.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_Gallery.graphql"
 
-query ProductQuery($urlKey: String!, $cartId: String = "", $hasCart: Boolean = false) {
+query ProductQuery($urlKey: String!) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
     }
-
-    ...cart
 
     product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {

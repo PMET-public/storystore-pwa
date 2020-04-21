@@ -1,10 +1,7 @@
 #import "~/graphql/_CartContent.graphql"
 
 fragment cart on Query {
-    hasCart @client @export(as: "hasCart")
-    cartId @client @export(as: "cartId")
-
-    cart(cart_id: $cartId) @include(if: $hasCart) @connection(key: "appCart") {
+    cart(cart_id: $cartId) @connection(key: "appCart") {
         ...CartContent
     }
 }

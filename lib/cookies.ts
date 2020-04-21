@@ -1,3 +1,8 @@
+export enum COOKIE {
+    settings = 'SETTINGS_OVERRIDES',
+    cartId = 'STORE_CART-ID',
+}
+
 export const setCookie = (name: string, value: string, expirationDays: number) => {
     const date = new Date()
     date.setTime(date.getTime() + expirationDays * 24 * 60 * 60 * 1000)
@@ -6,6 +11,7 @@ export const setCookie = (name: string, value: string, expirationDays: number) =
 }
 
 export const getCookieValueFromString = (cookie: string, name: string) => {
+    if (!cookie) return null
     const regex = cookie.match(new RegExp(name + '=([^;]+)'))
     return regex ? regex[1] : null
 }

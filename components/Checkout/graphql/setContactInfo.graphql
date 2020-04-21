@@ -1,8 +1,7 @@
 #import "./_ShippingMethods.graphql"
 #import "~/graphql/_CartContent.graphql"
 
-mutation SetContactInfo($cartId: String = "", $email: String!, $address: CartAddressInput!) {
-    cartId @client @export(as: "cartId")
+mutation SetContactInfo($cartId: String!, $email: String!, $address: CartAddressInput!) {
     # Set Email Address
     email: setGuestEmailOnCart(input: { cart_id: $cartId, email: $email }) @connection(key: "setGuestEmailOnCart") {
         cart {

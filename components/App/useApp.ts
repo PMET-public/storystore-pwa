@@ -1,13 +1,24 @@
-import { queryDefaultOptions } from '../../lib/apollo/client'
-import { useEffect } from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import { writeInLocalStorage } from '../../lib/localStorage'
+import { queryDefaultOptions } from '~/lib/apollo/client'
+import { useQuery } from '@apollo/react-hooks'
+
+import { useCart } from '~/components/Cart/useCart'
 
 import APP_QUERY from './graphql/app.graphql'
 import FOOTER_QUERY from './graphql/footer.graphql'
-import CREATE_EMPTY_CART_MUTATION from './graphql/createEmptyCart.graphql'
 
-export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
+type UseApp = {
+    cartId?: string
+    footerBlockId?: string
+}
+
+export const useApp = (props: UseApp = {}) => {
+    const { cartId, footerBlockId } = props
+
+    const {
+        queries: { cart },
+        api: { createCart, creatingCart },
+    } = useCart({ cartId })
+
     const app = useQuery(APP_QUERY, {
         ...queryDefaultOptions,
     })
@@ -15,42 +26,21 @@ export const useApp = ({ footerBlockId }: { footerBlockId: string }) => {
     const footer = useQuery(FOOTER_QUERY, {
         ...queryDefaultOptions,
         variables: {
-            hasFooter: !!footerBlockId,
-            footerBlockId,
+            footerBlockId: footerBlockId,
         },
+        skip: !footerBlockId,
         ssr: false,
     })
-
-    const storeId = app.data?.store?.id
-
-    /**
-     * No Cart no problem. Let's create one
-     */
-    const [createEmptyCart, creatingEmptyCart] = useMutation(CREATE_EMPTY_CART_MUTATION, {
-        update: (cache, { data: { cartId } }) => {
-            writeInLocalStorage('cartId', cartId)
-
-            cache.writeData({
-                data: {
-                    cartId,
-                },
-            })
-        },
-    })
-
-    useEffect(() => {
-        if (!storeId || app.loading || creatingEmptyCart.loading || !!creatingEmptyCart.data?.cartId) return
-
-        if ((app.error && !app.data?.cart) || app.data?.hasCart === false) {
-            if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
-            createEmptyCart()
-        }
-    }, [storeId, app, createEmptyCart, creatingEmptyCart])
 
     return {
         queries: {
             app,
+            cart,
             footer,
+        },
+        api: {
+            createCart,
+            creatingCart,
         },
     }
 }

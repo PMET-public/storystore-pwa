@@ -1,18 +1,12 @@
-import React, { useEffect, useCallback } from 'react'
-import { overrideSettingsFromCookie } from '~/lib/overrideFromCookie'
-import { version } from '~/package.json'
-import { useServiceWorker } from '~/hooks/useServiceWorker'
+import React from 'react'
 import NextNprogress from 'nextjs-progressbar'
 import App from '~/components/App'
-import ReactGA from 'react-ga'
-import Router from 'next/router'
 import NextApp from 'next/app'
 import { NextComponentType, NextPageContext } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/src/theme'
-
-const isProduction = process.env.NODE_ENV === 'production'
+import { StoryStoreProvider } from '~/lib/storystore'
 
 const FontStyles = createGlobalStyle`
     @font-face {
@@ -142,85 +136,24 @@ const FontStyles = createGlobalStyle`
 `
 
 const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pageProps, cookie }) => {
-    const env = {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        HOME_PAGE_ID: process.env.HOME_PAGE_ID,
-        FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
-        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-        ...overrideSettingsFromCookie('MAGENTO_URL', 'HOME_PAGE_ID', 'FOOTER_BLOCK_ID', 'GOOGLE_MAPS_API_KEY')(cookie),
-    }
-
-    const workbox = useServiceWorker()
-
-    /**
-     * Update SW Cache on Route change
-     */
-    const handleRouteChange = useCallback(
-        (url, error?: any) => {
-            if (error || !workbox) return
-
-            workbox.messageSW({
-                type: 'CACHE_URLS',
-                payload: {
-                    urlsToCache: [url],
-                },
-            })
-
-            ReactGA.pageview(url)
-        },
-        [workbox]
-    )
-
-    useEffect(() => {
-        if (isProduction) {
-            /**
-             * Google Analytics
-             */
-            ReactGA.initialize('UA-162672258-1')
-        }
-    })
-
-    useEffect(() => {
-        Router.events.on('routeChangeComplete', handleRouteChange)
-
-        return () => {
-            Router.events.off('routeChangeComplete', handleRouteChange)
-        }
-    }, [handleRouteChange])
-
-    /**
-     * Google Analytics
-     */
-    useEffect(() => {
-        if (!isProduction) return
-
-        ReactGA.set({ dimension1: version }) // verion
-
-        ReactGA.set({ dimension2: window.location.host }) // release
-
-        if (env.MAGENTO_URL) {
-            ReactGA.set({ dimension3: new URL(env.MAGENTO_URL).host }) // endpoint
-        }
-
-        ReactGA.pageview(window.location.pathname)
-    }, [env])
-
     return (
-        <ThemeProvider theme={baseTheme}>
-            <BaseStyles />
-            <FontStyles />
+        <StoryStoreProvider cookie={cookie}>
+            <ThemeProvider theme={baseTheme}>
+                <BaseStyles />
+                <FontStyles />
 
-            <App footerBlockId={env.FOOTER_BLOCK_ID}>
-                <NextNprogress
-                    color="rgba(161, 74, 36, 1)"
-                    startPosition={0.4}
-                    stopDelayMs={200}
-                    height={3}
-                    options={{ showSpinner: false, easing: 'ease' }}
-                />
-                <Component env={env} {...pageProps} />
-            </App>
-        </ThemeProvider>
+                <App>
+                    <NextNprogress
+                        color="rgba(161, 74, 36, 1)"
+                        startPosition={0.4}
+                        stopDelayMs={200}
+                        height={3}
+                        options={{ showSpinner: false, easing: 'ease' }}
+                    />
+                    <Component {...pageProps} />
+                </App>
+            </ThemeProvider>
+        </StoryStoreProvider>
     )
 }
 

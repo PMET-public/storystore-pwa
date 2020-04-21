@@ -1,26 +1,18 @@
 import gql from 'graphql-tag'
-import { getFromLocalStorage } from '../../lib/localStorage'
 
 /**
  * Extending the types of our server schema
  */
 export const typeDefs = gql`
     extend type Query {
-        hasCart: Boolean!
-        cartId: String!
         braintreeToken: String!
     }
 `
 
-const isBrowser = process.browser
-
 /**
  * Default values on application load
  */
-export const defaults = {
-    cartId: (isBrowser && getFromLocalStorage('cartId')) || '',
-    hasCart: isBrowser && !!getFromLocalStorage('cartId'),
-}
+export const defaults = {}
 
 /**
  * Resolvers
@@ -34,14 +26,6 @@ type Resolvers = {
 
 export const resolvers: Resolvers = {
     Query: {
-        cartId() {
-            const cartId = (isBrowser && getFromLocalStorage('cartId')) || ''
-            return cartId
-        },
-        hasCart() {
-            const cartId = isBrowser && getFromLocalStorage('cartId')
-            return isBrowser && !!cartId
-        },
         countries({ countries }) {
             /**
              * 🩹Patch:

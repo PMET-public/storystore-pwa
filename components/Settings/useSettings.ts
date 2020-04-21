@@ -1,8 +1,8 @@
 import { queryDefaultOptions } from '../../lib/apollo/client'
 import { useQuery } from '@apollo/react-hooks'
 
-import HOME_QUERY from '../Home/graphql/home.graphql'
-import APP_QUERY from '../App/graphql/app.graphql'
+import HOME_QUERY from './graphql/home.graphql'
+import FOOTER_QUERY from './graphql/footer.graphql'
 
 type Props = {
     homePageId: string
@@ -18,13 +18,13 @@ export const useSettings = ({ homePageId, footerBlockId }: Props) => {
         },
     })
 
-    const footer = useQuery(APP_QUERY, {
+    const footer = useQuery(FOOTER_QUERY, {
         ...queryDefaultOptions,
         errorPolicy: 'all',
         variables: {
-            hasFooter: !!footerBlockId,
             footerBlockId,
         },
+        skip: !footerBlockId,
     })
 
     return {

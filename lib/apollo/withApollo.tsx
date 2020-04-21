@@ -6,7 +6,7 @@ import ApolloClient from 'apollo-client'
 import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
-import { overrideSettingsFromCookie } from '../overrideFromCookie'
+import { updateSettingsFromCookie } from '../updateSettingsFromCookie'
 
 export interface IApolloProps {
     apolloState?: NormalizedCacheObject
@@ -18,15 +18,17 @@ export const initOnContext = (ctx: any) => {
 
     const cookie = (ctx.ctx || ctx).req?.headers.cookie
 
-    const { MAGENTO_URL } = {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        ...overrideSettingsFromCookie('MAGENTO_URL')(cookie),
-    }
+    const { magentoUrl } = updateSettingsFromCookie(
+        {
+            magentoUrl: process.env.MAGENTO_URL,
+        },
+        cookie
+    )
 
     const apolloState = ctx.apolloState || {}
 
     // Initialize ApolloClient if not already done
-    const apolloClient = ctx.apolloClient || createApolloClient(MAGENTO_URL, apolloState, cookie)
+    const apolloClient = ctx.apolloClient || createApolloClient(magentoUrl, apolloState, cookie)
 
     // We send the Apollo Client as a prop to the component to avoid calling initApollo() twice in the server.
     // Otherwise, the component would have to call initApollo() again but this
@@ -48,10 +50,9 @@ export const initOnContext = (ctx: any) => {
 
 export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any>) => {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: IApolloProps & AppInitialProps) => {
-        const { MAGENTO_URL } = {
-            MAGENTO_URL: process.env.MAGENTO_URL,
-            ...overrideSettingsFromCookie('MAGENTO_URL')(),
-        }
+        const { magentoUrl } = updateSettingsFromCookie({
+            magentoUrl: process.env.MAGENTO_URL,
+        })
 
         let client
 
@@ -60,7 +61,7 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
             client = apolloClient
         } else {
             // Happens on: next.js csr
-            client = createApolloClient(MAGENTO_URL, apolloState)
+            client = createApolloClient(magentoUrl, apolloState)
         }
 
         return (

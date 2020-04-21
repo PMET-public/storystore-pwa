@@ -1,8 +1,11 @@
 import React from 'react'
 
 import CartTemplate from '../components/Cart'
+import { NextPage } from 'next'
 
-const Cart = () => {
+type CartProps = {}
+
+const Cart: NextPage<CartProps> = () => {
     return <CartTemplate />
 }
 

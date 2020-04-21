@@ -1,12 +1,17 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useEffect, useCallback } from 'react'
 import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
+import { version } from '~/package.json'
+import ReactGA from 'react-ga'
+import Router from 'next/router'
 
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
 
 import { useApp } from './useApp'
 import { resolveImage } from '~/lib/resolveImage'
 import { useIsUrlActive } from '~/lib/resolveLink'
+import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useServiceWorker } from '~/hooks/useServiceWorker'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 
 import Head from '~/components/Head'
@@ -25,16 +30,85 @@ import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
-type AppProps = {
-    footerBlockId: string
-}
+type AppProps = {}
 
-export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) => {
-    const { queries } = useApp({ footerBlockId })
+export const App: FunctionComponent<AppProps> = ({ children }) => {
+    const workbox = useServiceWorker()
+
+    const { cartId, settings, setCartId } = useStoryStore()
+
+    const { queries, api } = useApp({ cartId, footerBlockId: settings.footerBlockId })
 
     const isUrlActive = useIsUrlActive()
 
     const online = useNetworkStatus()
+
+    const isProduction = process.env.NODE_ENV === 'production'
+
+    /**
+     * No Cart no problem. Let's create one
+     */
+    useEffect(() => {
+        if (queries.cart.loading || api.creatingCart.loading || !!api.creatingCart.data?.cartId) return
+
+        if (queries.cart.error || !cartId) {
+            if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
+            api.createCart(setCartId)
+        }
+    }, [queries, api, cartId])
+
+    /**
+     * Update SW Cache on Route change
+     */
+    const handleRouteChange = useCallback(
+        (url, error?: any) => {
+            if (error || !workbox) return
+
+            workbox.messageSW({
+                type: 'CACHE_URLS',
+                payload: {
+                    urlsToCache: [url],
+                },
+            })
+
+            ReactGA.pageview(url)
+        },
+        [workbox]
+    )
+
+    useEffect(() => {
+        Router.events.on('routeChangeComplete', handleRouteChange)
+
+        return () => {
+            Router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [handleRouteChange])
+
+    useEffect(() => {
+        if (isProduction) {
+            /**
+             * Google Analytics
+             */
+            ReactGA.initialize('UA-162672258-1')
+        }
+    }, [])
+
+    /**
+     * Google Analytics
+     */
+    useEffect(() => {
+        if (!isProduction) return
+
+        ReactGA.set({ dimension1: version }) // verion
+
+        ReactGA.set({ dimension2: window.location.host }) // release
+
+        if (settings.magentoUrl) {
+            ReactGA.set({ dimension3: new URL(settings.magentoUrl).host }) // endpoint
+        }
+
+        ReactGA.pageview(window.location.pathname)
+    }, [settings])
 
     if (online && queries.app.error) {
         const networkError = queries.app.error?.networkError as ServerError
@@ -60,7 +134,10 @@ export const App: FunctionComponent<AppProps> = ({ children, footerBlockId }) =>
         )
     }
 
-    const { store, cart, categories = [] } = queries.app.data || {}
+    const { store, categories = [] } = queries.app.data || {}
+
+    const { cart } = queries.cart.data || {}
+
     const { footer } = queries.footer.data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''

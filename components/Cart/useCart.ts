@@ -7,13 +7,25 @@ import UPDATE_CART_ITEMS_MUTATION from './graphql/updateCartItems.graphql'
 import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
+import CREATE_CART_MUTATION from './graphql/createCart.graphql'
 
-export const useCart = () => {
+type UseCart = {
+    cartId?: string
+}
+
+export const useCart = (props: UseCart = {}) => {
+    const { cartId } = props
+
     /**
      * Data Query
      */
     const cart = useQuery(CART_QUERY, {
         ...queryDefaultOptions,
+        errorPolicy: 'none',
+        variables: {
+            cartId,
+        },
+        skip: !cartId,
     })
 
     /**
@@ -29,10 +41,11 @@ export const useCart = () => {
     })
 
     const handleUpdateCartItem = useCallback(
-        (props: { productId: number; quantity: number }) => {
-            const { productId, quantity } = props
+        (props: { cartId: string; productId: number; quantity: number }) => {
+            const { cartId, productId, quantity } = props
             return updateCartItem({
                 variables: {
+                    cartId,
                     items: [{ cart_item_id: productId, quantity }],
                 },
             })
@@ -53,10 +66,11 @@ export const useCart = () => {
     })
 
     const handleRemoveCartItem = useCallback(
-        (props: { productId: number }) => {
+        (props: { cartId: string; productId: number }) => {
             const { productId } = props
             return removeCartItem({
                 variables: {
+                    cartId,
                     itemId: productId,
                 },
             })
@@ -77,10 +91,11 @@ export const useCart = () => {
     })
 
     const handleApplyCoupon = useCallback(
-        (props: { couponCode: string }) => {
+        (props: { cartId: string; couponCode: string }) => {
             const { couponCode } = props
             return applyCoupon({
                 variables: {
+                    cartId,
                     couponCode,
                 },
             })
@@ -100,9 +115,28 @@ export const useCart = () => {
         },
     })
 
-    const handleRemoveCoupon = useCallback(() => {
-        return removeCoupon()
-    }, [removeCoupon])
+    const handleRemoveCoupon = useCallback(
+        (props: { cartId: string }) => {
+            const { cartId } = props
+            return removeCoupon({
+                variables: {
+                    cartId,
+                },
+            })
+        },
+        [removeCoupon]
+    )
+
+    /**
+     * Handle Creating a New Cart
+     */
+
+    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION)
+
+    const handleCreateCart = useCallback(async (cb?: (cartId: string) => any) => {
+        const { data } = await createCart()
+        if (typeof cb === 'function') cb(data.cartId)
+    }, [])
 
     return {
         queries: {
@@ -117,6 +151,8 @@ export const useCart = () => {
             applyingCoupon,
             removeCoupon: handleRemoveCoupon,
             removingCoupon,
+            createCart: handleCreateCart,
+            creatingCart,
         },
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { NextComponentType } from 'next'
+import { NextPage } from 'next'
 
 import Error from '../components/Error'
 
@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 
 export type OfflineProps = {}
 
-const Offline: NextComponentType<any, any, OfflineProps> = ({}) => {
+const Offline: NextPage<OfflineProps> = () => {
     const router = useRouter()
 
     const online = useNetworkStatus()

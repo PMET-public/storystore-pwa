@@ -1,0 +1,14 @@
+#import "~/graphql/_store.graphql"
+
+query SettingsHomeQuery($id: String!) {
+    ...store
+
+    page: cmsPage(identifier: $id) {
+        id: url_key
+        title
+        content
+        metaTitle: meta_title
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+    }
+}

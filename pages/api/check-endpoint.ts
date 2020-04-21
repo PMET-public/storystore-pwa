@@ -23,7 +23,7 @@ enum ErrorLevels {
 }
 
 enum Fields {
-    'MAGENTO_URL' = 'MAGENTO_URL',
+    'magentoUrl' = 'magentoUrl',
 }
 
 export type ErrorResponse = {
@@ -46,7 +46,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             errors: [
                 {
                     level: ErrorLevels.ERROR,
-                    key: Fields.MAGENTO_URL,
+                    key: Fields.magentoUrl,
                     message: ErrorMessages.INVALID_URL,
                 },
             ],
@@ -67,16 +67,16 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             .replace(/\n/g, '')
     )
 
-    let MAGENTO_URL
+    let magentoUrl
 
     try {
-        MAGENTO_URL = new URL(`graphql?query=${graphQLQuery}`, url).href
+        magentoUrl = new URL(`graphql?query=${graphQLQuery}`, url).href
     } catch (err) {
         return res.status(422).send({
             errors: [
                 {
                     level: ErrorLevels.ERROR,
-                    key: Fields.MAGENTO_URL,
+                    key: Fields.magentoUrl,
                     message: ErrorMessages.INVALID_URL,
                 },
             ],
@@ -84,7 +84,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
     }
 
     try {
-        const response = await fetch(MAGENTO_URL)
+        const response = await fetch(magentoUrl)
 
         res.status(response.status)
 
@@ -96,7 +96,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
                 errors: [
                     {
                         level: ErrorLevels.ERROR,
-                        key: Fields.MAGENTO_URL,
+                        key: Fields.magentoUrl,
                         message: ErrorMessages.UNAUTHENTICATED,
                     },
                 ],
@@ -114,7 +114,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
                 errors: [
                     {
                         level: ErrorLevels.ERROR,
-                        key: Fields.MAGENTO_URL,
+                        key: Fields.magentoUrl,
                         message: ErrorMessages.INVALID_SCHEMA,
                     },
                 ],
@@ -139,7 +139,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
                 errors: [
                     {
                         level: ErrorLevels.ERROR,
-                        key: Fields.MAGENTO_URL,
+                        key: Fields.magentoUrl,
                         message: ErrorMessages.NOT_FOUND,
                     },
                 ],
@@ -152,7 +152,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             errors: [
                 {
                     level: ErrorLevels.ERROR,
-                    key: Fields.MAGENTO_URL,
+                    key: Fields.magentoUrl,
                     message: ErrorMessages.INTERNAL,
                 },
             ],

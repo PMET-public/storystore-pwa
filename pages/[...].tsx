@@ -1,6 +1,6 @@
 import React from 'react'
 import { NextComponentType } from 'next'
-import { overrideSettingsFromCookie } from '../lib/overrideFromCookie'
+import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
 
 import Link from '../components/Link'
 import Error from '../components/Error'
@@ -60,10 +60,12 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
             ? new URL('/api/graphql', location.href).href
             : new URL(
                   'graphql',
-                  {
-                      MAGENTO_URL: process.env.MAGENTO_URL,
-                      ...overrideSettingsFromCookie('MAGENTO_URL')(req?.headers.cookie),
-                  }.MAGENTO_URL
+                  updateSettingsFromCookie(
+                      {
+                          magentoUrl: process.env.MAGENTO_URL,
+                      },
+                      req?.headers.cookie
+                  ).magentoUrl
               ).href
 
         const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')

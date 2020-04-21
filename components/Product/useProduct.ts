@@ -35,9 +35,10 @@ type OptionsAndVariants =
       }
     | undefined
 
-export const useProduct = (props: { urlKey: string }) => {
-    const { urlKey } = props
-
+type UseProduct = {
+    urlKey: string
+}
+export const useProduct = ({ urlKey }: UseProduct) => {
     const product = useQuery(PRODUCT_QUERY, {
         ...queryDefaultOptions,
         variables: { urlKey },
@@ -146,11 +147,11 @@ export const useProduct = (props: { urlKey: string }) => {
     })
 
     const handleAddSimpleProductToCart = useCallback(
-        async (variables: { sku: string; quantity: number }) => {
-            const { sku, quantity } = variables
+        async (variables: { cartId: string; sku: string; quantity: number }) => {
+            const { cartId, sku, quantity } = variables
             const { data } = await addSimpleProductsToCart({
                 variables: {
-                    cartId: '', // @client
+                    cartId,
                     sku,
                     quantity,
                 },
@@ -177,12 +178,11 @@ export const useProduct = (props: { urlKey: string }) => {
     )
 
     const handleAddConfigurableProductToCart = useCallback(
-        async (variables: { quantity: number; sku: string; variantSku: string }) => {
-            const { sku, variantSku, quantity } = variables
-
+        async (variables: { cartId: string; quantity: number; sku: string; variantSku: string }) => {
+            const { cartId, sku, variantSku, quantity } = variables
             const { data } = await addConfigurableProductsToCart({
                 variables: {
-                    cartId: '', // @client
+                    cartId,
                     parentSku: sku,
                     sku: variantSku,
                     quantity,

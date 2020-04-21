@@ -1,5 +1,4 @@
 query CheckoutQuery {
-    hasCart @client
     braintreeToken @client
     countries {
         id

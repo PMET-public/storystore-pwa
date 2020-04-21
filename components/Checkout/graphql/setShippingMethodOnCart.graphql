@@ -2,7 +2,6 @@
 #import "~/graphql/_CartContent.graphql"
 
 mutation SetShippingMethodsOnCart($cartId: String!, $shippingMethods: [ShippingMethodInput]!) {
-    cartId @client @export(as: "cartId")
     setShippingMethodsOnCart(input: { cart_id: $cartId, shipping_methods: $shippingMethods }) {
         cart {
             ...ShippingMethods

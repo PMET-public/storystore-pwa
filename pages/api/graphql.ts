@@ -1,7 +1,7 @@
+import { COOKIE } from '~/lib/cookies'
 import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { SETTINGS_OVERRIDE_COOKIE } from '../../lib/overrideFromCookie'
 
 export const config = {
     api: {
@@ -11,16 +11,16 @@ export const config = {
 
 export const GraphQLApi = async (req: NextApiRequest, res: NextApiResponse) => {
     const settings = {
-        MAGENTO_URL: process.env.MAGENTO_URL,
-        ...JSON.parse(req.cookies[SETTINGS_OVERRIDE_COOKIE] || '{}'),
+        magentoUrl: process.env.MAGENTO_URL,
+        ...JSON.parse(req.cookies[COOKIE.settings] || '{}'),
     }
 
-    const MAGENTO_URL = new URL('graphql', settings.MAGENTO_URL).href
+    const magentoUrl = new URL('graphql', settings.magentoUrl).href
 
     req.pipe(
         request(
             {
-                url: MAGENTO_URL,
+                url: magentoUrl,
                 qs: req.query,
                 method: req.method,
                 pool: {

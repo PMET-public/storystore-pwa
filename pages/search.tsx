@@ -1,8 +1,11 @@
 import React from 'react'
 
 import SearchTemplate from '../components/Search'
+import { NextPage } from 'next'
 
-const Search = () => {
+type SearchProps = {}
+
+const Search: NextPage<SearchProps> = () => {
     return <SearchTemplate />
 }
 
