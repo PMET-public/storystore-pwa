@@ -1,13 +1,14 @@
 import { HttpLink } from 'apollo-link-http'
 import { ApolloLink } from 'apollo-link'
 import { ApolloClient } from 'apollo-client'
-import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory'
+import { InMemoryCache, defaultDataIdFromObject, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 import { RetryLink } from 'apollo-link-retry'
 import { onError } from 'apollo-link-error'
 import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
 import { QueryHookOptions } from '@apollo/react-hooks'
 import { persistCacheSync } from 'apollo-cache-persist-dev'
+import introspectionQueryResultData from '~/lib/apollo/fragmentTypes.json'
 
 let apolloClient: any
 
@@ -69,7 +70,14 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
         httpLink,
     ])
 
+    // Get GraphQL Schema
+    const fragmentMatcher = new IntrospectionFragmentMatcher({
+        introspectionQueryResultData,
+    })
+
     const cache = new InMemoryCache({
+        fragmentMatcher,
+
         // https://github.com/apollographql/react-apollo/issues/2387
         dataIdFromObject: (object: any) => {
             switch (object.__typename) {
@@ -99,7 +107,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
 
     const client = new ApolloClient({
         cache,
-        // connectToDevTools: process.browser,
+        connectToDevTools: process.browser,
         link,
         resolvers,
         ssrMode: !process.browser,
@@ -129,8 +137,6 @@ export default function createApolloClient(
 }
 
 export const queryDefaultOptions: QueryHookOptions = {
-    // fetchPolicy: 'cache-and-network',
-    // returnPartialData: true,
     errorPolicy: 'all',
     notifyOnNetworkStatusChange: true,
 }

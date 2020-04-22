@@ -9,9 +9,9 @@
     "node": "10.x"
   },
   "scripts": {
-    "dev": "next dev",
-    "inspect": "NODE_OPTIONS=\"--inspect\" next dev",
-    "build": "next build",
+    "dev": "yarn graphql:schema && NODE_OPTIONS=\"--inspect\" next dev",
+    "build": "yarn graphql:schema && next build",
+    "graphql:schema": "node lib/apollo/getGraphQLSchema.js",
     "start": "next start",
     "tslint": "tslint -p . -c tslint.json"
   },

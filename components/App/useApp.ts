@@ -29,7 +29,6 @@ export const useApp = (props: UseApp = {}) => {
             footerBlockId: footerBlockId,
         },
         skip: !footerBlockId,
-        ssr: false,
     })
 
     return {
