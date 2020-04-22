@@ -47,10 +47,10 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
     })
 
     const link = ApolloLink.from([
-        onError(({ graphQLErrors, networkError, response }) => {
+        onError(({ graphQLErrors, networkError }) => {
             if (process.env.NODE_ENV !== 'production') {
-                console.groupCollapsed('🚨 GraphQL Error')
-                console.log('Response: ', response)
+                console.log(`  –––––––––––––––––––––––––––––––––––––––––––––––––`)
+                console.groupCollapsed(`  🧐 GraphQL Error`)
                 if (graphQLErrors) {
                     graphQLErrors.forEach(({ message, locations, path }) => {
                         console.info(`Message: ${message}`)
@@ -62,6 +62,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
                 if (networkError) {
                     console.info('Network error: ', networkError)
                 }
+                console.log(`–––––––––––––––––––––––––––––––––––––––––––––––––`)
                 console.groupEnd()
             }
         }),

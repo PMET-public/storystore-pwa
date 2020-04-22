@@ -1,13 +1,13 @@
 import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
-import { toast } from '@pmet-public/luma-ui/src/lib'
+import { toast } from '@pmet-public/luma-ui/lib'
 import { version, dependencies } from '~/package.json'
 
 import { useSettings } from './useSettings'
 import { useCart } from '~/components/Cart/useCart'
 
-import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/src/components/Form'
-import Button from '@pmet-public/luma-ui/src/components/Button'
+import Form, { Input, FormContext, FieldColors } from '@pmet-public/luma-ui/components/Form'
+import Button from '@pmet-public/luma-ui/components/Button'
 import { useRouter } from 'next/router'
 import { Response } from '~/pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'

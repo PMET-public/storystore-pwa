@@ -5,7 +5,7 @@ import NextApp from 'next/app'
 import { NextComponentType, NextPageContext } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
-import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/src/theme'
+import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/theme'
 import { StoryStoreProvider } from '~/lib/storystore'
 
 const FontStyles = createGlobalStyle`

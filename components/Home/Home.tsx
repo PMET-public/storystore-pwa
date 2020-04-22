@@ -10,7 +10,7 @@ import { resolveImage } from '~/lib/resolveImage'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import { HomeSkeleton } from './Home.skeleton'
-import BubbleCarousel from '@pmet-public/luma-ui/src/components/BubbleCarousel'
+import BubbleCarousel from '@pmet-public/luma-ui/components/BubbleCarousel'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })

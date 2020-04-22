@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { DetailsWrapper as CartListDetailsWrapper } from '@pmet-public/luma-ui/src/components/CartList/CartList.styled'
-import { Root as ButtonRoot } from '@pmet-public/luma-ui/src/components/Button/Button.styled'
+import { DetailsWrapper as CartListDetailsWrapper } from '@pmet-public/luma-ui/components/CartList/CartList.styled'
+import { Root as ButtonRoot } from '@pmet-public/luma-ui/components/Button/Button.styled'
 
 export const Root = styled.div`
     display: grid;

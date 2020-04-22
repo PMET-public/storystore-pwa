@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 
-import CarouselComponent from '@pmet-public/luma-ui/src/components/Carousel'
+import CarouselComponent from '@pmet-public/luma-ui/components/Carousel'
 
-import { Root as ImageRoot, ImageTag } from '@pmet-public/luma-ui/src/components/Image/Image.styled'
-import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/src/components/Breadcrumbs/Breadcrumbs.styled'
-import { Items as ThumbSwatchesItems } from '@pmet-public/luma-ui/src/components/Form/ThumbSwatches/ThumbSwatches.styled'
+import { Root as ImageRoot, ImageTag } from '@pmet-public/luma-ui/components/Image/Image.styled'
+import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/components/Breadcrumbs/Breadcrumbs.styled'
+import { Items as ThumbSwatchesItems } from '@pmet-public/luma-ui/components/Form/ThumbSwatches/ThumbSwatches.styled'
 
 export const Root = styled.div`
     display: grid;

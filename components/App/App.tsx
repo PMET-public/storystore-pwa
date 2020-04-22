@@ -16,9 +16,9 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 
 import Head from '~/components/Head'
 import Link from '~/components/Link'
-import Header from '@pmet-public/luma-ui/src/components/Header'
-import TabBar from '@pmet-public/luma-ui/src/components/TabBar'
-import Footer from '@pmet-public/luma-ui/src/components/Footer'
+import Header from '@pmet-public/luma-ui/components/Header'
+import TabBar from '@pmet-public/luma-ui/components/TabBar'
+import Footer from '@pmet-public/luma-ui/components/Footer'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'

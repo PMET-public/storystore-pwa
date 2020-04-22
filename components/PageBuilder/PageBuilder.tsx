@@ -4,8 +4,8 @@
 
 import React, { useMemo, Suspense } from 'react'
 import { Root, RichText } from './PageBuilder.styled'
-import { Component } from '@pmet-public/luma-ui/src/lib'
-import { ErrorBoundary } from '@pmet-public/luma-ui/src/lib'
+import { Component } from '@pmet-public/luma-ui/lib'
+import { ErrorBoundary } from '@pmet-public/luma-ui/lib'
 import { htmlToProps } from './lib/parser'
 import { isPageBuilderHtml } from './lib/utils'
 

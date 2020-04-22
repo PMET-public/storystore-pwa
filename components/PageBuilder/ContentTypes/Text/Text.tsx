@@ -1,5 +1,5 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/src/lib'
+import { Component } from '@pmet-public/luma-ui/lib'
 import { Root } from './Text.styled'
 import useHtml from '../../../../hooks/useHtml'
 

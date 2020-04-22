@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { SlickSliderProps } from '@pmet-public/luma-ui/src/components/SlickSlider'
+import { SlickSliderProps } from '@pmet-public/luma-ui/components/SlickSlider'
 
 const component = dynamic(() => import('./'))
 

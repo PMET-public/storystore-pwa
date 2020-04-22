@@ -1,4 +1,4 @@
-import { toCamelCase } from '@pmet-public/luma-ui/src/lib'
+import { toCamelCase } from '@pmet-public/luma-ui/lib'
 
 /**
  * Styles as CSS Object

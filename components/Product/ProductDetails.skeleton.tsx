@@ -1,5 +1,5 @@
 import React from 'react'
-import Skeleton from '@pmet-public/luma-ui/src/components/Skeleton'
+import Skeleton from '@pmet-public/luma-ui/components/Skeleton'
 
 export const ProductDetailsSkeleton = ({ ...props }) => {
     return (

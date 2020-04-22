@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useCallback, useRef } from 'react'
-import { toast } from '@pmet-public/luma-ui/src/lib'
+import { toast } from '@pmet-public/luma-ui/lib'
 import { Workbox } from 'workbox-window'
 import { version } from '../../package.json'
 import { useRouter } from 'next/router'

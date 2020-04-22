@@ -8,7 +8,7 @@ import { resolveImage } from '../../lib/resolveImage'
 import useNetworkStatus from '../../hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 
-import CheckoutTemplate from '@pmet-public/luma-ui/src/templates/Checkout'
+import CheckoutTemplate from '@pmet-public/luma-ui/templates/Checkout'
 import Link from '../Link'
 import Head from '../Head'
 

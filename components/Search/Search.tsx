@@ -19,12 +19,12 @@ import {
 import { useSearch } from './useSearch'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
-import { useInfiniteScrolling } from '@pmet-public/luma-ui/src/hooks/useInfiniteScrolling'
+import { useInfiniteScrolling } from '@pmet-public/luma-ui/hooks/useInfiniteScrolling'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import SearchBar from '@pmet-public/luma-ui/src/components/SearchBar'
-import ProductList from '@pmet-public/luma-ui/src//components/ProductList'
+import SearchBar from '@pmet-public/luma-ui/components/SearchBar'
+import ProductList from '@pmet-public/luma-ui//components/ProductList'
 
 const Error = dynamic(() => import('~/components/Error'))
 

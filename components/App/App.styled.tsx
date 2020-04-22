@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { Utilities as HeaderUtilities } from '@pmet-public/luma-ui/src/components/Header/Header.styled'
-import { Wrapper as ContainerWrapper } from '@pmet-public/luma-ui/src/components/Container/Container.styled'
+import { Utilities as HeaderUtilities } from '@pmet-public/luma-ui/components/Header/Header.styled'
+import { Wrapper as ContainerWrapper } from '@pmet-public/luma-ui/components/Container/Container.styled'
 
 export const Root = styled.div`
     display: grid;

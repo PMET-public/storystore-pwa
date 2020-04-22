@@ -1,6 +1,6 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/src/lib'
-import SlickSlider from '@pmet-public/luma-ui/src/components/SlickSlider'
+import { Component } from '@pmet-public/luma-ui/lib'
+import SlickSlider from '@pmet-public/luma-ui/components/SlickSlider'
 
 export type SliderProps = {}
 
