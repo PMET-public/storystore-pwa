@@ -4,8 +4,8 @@ import {
     Root,
     Wrapper,
     Images,
-    CarouselWrapper,
-    ImageWrapper,
+    Carousel,
+    CarouselItem,
     GalleryGrid,
     InfoWrapper,
     InfoInnerWrapper,
@@ -30,7 +30,6 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
 import { ProductImageSkeleton } from './ProductImage.skeleton'
-import Carousel from '@pmet-public/luma-ui/src/components/Carousel'
 import Price from '@pmet-public/luma-ui/src/components/Price'
 import Button from '@pmet-public/luma-ui/src/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/src/components/Breadcrumbs'
@@ -163,22 +162,14 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 <Wrapper>
                     <Images>
                         {/* Mobile Gallery Carousel */}
-                        <CarouselWrapper
-                            as={Carousel}
-                            scrollerRef={setScrollerRef}
-                            gap={1}
-                            padding={3}
-                            show={1}
-                            snap
-                            hideScrollBar
-                        >
+                        <Carousel scrollerRef={setScrollerRef} gap={1} padding={3} show={1} snap hideScrollBar>
                             {!gallery ? (
-                                <ImageWrapper as={Carousel.Item}>
+                                <CarouselItem>
                                     <ProductImageSkeleton style={{ width: '100%' }} />
-                                </ImageWrapper>
+                                </CarouselItem>
                             ) : (
                                 gallery.map((image: any, index: number) => (
-                                    <ImageWrapper key={index} as={Carousel.Item}>
+                                    <CarouselItem key={index}>
                                         <Image
                                             {...image}
                                             transition
@@ -190,32 +181,32 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                 ...image.lazyload,
                                             }}
                                         />
-                                    </ImageWrapper>
+                                    </CarouselItem>
                                 ))
                             )}
-                        </CarouselWrapper>
+                        </Carousel>
 
                         {/* Tablet and Desktop Gallery Grid */}
                         <GalleryGrid>
                             {!gallery ? (
                                 <>
-                                    <ImageWrapper as={Carousel.Item}>
+                                    <CarouselItem>
                                         <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </ImageWrapper>
-                                    <ImageWrapper as={Carousel.Item}>
+                                    </CarouselItem>
+                                    <CarouselItem>
                                         <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </ImageWrapper>
+                                    </CarouselItem>
                                 </>
                             ) : (
                                 gallery.map((image: any, index: number) => (
-                                    <ImageWrapper key={index}>
+                                    <CarouselItem key={index}>
                                         <Image
                                             {...image}
                                             transition
                                             vignette={10}
                                             lazyload={{ offsetY: 100, ...image.lazyload }}
                                         />
-                                    </ImageWrapper>
+                                    </CarouselItem>
                                 ))
                             )}
                         </GalleryGrid>
