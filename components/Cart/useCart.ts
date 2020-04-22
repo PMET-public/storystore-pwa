@@ -1,4 +1,4 @@
-import { queryDefaultOptions } from '../../lib/apollo/client'
+import { queryDefaultOptions } from '~/lib/apollo/client'
 import { useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 

@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useCallback } from 'react'
-import { resolveImage } from '../../lib/resolveImage'
+import { resolveImage } from '~/lib/resolveImage'
 import dynamic from 'next/dynamic'
 import { Root, SummaryWrapper, CartSummaryWrapper, ProductList, StickyButtonWrapper } from './Cart.styled'
 
 import { useCart } from './useCart'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
-import useNetworkStatus from '../../hooks/useNetworkStatus'
+import useNetworkStatus from '~/hooks/useNetworkStatus'
 
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'

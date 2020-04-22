@@ -1,4 +1,4 @@
-import { queryDefaultOptions } from '../../lib/apollo/client'
+import { queryDefaultOptions } from '~/lib/apollo/client'
 import { useQuery } from '@apollo/react-hooks'
 
 import PAGE_QUERY from './graphql/page.graphql'
