@@ -1153,10 +1153,10 @@
   resolved "https://registry.yarnpkg.com/@mapbox/point-geometry/-/point-geometry-0.1.0.tgz#8a83f9335c7860effa2eeeca254332aa0aeed8f2"
   integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
 
-"@pmet-public/luma-ui@1.0.4":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.3.tgz#182bdb504c562997c46a7a9c0e4a2c9523a30344"
-  integrity sha512-HUveMQGRJ56qMQc3KO6n7h/WwEezIIhxVhbm8S0MMsT0lx2YWXEMsFew6mx6vb7QEy70bn3xAj2/MOF6CYph1Q==
+"@pmet-public/luma-ui@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@pmet-public/luma-ui/-/luma-ui-1.0.5.tgz#26d967fa2e06605430759e27f9f3a70f0a2b0e6c"
+  integrity sha512-CwAyIspmmwB7hqeOSgyzy/Pbp6gTWS8u8tQCrVlLhByHH1q41XTcQXdL/Oi1+us+HVPBSr9t/WyCoNZhIMdwVg==
 
 "@rollup/plugin-node-resolve@^7.1.1":
   version "7.1.1"

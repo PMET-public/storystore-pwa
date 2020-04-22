@@ -20,10 +20,21 @@ if (isProduction) {
     ReactGA.initialize('UA-162672258-1')
 }
 
-const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
+const MyApp: NextPage<any> = ({ Component, pageProps }) => {
     const [client, setClient] = useState<ApolloClient<any> | undefined>(undefined)
 
-    const { MAGENTO_URL } = env
+    const MAGENTO_URL = process.env.MAGENTO_URL
+    const HOME_PAGE_ID = process.env.HOME_PAGE_ID
+    const FOOTER_BLOCK_ID = process.env.FOOTER_BLOCK_ID
+    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY
+
+    const env = {
+        MAGENTO_URL,
+        HOME_PAGE_ID,
+        FOOTER_BLOCK_ID,
+        GOOGLE_MAPS_API_KEY,
+        ...overrideSettingsFromCookie('MAGENTO_URL', 'HOME_PAGE_ID', 'FOOTER_BLOCK_ID', 'GOOGLE_MAPS_API_KEY')(),
+    }
 
     /**
      * TypeKit (Fonts)
@@ -39,7 +50,7 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
      * Apollo Client (GraphQl)
      */
     useEffect(() => {
-        createApolloClient(MAGENTO_URL).then(client => setClient(client))
+        createApolloClient(env.MAGENTO_URL).then(client => setClient(client))
     }, [MAGENTO_URL, setClient])
 
     /**
@@ -78,35 +89,6 @@ const MyApp: NextPage<any> = ({ Component, pageProps, env }) => {
             </ServiceWorkerProvider>
         </ApolloProvider>
     )
-}
-
-MyApp.getInitialProps = async appContext => {
-    const MAGENTO_URL = process.env.MAGENTO_URL
-    const HOME_PAGE_ID = process.env.HOME_PAGE_ID
-    const FOOTER_BLOCK_ID = process.env.FOOTER_BLOCK_ID
-    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY
-
-    const { req } = (appContext as any).ctx
-
-    const { Component } = appContext as any
-
-    const pageProps = Component.getInitialProps ? await Component.getInitialProps(appContext) : {}
-
-    return {
-        pageProps,
-        env: {
-            MAGENTO_URL,
-            HOME_PAGE_ID,
-            FOOTER_BLOCK_ID,
-            GOOGLE_MAPS_API_KEY,
-            ...overrideSettingsFromCookie(
-                'MAGENTO_URL',
-                'HOME_PAGE_ID',
-                'FOOTER_BLOCK_ID',
-                'GOOGLE_MAPS_API_KEY'
-            )(req?.headers),
-        },
-    }
 }
 
 export default MyApp
