@@ -1,5 +1,5 @@
 import React from 'react'
-import CheckoutTemplate from '../../components/Checkout'
+import CheckoutTemplate from '~/components/Checkout'
 
 export const Checkout = () => {
     return <CheckoutTemplate />

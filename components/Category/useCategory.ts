@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { queryDefaultOptions } from '../../lib/apollo/client'
+import { queryDefaultOptions } from '~/lib/apollo/client'
 import { useQuery } from '@apollo/react-hooks'
 
 import CATEGORY_QUERY from './graphql/category.graphql'

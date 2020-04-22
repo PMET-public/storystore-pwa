@@ -2,17 +2,17 @@ import React, { FunctionComponent, useCallback, useState, useMemo, ChangeEvent, 
 import dynamic from 'next/dynamic'
 
 import { useCheckout } from './useCheckout'
-import { useCart } from '../Cart/useCart'
-import { resolveImage } from '../../lib/resolveImage'
+import { useCart } from '~/components/Cart/useCart'
+import { resolveImage } from '~/lib/resolveImage'
 
-import useNetworkStatus from '../../hooks/useNetworkStatus'
+import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 
 import CheckoutTemplate from '@pmet-public/luma-ui/src/templates/Checkout'
-import Link from '../Link'
-import Head from '../Head'
+import Link from '~/components/Link'
+import Head from '~/components/Head'
 
-const Error = dynamic(() => import('../Error'))
+const Error = dynamic(() => import('~/components/Error'))
 
 type CheckoutProps = {}
 

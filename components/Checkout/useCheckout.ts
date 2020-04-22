@@ -1,7 +1,7 @@
-import { writeInLocalStorage } from '../../lib/localStorage'
+import { writeInLocalStorage } from '~/lib/localStorage'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { queryDefaultOptions } from '../../lib/apollo/client'
+import { queryDefaultOptions } from '~/lib/apollo/client'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
