@@ -4,6 +4,7 @@ import {
     Root,
     Wrapper,
     Images,
+    Image,
     Carousel,
     CarouselItem,
     GalleryGrid,
@@ -33,7 +34,6 @@ import { ProductImageSkeleton } from './ProductImage.skeleton'
 import Price from '@pmet-public/luma-ui/components/Price'
 import Button from '@pmet-public/luma-ui/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
-import Image from '@pmet-public/luma-ui/components/Image'
 import Form, { Input } from '@pmet-public/luma-ui/components/Form'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
@@ -151,11 +151,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     <Images>
                         {/* Mobile Gallery Carousel */}
                         <Carousel scrollerRef={setScrollerRef} gap={1} padding={3} show={1} snap hideScrollBar>
-                            {!gallery ? (
-                                <CarouselItem>
-                                    <ProductImageSkeleton style={{ width: '100%' }} />
-                                </CarouselItem>
-                            ) : (
+                            {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
                                         <Image
@@ -171,26 +167,33 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                         />
                                     </CarouselItem>
                                 ))
+                            ) : (
+                                <CarouselItem>
+                                    <ProductImageSkeleton />
+                                </CarouselItem>
                             )}
                         </Carousel>
 
                         {/* Tablet and Desktop Gallery Grid */}
                         <GalleryGrid>
-                            {!gallery ? (
-                                <>
-                                    <CarouselItem>
-                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </CarouselItem>
-                                    <CarouselItem>
-                                        <ProductImageSkeleton style={{ width: '100%', height: '740px' }} />
-                                    </CarouselItem>
-                                </>
-                            ) : (
+                            {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
                                         <Image {...image} transition vignette={10} lazyload={{ offsetY: 100, ...image.lazyload }} />
                                     </CarouselItem>
                                 ))
+                            ) : (
+                                <>
+                                    <CarouselItem>
+                                        <ProductImageSkeleton />
+                                    </CarouselItem>
+                                    <CarouselItem>
+                                        <ProductImageSkeleton />
+                                    </CarouselItem>
+                                    <CarouselItem>
+                                        <ProductImageSkeleton />
+                                    </CarouselItem>
+                                </>
                             )}
                         </GalleryGrid>
                     </Images>

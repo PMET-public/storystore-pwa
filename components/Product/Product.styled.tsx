@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
 import CarouselComponent from '@pmet-public/luma-ui/components/Carousel'
+import ImageComponent from '@pmet-public/luma-ui/components/Image'
 
-import { Root as ImageRoot, ImageTag } from '@pmet-public/luma-ui/components/Image/Image.styled'
 import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/components/Breadcrumbs/Breadcrumbs.styled'
 import { Items as ThumbSwatchesItems } from '@pmet-public/luma-ui/components/Form/ThumbSwatches/ThumbSwatches.styled'
 
@@ -42,9 +42,19 @@ export const Images = styled.div`
     }
 `
 
+export const Image = styled(ImageComponent)`
+    display: block !important;
+    width: 100%;
+
+    & img {
+        width: 100%;
+        height: 100%;
+    }
+`
+
 export const Carousel = styled(CarouselComponent)`
     @media ${props => props.theme.breakpoints.medium} {
-        display: none;
+        display: none !important;
     }
 
     padding: 0;
@@ -52,16 +62,6 @@ export const Carousel = styled(CarouselComponent)`
 
 export const CarouselItem = styled(Carousel.Item)`
     display: grid;
-
-    ${ImageRoot} {
-        display: block;
-        width: 100%;
-    }
-
-    ${ImageTag} {
-        width: 100%;
-        height: 100%;
-    }
 `
 
 export const GalleryGrid = styled.div`
