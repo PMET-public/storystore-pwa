@@ -1,2 +1,2 @@
-export * from './useStoreStore'
-export { useStoreStore as default } from './useStoreStore'
+export * from './useStoryStore'
+export { useStoryStore as default } from './useStoryStore'

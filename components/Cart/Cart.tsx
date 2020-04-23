@@ -21,7 +21,7 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = () => {
-    const { cartId, setCartId } = useStoryStore()
+    const { cartId } = useStoryStore()
 
     const history = useRouter()
 
@@ -43,10 +43,6 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const productUrlSuffix = store?.productUrlSuffix ?? ''
 
-    const handleCreateCart = () => {
-        api.createCart().then(setCartId)
-    }
-
     if (!queries.cart.loading && !cart?.totalQuantity) {
         return (
             <CartLanding
@@ -65,7 +61,6 @@ export const Cart: FunctionComponent<CartProps> = () => {
     return (
         <React.Fragment>
             <Head title="Shopping Bag" />
-            <ButtonComponent onClick={handleCreateCart}>Create New Cart</ButtonComponent>
 
             <Root>
                 <ProductList>
