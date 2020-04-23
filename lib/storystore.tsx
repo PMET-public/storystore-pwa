@@ -69,9 +69,7 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 export const StoryStoreProvider: FunctionComponent<{ cookie?: string }> = ({ cookie, children }) => {
     const [state, dispatch] = useReducer(reducer, {
         ...initialState,
-        cartId:
-            (process.browser ? getCookie(COOKIE.cartId) : cookie && getCookieValueFromString(cookie, COOKIE.cartId)) ||
-            '',
+        cartId: (process.browser ? getCookie(COOKIE.cartId) : cookie && getCookieValueFromString(cookie, COOKIE.cartId)) || '',
         settings: updateSettingsFromCookie(
             {
                 magentoUrl: process.env.MAGENTO_URL,

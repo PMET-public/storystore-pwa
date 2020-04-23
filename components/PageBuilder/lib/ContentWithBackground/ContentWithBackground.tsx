@@ -14,14 +14,7 @@ export type ContentWithBackgroundProps = Props<{
     parallax?: ParallaxProps
 }>
 
-export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
-    backgroundImages,
-    fullScreen,
-    parallax,
-    children,
-    style,
-    ...props
-}) => {
+export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, fullScreen, parallax, children, style, ...props }) => {
     const elemRef = useRef(null)
 
     const backgroundRef = useRef(null)
@@ -70,22 +63,8 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({
     }, [backgroundElem, parallax])
 
     return (
-        <Root
-            $fullScreen={fullScreen}
-            $backgroundColor={styles.background.backgroundColor || 'transparent'}
-            ref={elemRef}
-            style={styles.wrapper}
-            {...props}
-        >
-            {bgImage.src && (
-                <BgImage
-                    $src={bgImage.src}
-                    $loaded={bgImage.loaded}
-                    $error={bgImage.error}
-                    ref={backgroundRef}
-                    style={styles.background}
-                />
-            )}
+        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} ref={elemRef} style={styles.wrapper} {...props}>
+            {bgImage.src && <BgImage $src={bgImage.src} $loaded={bgImage.loaded} $error={bgImage.error} ref={backgroundRef} style={styles.background} />}
             <Content>{children}</Content>
         </Root>
     )

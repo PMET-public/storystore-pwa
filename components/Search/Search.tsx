@@ -93,13 +93,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
             <Root>
                 <TopBar>
                     <TopBarWrapper $margin>
-                        <SearchBar
-                            loading={queries.search.loading}
-                            label="Search"
-                            count={productsCount}
-                            value={query.toString()}
-                            onUpdate={api.search}
-                        />
+                        <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={api.search} />
 
                         {/* TODO: Integrate Filters
                                 <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
@@ -131,14 +125,9 @@ export const Search: FunctionComponent<SearchProps> = () => {
                                     },
                                 },
                                 price: {
-                                    label:
-                                        price.maximum.regular.value > price.minimum.regular.value
-                                            ? 'Starting at'
-                                            : undefined,
+                                    label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
                                     regular: price.minimum.regular.value,
-                                    special:
-                                        price.minimum.discount.amountOff &&
-                                        price.minimum.final.value - price.minimum.discount.amountOff,
+                                    special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                                     currency: price.minimum.regular.currency,
                                 },
                                 title: {

@@ -134,13 +134,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
     if (!online && !product) return <ErrorComponent type="Offline" />
 
     if (!queries.product.loading && !product) {
-        return (
-            <ErrorComponent
-                type="404"
-                children="We're sorry, we coudn't find the product."
-                button={{ text: 'Search', as: Link, href: '/search' }}
-            />
-        )
+        return <ErrorComponent type="404" children="We're sorry, we coudn't find the product." button={{ text: 'Search', as: Link, href: '/search' }} />
     }
 
     // Pending support of other Product Types
@@ -150,13 +144,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     return (
         <React.Fragment>
-            {product && (
-                <Head
-                    title={product.metaTitle || product.title}
-                    description={product.metaDescription}
-                    keywords={product.metaKeywords}
-                />
-            )}
+            {product && <Head title={product.metaTitle || product.title} description={product.metaDescription} keywords={product.metaKeywords} />}
 
             <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors}>
                 <Wrapper>
@@ -200,12 +188,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             ) : (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image
-                                            {...image}
-                                            transition
-                                            vignette={10}
-                                            lazyload={{ offsetY: 100, ...image.lazyload }}
-                                        />
+                                        <Image {...image} transition vignette={10} lazyload={{ offsetY: 100, ...image.lazyload }} />
                                     </CarouselItem>
                                 ))
                             )}
@@ -216,9 +199,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         <InfoInnerWrapper>
                             <Info>
                                 {queries.product.loading && !product ? (
-                                    <ProductDetailsSkeleton
-                                        style={{ width: '56rem', minWidth: '100%', maxWidth: '100%' }}
-                                    />
+                                    <ProductDetailsSkeleton style={{ width: '56rem', minWidth: '100%', maxWidth: '100%' }} />
                                 ) : (
                                     <React.Fragment>
                                         <Header>
@@ -244,38 +225,22 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                             <Title>{product.title}</Title>
 
                                             <Price
-                                                label={
-                                                    product.price.maximum.regular.value >
-                                                    product.price.minimum.regular.value
-                                                        ? 'Starting at'
-                                                        : undefined
-                                                }
+                                                label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
                                                 regular={product.price.minimum.regular.value}
-                                                special={
-                                                    product.price.minimum.discount.amountOff &&
-                                                    product.price.minimum.final.value -
-                                                        product.price.minimum.discount.amountOff
-                                                }
+                                                special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
                                                 currency={product.price.minimum.regular.currency}
                                             />
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
 
-                                        {product.shortDescription?.html && (
-                                            <ShortDescription
-                                                dangerouslySetInnerHTML={{ __html: product.shortDescription.html }}
-                                            />
-                                        )}
+                                        {product.shortDescription?.html && <ShortDescription dangerouslySetInnerHTML={{ __html: product.shortDescription.html }} />}
 
                                         {product.options && (
                                             <InfoOptions>
                                                 {product.options
                                                     .map(({ id, type, label, required = true, code, items }: any) => {
                                                         const selected = items.find((x: any) => {
-                                                            return (
-                                                                code === x.code ||
-                                                                x.value.toString() === selectedOptions[code]
-                                                            )
+                                                            return code === x.code || x.value.toString() === selectedOptions[code]
                                                         })
 
                                                         return {
@@ -285,22 +250,20 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                                 label: selected ? `${label}: ${selected.label}` : label,
                                                                 name: `options.${code}`,
                                                                 rules: { required },
-                                                                items: items?.map(
-                                                                    ({ id, label, value, image }: any) => ({
-                                                                        _id: id,
-                                                                        text: label,
-                                                                        type: 'radio',
-                                                                        value,
-                                                                        image: image && {
-                                                                            alt: image.label || '',
-                                                                            src: resolveImage(image.url, {
-                                                                                width: 200,
-                                                                            }),
-                                                                            width: 4,
-                                                                            height: 5,
-                                                                        },
-                                                                    })
-                                                                ),
+                                                                items: items?.map(({ id, label, value, image }: any) => ({
+                                                                    _id: id,
+                                                                    text: label,
+                                                                    type: 'radio',
+                                                                    value,
+                                                                    image: image && {
+                                                                        alt: image.label || '',
+                                                                        src: resolveImage(image.url, {
+                                                                            width: 200,
+                                                                        }),
+                                                                        width: 4,
+                                                                        height: 5,
+                                                                    },
+                                                                })),
                                                             },
                                                         }
                                                     })
@@ -327,20 +290,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                 as="button"
                                                 text={product.stock === 'IN_STOCK' ? 'Add to Cart' : 'Sold Out'}
                                                 disabled={!cartId || product.stock === 'OUT_OF_STOCK'}
-                                                loading={
-                                                    api.addingSimpleProductsToCart.loading ||
-                                                    api.addingConfigurableProductToCart.loading
-                                                }
+                                                loading={api.addingSimpleProductsToCart.loading || api.addingConfigurableProductToCart.loading}
                                             />
                                         </Buttons>
 
                                         <Input type="hidden" name="quantity" value={1} rules={{ required: true }} />
 
-                                        {product.description?.html && (
-                                            <Description
-                                                dangerouslySetInnerHTML={{ __html: product.description.html }}
-                                            />
-                                        )}
+                                        {product.description?.html && <Description dangerouslySetInnerHTML={{ __html: product.description.html }} />}
                                     </React.Fragment>
                                 )}
                             </Info>

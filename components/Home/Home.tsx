@@ -34,13 +34,7 @@ export const Home: FunctionComponent<HomeProps> = () => {
 
     return (
         <React.Fragment>
-            {page && (
-                <Head
-                    title={page.metaTitle || page.title}
-                    description={page.metaDescription}
-                    keywords={page.metaKeywords}
-                />
-            )}
+            {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
             <Root>
                 {categories && (

@@ -21,7 +21,7 @@ const Error = dynamic(() => import('../Error'))
 type CartProps = {}
 
 export const Cart: FunctionComponent<CartProps> = () => {
-    const { cartId } = useStoryStore()
+    const { cartId, setCartId } = useStoryStore()
 
     const history = useRouter()
 
@@ -43,6 +43,10 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const productUrlSuffix = store?.productUrlSuffix ?? ''
 
+    const handleCreateCart = () => {
+        api.createCart().then(setCartId)
+    }
+
     if (!queries.cart.loading && !cart?.totalQuantity) {
         return (
             <CartLanding
@@ -61,6 +65,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
     return (
         <React.Fragment>
             <Head title="Shopping Bag" />
+            <ButtonComponent onClick={handleCreateCart}>Create New Cart</ButtonComponent>
 
             <Root>
                 <ProductList>
@@ -124,8 +129,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                         field: {
                                             label: 'Coupon Code',
                                             name: 'couponCode',
-                                            error:
-                                                api.applyingCoupon.error?.message || api.removingCoupon.error?.message,
+                                            error: api.applyingCoupon.error?.message || api.removingCoupon.error?.message,
                                             disabled: !!appliedCoupons,
                                             defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
                                         },
@@ -179,10 +183,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                     label: 'Estimated Taxes',
                                     price: cart?.prices?.taxes[0] && {
                                         currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
-                                        regular: cart.prices.taxes.reduce(
-                                            (accum: number, tax: { value: number }) => accum + tax.value,
-                                            0
-                                        ),
+                                        regular: cart.prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
                                     },
                                 },
 

@@ -32,11 +32,7 @@ const renderComponent = (Component: React.ComponentType<any>, props: any, items:
 }
 
 const PageBuilderFactory: Component<PageBuilderFactoryProps> = ({ component, items, props }) => {
-    return (
-        <Suspense fallback="">
-            {component ? <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary> : null}
-        </Suspense>
-    )
+    return <Suspense fallback="">{component ? <ErrorBoundary>{renderComponent(component, props, items)}</ErrorBoundary> : null}</Suspense>
 }
 
 export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => {
@@ -51,11 +47,7 @@ export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => 
 
     return (
         <Root {...props}>
-            {usePageBuilder ? (
-                items.map((contentType: any, index: number) => <PageBuilderFactory key={index} {...contentType} />)
-            ) : (
-                <RichText dangerouslySetInnerHTML={{ __html: html }} />
-            )}
+            {usePageBuilder ? items.map((contentType: any, index: number) => <PageBuilderFactory key={index} {...contentType} />) : <RichText dangerouslySetInnerHTML={{ __html: html }} />}
         </Root>
     )
 }

@@ -20,13 +20,7 @@ const messages = {
     '404': `Oops! The page you landed on doesn't exist.`,
 }
 
-export const Error: Component<ErrorProps> = ({
-    type = '500',
-    fullScreen = false,
-    button,
-    children = messages[type],
-    ...props
-}) => {
+export const Error: Component<ErrorProps> = ({ type = '500', fullScreen = false, button, children = messages[type], ...props }) => {
     return (
         <ErrorTemplate type={type} style={fullScreen ? { width: '100vw', height: '100vh' } : {}} {...props}>
             <div>{children}</div>

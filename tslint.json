@@ -1,11 +1,6 @@
 {
     "defaultSeverity": "error",
-    "extends": [
-        "tslint-react",
-        "tslint-react-hooks",
-        "tslint-plugin-prettier",
-        "tslint-config-prettier"
-    ],
+    "extends": ["tslint-react", "tslint-react-hooks", "tslint-plugin-prettier", "tslint-config-prettier"],
     "jsRules": {},
     "rules": {
         "prettier": true,
@@ -17,10 +12,6 @@
     },
     "rulesDirectory": [],
     "linterOptions": {
-        "exclude": [
-            "**/node_modules/**",
-            "**/dist/**",
-            "**/types/**"
-        ]
+        "exclude": ["**/node_modules/**", "**/dist/**", "**/types/**"]
     }
 }

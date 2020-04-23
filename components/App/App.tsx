@@ -53,7 +53,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
         if (queries.cart.error || !cartId) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
-            api.createCart(setCartId)
+            api.createCart().then(setCartId)
         }
     }, [queries, api, cartId])
 
@@ -115,11 +115,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
         if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
             return (
-                <Error
-                    type="401"
-                    button={{ text: 'Login', onClick: () => (window.location.href = '/basic-auth') }}
-                    fullScreen
-                >
+                <Error type="401" button={{ text: 'Login', onClick: () => (window.location.href = '/basic-auth') }} fullScreen>
                     Authorization Required
                 </Error>
             )
@@ -221,16 +217,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                 <Main>{children}</Main>
 
                 <FooterContainer as="footer">
-                    <Footer
-                        loading={queries.app.loading}
-                        html={
-                            footer?.items[0]?.html ? (
-                                <PageBuilder html={footer.items[0].html} />
-                            ) : (
-                                <Copyright>{store?.copyright}</Copyright>
-                            )
-                        }
-                    />
+                    <Footer loading={queries.app.loading} html={footer?.items[0]?.html ? <PageBuilder html={footer.items[0].html} /> : <Copyright>{store?.copyright}</Copyright>} />
                 </FooterContainer>
 
                 <TabBarContainer as="nav">

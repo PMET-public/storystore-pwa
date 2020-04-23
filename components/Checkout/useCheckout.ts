@@ -1,11 +1,11 @@
-import { writeInLocalStorage } from '~/lib/localStorage'
+import { useCart } from '~/components/Cart/useCart'
 import { useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
+
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
-import RESET_CART_MUTATION from './graphql/resetCart.graphql'
 
 import CONTACT_INFO_QUERY from './graphql/contactInfo.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
@@ -18,13 +18,26 @@ import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethodOnCart.graphq
 
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
 
-export const useCheckout = () => {
+type UseCheckout = {
+    cartId: string
+}
+
+export const useCheckout = (props: UseCheckout) => {
+    const { cartId } = props
     /**
      * Data Query
      */
     const checkout = useQuery(CHECKOUT_QUERY, {
         ...queryDefaultOptions,
     })
+
+    /**
+     * Cart
+     */
+    const {
+        queries: { cart },
+        api: { createCart, creatingCart, applyCoupon, applyingCoupon, removeCoupon, removingCoupon },
+    } = useCart({ cartId })
 
     /**
      * Create Braintree Token
@@ -47,13 +60,15 @@ export const useCheckout = () => {
 
     const contactInfo = useQuery(CONTACT_INFO_QUERY, {
         ...queryDefaultOptions,
+        variables: { cartId },
         fetchPolicy: 'no-cache',
     })
 
     const [setContactInfo, settingContactInfo] = useMutation(SET_CONTACT_INFO_MUTATION, {
         update(cache, { data: { billingAddress } }) {
+            const { cart } = billingAddress
             cache.writeData({
-                data: { ...billingAddress },
+                data: { cart },
             })
         },
     })
@@ -72,21 +87,10 @@ export const useCheckout = () => {
             phone: string
             saveInAddressBook: boolean
         }) => {
-            const {
-                email,
-                city,
-                company,
-                country,
-                firstName,
-                lastName,
-                postalCode,
-                region,
-                street,
-                phone,
-                saveInAddressBook,
-            } = props
+            const { email, city, company, country, firstName, lastName, postalCode, region, street, phone, saveInAddressBook } = props
             return setContactInfo({
                 variables: {
+                    cartId,
                     email: email,
                     address: {
                         city: city,
@@ -103,7 +107,7 @@ export const useCheckout = () => {
                 },
             })
         },
-        [setContactInfo]
+        [setContactInfo, cartId]
     )
 
     /**
@@ -111,6 +115,7 @@ export const useCheckout = () => {
      */
     const shippingMethods = useQuery(SHIPPING_METHODS_QUERY, {
         ...queryDefaultOptions,
+        variables: { cartId },
     })
 
     const [setShippingMethod, settingShippingMethod] = useMutation(SET_SHIPPING_METHOD_MUTATION, {
@@ -127,11 +132,12 @@ export const useCheckout = () => {
             const { methodCode, carrierCode } = props
             return setShippingMethod({
                 variables: {
+                    cartId,
                     shippingMethods: [{ carrier_code: carrierCode, method_code: methodCode }],
                 },
             })
         },
-        [setShippingMethod]
+        [setShippingMethod, cartId]
     )
 
     /**
@@ -139,6 +145,7 @@ export const useCheckout = () => {
      */
     const paymentMethod = useQuery(SELECTED_PAYMENT_METHOD_QUERY, {
         ...queryDefaultOptions,
+        variables: { cartId },
     })
 
     const [setPaymentMethod, settingPaymentMethod] = useMutation(SET_PAYMENT_METHOD_MUTATION)
@@ -148,32 +155,22 @@ export const useCheckout = () => {
             const { nonce } = props
 
             return await setPaymentMethod({
-                variables: { nonce },
+                variables: { cartId, nonce },
             })
         },
-        [setPaymentMethod]
+        [setPaymentMethod, cartId]
     )
 
     /**
      * Place Order
      */
-    const [resetCart] = useMutation(RESET_CART_MUTATION, {
-        update: (cache, { data: { cartId } }) => {
-            writeInLocalStorage('cartId', cartId)
-
-            cache.writeData({
-                data: { cartId },
-            })
-        },
-    })
 
     const [placeOrder, placingOrder] = useMutation(PLACE_ORDER_MUTATION)
 
     const handlePlaceOrder = useCallback(async () => {
-        const res = await placeOrder()
-        await resetCart()
-        return res
-    }, [placeOrder, resetCart])
+        const { data } = await placeOrder({ variables: { cartId } })
+        return data.placeOrder?.order
+    }, [placeOrder])
 
     return {
         queries: {
@@ -182,6 +179,7 @@ export const useCheckout = () => {
             shippingMethods,
             paymentMethod,
             placeOrder,
+            cart,
         },
         api: {
             setContactInfo: handleSetContactInfo,
@@ -192,6 +190,12 @@ export const useCheckout = () => {
             settingPaymentMethod,
             placeOrder: handlePlaceOrder,
             placingOrder,
+            applyCoupon,
+            applyingCoupon,
+            removeCoupon,
+            removingCoupon,
+            createCart,
+            creatingCart,
         },
     }
 }

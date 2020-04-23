@@ -143,13 +143,7 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
                 <FontStyles />
 
                 <App>
-                    <NextNprogress
-                        color="rgba(161, 74, 36, 1)"
-                        startPosition={0.4}
-                        stopDelayMs={200}
-                        height={3}
-                        options={{ showSpinner: false, easing: 'ease' }}
-                    />
+                    <NextNprogress color="rgba(161, 74, 36, 1)" startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
                     <Component {...pageProps} />
                 </App>
             </ThemeProvider>

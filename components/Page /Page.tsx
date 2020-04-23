@@ -30,17 +30,9 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
     }
     return (
         <React.Fragment>
-            {page && (
-                <Head
-                    title={page.metaTitle || page.title}
-                    description={page.metaDescription}
-                    keywords={page.metaKeywords}
-                />
-            )}
+            {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
-            <Root>
-                {queries.page.loading && !page?.content ? <PageSkeleton /> : <PageBuilder html={page.content} />}
-            </Root>
+            <Root>{queries.page.loading && !page?.content ? <PageSkeleton /> : <PageBuilder html={page.content} />}</Root>
         </React.Fragment>
     )
 }

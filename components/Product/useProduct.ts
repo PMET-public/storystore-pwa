@@ -164,18 +164,15 @@ export const useProduct = ({ urlKey }: UseProduct) => {
     /**
      * Handle Add To Cart Configurable Product
      */
-    const [addConfigurableProductsToCart, addingConfigurableProductToCart] = useMutation(
-        ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION,
-        {
-            update(cache, { data: { addToCart } }) {
-                const { cart } = addToCart
+    const [addConfigurableProductsToCart, addingConfigurableProductToCart] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION, {
+        update(cache, { data: { addToCart } }) {
+            const { cart } = addToCart
 
-                cache.writeData({
-                    data: { cart },
-                })
-            },
-        }
-    )
+            cache.writeData({
+                data: { cart },
+            })
+        },
+    })
 
     const handleAddConfigurableProductToCart = useCallback(
         async (variables: { cartId: string; quantity: number; sku: string; variantSku: string }) => {

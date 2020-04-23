@@ -131,11 +131,16 @@ export const useCart = (props: UseCart = {}) => {
      * Handle Creating a New Cart
      */
 
-    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION)
+    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION, {
+        refetchQueries: ({ data }) => [{ query: CART_QUERY, variables: { cartId: data.cartId } }],
+    })
 
-    const handleCreateCart = useCallback(async (cb?: (cartId: string) => any) => {
-        const { data } = await createCart()
-        if (typeof cb === 'function') cb(data.cartId)
+    const handleCreateCart = useCallback(async () => {
+        const {
+            data: { cartId },
+        } = await createCart()
+
+        return cartId
     }, [])
 
     return {

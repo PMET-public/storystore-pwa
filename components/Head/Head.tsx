@@ -14,14 +14,7 @@ export type HeadProps = Metadata & {
 
 export const getFullPageTitle = (arr: Array<string | undefined>) => arr.filter(x => !!x).join(' | ')
 
-export const Head: FunctionComponent<HeadProps> = ({
-    title,
-    titlePrefix,
-    titleSuffix,
-    description,
-    keywords,
-    defaults,
-}) => {
+export const Head: FunctionComponent<HeadProps> = ({ title, titlePrefix, titleSuffix, description, keywords, defaults }) => {
     const globalsRef = useRef<Metadata>({ ...defaults })
 
     if (defaults) globalsRef.current = { ...globalsRef.current, ...defaults }

@@ -39,10 +39,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
     ) => {
         const href = _href.toString()
 
-        const query =
-            typeof urlResolver === 'object'
-                ? `type=${urlResolver.type}&contentId=${urlResolver.id}&urlKey=${urlResolver.urlKey}`
-                : ''
+        const query = typeof urlResolver === 'object' ? `type=${urlResolver.type}&contentId=${urlResolver.id}&urlKey=${urlResolver.urlKey}` : ''
 
         const linkProps: NextLinkProps = {
             href: external === false || urlResolver ? `/[...]?url=${href}&${query}` : href,

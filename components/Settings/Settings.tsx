@@ -56,7 +56,7 @@ const addCredentialsToMagentoUrls = (url: string) => {
 }
 
 export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
-    const { settings, setSettings } = useStoryStore()
+    const { settings, setSettings, setCartId } = useStoryStore()
 
     const apolloClient = useApolloClient()
 
@@ -105,7 +105,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                     }
 
                     // Reset Store Cart
-                    await cartApi.createCart()
+                    const cartId = await cartApi.createCart()
+                    setCartId(cartId)
                 }
 
                 // Save Changes
@@ -170,23 +171,14 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                         }}
                     />
 
-                    <Input
-                        name="googleMapsApiKey"
-                        label="Google Maps API Key"
-                        placeholder={defaults.googleMapsApiKey}
-                        style={{ textOverflow: 'ellipsis' }}
-                    />
+                    <Input name="googleMapsApiKey" label="Google Maps API Key" placeholder={defaults.googleMapsApiKey} style={{ textOverflow: 'ellipsis' }} />
 
                     <Input
                         name="homePageId"
                         label="Home Page URL Key"
                         placeholder={defaults.homePageId}
                         style={{ textOverflow: 'ellipsis' }}
-                        error={
-                            home.loading || home.data?.page
-                                ? undefined
-                                : `🏡 No Home page found. Did you mean to use "${home.data?.store?.homePage}"?`
-                        }
+                        error={home.loading || home.data?.page ? undefined : `🏡 No Home page found. Did you mean to use "${home.data?.store?.homePage}"?`}
                         color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
                     />
 
@@ -195,16 +187,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                         label="Footer Block ID"
                         placeholder={defaults.footerBlockId}
                         style={{ textOverflow: 'ellipsis' }}
-                        error={
-                            footer.loading || footer.data?.footer?.items[0]?.id
-                                ? undefined
-                                : `🦶 No Footer block found. Using Copyright message instead.`
-                        }
-                        color={
-                            footer.loading || footer.data?.footer?.items[0]?.id
-                                ? FieldColors.default
-                                : FieldColors.notice
-                        }
+                        error={footer.loading || footer.data?.footer?.items[0]?.id ? undefined : `🦶 No Footer block found. Using Copyright message instead.`}
+                        color={footer.loading || footer.data?.footer?.items[0]?.id ? FieldColors.default : FieldColors.notice}
                     />
 
                     <Buttons>

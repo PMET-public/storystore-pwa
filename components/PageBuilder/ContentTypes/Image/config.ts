@@ -13,10 +13,7 @@ const props = (elem: HTMLElement) => {
 
     const linkElem = elem.children[0]
 
-    const imageElement =
-        linkElem.nodeName === 'A'
-            ? (linkElem.children as HTMLCollectionOf<HTMLElement>)
-            : (elem.children as HTMLCollectionOf<HTMLElement>)
+    const imageElement = linkElem.nodeName === 'A' ? (linkElem.children as HTMLCollectionOf<HTMLElement>) : (elem.children as HTMLCollectionOf<HTMLElement>)
 
     const desktopSrc = imageElement[0].getAttribute('src') || ''
     const mobileSrc = imageElement[1].getAttribute('src') || ''

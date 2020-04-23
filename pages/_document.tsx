@@ -43,10 +43,7 @@ export default class extends Document<any> {
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
                     <meta name="apple-mobile-web-app-title" content="Luma" />
-                    <link
-                        rel="apple-touch-icon"
-                        href="https://luma-pwa.fnhipster.now.sh/static/icons/apple-touch-icon.png"
-                    />
+                    <link rel="apple-touch-icon" href="https://luma-pwa.fnhipster.now.sh/static/icons/apple-touch-icon.png" />
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 

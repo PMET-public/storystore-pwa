@@ -24,23 +24,9 @@ const getSelfAlignment = (value: 'align-top' | 'align-center' | 'align-bottom' |
     }
 }
 
-export const Column: Component<ColumnProps> = ({
-    appearance = 'full-height',
-    hero,
-    background,
-    children,
-    style,
-    ...props
-}) => {
+export const Column: Component<ColumnProps> = ({ appearance = 'full-height', hero, background, children, style, ...props }) => {
     return (
-        <Root
-            $hero={hero}
-            $selfAlignment={getSelfAlignment(appearance)}
-            as={ContentWithBackground}
-            {...background}
-            style={style}
-            {...props}
-        >
+        <Root $hero={hero} $selfAlignment={getSelfAlignment(appearance)} as={ContentWithBackground} {...background} style={style} {...props}>
             {children}
         </Root>
     )

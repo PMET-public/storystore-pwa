@@ -104,19 +104,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     return (
         <React.Fragment key={page?.id}>
             {/* Head Metadata */}
-            {page && (
-                <Head
-                    title={page.metaTitle || page.title}
-                    description={page.metaDescription}
-                    keywords={page.metaKeywords}
-                />
-            )}
+            {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
             <Root>
                 {/* PageBuilder Content */}
-                {page?.cmsBlock && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && (
-                    <PageBuilder html={page.cmsBlock} />
-                )}
+                {page?.cmsBlock && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && <PageBuilder html={page.cmsBlock} />}
 
                 {/* Product List */}
                 {/* TODO: && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PRODUCTS') */}
@@ -132,11 +124,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                                                 type: 'CATEGORY',
                                                 id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
                                             }}
-                                            href={
-                                                '/' +
-                                                page.breadcrumbs[page.breadcrumbs.length - 1].href +
-                                                categoryUrlSuffix
-                                            }
+                                            href={'/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix}
                                         >
                                             <BackIcon />
                                         </BackButton>
@@ -193,39 +181,32 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         <ProductListWrapper $margin>
                             <ProductList
                                 loadingMore={queries.products.loading}
-                                items={products?.items?.map(
-                                    ({ id, image, price, title, urlKey }: any, index: number) => ({
-                                        _id: `${id}--${index}`,
-                                        as: Link,
-                                        href: `/${urlKey + productUrlSuffix}`,
-                                        urlResolver: {
-                                            type: 'PRODUCT',
-                                            id,
-                                            urlKey,
+                                items={products?.items?.map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                                    _id: `${id}--${index}`,
+                                    as: Link,
+                                    href: `/${urlKey + productUrlSuffix}`,
+                                    urlResolver: {
+                                        type: 'PRODUCT',
+                                        id,
+                                        urlKey,
+                                    },
+                                    image: {
+                                        alt: image.alt,
+                                        src: {
+                                            desktop: resolveImage(image.src, { width: 1260 }),
+                                            mobile: resolveImage(image.src, { width: 960 }),
                                         },
-                                        image: {
-                                            alt: image.alt,
-                                            src: {
-                                                desktop: resolveImage(image.src, { width: 1260 }),
-                                                mobile: resolveImage(image.src, { width: 960 }),
-                                            },
-                                        },
-                                        price: {
-                                            label:
-                                                price.maximum.regular.value > price.minimum.regular.value
-                                                    ? 'Starting at'
-                                                    : undefined,
-                                            regular: price.minimum.regular.value,
-                                            special:
-                                                price.minimum.discount.amountOff &&
-                                                price.minimum.final.value - price.minimum.discount.amountOff,
-                                            currency: price.minimum.regular.currency,
-                                        },
-                                        title: {
-                                            text: title,
-                                        },
-                                    })
-                                )}
+                                    },
+                                    price: {
+                                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                                        regular: price.minimum.regular.value,
+                                        special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
+                                        currency: price.minimum.regular.currency,
+                                    },
+                                    title: {
+                                        text: title,
+                                    },
+                                }))}
                             />
                         </ProductListWrapper>
                     </Content>

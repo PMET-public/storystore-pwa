@@ -14,12 +14,7 @@ export const ButtonsContext = createContext({
     setMaxWidth: (x: any) => x,
 })
 
-export const Buttons: Component<ButtonsProps> = ({
-    children,
-    appearance = 'inline',
-    sameWidth: _sameWidth,
-    ...props
-}) => {
+export const Buttons: Component<ButtonsProps> = ({ children, appearance = 'inline', sameWidth: _sameWidth, ...props }) => {
     const rootElem = useRef<HTMLDivElement>(null)
 
     const [maxWidth, setMaxWidth] = useState<number>(0)
@@ -42,9 +37,7 @@ export const Buttons: Component<ButtonsProps> = ({
 
     return (
         <Root ref={rootElem} $appearance={appearance} $alignment={alignment} $sameWidth={sameWidth} {...props}>
-            <ButtonsContext.Provider value={{ appearance, maxWidth, setMaxWidth, sameWidth }}>
-                {children}
-            </ButtonsContext.Provider>
+            <ButtonsContext.Provider value={{ appearance, maxWidth, setMaxWidth, sameWidth }}>{children}</ButtonsContext.Provider>
         </Root>
     )
 }

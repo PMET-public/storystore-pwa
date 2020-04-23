@@ -118,11 +118,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
     return client
 }
 
-export default function createApolloClient(
-    magentoUrl: string = process.env.MAGENTO_URL,
-    initialState?: any,
-    cookie?: string
-) {
+export default function createApolloClient(magentoUrl: string = process.env.MAGENTO_URL, initialState?: any, cookie?: string) {
     // Make sure to create a new client for every server-side request so that data
     // isn't shared between connections (which would be bad)
     if (!process.browser) {

@@ -42,9 +42,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
                         regular: price.minimum.regular.value,
-                        special:
-                            price.minimum.discount.amountOff &&
-                            price.minimum.final.value - price.minimum.discount.amountOff,
+                        special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
                 }))}
@@ -79,9 +77,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
                         regular: price.minimum.regular.value,
-                        special:
-                            price.minimum.discount.amountOff &&
-                            price.minimum.final.value - price.minimum.discount.amountOff,
+                        special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
                 }))}
