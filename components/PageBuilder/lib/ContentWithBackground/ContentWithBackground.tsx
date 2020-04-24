@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useEffect } from 'react'
 import { Component, Props } from '@pmet-public/luma-ui/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
+import { LazyImageFull, ImageState } from 'react-lazy-images'
 
 import { useImage, ImgSrc } from '@pmet-public/luma-ui/hooks/useImage'
 
@@ -62,7 +63,24 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
 
     return (
         <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} style={styles.wrapper} {...props}>
-            {bgImage && <BgImage $src={bgImage} style={styles.background} ref={backgroundRef} />}
+            {bgImage &&
+                (parallax ? (
+                    <BgImage $src={bgImage} $loaded style={styles.background} ref={backgroundRef} />
+                ) : (
+                    <LazyImageFull src={bgImage}>
+                        {({ imageState, ref }) => {
+                            return imageState === ImageState.LoadSuccess ? (
+                                <BgImage $src={bgImage} $loaded style={styles.background} ref={backgroundRef} />
+                            ) : (
+                                <BgImage
+                                    $src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAFCAQAAADIpIVQAAAADklEQVR42mNkgAJGIhgAALQABsHyMOcAAAAASUVORK5CYII="
+                                    style={styles.background}
+                                    ref={ref}
+                                />
+                            )
+                        }}
+                    </LazyImageFull>
+                ))}
             <Content>{children}</Content>
         </Root>
     )

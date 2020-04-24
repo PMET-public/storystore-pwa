@@ -123,6 +123,8 @@ export const Search: FunctionComponent<SearchProps> = () => {
                                         desktop: resolveImage(image.src, { width: 1260 }),
                                         mobile: resolveImage(image.src, { width: 960 }),
                                     },
+                                    width: 1274,
+                                    height: 1580,
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
