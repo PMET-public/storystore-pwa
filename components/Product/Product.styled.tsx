@@ -1,10 +1,8 @@
 import styled from 'styled-components'
 
 import CarouselComponent from '@pmet-public/luma-ui/components/Carousel'
-import ImageComponent from '@pmet-public/luma-ui/components/Image'
 
 import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/components/Breadcrumbs/Breadcrumbs.styled'
-import { Items as ThumbSwatchesItems } from '@pmet-public/luma-ui/components/Form/ThumbSwatches/ThumbSwatches.styled'
 
 export const Root = styled.div`
     display: grid;
@@ -40,15 +38,15 @@ export const Images = styled.div`
         z-index: 0;
         max-height: calc(100vh - 20rem);
     }
-`
 
-export const Image = styled(ImageComponent)`
-    display: block !important;
-    width: 100%;
+    && .LazyLoadImage {
+        width: 100% !important;
+        height: 100% !important;
 
-    & img {
-        width: 100%;
-        height: 100%;
+        & img {
+            width: 100%;
+            height: 100%;
+        }
     }
 `
 
@@ -142,18 +140,6 @@ export const Header = styled.header`
 
     ${BreadcrumbsRoot} {
         font-size: 1.2rem;
-    }
-`
-
-export const ThumbSwatchesWrapper = styled.div`
-    overflow-y: auto;
-
-    ${ThumbSwatchesItems} {
-        grid-template-columns: repeat(3, 1fr);
-
-        @media ${props => props.theme.breakpoints.medium} {
-            grid-template-columns: repeat(4, 1fr);
-        }
     }
 `
 

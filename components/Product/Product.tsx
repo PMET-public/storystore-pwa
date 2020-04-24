@@ -1,10 +1,9 @@
-import React, { FunctionComponent, useCallback, useState, MutableRefObject, useRef, useMemo } from 'react'
+import React, { FunctionComponent, useCallback, useState, useRef, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import {
     Root,
     Wrapper,
     Images,
-    Image,
     Carousel,
     CarouselItem,
     GalleryGrid,
@@ -19,7 +18,6 @@ import {
     Buttons,
     ShortDescription,
     Description,
-    ThumbSwatchesWrapper,
 } from './Product.styled'
 
 import { useRouter } from 'next/router'
@@ -35,10 +33,11 @@ import Price from '@pmet-public/luma-ui/components/Price'
 import Button from '@pmet-public/luma-ui/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
 import Form, { Input } from '@pmet-public/luma-ui/components/Form'
+import Image from '@pmet-public/luma-ui/components/Image'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import TextSwatches from '@pmet-public/luma-ui/components/Form/TextSwatches'
+import ThumbSwatches from '@pmet-public/luma-ui/components/Form/ThumbSwatches'
 
-const TextSwatches = dynamic(() => import('@pmet-public/luma-ui/components/Form/TextSwatches'))
-const ThumbSwatches = dynamic(() => import('@pmet-public/luma-ui/components/Form/ThumbSwatches'))
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
 export type ProductProps = {
@@ -102,8 +101,6 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
         }
     }, [api, product, history])
 
-    const [scrollerRef, setScrollerRef] = useState<MutableRefObject<Element>>()
-
     const infoRef = useRef<HTMLDivElement>(null)
 
     /**
@@ -150,21 +147,11 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 <Wrapper>
                     <Images>
                         {/* Mobile Gallery Carousel */}
-                        <Carousel scrollerRef={setScrollerRef} gap={1} padding={3} show={1} snap hideScrollBar>
+                        <Carousel gap={1} padding={3} show={1} snap hideScrollBar>
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image
-                                            {...image}
-                                            transition
-                                            vignette={10}
-                                            lazyload={{
-                                                container: scrollerRef,
-                                                offsetY: 100,
-                                                offsetX: 50,
-                                                ...image.lazyload,
-                                            }}
-                                        />
+                                        <Image {...image} height={1580} width={1274} vignette={10} />
                                     </CarouselItem>
                                 ))
                             ) : (
@@ -179,7 +166,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} transition vignette={10} lazyload={{ offsetY: 100, ...image.lazyload }} />
+                                        <Image {...image} height={1580} width={1274} vignette={10} />
                                     </CarouselItem>
                                 ))
                             ) : (
@@ -263,8 +250,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                                         src: resolveImage(image.url, {
                                                                             width: 200,
                                                                         }),
-                                                                        width: 4,
-                                                                        height: 5,
+                                                                        width: 160,
+                                                                        height: 198,
                                                                     },
                                                                 })),
                                                             },
@@ -276,11 +263,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                             <fieldset key={_id || index}>
                                                                 <Field>
                                                                     {type === 'text' && <TextSwatches {...swatches} />}
-                                                                    {type === 'thumb' && (
-                                                                        <ThumbSwatchesWrapper>
-                                                                            <ThumbSwatches {...swatches} />
-                                                                        </ThumbSwatchesWrapper>
-                                                                    )}
+                                                                    {type === 'thumb' && <ThumbSwatches {...swatches} />}
                                                                 </Field>
                                                             </fieldset>
                                                         )

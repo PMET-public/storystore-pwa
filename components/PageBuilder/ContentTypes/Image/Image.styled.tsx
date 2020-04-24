@@ -1,12 +1,6 @@
 import styled from 'styled-components'
 
-import { Root as ImageRoot } from '@pmet-public/luma-ui/components/Image/Image.styled'
-
-export const Root = styled.div`
-    ${ImageRoot} {
-        overflow: hidden;
-    }
-`
+export const Root = styled.div``
 
 export const Caption = styled.div`
     padding: 1rem;

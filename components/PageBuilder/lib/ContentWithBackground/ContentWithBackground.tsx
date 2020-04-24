@@ -2,27 +2,25 @@ import React, { useMemo, useRef, useEffect } from 'react'
 import { Component, Props } from '@pmet-public/luma-ui/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 
-import { Image, useImage } from '@pmet-public/luma-ui/hooks/useImage'
+import { useImage, ImgSrc } from '@pmet-public/luma-ui/hooks/useImage'
 
 export type ParallaxProps = {
     speed: number
 }
 
 export type ContentWithBackgroundProps = Props<{
-    backgroundImages?: Image
+    backgroundImages?: ImgSrc
     fullScreen?: boolean
     parallax?: ParallaxProps
 }>
 
 export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, fullScreen, parallax, children, style, ...props }) => {
-    const elemRef = useRef(null)
-
     const backgroundRef = useRef(null)
 
     const backgroundElem = backgroundRef.current
 
     // Background IMage
-    const bgImage = useImage(elemRef, backgroundImages, { lazyload: { offsetY: 100 } })
+    const bgImage = useImage(backgroundImages)
 
     // Styles
     const styles: { [key: string]: any } = useMemo(() => {
@@ -63,8 +61,8 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
     }, [backgroundElem, parallax])
 
     return (
-        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} ref={elemRef} style={styles.wrapper} {...props}>
-            {bgImage.src && <BgImage $src={bgImage.src} $loaded={bgImage.loaded} $error={bgImage.error} ref={backgroundRef} style={styles.background} />}
+        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} style={styles.wrapper} {...props}>
+            {bgImage && <BgImage $src={bgImage} style={styles.background} ref={backgroundRef} />}
             <Content>{children}</Content>
         </Root>
     )
