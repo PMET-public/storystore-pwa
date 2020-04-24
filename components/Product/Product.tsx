@@ -4,6 +4,7 @@ import {
     Root,
     Wrapper,
     Images,
+    Image,
     Carousel,
     CarouselItem,
     GalleryGrid,
@@ -33,7 +34,6 @@ import Price from '@pmet-public/luma-ui/components/Price'
 import Button from '@pmet-public/luma-ui/components/Button'
 import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
 import Form, { Input } from '@pmet-public/luma-ui/components/Form'
-import Image from '@pmet-public/luma-ui/components/Image'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import TextSwatches from '@pmet-public/luma-ui/components/Form/TextSwatches'
 import ThumbSwatches from '@pmet-public/luma-ui/components/Form/ThumbSwatches'
@@ -151,7 +151,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} height={1580} width={1274} vignette={10} />
+                                        <Image {...image} height={1580} width={1274} vignette />
                                     </CarouselItem>
                                 ))
                             ) : (
@@ -166,7 +166,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} height={1580} width={1274} vignette={10} />
+                                        <Image {...image} height={1580} width={1274} vignette />
                                     </CarouselItem>
                                 ))
                             ) : (

@@ -5,7 +5,7 @@ import NextApp from 'next/app'
 import { NextComponentType, NextPageContext } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
-import { baseTheme, BaseStyles } from '@pmet-public/luma-ui/theme'
+import { baseTheme, UIBase } from '@pmet-public/luma-ui/theme'
 import { StoryStoreProvider } from '~/lib/storystore'
 
 const FontStyles = createGlobalStyle`
@@ -139,7 +139,7 @@ const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pagePr
     return (
         <StoryStoreProvider cookie={cookie}>
             <ThemeProvider theme={baseTheme}>
-                <BaseStyles />
+                <UIBase />
                 <FontStyles />
 
                 <App>

@@ -80,12 +80,6 @@ export const Cart: FunctionComponent<CartProps> = () => {
                             },
                             sku: `SKU. ${product.sku}`,
                             thumbnail: {
-                                as: Link,
-                                urlResolver: {
-                                    type: 'PRODUCT',
-                                    urlKey: product.urlKey,
-                                },
-                                href: `/${product.urlKey}${productUrlSuffix}`,
                                 alt: product.thumbnail.label,
                                 src: resolveImage(product.thumbnail.url, { width: 300 }),
                             },

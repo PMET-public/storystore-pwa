@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import CarouselComponent from '@pmet-public/luma-ui/components/Carousel'
+import ImageComponent from '@pmet-public/luma-ui/components/Image'
 
 import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/components/Breadcrumbs/Breadcrumbs.styled'
 
@@ -38,16 +39,11 @@ export const Images = styled.div`
         z-index: 0;
         max-height: calc(100vh - 20rem);
     }
+`
 
-    && .LazyLoadImage {
-        width: 100% !important;
-        height: 100% !important;
-
-        & img {
-            width: 100%;
-            height: 100%;
-        }
-    }
+export const Image = styled(ImageComponent)`
+    width: 100%;
+    height: 100%;
 `
 
 export const Carousel = styled(CarouselComponent)`
