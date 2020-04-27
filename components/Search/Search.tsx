@@ -24,7 +24,7 @@ import { useInfiniteScrolling } from '@pmet-public/storystore-ui/hooks/useInfini
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import SearchBar from '@pmet-public/storystore-ui/components/SearchBar'
-import ProductList from '@pmet-public/storystore-ui//components/ProductList'
+import ProductList from '@pmet-public/storystore-ui/components/ProductList'
 
 const Error = dynamic(() => import('~/components/Error'))
 

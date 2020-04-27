@@ -149,7 +149,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                 <Details>
                     <Label>Version</Label>
                     <Value>
-                        {version} (Storybook {dependencies['@pmet-public/storystore-ui']})
+                        PWA {version} (UI {dependencies['@pmet-public/storystore-ui']})
                     </Value>
                 </Details>
 
