@@ -18,7 +18,6 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@pmet-public/luma-ui/components/Header'
 import TabBar from '@pmet-public/luma-ui/components/TabBar'
-import Footer from '@pmet-public/luma-ui/components/Footer'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
@@ -29,6 +28,7 @@ import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
+const Footer = dynamic(() => import('@pmet-public/luma-ui/components/Footer'), { ssr: false })
 
 type AppProps = {}
 

@@ -1,4 +1,19 @@
 {
+    "env": {
+        "production": {
+            "plugins": [
+                "babel-plugin-inline-react-svg",
+                [
+                    "babel-plugin-styled-components",
+                    {
+                        "ssr": true,
+                        "displayName": false,
+                        "preprocess": true
+                    }
+                ]
+            ]
+        }
+    },
     "presets": [
         "next/babel"
     ],
@@ -8,7 +23,8 @@
             "babel-plugin-styled-components",
             {
                 "ssr": true,
-                "displayName": true
+                "displayName": true,
+                "preprocess": true
             }
         ]
     ]
