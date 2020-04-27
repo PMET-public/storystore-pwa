@@ -1,5 +1,5 @@
 import configs from '../configs'
-import { toPascalCase } from '@pmet-public/luma-ui/lib'
+import { toPascalCase } from '@pmet-public/storystore-ui/lib'
 
 const getComponentData = (type: string, node?: HTMLElement) => {
     const name = toPascalCase(type)

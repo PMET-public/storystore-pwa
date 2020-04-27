@@ -11,13 +11,13 @@ import { useRouter } from 'next/router'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import CartList from '@pmet-public/luma-ui/components/CartList'
-import CartSummary from '@pmet-public/luma-ui/components/CartSummary'
-import ContactInfoForm from '@pmet-public/luma-ui/components/Checkout/ContactInfoForm'
-import ShippingMethodForm from '@pmet-public/luma-ui/components/Checkout/ShippingMethodForm'
-import PaymentMethodForm from '@pmet-public/luma-ui/components/Checkout/PaymentMethodForm'
-import PlaceOrderForm from '@pmet-public/luma-ui/components/Checkout/PlaceOrderForm'
-import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
+import CartList from '@pmet-public/storystore-ui/components/CartList'
+import CartSummary from '@pmet-public/storystore-ui/components/CartSummary'
+import ContactInfoForm from '@pmet-public/storystore-ui/components/Checkout/ContactInfoForm'
+import ShippingMethodForm from '@pmet-public/storystore-ui/components/Checkout/ShippingMethodForm'
+import PaymentMethodForm from '@pmet-public/storystore-ui/components/Checkout/PaymentMethodForm'
+import PlaceOrderForm from '@pmet-public/storystore-ui/components/Checkout/PlaceOrderForm'
+import Breadcrumbs from '@pmet-public/storystore-ui/components/Breadcrumbs'
 
 const Error = dynamic(() => import('~/components/Error'))
 

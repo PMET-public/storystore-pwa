@@ -4,7 +4,7 @@ const path = require('path')
 const withTM = require('next-transpile-modules')
 const withOffline = require('next-offline')
 
-module.exports = withTM(['@pmet-public/luma-ui'])(
+module.exports = withTM(['@pmet-public/storystore-ui'])(
     withOffline({
         // Build environment variables
         env: {

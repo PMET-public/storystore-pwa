@@ -10,11 +10,11 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import ButtonComponent from '@pmet-public/luma-ui/components/Button'
-import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
-import CartList from '@pmet-public/luma-ui/components/CartList'
-import CartSummary from '@pmet-public/luma-ui/components/CartSummary'
-import CartLanding from '@pmet-public/luma-ui/components/CartLanding'
+import ButtonComponent from '@pmet-public/storystore-ui/components/Button'
+import Breadcrumbs from '@pmet-public/storystore-ui/components/Breadcrumbs'
+import CartList from '@pmet-public/storystore-ui/components/CartList'
+import CartSummary from '@pmet-public/storystore-ui/components/CartSummary'
+import CartLanding from '@pmet-public/storystore-ui/components/CartLanding'
 
 const Error = dynamic(() => import('../Error'))
 

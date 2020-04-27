@@ -1,11 +1,11 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 
-import ErrorTemplate, { ErrorTypes } from '@pmet-public/luma-ui/components/Error'
-import { ButtonProps } from '@pmet-public/luma-ui/components/Button'
-import { Component } from '@pmet-public/luma-ui/lib'
+import ErrorTemplate, { ErrorTypes } from '@pmet-public/storystore-ui/components/Error'
+import { ButtonProps } from '@pmet-public/storystore-ui/components/Button'
+import { Component } from '@pmet-public/storystore-ui/lib'
 
-const Button = dynamic(() => import('@pmet-public/luma-ui/components/Button'))
+const Button = dynamic(() => import('@pmet-public/storystore-ui/components/Button'))
 
 type ErrorProps = {
     type?: ErrorTypes

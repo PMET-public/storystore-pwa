@@ -1,7 +1,7 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/lib'
+import { Component } from '@pmet-public/storystore-ui/lib'
 
-import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/luma-ui/components/Tabs'
+import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/storystore-ui/components/Tabs'
 
 export type TabsProps = {
     activeTab: number

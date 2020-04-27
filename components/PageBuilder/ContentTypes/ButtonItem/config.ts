@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 import { resolveLink, LinkType } from './../../../../lib/resolveLink'
 import { LinkProps } from '../../../../components/Link'
-import { ButtonProps } from '@pmet-public/luma-ui/components/Button'
+import { ButtonProps } from '@pmet-public/storystore-ui/components/Button'
 
 const component = dynamic(() => import('./'))
 

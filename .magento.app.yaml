@@ -1,4 +1,4 @@
-name: node-luma-pwa
+name: node-storystore-pwa
 type: nodejs:10
 
 dependencies:
@@ -7,7 +7,7 @@ dependencies:
 
 web:
     commands:
-        start: 'next start -p $PORT'
+        start: "next start -p $PORT"
 
 hooks:
     build: |
@@ -26,4 +26,4 @@ disk: 4096
 
 variables:
     env:
-        MAGENTO_URL: 'https://admin:a6terwtbk67os@forrester-vhjbjgi-a6terwtbk67os.demo.magentosite.cloud/'
+        MAGENTO_URL: "https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud/"

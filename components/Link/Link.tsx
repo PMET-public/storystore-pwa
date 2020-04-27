@@ -1,5 +1,5 @@
 import React, { FunctionComponent, forwardRef } from 'react'
-import { Props } from '@pmet-public/luma-ui/lib'
+import { Props } from '@pmet-public/storystore-ui/lib'
 import styled from 'styled-components'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { CONTENT_TYPE } from '~/pages/[...]'

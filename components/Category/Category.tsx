@@ -20,17 +20,17 @@ import {
 } from './Category.styled'
 
 import { useCategory } from './useCategory'
-import { useInfiniteScrolling } from '@pmet-public/luma-ui/hooks/useInfiniteScrolling'
+import { useInfiniteScrolling } from '@pmet-public/storystore-ui/hooks/useInfiniteScrolling'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import ProductList from '@pmet-public/luma-ui/components/ProductList'
-// import Filters from '@pmet-public/luma-ui/components/Filters'
-import Breadcrumbs from '@pmet-public/luma-ui/components/Breadcrumbs'
-import Pills from '@pmet-public/luma-ui/components/Pills'
-// import Button from '@pmet-public/luma-ui/components/Button'
-import { Skeleton } from '@pmet-public/luma-ui/components/Skeleton'
+import ProductList from '@pmet-public/storystore-ui/components/ProductList'
+// import Filters from '@pmet-public/storystore-ui/components/Filters'
+import Breadcrumbs from '@pmet-public/storystore-ui/components/Breadcrumbs'
+import Pills from '@pmet-public/storystore-ui/components/Pills'
+// import Button from '@pmet-public/storystore-ui/components/Button'
+import { Skeleton } from '@pmet-public/storystore-ui/components/Skeleton'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })

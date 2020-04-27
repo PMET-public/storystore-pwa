@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 
-import CarouselComponent from '@pmet-public/luma-ui/components/Carousel'
-import ImageComponent from '@pmet-public/luma-ui/components/Image'
+import CarouselComponent from '@pmet-public/storystore-ui/components/Carousel'
+import ImageComponent from '@pmet-public/storystore-ui/components/Image'
 
-import { Root as BreadcrumbsRoot } from '@pmet-public/luma-ui/components/Breadcrumbs/Breadcrumbs.styled'
+import { Root as BreadcrumbsRoot } from '@pmet-public/storystore-ui/components/Breadcrumbs/Breadcrumbs.styled'
 
 export const Root = styled.div`
     display: grid;

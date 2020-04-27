@@ -1,4 +1,4 @@
-import { toCamelCase } from '@pmet-public/luma-ui/lib'
+import { toCamelCase } from '@pmet-public/storystore-ui/lib'
 
 /**
  * Styles as CSS Object

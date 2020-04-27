@@ -1,9 +1,9 @@
 import React from 'react'
-import { Component } from '@pmet-public/luma-ui/lib'
+import { Component } from '@pmet-public/storystore-ui/lib'
 import { Root, Caption } from './Image.styled'
 
 import Link, { LinkProps } from '~/components/Link'
-import ImageComponent, { ImageProps as ImageComponentProps } from '@pmet-public/luma-ui/components/Image'
+import ImageComponent, { ImageProps as ImageComponentProps } from '@pmet-public/storystore-ui/components/Image'
 
 export type ImageProps = {
     image: ImageComponentProps

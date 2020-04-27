@@ -1,9 +1,9 @@
 import React from 'react'
-import { Component, Props } from '@pmet-public/luma-ui/lib'
+import { Component, Props } from '@pmet-public/storystore-ui/lib'
 import { Root, Container, Wrapper, Overlay, ContentWrapper, Content, Button } from './Banner.styled'
 
 import Link, { LinkProps } from '../../../Link'
-import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/luma-ui/components/Button'
+import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/storystore-ui/components/Button'
 import ContentWithBackground, { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 import useHtml from '../../../../hooks/useHtml'
 

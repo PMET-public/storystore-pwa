@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { Root as ButtonRoot } from '@pmet-public/luma-ui/components/Button/Button.styled'
+import { Root as ButtonRoot } from '@pmet-public/storystore-ui/components/Button/Button.styled'
 
 export const Root = styled.div<{ $appearance?: string; $secondary?: boolean; $link?: boolean; $maxWidth?: number }>`
     &:not(:last-child) {

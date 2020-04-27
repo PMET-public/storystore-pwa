@@ -1,5 +1,5 @@
 import React from 'react'
-import Skeleton from '@pmet-public/luma-ui/components/Skeleton'
+import Skeleton from '@pmet-public/storystore-ui/components/Skeleton'
 
 export const HomeSkeleton = () => (
     <Skeleton style={{ height: '100vh', width: '100vw ' }}>
