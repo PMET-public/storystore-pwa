@@ -27,7 +27,8 @@
         "react/prop-types": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/camelcase": "off"
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/explicit-function-return-type": "off"
     },
     "ignorePatterns": [
         "node_modules/",
