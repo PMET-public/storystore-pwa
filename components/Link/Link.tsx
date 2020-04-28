@@ -18,7 +18,7 @@ export type LinkProps = Props<
 
 const LinkElement = styled.a``
 
-export const Link: FunctionComponent<LinkProps> = forwardRef(
+const Link: FunctionComponent<LinkProps> = forwardRef(
     (
         {
             href: _href,
@@ -60,3 +60,7 @@ export const Link: FunctionComponent<LinkProps> = forwardRef(
         )
     }
 )
+
+Link.displayName = 'Link'
+
+export { Link }

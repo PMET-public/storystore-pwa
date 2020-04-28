@@ -8,7 +8,7 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
 import { updateSettingsFromCookie } from '../updateSettingsFromCookie'
 
-export interface IApolloProps {
+export interface ApolloProps {
     apolloState?: NormalizedCacheObject
     apolloClient: ApolloClient<NormalizedCacheObject>
 }
@@ -49,7 +49,7 @@ export const initOnContext = (ctx: any) => {
 }
 
 export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any>) => {
-    const WithApollo = ({ apolloClient, apolloState, ...pageProps }: IApolloProps & AppInitialProps) => {
+    const WithApollo = ({ apolloClient, apolloState, ...pageProps }: ApolloProps & AppInitialProps) => {
         const { magentoUrl } = updateSettingsFromCookie({
             magentoUrl: process.env.MAGENTO_URL,
         })

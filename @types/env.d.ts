@@ -1,4 +1,4 @@
-declare module NodeJS {
+declare namespace NodeJS {
     interface ProcessEnv {
         MAGENTO_URL: string
         HOME_PAGE_ID: string

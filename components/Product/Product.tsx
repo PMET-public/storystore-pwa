@@ -131,7 +131,11 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
     if (!online && !product) return <ErrorComponent type="Offline" />
 
     if (!queries.product.loading && !product) {
-        return <ErrorComponent type="404" children="We're sorry, we coudn't find the product." button={{ text: 'Search', as: Link, href: '/search' }} />
+        return (
+            <ErrorComponent type="404" button={{ text: 'Search', as: Link, href: '/search' }}>
+                We&apos;re sorry, we coudn&apos;t find the product.
+            </ErrorComponent>
+        )
     }
 
     // Pending support of other Product Types

@@ -45,16 +45,13 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     if (!queries.cart.loading && !cart?.totalQuantity) {
         return (
-            <CartLanding
-                title={{ text: 'Shopping Bag' }}
-                children={
-                    <div>
-                        <ButtonComponent as={Link} href="/" style={{ marginTop: '2rem' }}>
-                            Get Shopping
-                        </ButtonComponent>
-                    </div>
-                }
-            />
+            <CartLanding title={{ text: 'Shopping Bag' }}>
+                <div>
+                    <ButtonComponent as={Link} href="/" style={{ marginTop: '2rem' }}>
+                        Get Shopping
+                    </ButtonComponent>
+                </div>
+            </CartLanding>
         )
     }
 

@@ -161,7 +161,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
             {query && products?.count === 0 && (
                 <NoResult $margin>
                     <Error type="404">
-                        We couldn’t find any results for "{query}". <br />
+                        We couldn&apos;t find any results for &quot;{query}&quot;. <br />
                         Please try the field above to search again.
                     </Error>
                 </NoResult>
