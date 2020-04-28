@@ -1,5 +1,3 @@
-import { useRouter } from 'next/router'
-
 export type LinkType = 'default' | 'category' | 'product' | 'page'
 
 export const resolveLink = (url: string, type: LinkType = 'default'): { href: string; external?: boolean } => {
@@ -14,11 +12,4 @@ export const resolveLink = (url: string, type: LinkType = 'default'): { href: st
         console.error(error)
         return { href: url, external: true }
     }
-}
-
-export const useIsUrlActive = () => {
-    const { pathname, query } = useRouter()
-    const { url = pathname } = query
-
-    return (href: string) => href === url
 }

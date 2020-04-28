@@ -3,13 +3,12 @@ import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 import { version } from '~/package.json'
 import ReactGA from 'react-ga'
-import Router from 'next/router'
+import Router, { useRouter } from 'next/router'
 
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
 
 import { useApp } from './useApp'
 import { resolveImage } from '~/lib/resolveImage'
-import { useIsUrlActive } from '~/lib/resolveLink'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import { useServiceWorker } from '~/hooks/useServiceWorker'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
@@ -39,9 +38,17 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     const { queries, api } = useApp({ cartId, footerBlockId: settings.footerBlockId })
 
-    const isUrlActive = useIsUrlActive()
-
     const online = useNetworkStatus()
+
+    const router = useRouter()
+
+    const isUrlActive = useCallback(
+        (href: string) => {
+            const { pathname, asPath } = router
+            return href === (asPath || pathname)
+        },
+        [router]
+    )
 
     const isProduction = process.env.NODE_ENV === 'production'
 
