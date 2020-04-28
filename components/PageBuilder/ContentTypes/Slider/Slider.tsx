@@ -1,6 +1,6 @@
 import React from 'react'
-import { Component } from '@pmet-public/storystore-ui/lib'
-import SlickSlider from '@pmet-public/storystore-ui/components/SlickSlider'
+import { Component } from '@pmet-public/storystore-ui/dist/lib'
+import SlickSlider from '@pmet-public/storystore-ui/dist/components/SlickSlider'
 
 export type SliderProps = {}
 

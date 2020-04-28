@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { Root as RootButtonComponent } from '@pmet-public/storystore-ui/components/Button/Button.styled'
+import { Root as RootButtonComponent } from '@pmet-public/storystore-ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div<{ $appearance: 'inline' | 'stacked'; $sameWidth: boolean; $alignment?: string }>`
     display: inline-flex !important;

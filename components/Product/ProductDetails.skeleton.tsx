@@ -1,5 +1,5 @@
 import React from 'react'
-import Skeleton from '@pmet-public/storystore-ui/components/Skeleton'
+import Skeleton from '@pmet-public/storystore-ui/dist/components/Skeleton'
 
 export const ProductDetailsSkeleton = ({ ...props }) => {
     return (

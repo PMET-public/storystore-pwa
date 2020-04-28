@@ -16,8 +16,8 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 
 import Head from '~/components/Head'
 import Link from '~/components/Link'
-import Header from '@pmet-public/storystore-ui/components/Header'
-import TabBar from '@pmet-public/storystore-ui/components/TabBar'
+import Header from '@pmet-public/storystore-ui/dist/components/Header'
+import TabBar from '@pmet-public/storystore-ui/dist/components/TabBar'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
@@ -28,7 +28,7 @@ import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
-const Footer = dynamic(() => import('@pmet-public/storystore-ui/components/Footer'), { ssr: false })
+const Footer = dynamic(() => import('@pmet-public/storystore-ui/dist/components/Footer'), { ssr: false })
 
 type AppProps = {}
 
@@ -55,7 +55,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
             api.createCart().then(setCartId)
         }
-    }, [queries, api, cartId])
+    }, [setCartId, queries, api, cartId])
 
     /**
      * Update SW Cache on Route change
@@ -108,7 +108,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
 
         ReactGA.pageview(window.location.pathname)
-    }, [settings])
+    }, [isProduction, settings])
 
     if (online && queries.app.error) {
         const networkError = queries.app.error?.networkError as ServerError

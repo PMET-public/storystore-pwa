@@ -1,4 +1,4 @@
-import { toCamelCase } from '@pmet-public/storystore-ui/lib'
+import { toCamelCase } from '@pmet-public/storystore-ui/dist/lib'
 
 /**
  * Styles as CSS Object

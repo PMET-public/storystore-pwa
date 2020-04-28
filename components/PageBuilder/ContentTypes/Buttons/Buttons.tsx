@@ -1,5 +1,5 @@
 import React, { useRef, useState, createContext, useMemo } from 'react'
-import { Component } from '@pmet-public/storystore-ui/lib'
+import { Component } from '@pmet-public/storystore-ui/dist/lib'
 import { Root } from './Buttons.styled'
 
 export type ButtonsProps = {

@@ -2,8 +2,8 @@ import React, { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/router'
 
-import CartLanding from '@pmet-public/storystore-ui/components/CartLanding'
-import Button from '@pmet-public/storystore-ui/components/Button'
+import CartLanding from '@pmet-public/storystore-ui/dist/components/CartLanding'
+import Button from '@pmet-public/storystore-ui/dist/components/Button'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 

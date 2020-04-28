@@ -10,7 +10,7 @@ import { resolveImage } from '~/lib/resolveImage'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import { HomeSkeleton } from './Home.skeleton'
-import BubbleCarousel from '@pmet-public/storystore-ui/components/BubbleCarousel'
+import BubbleCarousel from '@pmet-public/storystore-ui/dist/components/BubbleCarousel'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })

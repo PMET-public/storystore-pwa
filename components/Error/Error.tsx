@@ -1,11 +1,11 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 
-import ErrorTemplate, { ErrorTypes } from '@pmet-public/storystore-ui/components/Error'
-import { ButtonProps } from '@pmet-public/storystore-ui/components/Button'
-import { Component } from '@pmet-public/storystore-ui/lib'
+import ErrorTemplate, { ErrorTypes } from '@pmet-public/storystore-ui/dist/components/Error'
+import { ButtonProps } from '@pmet-public/storystore-ui/dist/components/Button'
+import { Component } from '@pmet-public/storystore-ui/dist/lib'
 
-const Button = dynamic(() => import('@pmet-public/storystore-ui/components/Button'))
+const Button = dynamic(() => import('@pmet-public/storystore-ui/dist/components/Button'))
 
 type ErrorProps = {
     type?: ErrorTypes

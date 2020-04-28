@@ -1,7 +1,7 @@
 import React from 'react'
-import { Component } from '@pmet-public/storystore-ui/lib'
+import { Component } from '@pmet-public/storystore-ui/dist/lib'
 
-import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/storystore-ui/components/Tabs'
+import TabsWrapper, { TabList, Tab, TabPanel } from '@pmet-public/storystore-ui/dist/components/Tabs'
 
 export type TabsProps = {
     activeTab: number

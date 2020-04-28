@@ -1,9 +1,9 @@
 import React, { useMemo, useRef, useEffect } from 'react'
-import { Component, Props } from '@pmet-public/storystore-ui/lib'
+import { Component, Props } from '@pmet-public/storystore-ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 import { LazyImageFull, ImageState } from 'react-lazy-images'
 
-import { useImage, ImgSrc } from '@pmet-public/storystore-ui/hooks/useImage'
+import { useImage, ImgSrc } from '@pmet-public/storystore-ui/dist/hooks/useImage'
 
 export type ParallaxProps = {
     speed: number

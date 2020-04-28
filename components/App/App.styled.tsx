@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { Utilities as HeaderUtilities } from '@pmet-public/storystore-ui/components/Header/Header.styled'
-import { Wrapper as ContainerWrapper } from '@pmet-public/storystore-ui/components/Container/Container.styled'
+import { Utilities as HeaderUtilities } from '@pmet-public/storystore-ui/dist/components/Header/Header.styled'
+import { Wrapper as ContainerWrapper } from '@pmet-public/storystore-ui/dist/components/Container/Container.styled'
 
 export const Root = styled.div`
     display: grid;
