@@ -52,7 +52,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (!cart || cart.totalQuantity === 0) history.push('/cart')
+        if (!cart || cart.totalQuantity === 0) history.push('/cart').then(() => window.scrollTo(0, 0))
     }, [checkout, cart, history])
 
     /**
@@ -166,11 +166,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
     const handlePlaceOrder = useCallback(async () => {
         const order = await api.placeOrder()
 
+        history.push(`/checkout/confirmation?orderId=${order.id}`)
+
         // Reset Cart by creating a new one
         const cartId = await api.createCart()
         setCartId(cartId)
-
-        history.push(`/checkout/confirmation?orderId=${order.id}`)
     }, [api, history, setCartId])
 
     const online = useNetworkStatus()

@@ -95,11 +95,12 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 throw Error('Product type not supported')
             }
 
-            history.push('/cart')
+            await history.push('/cart')
+            window.scrollTo(0, 0)
         } catch (error) {
             console.error(error)
         }
-    }, [api, product, history])
+    }, [api, product, history, cartId])
 
     const infoRef = useRef<HTMLDivElement>(null)
 
@@ -112,7 +113,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                 infoRef.current.scrollIntoView({ behavior: 'smooth' })
             }
         },
-        [infoRef.current]
+        [infoRef]
     )
 
     const gallery = useMemo(() => {

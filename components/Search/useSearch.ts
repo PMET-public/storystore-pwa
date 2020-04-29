@@ -24,13 +24,13 @@ export const useSearch = (props: { queryString?: string }) => {
     })
 
     const handleOnNewSearch = useCallback(
-        (newQuery: string) => {
+        async (newQuery: string) => {
             if (newQuery.length === 0 || newQuery.length > 2) {
-                history.push(`/search?query=${newQuery}`, `/search?query=${newQuery}`, { shallow: true })
+                await history.push(`/search?query=${newQuery}`, `/search?query=${newQuery}`, { shallow: true })
                 window.scrollTo(0, 0)
             }
         },
-        [queryString, history]
+        [history]
     )
 
     return {

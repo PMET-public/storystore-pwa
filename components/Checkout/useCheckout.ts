@@ -170,7 +170,7 @@ export const useCheckout = (props: UseCheckout) => {
     const handlePlaceOrder = useCallback(async () => {
         const { data } = await placeOrder({ variables: { cartId } })
         return data.placeOrder?.order
-    }, [placeOrder])
+    }, [placeOrder, cartId])
 
     return {
         queries: {

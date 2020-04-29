@@ -28,7 +28,8 @@ export const Cart: FunctionComponent<CartProps> = () => {
     const { queries, api } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
-        history.push('/checkout')
+        await history.push('/checkout')
+        window.scrollTo(0, 0)
     }, [history])
 
     const online = useNetworkStatus()
