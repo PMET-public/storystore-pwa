@@ -52,7 +52,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
      * Redirect to Shopping Cart if empty
      */
     useEffect(() => {
-        if (!cart || cart.items?.length === 0) history.push('/cart')
+        if (!cart || cart.totalQuantity === 0) history.push('/cart')
     }, [checkout, cart, history])
 
     /**
