@@ -13,7 +13,7 @@ export type ButtonItemProps = {
     color: 'primary' | 'secondary'
 }
 
-export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, color, children, ...props }) => {
+export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, color, ...props }) => {
     const { appearance, sameWidth, maxWidth, setMaxWidth } = useContext(ButtonsContext)
 
     const rootElem = useRef<HTMLDivElement>(null)

@@ -7,7 +7,7 @@ export type HtmlProps = {
     source: string
 }
 
-export const Html: Component<HtmlProps> = ({ children, source, ...props }) => {
+export const Html: Component<HtmlProps> = ({ source, ...props }) => {
     const html = useHtml(source)
     return <Root {...props}>{html}</Root>
 }

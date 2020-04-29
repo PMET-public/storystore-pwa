@@ -6,6 +6,6 @@ import PageBuilder, { PageBuilderProps } from '../..'
 
 export type BlockProps = PageBuilderProps
 
-export const Block: Component<BlockProps> = ({ children, ...props }) => {
+export const Block: Component<BlockProps> = ({ ...props }) => {
     return <PageBuilder {...props} />
 }

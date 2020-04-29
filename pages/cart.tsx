@@ -1,12 +1,29 @@
 import React from 'react'
-
-import CartTemplate from '../components/Cart'
 import { NextPage } from 'next'
+import { withApollo } from '~/lib/apollo/withApollo'
+import { StoryStoreProvider } from '~/lib/storystore'
 
-type CartProps = {}
+import App from '~/components/App'
+import CartTemplate from '~/components/Cart'
 
-const Cart: NextPage<CartProps> = () => {
-    return <CartTemplate />
+type CartProps = {
+    cookie?: string
 }
 
-export default Cart
+const Cart: NextPage<CartProps> = ({ cookie }) => {
+    return (
+        <StoryStoreProvider cookie={cookie}>
+            <App>
+                <CartTemplate />
+            </App>
+        </StoryStoreProvider>
+    )
+}
+
+Cart.getInitialProps = async ({ req }) => {
+    return {
+        cookie: req?.headers.cookie,
+    }
+}
+
+export default withApollo({ ssr: true })(Cart)

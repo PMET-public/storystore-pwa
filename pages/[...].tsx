@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+import { withApollo } from '~/lib/apollo/withApollo'
+import { StoryStoreProvider } from '~/lib/storystore'
 import { NextComponentType } from 'next'
 import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
 
+import App from '~/components/App'
 import Link from '../components/Link'
 import Error from '../components/Error'
 import Page from '../components/Page '
@@ -19,40 +22,51 @@ export type ResolverProps = {
     contentId: number
     urlKey: string
     type: CONTENT_TYPE
+    cookie?: string
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
-    if (!type) {
-        return (
-            <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
-                Missing UrlResolver Type
-            </Error>
-        )
-    }
-
-    switch (type) {
-        case 'CMS_PAGE':
-            return <Page key={contentId} id={contentId} />
-        case 'CATEGORY':
-            return <Category key={contentId} id={contentId} />
-        case 'PRODUCT':
-            return <Product key={urlKey} urlKey={urlKey} />
-        case '404':
-            return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
-        default:
+const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ cookie, type, contentId, urlKey }) => {
+    const renderPage = useMemo(() => {
+        if (!type) {
             return (
                 <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
-                    Internal Error: {type} is not valid
+                    Missing UrlResolver Type
                 </Error>
             )
-    }
+        }
+
+        switch (type) {
+            case 'CMS_PAGE':
+                return <Page key={contentId} id={contentId} />
+            case 'CATEGORY':
+                return <Category key={contentId} id={contentId} />
+            case 'PRODUCT':
+                return <Product key={urlKey} urlKey={urlKey} />
+            case '404':
+                return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
+            default:
+                return (
+                    <Error type="500" button={{ text: 'Reload', onClick: () => window.location.reload() }}>
+                        Internal Error: {type} is not valid
+                    </Error>
+                )
+        }
+    }, [contentId, type, urlKey])
+
+    return (
+        <StoryStoreProvider cookie={cookie}>
+            <App>{renderPage}</App>
+        </StoryStoreProvider>
+    )
 }
 
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
+    const cookie = req?.headers.cookie
+
     let { type, contentId, urlKey } = query
 
     if (type && (contentId || urlKey)) {
-        return { type, contentId, urlKey }
+        return { type, contentId, urlKey, cookie }
     }
 
     try {
@@ -100,7 +114,7 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
         if (res) res.statusCode = 500
     }
 
-    return { type, contentId, urlKey }
+    return { type, contentId, urlKey, cookie }
 }
 
-export default UrlResolver
+export default withApollo({ ssr: true })(UrlResolver)

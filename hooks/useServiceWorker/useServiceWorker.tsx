@@ -61,23 +61,20 @@ export const useServiceWorker = () => {
         [handleReloadApp]
     )
 
-    const handleServiceWorkerActivated = useCallback(
-        _event => {
-            if (!wb.current) return
+    const handleServiceWorkerActivated = useCallback(() => {
+        if (!wb.current) return
 
-            // Get the current page URL + all resources the page loaded.
-            const urlsToCache = [...performance.getEntriesByType('resource').map(r => r.name)]
+        // Get the current page URL + all resources the page loaded.
+        const urlsToCache = [...performance.getEntriesByType('resource').map(r => r.name)]
 
-            // Send that list of URLs to your router in the service worker.
-            wb.current.messageSW({
-                type: 'CACHE_URLS',
-                payload: {
-                    urlsToCache: [window.location.href, ...urlsToCache],
-                },
-            })
-        },
-        [wb]
-    )
+        // Send that list of URLs to your router in the service worker.
+        wb.current.messageSW({
+            type: 'CACHE_URLS',
+            payload: {
+                urlsToCache: [window.location.href, ...urlsToCache],
+            },
+        })
+    }, [wb])
 
     useEffect(() => {
         if (!wb.current) return
@@ -94,7 +91,7 @@ export const useServiceWorker = () => {
             wb.current.removeEventListener('installed', handleServiceWorkerInstalled)
             wb.current.removeEventListener('activated', handleServiceWorkerActivated)
         }
-    }, [wb.current])
+    }, [wb, handleServiceWorkerInstalled, handleServiceWorkerActivated])
 
     return wb.current
 }

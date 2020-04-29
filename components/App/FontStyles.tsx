@@ -1,14 +1,6 @@
-import React from 'react'
-import NextNprogress from 'nextjs-progressbar'
-import App from '~/components/App'
-import NextApp from 'next/app'
-import { NextComponentType, NextPageContext } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
-import { ThemeProvider, createGlobalStyle } from 'styled-components'
-import { baseTheme, UIBase } from '@pmet-public/storystore-ui/dist/theme'
-import { StoryStoreProvider } from '~/lib/storystore'
+import { createGlobalStyle } from 'styled-components'
 
-const FontStyles = createGlobalStyle`
+export const FontStyles = createGlobalStyle`
     @font-face {
         font-family: 'source-sans-pro';
         src: url('https://use.typekit.net/af/61f808/00000000000000003b9b3d63/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3')
@@ -134,32 +126,3 @@ const FontStyles = createGlobalStyle`
         font-family: 'rucksack', sans-serif;
     }
 `
-
-const MyApp: NextComponentType<NextPageContext, any, any> = ({ Component, pageProps, cookie }) => {
-    return (
-        <StoryStoreProvider cookie={cookie}>
-            <ThemeProvider theme={baseTheme}>
-                <UIBase />
-                <FontStyles />
-
-                <App>
-                    <NextNprogress color="rgba(161, 74, 36, 1)" startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
-                    <Component {...pageProps} />
-                </App>
-            </ThemeProvider>
-        </StoryStoreProvider>
-    )
-}
-
-MyApp.getInitialProps = async appContext => {
-    const { req } = (appContext as any).ctx
-
-    const appProps = await NextApp.getInitialProps(appContext as any)
-
-    return {
-        ...appProps,
-        cookie: req?.headers.cookie,
-    }
-}
-
-export default withApollo({ ssr: true })(MyApp)

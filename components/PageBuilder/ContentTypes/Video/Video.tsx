@@ -6,7 +6,7 @@ export type VideoProps = {
     url: string
 }
 
-export const Video: Component<VideoProps> = ({ children, url, ...props }) => {
+export const Video: Component<VideoProps> = ({ url, ...props }) => {
     return (
         <Root {...props}>
             <iframe

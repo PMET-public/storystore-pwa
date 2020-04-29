@@ -1,6 +1,9 @@
 import React from 'react'
 import { NextPage } from 'next'
+import { withApollo } from '~/lib/apollo/withApollo'
+import { StoryStoreProvider } from '~/lib/storystore'
 
+import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
 
 type SettingsProps = {
@@ -15,7 +18,13 @@ const Settings: NextPage<SettingsProps> = () => {
         googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     }
 
-    return <SettingsTemplate defaults={defaults} />
+    return (
+        <StoryStoreProvider>
+            <App>
+                <SettingsTemplate defaults={defaults} />
+            </App>
+        </StoryStoreProvider>
+    )
 }
 
-export default Settings
+export default withApollo({ ssr: false })(Settings)

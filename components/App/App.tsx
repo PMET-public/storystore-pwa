@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic'
 import { version } from '~/package.json'
 import ReactGA from 'react-ga'
 import Router, { useRouter } from 'next/router'
+import { ThemeProvider } from 'styled-components'
+import { baseTheme, UIBase } from '@pmet-public/storystore-ui/dist/theme'
 
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
 
@@ -13,6 +15,7 @@ import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import { useServiceWorker } from '~/hooks/useServiceWorker'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 
+import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@pmet-public/storystore-ui/dist/components/Header'
@@ -24,6 +27,7 @@ import IconBagSvg from 'remixicon/icons/Finance/shopping-bag-line.svg'
 import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
 import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
+import { FontStyles } from './FontStyles'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
@@ -148,7 +152,11 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const loading = queries.app.loading && !store
 
     return (
-        <React.Fragment>
+        <ThemeProvider theme={baseTheme}>
+            <NextNprogress color={baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
+            <UIBase />
+            <FontStyles />
+
             {/* Head Metadata */}
             {store && (
                 <Head
@@ -265,6 +273,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     />
                 </TabBarContainer>
             </Root>
-        </React.Fragment>
+        </ThemeProvider>
     )
 }

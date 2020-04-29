@@ -59,7 +59,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
         return () => {
             jarallax(backgroundElem, 'destroy')
         }
-    }, [backgroundElem, parallax])
+    }, [backgroundElem, parallax, styles.background.backgroundSize, styles.background.backgroundPositionX, styles.background.backgroundRepeatX])
 
     return (
         <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} style={styles.wrapper} {...props}>

@@ -22,7 +22,7 @@ export type BannerProps = {
     }>
 }
 
-export const Banner: Component<BannerProps> = ({ appearance = 'poster', background, button, children, content, link, overlay, showButton, showOverlay, style, ...props }) => {
+export const Banner: Component<BannerProps> = ({ appearance = 'poster', background, button, content, link, overlay, showButton, showOverlay, style, ...props }) => {
     const contentHtml = useHtml(content?.html)
 
     return (

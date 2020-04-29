@@ -7,7 +7,7 @@ export type HeadingProps = {
     text: string
 }
 
-export const Heading: Component<HeadingProps> = ({ children, as, text, ...props }) => {
+export const Heading: Component<HeadingProps> = ({ as, text, ...props }) => {
     return (
         <Root as={as} {...props}>
             {text}

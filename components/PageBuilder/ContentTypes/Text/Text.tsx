@@ -5,7 +5,7 @@ import useHtml from '../../../../hooks/useHtml'
 
 export type TextProps = {}
 
-export const Text: Component<TextProps> = ({ children, innerHTML, ...props }) => {
+export const Text: Component<TextProps> = ({ innerHTML, ...props }) => {
     const html = useHtml(innerHTML)
     return <Root {...props}>{html}</Root>
 }

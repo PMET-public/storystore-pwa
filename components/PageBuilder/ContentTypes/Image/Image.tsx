@@ -11,7 +11,7 @@ export type ImageProps = {
     link?: LinkProps
 }
 
-export const Image: Component<ImageProps> = ({ children, caption, link, image, ...props }) => {
+export const Image: Component<ImageProps> = ({ caption, link, image, ...props }) => {
     return (
         <Root as={link ? (p: any) => <Link {...link} {...p} /> : 'div'} {...props}>
             <figure>

@@ -1,12 +1,30 @@
 import React from 'react'
 
-import SearchTemplate from '../components/Search'
 import { NextPage } from 'next'
+import { withApollo } from '~/lib/apollo/withApollo'
+import { StoryStoreProvider } from '~/lib/storystore'
 
-type SearchProps = {}
+import App from '~/components/App'
+import SearchTemplate from '~/components/Search'
 
-const Search: NextPage<SearchProps> = () => {
-    return <SearchTemplate />
+type SearchProps = {
+    cookie?: string
 }
 
-export default Search
+const Search: NextPage<SearchProps> = ({ cookie }) => {
+    return (
+        <StoryStoreProvider cookie={cookie}>
+            <App>
+                <SearchTemplate />
+            </App>
+        </StoryStoreProvider>
+    )
+}
+
+Search.getInitialProps = async ({ req }) => {
+    return {
+        cookie: req?.headers.cookie,
+    }
+}
+
+export default withApollo({ ssr: true })(Search)
