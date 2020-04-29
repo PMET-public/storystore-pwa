@@ -50,7 +50,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
         onError(({ graphQLErrors, networkError }) => {
             if (process.env.NODE_ENV !== 'production') {
                 console.log(`  –––––––––––––––––––––––––––––––––––––––––––––––––`)
-                console.groupCollapsed(`  🧐 GraphQL Error`)
+                console.groupCollapsed(`  🔥 GraphQL Error`)
                 if (graphQLErrors) {
                     graphQLErrors.forEach(({ message, locations, path }) => {
                         console.info(`Message: ${message}`)

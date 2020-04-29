@@ -20,7 +20,7 @@ import {
 } from './Category.styled'
 
 import { useCategory } from './useCategory'
-import { useInfiniteScrolling } from '@pmet-public/storystore-ui/dist/hooks/useInfiniteScrolling'
+import { useFetchMoreOnScrolling } from '@pmet-public/storystore-ui/dist/hooks/useFetchMoreOnScrolling'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
@@ -50,21 +50,12 @@ const TitleSkeleton = ({ ...props }) => {
 export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
     const { queries } = useCategory({ id })
 
+    const products = queries.products.data?.products
+
     /**
      * Infinite Scroll Effect
      */
-    useInfiniteScrolling(() => {
-        if (queries.products.loading) return
-
-        const { products } = queries.products.data
-
-        // ignore if it is loading or has no pagination
-        if (!products?.pagination) return
-
-        // don't run if it's in the last page
-        if (!(products.pagination.current < products.pagination.total)) return
-
-        // load more products
+    useFetchMoreOnScrolling({ threshold: 400, loading: queries.products.loading, hasNextPage: products?.pagination && products.pagination.current < products.pagination.total }, () => {
         queries.products
             .fetchMore({
                 variables: {
@@ -87,15 +78,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.category.data.page) return <Error type="Offline" />
+    if (!online && !queries.category.data?.page) return <Error type="Offline" />
 
-    if (!queries.category.loading && !queries.category.data.page) {
+    if (!queries.category.loading && !queries.category.data?.page) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
     }
 
     const page = queries.category.data?.page && queries.category.data.page[0]
-
-    const products = queries.products.data?.products
 
     const categoryUrlSuffix = queries.category.data?.store?.categoryUrlSuffix ?? ''
 
@@ -181,34 +170,36 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         <ProductListWrapper $margin>
                             <ProductList
                                 loadingMore={queries.products.loading}
-                                items={products?.items?.map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                                    _id: `${id}--${index}`,
-                                    as: Link,
-                                    href: `/${urlKey + productUrlSuffix}`,
-                                    urlResolver: {
-                                        type: 'PRODUCT',
-                                        id,
-                                        urlKey,
-                                    },
-                                    image: {
-                                        alt: image.alt,
-                                        src: {
-                                            desktop: resolveImage(image.src, { width: 1260 }),
-                                            mobile: resolveImage(image.src, { width: 960 }),
+                                items={products?.items
+                                    ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
+                                    .map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                                        _id: `${id}--${index}`,
+                                        as: Link,
+                                        href: `/${urlKey + productUrlSuffix}`,
+                                        urlResolver: {
+                                            type: 'PRODUCT',
+                                            id,
+                                            urlKey,
                                         },
-                                        width: 1274,
-                                        height: 1580,
-                                    },
-                                    price: {
-                                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                        regular: price.minimum.regular.value,
-                                        special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
-                                        currency: price.minimum.regular.currency,
-                                    },
-                                    title: {
-                                        text: title,
-                                    },
-                                }))}
+                                        image: {
+                                            alt: image.alt,
+                                            src: {
+                                                desktop: resolveImage(image.src, { width: 1260 }),
+                                                mobile: resolveImage(image.src, { width: 960 }),
+                                            },
+                                            width: 1274,
+                                            height: 1580,
+                                        },
+                                        price: {
+                                            label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                                            regular: price.minimum.regular.value,
+                                            special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
+                                            currency: price.minimum.regular.currency,
+                                        },
+                                        title: {
+                                            text: title,
+                                        },
+                                    }))}
                             />
                         </ProductListWrapper>
                     </Content>
