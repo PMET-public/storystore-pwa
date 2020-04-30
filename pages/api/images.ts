@@ -1,41 +1,63 @@
 import { COOKIE } from '~/lib/cookies'
-import request from 'request'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
+import https, { RequestOptions } from 'https'
+import http from 'http'
 
 const maxAge = 30 * 86400 // 30 days 31536000
 
-export const ImagesApi = async (req: NextApiRequest, res: NextApiResponse) => {
-    const imageURL = req.query.url.toString()
+const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =>
+    new Promise(resolve => {
+        const imageURL = request.query.url.toString()
 
-    const settings = {
-        magentoUrl: process.env.MAGENTO_URL,
-        ...JSON.parse(req.cookies[COOKIE.settings] || '{}'),
-    }
+        const settings = {
+            magentoUrl: process.env.MAGENTO_URL,
+            ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+        }
 
-    const magentoUrl = new URL(imageURL, settings.magentoUrl).href
+        const query = request.url?.split('?')[1]
 
-    req.pipe(
-        request.get(
-            {
-                qs: req.query,
-                url: magentoUrl,
-                pool: {
-                    maxSockets: Infinity,
-                },
+        const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
+
+        const options: RequestOptions = {
+            headers: {
+                ...request.headers,
+                host: magentoUrl.host,
             },
-            (error, response) => {
-                if (error) {
-                    console.error(error)
-                    res.status(500).end()
-                    return
-                }
-                if (response) {
-                    response.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
-                }
-            }
-        )
-    ).pipe(res)
-}
+        }
 
-export default ImagesApi
+        const httpx = magentoUrl.protocol === 'https:' ? https : http
+
+        const proxy = httpx
+            .request(magentoUrl, options, res => {
+                // Set Cache Headers – for Now.sh Edge
+                res.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
+
+                response.writeHead(res.statusCode as number, res.headers)
+
+                res.pipe(response, {
+                    end: true,
+                })
+            })
+            .on('error', error => {
+                if (error) {
+                    // @ts-ignore
+                    if (error.code === 'ENOTFOUND') {
+                        response.status(404)
+                    } else {
+                        response.status(500)
+                        console.error(error.message)
+                    }
+
+                    response.end()
+                }
+            })
+
+        request
+            .pipe(proxy, {
+                end: true,
+            })
+            .on('response', resolve)
+    })
+
+export default proxyImages
