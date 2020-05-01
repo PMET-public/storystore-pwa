@@ -3,7 +3,7 @@ import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 import { version } from '~/package.json'
 import ReactGA from 'react-ga'
-import Router, { NextRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@pmet-public/storystore-ui/dist/theme'
 
@@ -33,13 +33,11 @@ const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 const Footer = dynamic(() => import('@pmet-public/storystore-ui/dist/components/Footer'), { ssr: false })
 
-type AppProps = {
-    router: NextRouter
-}
+type AppProps = {}
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-export const App: FunctionComponent<AppProps> = ({ children, router }) => {
+export const App: FunctionComponent<AppProps> = ({ children }) => {
     const workbox = useServiceWorker()
 
     const { cartId, settings, setCartId } = useStoryStore()
@@ -47,6 +45,8 @@ export const App: FunctionComponent<AppProps> = ({ children, router }) => {
     const { queries, api } = useApp({ cartId, footerBlockId: settings.footerBlockId })
 
     const online = useNetworkStatus()
+
+    const router = useRouter()
 
     const isUrlActive = useCallback(
         (href: string): boolean => {

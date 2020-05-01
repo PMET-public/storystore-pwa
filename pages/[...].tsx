@@ -3,8 +3,6 @@ import { withApollo } from '~/lib/apollo/withApollo'
 import { NextComponentType } from 'next'
 import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
 
-import { useRouter } from 'next/router'
-
 import App from '~/components/App'
 import Link from '../components/Link'
 import Error from '../components/Error'
@@ -26,8 +24,6 @@ export type ResolverProps = {
 }
 
 const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
-    const router = useRouter()
-
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -55,7 +51,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
         }
     }, [contentId, type, urlKey])
 
-    return <App router={router}>{renderPage}</App>
+    return <App>{renderPage}</App>
 }
 
 // enable next.js ssr

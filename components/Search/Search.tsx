@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react'
+import React, { FunctionComponent, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveImage } from '~/lib/resolveImage'
 
@@ -35,7 +35,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { query = '' } = history.query
 
-    const { queries, api } = useSearch({ queryString: query?.toString() })
+    const { queries } = useSearch({ queryString: query?.toString() })
 
     const products = queries.search.data?.products
 
@@ -67,6 +67,16 @@ export const Search: FunctionComponent<SearchProps> = () => {
             .catch(() => {})
     })
 
+    const handleOnNewSearch = useCallback(
+        async (newQuery: string) => {
+            if (newQuery.length === 0 || newQuery.length > 2) {
+                await history.push(`/search?query=${newQuery}`, `/search?query=${newQuery}`, { shallow: true })
+                window.scrollTo(0, 0)
+            }
+        },
+        [history]
+    )
+
     const productsCount = useMemo(() => {
         if (!products) return
         const { count = 0 } = products
@@ -82,7 +92,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
             <Root>
                 <TopBar>
                     <TopBarWrapper $margin>
-                        <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={api.search} />
+                        <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
                         {/* TODO: Integrate Filters
                                 <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>

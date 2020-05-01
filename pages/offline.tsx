@@ -27,7 +27,7 @@ const Offline: NextPage<OfflineProps> = ({}) => {
     }, online)
 
     return (
-        <App router={router}>
+        <App>
             <Error type="Offline" />
         </App>
     )
