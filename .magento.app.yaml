@@ -3,11 +3,11 @@ type: nodejs:10
 
 dependencies:
     nodejs:
-        next: ^9.2.0
+        next: 9.3.6
 
 web:
     commands:
-        start: "next start -p $PORT"
+        start: 'next start -p $PORT'
 
 hooks:
     build: |
@@ -26,4 +26,4 @@ disk: 4096
 
 variables:
     env:
-        MAGENTO_URL: "https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud/"
+        MAGENTO_URL: 'https://admin:a6terwtbk67os@carlos-233-3h6p5qa-a6terwtbk67os.demo.magentosite.cloud/'
