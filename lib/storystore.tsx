@@ -1,16 +1,18 @@
-import React, { createContext, Reducer, FunctionComponent, useReducer } from 'react'
-import { getCookie, COOKIE, setCookie, getCookieValueFromString } from './cookies'
-import { updateSettingsFromCookie } from './updateSettingsFromCookie'
+import React, { createContext, Reducer, useReducer } from 'react'
+import { NextPage } from 'next'
+import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
+import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+
+type Settings = {
+    magentoUrl: string
+    homePageId: string
+    footerBlockId?: string
+    googleMapsApiKey?: string
+}
 
 type ReducerState = {
     cartId: string
-
-    settings: {
-        magentoUrl: string
-        homePageId: string
-        footerBlockId: string
-        googleMapsApiKey: string
-    }
+    settings: Settings
 }
 
 type ReducerActions =
@@ -25,19 +27,22 @@ type ReducerActions =
 
 const initialState: ReducerState = {
     cartId: '',
-
     settings: {
-        magentoUrl: '',
-        homePageId: '',
-        footerBlockId: '',
-        googleMapsApiKey: '',
+        magentoUrl: process.env.MAGENTO_URL,
+        homePageId: process.env.HOME_PAGE_ID,
+        footerBlockId: process.env.FOOTER_BLOCK_ID,
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     },
 }
 
 export const StoryStoreContext = createContext({
     ...initialState,
-    setCartId: (_payload: string) => {},
-    setSettings: (_payload: { [key: string]: any }) => {},
+    setCartId: (payload: string) => {
+        payload
+    },
+    setSettings: (payload: { [key: string]: any }) => {
+        payload
+    },
 })
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
@@ -66,36 +71,46 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
-export type StoryStore = {
-    cookie?: string
+export const withStoryStore = (PageComponent: NextPage<any>) => {
+    const WithStoryStore = ({ cookie, ...pageProps }: any) => {
+        const [state, dispatch] = useReducer(reducer, {
+            cartId: getCookie(COOKIE.cartId, cookie) || '',
+            settings: updateSettingsFromCookie(initialState.settings, cookie),
+        })
+
+        return (
+            <StoryStoreContext.Provider
+                value={{
+                    ...state,
+                    setCartId: payload => {
+                        dispatch({ type: 'setCartId', payload })
+                    },
+                    setSettings: payload => {
+                        dispatch({ type: 'setSettings', payload })
+                    },
+                }}
+            >
+                <PageComponent {...pageProps} />
+            </StoryStoreContext.Provider>
+        )
+    }
+
+    if (PageComponent.getInitialProps) {
+        WithStoryStore.getInitialProps = async (ctx: any) => {
+            if (Boolean(ctx.ctx)) {
+                console.error('withStoryStore does not support custom next.js _app. Please move to /pages/*.tsx')
+            }
+
+            let props = {}
+
+            if (PageComponent.getInitialProps) {
+                props = {
+                    ...(await PageComponent.getInitialProps(ctx)),
+                }
+            }
+            return { ...props, cookie: ctx.req?.headers.cookie }
+        }
+    }
+
+    return WithStoryStore
 }
-
-export const StoryStoreProvider: FunctionComponent<StoryStore> = ({ cookie, children }) => {
-    const [state, dispatch] = useReducer(reducer, {
-        ...initialState,
-        cartId: (process.browser ? getCookie(COOKIE.cartId) : cookie && getCookieValueFromString(cookie, COOKIE.cartId)) || '',
-        settings: updateSettingsFromCookie(
-            {
-                magentoUrl: process.env.MAGENTO_URL,
-                homePageId: process.env.HOME_PAGE_ID,
-                footerBlockId: process.env.FOOTER_BLOCK_ID,
-                googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-            },
-            cookie
-        ),
-    })
-
-    return (
-        <StoryStoreContext.Provider
-            value={{
-                ...state,
-                setCartId: payload => dispatch({ type: 'setCartId', payload }),
-                setSettings: payload => dispatch({ type: 'setSettings', payload }),
-            }}
-        >
-            {children}
-        </StoryStoreContext.Provider>
-    )
-}
-
-export default StoryStoreProvider

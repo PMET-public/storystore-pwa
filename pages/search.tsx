@@ -2,35 +2,24 @@ import React from 'react'
 
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import SearchTemplate from '~/components/Search'
 
-type SearchProps = {
-    storyStore: StoryStore
-}
+type SearchProps = {}
 
-const Search: NextPage<SearchProps> = ({ storyStore }) => {
+const Search: NextPage<SearchProps> = ({}) => {
     const router = useRouter()
 
     return (
-        <StoryStoreProvider {...storyStore}>
-            <App router={router}>
-                <SearchTemplate />
-            </App>
-        </StoryStoreProvider>
+        <App router={router}>
+            <SearchTemplate />
+        </App>
     )
 }
 
-Search.getInitialProps = async ({ req }) => {
-    return {
-        storyStore: {
-            cookie: req?.headers.cookie,
-        },
-    }
-}
+Search.getInitialProps = async () => ({}) // Enable next.js ssr
 
-export default withApollo({ ssr: true })(Search)
+export default withApollo(Search)

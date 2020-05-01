@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { NextComponentType } from 'next'
 import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
-import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import { useRouter } from 'next/router'
 
@@ -24,10 +23,9 @@ export type ResolverProps = {
     contentId: number
     urlKey: string
     type: CONTENT_TYPE
-    storyStore: StoryStore
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ storyStore, type, contentId, urlKey }) => {
+const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
     const router = useRouter()
 
     const renderPage = useMemo(() => {
@@ -57,13 +55,10 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ storyStore, t
         }
     }, [contentId, type, urlKey])
 
-    return (
-        <StoryStoreProvider {...storyStore}>
-            <App router={router}>{renderPage}</App>
-        </StoryStoreProvider>
-    )
+    return <App router={router}>{renderPage}</App>
 }
 
+// enable next.js ssr
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
     const cookie = req?.headers.cookie
 
@@ -121,4 +116,4 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
     return { type, contentId, urlKey, storyStore: { cookie } }
 }
 
-export default withApollo({ ssr: true })(UrlResolver)
+export default withApollo(UrlResolver)

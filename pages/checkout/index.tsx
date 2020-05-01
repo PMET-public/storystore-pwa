@@ -1,27 +1,22 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import CheckoutTemplate from '~/components/Checkout'
 
-type CheckoutProps = {
-    storyStore: StoryStore
-}
+type CheckoutProps = {}
 
-export const Checkout: NextPage<CheckoutProps> = ({ storyStore }) => {
+export const Checkout: NextPage<CheckoutProps> = ({}) => {
     const router = useRouter()
 
     return (
-        <StoryStoreProvider {...storyStore}>
-            <App router={router}>
-                <CheckoutTemplate />
-            </App>
-        </StoryStoreProvider>
+        <App router={router}>
+            <CheckoutTemplate />
+        </App>
     )
 }
 
-export default withApollo({ ssr: false })(Checkout)
+export default withApollo(Checkout)

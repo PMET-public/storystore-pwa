@@ -6,7 +6,8 @@ import ApolloClient from 'apollo-client'
 import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
-import { updateSettingsFromCookie } from '../updateSettingsFromCookie'
+import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+import { withStoryStore } from '~/lib/storystore'
 
 export interface ApolloProps {
     apolloState?: NormalizedCacheObject
@@ -16,7 +17,7 @@ export interface ApolloProps {
 export const initOnContext = (ctx: any) => {
     const inAppContext = Boolean(ctx.ctx)
 
-    // We consider installing `withApollo({ ssr: true })` on global App level
+    // We consider installing `withApollo` on global App level
     // as antipattern since it disables project wide Automatic Static Optimization.
     if (process.env.NODE_ENV === 'development') {
         if (inAppContext) {
@@ -54,7 +55,7 @@ export const initOnContext = (ctx: any) => {
     return ctx
 }
 
-export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any>) => {
+export const withApollo = (PageComponent: NextPage<any>) => {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: ApolloProps & AppInitialProps) => {
         const { magentoUrl } = updateSettingsFromCookie({
             magentoUrl: process.env.MAGENTO_URL,
@@ -67,7 +68,7 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
             client = apolloClient
         } else {
             // Happens on: next.js csr
-            client = createApolloClient(magentoUrl, apolloState)
+            client = createApolloClient(magentoUrl, apolloState, undefined)
         }
 
         return (
@@ -83,7 +84,7 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
         WithApollo.displayName = `withApollo(${displayName})`
     }
 
-    if (ssr || PageComponent.getInitialProps) {
+    if (PageComponent.getInitialProps) {
         WithApollo.getInitialProps = async (ctx: any) => {
             const inAppContext = Boolean(ctx.ctx)
             const { apolloClient } = initOnContext(ctx)
@@ -106,11 +107,12 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
                 }
 
                 // Only if dataFromTree is enabled
-                if (ssr && AppTree) {
+                if (AppTree) {
                     try {
                         // Import `@apollo/react-ssr` dynamically.
                         // We don't want to have this in our client bundle.
                         const { getDataFromTree } = await import('@apollo/react-ssr')
+                        // To be used by StoryStore
 
                         // Since AppComponents and PageComponents have different context types
                         // we need to modify their props a little.
@@ -151,5 +153,5 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
         }
     }
 
-    return WithApollo
+    return withStoryStore(WithApollo)
 }

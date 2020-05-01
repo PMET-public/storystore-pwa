@@ -14,7 +14,8 @@ import ButtonComponent from '@pmet-public/storystore-ui/dist/components/Button'
 import Breadcrumbs from '@pmet-public/storystore-ui/dist/components/Breadcrumbs'
 import CartList from '@pmet-public/storystore-ui/dist/components/CartList'
 import CartSummary from '@pmet-public/storystore-ui/dist/components/CartSummary'
-import CartLanding from '@pmet-public/storystore-ui/dist/components/CartLanding'
+import EmptyCart from '@pmet-public/storystore-ui/dist/components/EmptyCart'
+import ViewLoader from '@pmet-public/storystore-ui/dist/components/ViewLoader'
 
 const Error = dynamic(() => import('../Error'))
 
@@ -44,19 +45,24 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const productUrlSuffix = store?.productUrlSuffix ?? ''
 
-    if (!queries.cart.loading && !cart?.totalQuantity) {
+    if (!cart) return <ViewLoader />
+
+    if (!queries.cart.loading && cart.totalQuantity < 1) {
         return (
-            <CartLanding title={{ text: 'Shopping Bag' }}>
-                <ButtonComponent as={Link} href="/" style={{ marginTop: '2rem' }}>
-                    Get shopping
-                </ButtonComponent>
-            </CartLanding>
+            <React.Fragment>
+                <Head title="Shopping Bag" />
+                <EmptyCart title={{ text: 'Shopping Bag' }}>
+                    <ButtonComponent as={Link} href="/" style={{ marginTop: '2rem' }}>
+                        Get shopping
+                    </ButtonComponent>
+                </EmptyCart>
+            </React.Fragment>
         )
     }
 
     return (
         <React.Fragment>
-            <Head title="Shopping Bag" />
+            <Head title={`Shopping Bag ${cart?.totalQuantity ? `(${cart?.totalQuantity})` : ''}`} />
 
             <Root>
                 <ProductList>

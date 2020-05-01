@@ -16,8 +16,8 @@ export const getCookieValueFromString = (cookie: string, name: string) => {
     return regex ? regex[1] : null
 }
 
-export const getCookie = (name: string) => {
-    return getCookieValueFromString(document.cookie, name)
+export const getCookie = (name: string, cookie?: string) => {
+    return getCookieValueFromString(process.browser ? cookie || document.cookie : cookie || '', name)
 }
 
 export const deleteCookie = (name: string) => {

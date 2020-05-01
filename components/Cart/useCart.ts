@@ -67,7 +67,7 @@ export const useCart = (props: UseCart = {}) => {
 
     const handleRemoveCartItem = useCallback(
         (props: { cartId: string; productId: number }) => {
-            const { productId } = props
+            const { cartId, productId } = props
             return removeCartItem({
                 variables: {
                     cartId,
@@ -92,7 +92,7 @@ export const useCart = (props: UseCart = {}) => {
 
     const handleApplyCoupon = useCallback(
         (props: { cartId: string; couponCode: string }) => {
-            const { couponCode } = props
+            const { cartId, couponCode } = props
             return applyCoupon({
                 variables: {
                     cartId,
@@ -141,7 +141,7 @@ export const useCart = (props: UseCart = {}) => {
         } = await createCart()
 
         return cartId
-    }, [])
+    }, [createCart])
 
     return {
         queries: {

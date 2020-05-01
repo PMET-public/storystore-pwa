@@ -16,8 +16,6 @@ import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 type ReducerState = {
     magentoUrl?: string
     homePageId?: string
-    footerBlockId?: string
-    googleMapsApiKey?: string
 }
 
 type ReducerActions = {
@@ -29,8 +27,6 @@ export type SettingsProps = {
     defaults: {
         magentoUrl?: string
         homePageId?: string
-        footerBlockId?: string
-        googleMapsApiKey?: string
     }
 }
 
@@ -69,10 +65,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
     const [state, dispatch] = useReducer(reducer, settings)
 
     const {
-        queries: { footer, home },
+        queries: { home },
     } = useSettings({
         homePageId: state.homePageId || defaults.homePageId || '',
-        footerBlockId: state.footerBlockId || defaults.footerBlockId || '',
     })
 
     const { api: cartApi } = useCart()
@@ -171,8 +166,6 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                         }}
                     />
 
-                    <Input name="googleMapsApiKey" label="Google Maps API Key" placeholder={defaults.googleMapsApiKey} style={{ textOverflow: 'ellipsis' }} />
-
                     <Input
                         name="homePageId"
                         label="Home Page URL Key"
@@ -180,15 +173,6 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                         style={{ textOverflow: 'ellipsis' }}
                         error={home.loading || home.data?.page ? undefined : `🏡 No Home page found. Did you mean to use "${home.data?.store?.homePage}"?`}
                         color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
-                    />
-
-                    <Input
-                        name="footerBlockId"
-                        label="Footer Block ID"
-                        placeholder={defaults.footerBlockId}
-                        style={{ textOverflow: 'ellipsis' }}
-                        error={footer.loading || footer.data?.footer?.items[0]?.id ? undefined : `🦶 No Footer block found. Using Copyright message instead.`}
-                        color={footer.loading || footer.data?.footer?.items[0]?.id ? FieldColors.default : FieldColors.notice}
                     />
 
                     <Buttons>

@@ -1,34 +1,21 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import CartTemplate from '~/components/Cart'
 import { useRouter } from 'next/router'
 
-type CartProps = {
-    storyStore: StoryStore
-}
+type CartProps = {}
 
-const Cart: NextPage<CartProps> = ({ storyStore }) => {
+const Cart: NextPage<CartProps> = ({}) => {
     const router = useRouter()
 
     return (
-        <StoryStoreProvider {...storyStore}>
-            <App router={router}>
-                <CartTemplate />
-            </App>
-        </StoryStoreProvider>
+        <App router={router}>
+            <CartTemplate />
+        </App>
     )
 }
 
-Cart.getInitialProps = async ({ req }) => {
-    return {
-        storyStore: {
-            cookie: req?.headers.cookie,
-        },
-    }
-}
-
-export default withApollo({ ssr: true })(Cart)
+export default withApollo(Cart)

@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/router'
 
-import CartLanding from '@pmet-public/storystore-ui/dist/components/CartLanding'
+import EmptyCart from '@pmet-public/storystore-ui/dist/components/EmptyCart'
 import Button from '@pmet-public/storystore-ui/dist/components/Button'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
@@ -18,7 +18,7 @@ export const Confirmation: FunctionComponent = () => {
         <React.Fragment>
             <Head title="Order Completed! 🙌" />
 
-            <CartLanding
+            <EmptyCart
                 title={{
                     text: 'Thank you for your order!',
                 }}
@@ -31,7 +31,7 @@ export const Confirmation: FunctionComponent = () => {
                         Continue Shopping
                     </Button>
                 </div>
-            </CartLanding>
+            </EmptyCart>
         </React.Fragment>
     )
 }
