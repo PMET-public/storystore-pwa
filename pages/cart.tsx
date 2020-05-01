@@ -1,19 +1,22 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import CartTemplate from '~/components/Cart'
+import { useRouter } from 'next/router'
 
 type CartProps = {
-    cookie?: string
+    storyStore: StoryStore
 }
 
-const Cart: NextPage<CartProps> = ({ cookie }) => {
+const Cart: NextPage<CartProps> = ({ storyStore }) => {
+    const router = useRouter()
+
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>
                 <CartTemplate />
             </App>
         </StoryStoreProvider>
@@ -22,7 +25,9 @@ const Cart: NextPage<CartProps> = ({ cookie }) => {
 
 Cart.getInitialProps = async ({ req }) => {
     return {
-        cookie: req?.headers.cookie,
+        storyStore: {
+            cookie: req?.headers.cookie,
+        },
     }
 }
 

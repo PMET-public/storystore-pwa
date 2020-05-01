@@ -1,19 +1,23 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
+
+import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import HomeTemplate from '../components/Home'
 
 type HomeProps = {
-    cookie?: string
+    storyStore: StoryStore
 }
 
-const Home: NextPage<HomeProps> = ({ cookie }) => {
+const Home: NextPage<HomeProps> = ({ storyStore }) => {
+    const router = useRouter()
+
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>
                 <HomeTemplate />
             </App>
         </StoryStoreProvider>
@@ -22,7 +26,9 @@ const Home: NextPage<HomeProps> = ({ cookie }) => {
 
 Home.getInitialProps = async ({ req }) => {
     return {
-        cookie: req?.headers.cookie,
+        storyStore: {
+            cookie: req?.headers.cookie,
+        },
     }
 }
 

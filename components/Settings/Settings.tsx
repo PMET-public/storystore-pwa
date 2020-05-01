@@ -82,7 +82,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
      */
     useEffect(() => {
         formRef.current?.setValue(Object.keys(settings).map(key => ({ [key]: (state as any)[key] })))
-    }, [formRef])
+    }, [formRef, settings, state])
 
     const handleSaveOverrides = useCallback(
         async payload => {
@@ -134,7 +134,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
             setSaving(false)
         },
-        [dispatch, apolloClient, setSaving, formRef, cartApi]
+        [router, dispatch, apolloClient, setCartId, setSettings, setSaving, formRef, cartApi]
     )
 
     const handleOnResetToDefaults = useCallback(() => {

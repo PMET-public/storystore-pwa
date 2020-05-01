@@ -66,7 +66,11 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
-export const StoryStoreProvider: FunctionComponent<{ cookie?: string }> = ({ cookie, children }) => {
+export type StoryStore = {
+    cookie?: string
+}
+
+export const StoryStoreProvider: FunctionComponent<StoryStore> = ({ cookie, children }) => {
     const [state, dispatch] = useReducer(reducer, {
         ...initialState,
         cartId: (process.browser ? getCookie(COOKIE.cartId) : cookie && getCookieValueFromString(cookie, COOKIE.cartId)) || '',
@@ -93,3 +97,5 @@ export const StoryStoreProvider: FunctionComponent<{ cookie?: string }> = ({ coo
         </StoryStoreContext.Provider>
     )
 }
+
+export default StoryStoreProvider

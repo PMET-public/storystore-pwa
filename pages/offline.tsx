@@ -2,7 +2,7 @@ import React from 'react'
 import { NextPage } from 'next'
 
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
 
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
@@ -12,10 +12,10 @@ import App from '~/components/App'
 import Error from '~/components/Error'
 
 export type OfflineProps = {
-    cookie?: string
+    storyStore: StoryStore
 }
 
-const Offline: NextPage<OfflineProps> = ({ cookie }) => {
+const Offline: NextPage<OfflineProps> = ({ storyStore }) => {
     const router = useRouter()
 
     const online = useNetworkStatus()
@@ -30,8 +30,8 @@ const Offline: NextPage<OfflineProps> = ({ cookie }) => {
     }, online)
 
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>
                 <Error type="Offline" />
             </App>
         </StoryStoreProvider>

@@ -1,19 +1,23 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
+
+import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import { Confirmation as ConfirmationPage } from '~/components/Checkout/Confirmation'
 
 type ConfirmationProps = {
-    cookie?: string
+    storyStore: StoryStore
 }
 
-export const Confirmation: NextPage<ConfirmationProps> = ({ cookie }) => {
+export const Confirmation: NextPage<ConfirmationProps> = ({ storyStore }) => {
+    const router = useRouter()
+
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>
                 <ConfirmationPage />
             </App>
         </StoryStoreProvider>

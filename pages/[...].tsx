@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
 import { NextComponentType } from 'next'
 import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
+
+import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import Link from '../components/Link'
@@ -22,10 +24,12 @@ export type ResolverProps = {
     contentId: number
     urlKey: string
     type: CONTENT_TYPE
-    cookie?: string
+    storyStore: StoryStore
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ cookie, type, contentId, urlKey }) => {
+const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ storyStore, type, contentId, urlKey }) => {
+    const router = useRouter()
+
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -54,8 +58,8 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ cookie, type,
     }, [contentId, type, urlKey])
 
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>{renderPage}</App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>{renderPage}</App>
         </StoryStoreProvider>
     )
 }
@@ -114,7 +118,7 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
         if (res) res.statusCode = 500
     }
 
-    return { type, contentId, urlKey, cookie }
+    return { type, contentId, urlKey, storyStore: { cookie } }
 }
 
 export default withApollo({ ssr: true })(UrlResolver)

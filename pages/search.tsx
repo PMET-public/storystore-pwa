@@ -2,19 +2,23 @@ import React from 'react'
 
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStoreProvider, { StoryStore } from '~/lib/storystore'
+
+import { useRouter } from 'next/router'
 
 import App from '~/components/App'
 import SearchTemplate from '~/components/Search'
 
 type SearchProps = {
-    cookie?: string
+    storyStore: StoryStore
 }
 
-const Search: NextPage<SearchProps> = ({ cookie }) => {
+const Search: NextPage<SearchProps> = ({ storyStore }) => {
+    const router = useRouter()
+
     return (
-        <StoryStoreProvider cookie={cookie}>
-            <App>
+        <StoryStoreProvider {...storyStore}>
+            <App router={router}>
                 <SearchTemplate />
             </App>
         </StoryStoreProvider>
@@ -23,7 +27,9 @@ const Search: NextPage<SearchProps> = ({ cookie }) => {
 
 Search.getInitialProps = async ({ req }) => {
     return {
-        cookie: req?.headers.cookie,
+        storyStore: {
+            cookie: req?.headers.cookie,
+        },
     }
 }
 
