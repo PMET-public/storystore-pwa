@@ -11,6 +11,7 @@ export const useSettings = ({ homePageId }: Props) => {
     const home = useQuery(HOME_QUERY, {
         ...queryDefaultOptions,
         errorPolicy: 'all',
+        ssr: false,
         variables: {
             id: homePageId,
         },

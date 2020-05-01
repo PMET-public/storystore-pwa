@@ -62,7 +62,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     useEffect(() => {
         if (queries.cart.loading || api.creatingCart.loading || !!api.creatingCart.data?.cartId) return
 
-        if (queries.cart.error || !cartId) {
+        if (queries.cart.error || !cartId || queries.cart.data?.cart?.id !== cartId) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
             api.createCart().then(setCartId)
         }

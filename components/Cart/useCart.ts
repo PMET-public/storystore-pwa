@@ -25,6 +25,7 @@ export const useCart = (props: UseCart = {}) => {
         variables: {
             cartId,
         },
+        ssr: false,
         skip: !cartId,
     })
 
