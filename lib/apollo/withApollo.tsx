@@ -16,6 +16,14 @@ export interface ApolloProps {
 export const initOnContext = (ctx: any) => {
     const inAppContext = Boolean(ctx.ctx)
 
+    // We consider installing `withApollo({ ssr: true })` on global App level
+    // as antipattern since it disables project wide Automatic Static Optimization.
+    if (process.env.NODE_ENV === 'development') {
+        if (inAppContext) {
+            console.warn('Warning: You have opted-out of Automatic Static Optimization due to `withApollo` in `pages/_app`.\n' + 'Read more: https://err.sh/next.js/opt-out-auto-static-optimization\n')
+        }
+    }
+
     const cookie = (ctx.ctx || ctx).req?.headers.cookie
 
     const { magentoUrl } = updateSettingsFromCookie(
@@ -25,10 +33,8 @@ export const initOnContext = (ctx: any) => {
         cookie
     )
 
-    const apolloState = ctx.apolloState || {}
-
     // Initialize ApolloClient if not already done
-    const apolloClient = ctx.apolloClient || createApolloClient(magentoUrl, apolloState, cookie)
+    const apolloClient = ctx.apolloClient || createApolloClient(magentoUrl, ctx.apolloState || {}, cookie)
 
     // We send the Apollo Client as a prop to the component to avoid calling initApollo() twice in the server.
     // Otherwise, the component would have to call initApollo() again but this
@@ -80,7 +86,6 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
     if (ssr || PageComponent.getInitialProps) {
         WithApollo.getInitialProps = async (ctx: any) => {
             const inAppContext = Boolean(ctx.ctx)
-
             const { apolloClient } = initOnContext(ctx)
 
             // Run wrapped getInitialProps methods
@@ -92,7 +97,7 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
             }
 
             // Only on the server:
-            if (!process.browser) {
+            if (typeof window === 'undefined') {
                 const { AppTree } = ctx
                 // When redirecting, the response is finished.
                 // No point in continuing to render
@@ -110,7 +115,6 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent: NextPage<any
                         // Since AppComponents and PageComponents have different context types
                         // we need to modify their props a little.
                         let props
-
                         if (inAppContext) {
                             props = { ...pageProps, apolloClient }
                         } else {

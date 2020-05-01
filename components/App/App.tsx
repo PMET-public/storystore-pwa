@@ -35,6 +35,8 @@ const Footer = dynamic(() => import('@pmet-public/storystore-ui/dist/components/
 
 type AppProps = {}
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const workbox = useServiceWorker()
 
@@ -47,14 +49,13 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const router = useRouter()
 
     const isUrlActive = useCallback(
-        (href: string) => {
+        (href: string): boolean => {
+            if (!router) return false
             const { pathname, asPath } = router
             return href === (asPath || pathname)
         },
         [router]
     )
-
-    const isProduction = process.env.NODE_ENV === 'production'
 
     /**
      * No Cart no problem. Let's create one
@@ -119,7 +120,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
 
         ReactGA.pageview(window.location.pathname)
-    }, [isProduction, settings])
+    }, [settings])
 
     if (online && queries.app.error) {
         const networkError = queries.app.error?.networkError as ServerError
