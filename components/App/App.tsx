@@ -50,7 +50,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
 
     const isUrlActive = useCallback(
         (href: string): boolean => {
-            const { pathname, asPath } = router
+            const { pathname, asPath } = router || {}
             return href === (asPath || pathname)
         },
         [router]
