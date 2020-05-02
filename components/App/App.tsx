@@ -5,7 +5,7 @@ import { version } from '~/package.json'
 import ReactGA from 'react-ga'
 import Router, { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
-import { baseTheme, UIBase } from '@pmet-public/storystore-ui/dist/theme'
+import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
 
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
 
@@ -18,8 +18,8 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
-import Header from '@pmet-public/storystore-ui/dist/components/Header'
-import TabBar from '@pmet-public/storystore-ui/dist/components/TabBar'
+import Header from '@storystore/ui/dist/components/Header'
+import TabBar from '@storystore/ui/dist/components/TabBar'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
@@ -31,7 +31,7 @@ import { FontStyles } from './FontStyles'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
-const Footer = dynamic(() => import('@pmet-public/storystore-ui/dist/components/Footer'), { ssr: false })
+const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { ssr: false })
 
 type AppProps = {}
 

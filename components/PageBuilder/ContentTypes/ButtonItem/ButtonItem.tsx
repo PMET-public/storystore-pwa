@@ -1,8 +1,8 @@
 import React, { useRef, useContext, useEffect } from 'react'
-import { Component } from '@pmet-public/storystore-ui/dist/lib'
+import { Component } from '@storystore/ui/dist/lib'
 import { Root } from './ButtonItem.styled'
 
-import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@pmet-public/storystore-ui/dist/components/Button'
+import ButtonComponent, { ButtonProps as ButtonComponentProps } from '@storystore/ui/dist/components/Button'
 import Link, { LinkProps } from '../../../Link'
 import { ButtonsContext } from '../Buttons'
 

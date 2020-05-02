@@ -19,12 +19,12 @@ import {
 import { useSearch } from './useSearch'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
-import { useFetchMoreOnScrolling } from '@pmet-public/storystore-ui/dist/hooks/useFetchMoreOnScrolling'
+import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import SearchBar from '@pmet-public/storystore-ui/dist/components/SearchBar'
-import ProductList from '@pmet-public/storystore-ui/dist/components/ProductList'
+import SearchBar from '@storystore/ui/dist/components/SearchBar'
+import ProductList from '@storystore/ui/dist/components/ProductList'
 
 const Error = dynamic(() => import('~/components/Error'))
 

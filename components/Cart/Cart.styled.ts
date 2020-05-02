@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { DetailsWrapper as CartListDetailsWrapper } from '@pmet-public/storystore-ui/dist/components/CartList/CartList.styled'
-import { Root as ButtonRoot } from '@pmet-public/storystore-ui/dist/components/Button/Button.styled'
+import { DetailsWrapper as CartListDetailsWrapper } from '@storystore/ui/dist/components/CartList/CartList.styled'
+import { Root as ButtonRoot } from '@storystore/ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div`
     display: grid;

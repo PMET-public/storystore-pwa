@@ -1,5 +1,5 @@
 import React from 'react'
-import { Component } from '@pmet-public/storystore-ui/dist/lib'
+import { Component } from '@storystore/ui/dist/lib'
 import { Root } from './Html.styled'
 import useHtml from '../../../../hooks/useHtml'
 

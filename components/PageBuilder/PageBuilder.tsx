@@ -4,8 +4,8 @@
 
 import React, { useMemo, Suspense } from 'react'
 import { Root, RichText } from './PageBuilder.styled'
-import { Component } from '@pmet-public/storystore-ui/dist/lib'
-import { ErrorBoundary } from '@pmet-public/storystore-ui/dist/lib'
+import { Component } from '@storystore/ui/dist/lib'
+import { ErrorBoundary } from '@storystore/ui/dist/lib'
 import { htmlToProps } from './lib/parser'
 import { isPageBuilderHtml } from './lib/utils'
 

@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
-import { Root as CartSummaryRoot } from '@pmet-public/storystore-ui/dist/components/CartSummary/CartSummary.styled'
-import { Root as CartListRoot, Thumbnail as CartItemThumb } from '@pmet-public/storystore-ui/dist/components/CartList/CartList.styled'
+import { Root as CartSummaryRoot } from '@storystore/ui/dist/components/CartSummary/CartSummary.styled'
+import { Root as CartListRoot, Thumbnail as CartItemThumb } from '@storystore/ui/dist/components/CartList/CartList.styled'
 
 import PendingIconSvg from 'remixicon/icons/System/checkbox-blank-circle-fill.svg'
 import DoneIconSvg from 'remixicon/icons/Design/edit-circle-fill.svg'

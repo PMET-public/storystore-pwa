@@ -1,5 +1,5 @@
 import React from 'react'
-import Skeleton from '@pmet-public/storystore-ui/dist/components/Skeleton'
+import Skeleton from '@storystore/ui/dist/components/Skeleton'
 
 export const HomeSkeleton = () => (
     <Skeleton style={{ height: '100vh', width: '100vw ' }}>

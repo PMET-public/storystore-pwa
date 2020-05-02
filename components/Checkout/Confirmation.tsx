@@ -2,8 +2,8 @@ import React, { FunctionComponent } from 'react'
 
 import { useRouter } from 'next/router'
 
-import EmptyCart from '@pmet-public/storystore-ui/dist/components/EmptyCart'
-import Button from '@pmet-public/storystore-ui/dist/components/Button'
+import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
+import Button from '@storystore/ui/dist/components/Button'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 

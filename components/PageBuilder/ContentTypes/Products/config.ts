@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
-import { SlickSliderProps } from '@pmet-public/storystore-ui/dist/components/SlickSlider'
+import { SlickSliderProps } from '@storystore/ui/dist/components/SlickSlider'
 
 const component = dynamic(() => import('./'))
 

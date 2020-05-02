@@ -1,13 +1,13 @@
 import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
-import { toast } from '@pmet-public/storystore-ui/dist/lib'
+import { toast } from '@storystore/ui/dist/lib'
 import { version, dependencies } from '~/package.json'
 
 import { useSettings } from './useSettings'
 import { useCart } from '~/components/Cart/useCart'
 
-import Form, { Input, FormContext, FieldColors } from '@pmet-public/storystore-ui/dist/components/Form'
-import Button from '@pmet-public/storystore-ui/dist/components/Button'
+import Form, { Input, FormContext, FieldColors } from '@storystore/ui/dist/components/Form'
+import Button from '@storystore/ui/dist/components/Button'
 import { useRouter } from 'next/router'
 import { Response } from '~/pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'
@@ -144,7 +144,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                 <Details>
                     <Label>Version</Label>
                     <Value>
-                        PWA {version} (UI {dependencies['@pmet-public/storystore-ui']})
+                        PWA {version} (UI {dependencies['@storystore/ui']})
                     </Value>
                 </Details>
 

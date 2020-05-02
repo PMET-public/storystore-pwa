@@ -20,17 +20,17 @@ import {
 } from './Category.styled'
 
 import { useCategory } from './useCategory'
-import { useFetchMoreOnScrolling } from '@pmet-public/storystore-ui/dist/hooks/useFetchMoreOnScrolling'
+import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import ProductList from '@pmet-public/storystore-ui/dist/components/ProductList'
-// import Filters from '@pmet-public/storystore-ui/dist/components/Filters'
-import Breadcrumbs from '@pmet-public/storystore-ui/dist/components/Breadcrumbs'
-import Pills from '@pmet-public/storystore-ui/dist/components/Pills'
-// import Button from '@pmet-public/storystore-ui/dist/components/Button'
-import { Skeleton } from '@pmet-public/storystore-ui/dist/components/Skeleton'
+import ProductList from '@storystore/ui/dist/components/ProductList'
+// import Filters from '@storystore/ui/dist/components/Filters'
+import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
+import Pills from '@storystore/ui/dist/components/Pills'
+// import Button from '@storystore/ui/dist/components/Button'
+import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })

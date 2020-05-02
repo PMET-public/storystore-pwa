@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 
 import { LinkProps } from '../../../../components/Link'
-import { ImageProps } from '@pmet-public/storystore-ui/dist/components/Image'
+import { ImageProps } from '@storystore/ui/dist/components/Image'
 import { LinkType, resolveLink } from '../../../../lib/resolveLink'
 import { resolveImage } from '../../../../lib/resolveImage'
 

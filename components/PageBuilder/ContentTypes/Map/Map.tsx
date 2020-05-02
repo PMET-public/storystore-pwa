@@ -1,6 +1,6 @@
 import React from 'react'
-import { Component } from '@pmet-public/storystore-ui/dist/lib'
-import MapComponent from '@pmet-public/storystore-ui/dist/components/Map'
+import { Component } from '@storystore/ui/dist/lib'
+import MapComponent from '@storystore/ui/dist/components/Map'
 
 type Location = {
     _id: number

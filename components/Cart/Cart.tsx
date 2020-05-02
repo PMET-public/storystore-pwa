@@ -10,12 +10,12 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import ButtonComponent from '@pmet-public/storystore-ui/dist/components/Button'
-import Breadcrumbs from '@pmet-public/storystore-ui/dist/components/Breadcrumbs'
-import CartList from '@pmet-public/storystore-ui/dist/components/CartList'
-import CartSummary from '@pmet-public/storystore-ui/dist/components/CartSummary'
-import EmptyCart from '@pmet-public/storystore-ui/dist/components/EmptyCart'
-import ViewLoader from '@pmet-public/storystore-ui/dist/components/ViewLoader'
+import ButtonComponent from '@storystore/ui/dist/components/Button'
+import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
+import CartList from '@storystore/ui/dist/components/CartList'
+import CartSummary from '@storystore/ui/dist/components/CartSummary'
+import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
+import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
 
 const Error = dynamic(() => import('../Error'))
 
