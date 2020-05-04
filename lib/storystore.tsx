@@ -49,7 +49,6 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
         case 'setCartId':
             setCookie(COOKIE.cartId, action.payload, 365)
-
             return {
                 ...state,
                 cartId: action.payload,
