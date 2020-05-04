@@ -1,8 +1,7 @@
-import React, { createContext, Reducer, useReducer, useEffect, useCallback } from 'react'
+import React, { createContext, Reducer, useReducer } from 'react'
 import { NextPage } from 'next'
 import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
 import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
-import useServiceWorker from '~/hooks/useServiceWorker'
 
 type Settings = {
     magentoUrl: string
@@ -46,8 +45,6 @@ export const StoryStoreContext = createContext({
     },
 })
 
-export const STORYSTORE_SHARED_DATA_ENDPOINT = '/local/storystore'
-
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
         case 'setCartId':
@@ -60,8 +57,6 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
         case 'setSettings':
             setCookie(COOKIE.settings, JSON.stringify(action.payload), 365)
-
-            fetch(STORYSTORE_SHARED_DATA_ENDPOINT, { method: 'POST', body: JSON.stringify(action.payload) })
 
             return {
                 ...state,
@@ -82,37 +77,6 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
             cartId: getCookie(COOKIE.cartId, cookie) || '',
             settings: updateSettingsFromCookie(initialState.settings, cookie),
         })
-
-        /**
-         * Local Storage and Cookie data is not shared between iOS Safair and "installed PWA",
-         * As a workaround, we sync the data from Cache Storage to a Cookie.
-         *
-         * Note: Chrome and Safari only expose `CacheStorage` to the windowed context over HTTPS.
-         * window.caches will be undefined unless an SSL certificate is configured.
-         * https://medium.com/@kozak.jakub55/how-to-share-state-data-between-a-pwa-in-ios-safari-and-standalone-mode-64174a48b043
-         */
-        const sw = useServiceWorker()
-
-        const handleSyncData = useCallback(async () => {
-            try {
-                const res = await fetch(STORYSTORE_SHARED_DATA_ENDPOINT)
-                const payload = await res.json()
-                if (payload) dispatch({ type: 'setSettings', payload })
-            } catch (error) {
-                // Gotta catch 'em all
-                console.error('🤔 There was an issue getting data from Cache Storage', error)
-            }
-        }, [dispatch])
-
-        useEffect(() => {
-            if (!sw || getCookie(COOKIE.settings)) return // No need to sync if Cookie already exist
-
-            sw.addEventListener('controlling', handleSyncData)
-
-            return () => {
-                sw.removeEventListener('controlling', handleSyncData)
-            }
-        }, [sw, handleSyncData])
 
         return (
             <StoryStoreContext.Provider
