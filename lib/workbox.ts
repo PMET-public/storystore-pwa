@@ -4,6 +4,7 @@ import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategi
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { skipWaiting, clientsClaim, WorkboxPlugin } from 'workbox-core'
+import { STORYSTORE_SHARED_DATA_ENDPOINT } from './storystore'
 
 const DAY_IN_SECONDS = 86400
 
@@ -78,8 +79,38 @@ registerRoute(
 setDefaultHandler(args => {
     const { url } = args
     const request = args.request as any
+    const method = request?.method
 
-    if (url?.hostname === self.location.hostname && request?.method === 'GET') {
+    if (url?.pathname === STORYSTORE_SHARED_DATA_ENDPOINT) {
+        if (method === 'POST') {
+            return request.json().then((body: { [key: string]: any }) => {
+                return caches
+                    .open(STORYSTORE_SHARED_DATA_ENDPOINT)
+                    .then(function (cache) {
+                        // console.log('🎉 Data saved in Cache Storage!', body)
+                        const response = new Response(JSON.stringify(body))
+                        cache.put(STORYSTORE_SHARED_DATA_ENDPOINT, response)
+                        return new Response(JSON.stringify(body))
+                    })
+                    .catch(() => {
+                        // console.error('🤔 There was an issue saving data in Cache Storage')
+                        return new Response(null)
+                    })
+            })
+        } else {
+            return args.event.respondWith(
+                caches.open(STORYSTORE_SHARED_DATA_ENDPOINT).then(function (cache) {
+                    return (
+                        cache.match(STORYSTORE_SHARED_DATA_ENDPOINT).then(function (response) {
+                            return response || new Response('{}')
+                        }) || new Response('{}')
+                    )
+                })
+            )
+        }
+    }
+
+    if (url?.hostname === self.location.hostname && method === 'GET') {
         // console.log(`⚙️ Running ${url.pathname} through offline cache.`, request)
         return new NetworkFirst({
             cacheName: 'offline',

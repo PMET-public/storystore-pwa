@@ -1,7 +1,8 @@
-import React, { createContext, Reducer, useReducer, useEffect } from 'react'
+import React, { createContext, Reducer, useReducer, useEffect, useCallback } from 'react'
 import { NextPage } from 'next'
 import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
 import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+import useServiceWorker from '~/hooks/useServiceWorker'
 
 type Settings = {
     magentoUrl: string
@@ -45,44 +46,13 @@ export const StoryStoreContext = createContext({
     },
 })
 
-const CACHE_NAME = 'storystore'
-const FAKE_ENDPOINT = '/local/storystore'
-
-const setDataInCacheStorage = async (payload: any) => {
-    try {
-        const cache = await caches.open(CACHE_NAME)
-        const responseBody = JSON.stringify(payload)
-        const response = new Response(responseBody)
-        await cache.put(FAKE_ENDPOINT, response)
-
-        console.log('Data saved in Cache Storage! 🎉')
-    } catch (error) {
-        // It's up to you how you resolve the error
-        console.log('🤔 There was an issue saving data in Cache Storage', { error })
-    }
-}
-
-const getDataFromCacheStorage = async () => {
-    try {
-        const cache = await caches.open(CACHE_NAME)
-        const response = await cache.match(FAKE_ENDPOINT)
-
-        if (!response) {
-            return null
-        }
-
-        const responseBody = await response.json()
-        return responseBody
-    } catch (error) {
-        // Gotta catch 'em all
-        console.log('🤔 There was an issue getting data from Cache Storage', { error })
-    }
-}
+export const STORYSTORE_SHARED_DATA_ENDPOINT = '/local/storystore'
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
         case 'setCartId':
             setCookie(COOKIE.cartId, action.payload, 365)
+
             return {
                 ...state,
                 cartId: action.payload,
@@ -90,7 +60,8 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
         case 'setSettings':
             setCookie(COOKIE.settings, JSON.stringify(action.payload), 365)
-            setDataInCacheStorage({ ...action.payload })
+
+            fetch(STORYSTORE_SHARED_DATA_ENDPOINT, { method: 'POST', body: JSON.stringify(action.payload) })
 
             return {
                 ...state,
@@ -120,15 +91,28 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
          * window.caches will be undefined unless an SSL certificate is configured.
          * https://medium.com/@kozak.jakub55/how-to-share-state-data-between-a-pwa-in-ios-safari-and-standalone-mode-64174a48b043
          */
-        useEffect(() => {
-            const dataFromCookie = getCookie(COOKIE.settings)
-            if (!dataFromCookie) {
-                getDataFromCacheStorage().then(payload => {
-                    console.log('🚚 Transfering data from Cache Storage to Cookie')
-                    setCookie(COOKIE.settings, JSON.stringify(payload), 365)
-                })
+        const sw = useServiceWorker()
+
+        const handleSyncData = useCallback(async () => {
+            try {
+                const res = await fetch(STORYSTORE_SHARED_DATA_ENDPOINT)
+                const payload = await res.json()
+                if (payload) dispatch({ type: 'setSettings', payload })
+            } catch (error) {
+                // Gotta catch 'em all
+                console.error('🤔 There was an issue getting data from Cache Storage', error)
             }
         }, [dispatch])
+
+        useEffect(() => {
+            if (!sw || getCookie(COOKIE.settings)) return // No need to sync if Cookie already exist
+
+            sw.addEventListener('controlling', handleSyncData)
+
+            return () => {
+                sw.removeEventListener('controlling', handleSyncData)
+            }
+        }, [sw, handleSyncData])
 
         return (
             <StoryStoreContext.Provider
