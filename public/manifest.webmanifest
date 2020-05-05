@@ -1,11 +1,11 @@
 {
-    "name": "Luma",
-    "short_name": "Luma",
+    "name": "StoryStore PWA",
+    "short_name": "StoryStore PWA",
     "orientation": "portrait-primary",
     "display": "standalone",
     "start_url": ".",
     "background_color": "#ffffff",
-    "description": "We’re passionate about active lifestyles – and it goes way beyond apparel.",
+    "description": "A Magento head-less demo experience.",
     "theme_color": "#222222",
     "icons": [
         {

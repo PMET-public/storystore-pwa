@@ -178,10 +178,10 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                             as: Link,
                             image: store?.logoSrc && {
                                 src: resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc),
-                                alt: store?.logoAlt || 'PWA Story Store',
+                                alt: store?.logoAlt || 'StoryStore PWA',
                             },
                             href: '/',
-                            title: store?.logoAlt || 'PWA Story Store',
+                            title: store?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
                             items: categories[0]?.children.map(({ id, text, href: _href }: any) => {

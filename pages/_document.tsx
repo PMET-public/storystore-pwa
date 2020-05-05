@@ -43,7 +43,7 @@ export default class extends Document<any> {
                     {/* iOS */}
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-                    <meta name="apple-mobile-web-app-title" content="Luma" />
+                    <meta name="apple-mobile-web-app-title" content="StoryStore PWA" />
                     <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
                     {/* Web App Manifest  */}
                     <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />

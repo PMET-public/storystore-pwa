@@ -83,7 +83,7 @@ export const useServiceWorker = () => {
 
         // Register the service worker
         wb.current.register().then(() => {
-            console.log(`🙌 PWA StoryStore.`)
+            console.log(`🙌 StoryStore PWA!`)
         })
 
         return () => {

@@ -107,7 +107,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
 
         /**
          * Check if category list exist – this is only available in Magento 2.3.4 and above,
-         * and required in Story Storefront
+         * and required in StoryStore PWA
          */
         if (!data.categoryList?.shift().id) {
             return res.send({
