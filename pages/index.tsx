@@ -15,6 +15,11 @@ const Home: NextPage<HomeProps> = ({}) => {
     )
 }
 
-Home.getInitialProps = async () => ({}) // Enable next.js ssr
+// Enable next.js ssr
+Home.getInitialProps = async ({ res }) => {
+    const maxAge = 30 * 86400 // 30 days 31536000
+    res?.setHeader('Cache-Control', `max-age=${maxAge}, stale-while-revalidate`)
+    return {}
+}
 
 export default withApollo(Home)

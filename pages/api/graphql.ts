@@ -4,8 +4,6 @@ import http from 'http'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const maxAge = 30 * 86400 // 30 days 31536000
-
 export const config = {
     api: {
         bodyParser: false,
@@ -35,8 +33,6 @@ const proxyGraphQl = async (request: NextApiRequest, response: NextApiResponse) 
 
         const proxy = httpx
             .request(magentoUrl, options, res => {
-                res.headers['Cache-Control'] = `max-age=${maxAge}, stale-while-revalidate`
-
                 response.writeHead(res.statusCode as number, res.headers)
 
                 res.pipe(response, {
