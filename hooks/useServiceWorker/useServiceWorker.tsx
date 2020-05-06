@@ -8,6 +8,7 @@ import styled from 'styled-components'
 const Toast = styled.div`
     display: grid;
     grid-gap: 1rem;
+    padding: 1rem;
 
     & > button {
         background-color: #fff;
