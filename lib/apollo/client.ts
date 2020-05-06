@@ -110,7 +110,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
         connectToDevTools: process.browser,
         link,
         resolvers,
-        ssrMode: !process.browser,
+        ssrMode: false, //!process.browser,
         typeDefs,
     })
 
