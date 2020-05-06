@@ -41,21 +41,23 @@ export const Home: FunctionComponent<HomeProps> = () => {
                     <Stories>
                         <BubbleCarousel
                             loading={queries.home.loading && !categories}
-                            items={categories[0].children.map(({ id, text, href, image }: any) => ({
-                                as: Link,
-                                urlResolver: {
-                                    type: 'CATEGORY',
-                                    id,
-                                },
-                                href: href + categoryUrlSuffix,
-                                image: image && {
-                                    alt: text,
-                                    src: resolveImage(image, { width: 200, height: 200 }),
-                                    width: '100px',
-                                    height: '100px',
-                                },
-                                text,
-                            }))}
+                            items={
+                                categories[0]?.children?.map(({ id, text, href, image }: any) => ({
+                                    as: Link,
+                                    urlResolver: {
+                                        type: 'CATEGORY',
+                                        id,
+                                    },
+                                    href: href + categoryUrlSuffix,
+                                    image: image && {
+                                        alt: text,
+                                        src: resolveImage(image, { width: 200, height: 200 }),
+                                        width: '100px',
+                                        height: '100px',
+                                    },
+                                    text,
+                                })) ?? []
+                            }
                         />
                     </Stories>
                 )}
