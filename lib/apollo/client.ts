@@ -7,7 +7,6 @@ import { onError } from 'apollo-link-error'
 import QueueLink from 'apollo-link-queue'
 import { defaults, typeDefs, resolvers } from './resolvers'
 import { QueryHookOptions } from '@apollo/react-hooks'
-import { persistCache } from 'apollo-cache-persist'
 import introspectionQueryResultData from '~/lib/apollo/fragmentTypes.json'
 
 let apolloClient: any
@@ -93,13 +92,6 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
             }
         },
     }).restore(initialState)
-
-    if (process.browser) {
-        persistCache({
-            cache,
-            storage: localStorage as any,
-        })
-    }
 
     cache.writeData({
         data: { ...defaults },
