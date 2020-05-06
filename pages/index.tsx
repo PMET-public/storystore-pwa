@@ -16,8 +16,7 @@ const Home: NextPage<HomeProps> = ({}) => {
 }
 
 // Enable next.js ssr
-Home.getInitialProps = async ({ res }) => {
-    res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+Home.getInitialProps = async ({}) => {
     return {}
 }
 

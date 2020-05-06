@@ -56,8 +56,6 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 
 // enable next.js ssr
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
-    res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
-
     const cookie = req?.headers.cookie
 
     let { type, contentId, urlKey } = query
