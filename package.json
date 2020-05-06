@@ -9,7 +9,7 @@
     "node": "10.x"
   },
   "scripts": {
-    "dev": "npm run graphql:schema && NODE_OPTIONS=\"--inspect\" next dev",
+    "dev": "npm run graphql:schema && next dev",
     "build": "npm run graphql:schema && next build",
     "graphql:schema": "node lib/apollo/getGraphQLSchema.js",
     "start": "next start",
