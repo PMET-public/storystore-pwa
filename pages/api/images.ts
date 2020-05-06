@@ -31,8 +31,9 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
         const proxy = httpx
             .request(magentoUrl, options, res => {
                 // Set Cache Headers – for Now.sh Edge
+                res.headers['Cache-Control'] = `max-age=${maxAge}, immutable`
+
                 response.writeHead(res.statusCode as number, res.headers)
-                response.setHeader('Cache-Control', `max-age=${maxAge}, immutable`)
 
                 res.pipe(response, {
                     end: true,
