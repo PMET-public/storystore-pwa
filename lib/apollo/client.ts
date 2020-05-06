@@ -92,7 +92,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
                     return defaultDataIdFromObject(object)
             }
         },
-    }).restore({ ...initialState })
+    })
 
     if (process.browser) {
         // await before instantiating ApolloClient, else queries might run before the cache is persisted
@@ -101,6 +101,8 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
             storage: localStorage as any,
         })
     }
+
+    cache.restore(initialState)
 
     cache.writeData({
         data: { ...defaults },
