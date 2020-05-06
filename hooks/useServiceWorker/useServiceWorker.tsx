@@ -1,9 +1,10 @@
 import React, { useMemo, useEffect, useCallback, useRef } from 'react'
-import { toast } from '@storystore/ui/dist/lib'
 import { Workbox } from 'workbox-window'
 import { version } from '../../package.json'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
+
+const toast = process.browser ? require('react-toastify').toast : {}
 
 const Toast = styled.div`
     display: grid;

@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
-import { toast } from '@storystore/ui/dist/lib'
 import { version, dependencies } from '~/package.json'
 
 import { useSettings } from './useSettings'
@@ -12,6 +11,8 @@ import { useRouter } from 'next/router'
 import { Response } from '~/pages/api/check-endpoint'
 import { useApolloClient } from '@apollo/react-hooks'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+
+const toast = process.browser ? require('react-toastify').toast : {}
 
 type ReducerState = {
     magentoUrl?: string

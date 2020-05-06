@@ -6,7 +6,6 @@ import ReactGA from 'react-ga'
 import Router, { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
-
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
 
 import { useApp } from './useApp'
@@ -28,6 +27,7 @@ import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
 import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 import { FontStyles } from './FontStyles'
+import { ToastsStyles } from './ToastsStyles'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
@@ -36,6 +36,14 @@ const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { 
 type AppProps = {}
 
 const isProduction = process.env.NODE_ENV === 'production'
+
+if (process.browser) {
+    const toast = require('react-toastify').toast
+
+    toast.configure({
+        position: toast.POSITION.BOTTOM_RIGHT,
+    })
+}
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
     const workbox = useServiceWorker()
@@ -156,6 +164,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             <NextNprogress color={baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
             <FontStyles />
+            <ToastsStyles />
 
             {/* Head Metadata */}
             {store && (
