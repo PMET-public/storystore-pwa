@@ -193,7 +193,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                             title: store?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
-                            items: categories[0]?.children.map(({ id, text, href: _href }: any) => {
+                            items: categories[0]?.children?.map(({ id, text, href: _href }: any) => {
                                 const href = _href + categoryUrlSuffix
 
                                 return {
