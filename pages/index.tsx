@@ -17,8 +17,7 @@ const Home: NextPage<HomeProps> = ({}) => {
 
 // Enable next.js ssr
 Home.getInitialProps = async ({ res }) => {
-    const maxAge = 30 * 86400 // 30 days 31536000
-    res?.setHeader('Cache-Control', `max-age=${maxAge}, stale-while-revalidate`)
+    res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     return {}
 }
 
