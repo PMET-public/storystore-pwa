@@ -16,6 +16,10 @@ const Search: NextPage<SearchProps> = ({}) => {
     )
 }
 
-Search.getInitialProps = async () => ({}) // Enable next.js ssr
+// Enable next.js ssr
+Search.getInitialProps = async ({ res }) => {
+    res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    return {}
+}
 
 export default withApollo(Search)
