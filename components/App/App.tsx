@@ -35,8 +35,6 @@ const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { 
 
 type AppProps = {}
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 if (process.browser) {
     const toast = require('react-toastify').toast
 
@@ -104,11 +102,11 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     }, [handleRouteChange])
 
     useEffect(() => {
-        if (isProduction) {
+        if (process.env.GOOGLE_ANALYTICS) {
             /**
              * Google Analytics
              */
-            ReactGA.initialize('UA-162672258-1')
+            ReactGA.initialize(process.env.GOOGLE_ANALYTICS)
         }
     }, [])
 
@@ -116,8 +114,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
      * Google Analytics
      */
     useEffect(() => {
-        if (!isProduction) return
-
         ReactGA.set({ dimension1: version }) // verion
 
         ReactGA.set({ dimension2: window.location.host }) // release

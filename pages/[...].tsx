@@ -56,7 +56,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
 
 // enable next.js ssr
 UrlResolver.getInitialProps = async ({ req, res, query }) => {
-    if (process.env.CACHE) {
+    if (!Boolean(process.env.DEMO_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 

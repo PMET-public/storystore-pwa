@@ -4,5 +4,7 @@ declare namespace NodeJS {
         HOME_PAGE_ID: string
         FOOTER_BLOCK_ID: string
         GOOGLE_MAPS_API_KEY: string
+        GOOGLE_ANALYTICS: string
+        DEMO_MODE: string
     }
 }

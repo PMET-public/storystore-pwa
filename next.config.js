@@ -10,6 +10,8 @@ module.exports = withOffline({
         HOME_PAGE_ID: process.env.HOME_PAGE_ID,
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
         GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+        GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
+        DEMO_MODE: process.env.DEMO_MODE,
     },
 
     dontAutoRegisterSw: true,
@@ -21,13 +23,23 @@ module.exports = withOffline({
 
     experimental: {
         async redirects() {
-            return [
+            const redirects = [
                 {
                     source: `/basic-auth`,
                     destination: '/',
                     permanent: false,
                 },
             ]
+
+            if (!Boolean(process.env.DEMO_MODE)) {
+                redirects.push({
+                    source: '/settings',
+                    destination: '/',
+                    permanent: true,
+                })
+            }
+
+            return redirects
         },
         async rewrites() {
             return [

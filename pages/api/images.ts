@@ -29,7 +29,7 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
         const proxy = httpx
             .request(magentoUrl, options, res => {
                 // Set Cache Headers – for Now.sh Edge
-                if (process.env.CACHE) {
+                if (!Boolean(process.env.DEMO_MODE)) {
                     res.headers['Cache-Control'] = 's-maxage=1, stale-while-revalidate'
                 }
 
