@@ -3,7 +3,11 @@ query CategoryQuery($id: String!) {
         id
 
         title: name
-        cmsBlock: description
+        description: description
+        block: cms_block {
+            id: identifier
+            content
+        }
         mode: display_mode
         metaDescription: meta_description
         metaKeywords: meta_keywords
