@@ -6,7 +6,7 @@ import ApolloClient from 'apollo-client'
 import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
-import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+import { getSettings } from '~/lib/getSettings'
 import { withStoryStore } from '~/lib/storystore'
 
 export interface ApolloProps {
@@ -27,12 +27,7 @@ export const initOnContext = (ctx: any) => {
 
     const cookie = (ctx.ctx || ctx).req?.headers.cookie
 
-    const { magentoUrl } = updateSettingsFromCookie(
-        {
-            magentoUrl: process.env.MAGENTO_URL,
-        },
-        cookie
-    )
+    const { magentoUrl } = getSettings(cookie)
 
     // Initialize ApolloClient if not already done
     const apolloClient = ctx.apolloClient || createApolloClient(magentoUrl, ctx.apolloState || {}, cookie)
@@ -57,9 +52,7 @@ export const initOnContext = (ctx: any) => {
 
 export const withApollo = (PageComponent: NextPage<any>) => {
     const WithApollo = ({ apolloClient, apolloState, ...pageProps }: ApolloProps & AppInitialProps) => {
-        const { magentoUrl } = updateSettingsFromCookie({
-            magentoUrl: process.env.MAGENTO_URL,
-        })
+        const { magentoUrl } = getSettings()
 
         let client
 

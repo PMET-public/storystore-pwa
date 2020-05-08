@@ -1,48 +1,18 @@
-import React, { FunctionComponent, useState, useCallback, Reducer, useReducer, useRef, useEffect } from 'react'
+import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { version, dependencies } from '~/package.json'
+import gql from 'graphql-tag'
 
-import { useSettings } from './useSettings'
-import { useCart } from '~/components/Cart/useCart'
+import { useRouter } from 'next/router'
+import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
 import Form, { Input, FormContext, FieldColors } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
-import { useRouter } from 'next/router'
 import { Response } from '~/pages/api/check-endpoint'
-import { useApolloClient } from '@apollo/react-hooks'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useCart } from '~/components/Cart/useCart'
 
 const toast = process.browser ? require('react-toastify').toast : {}
-
-type ReducerState = {
-    magentoUrl?: string
-    homePageId?: string
-}
-
-type ReducerActions = {
-    type: 'save'
-    payload: ReducerState
-}
-
-export type SettingsProps = {
-    defaults: {
-        magentoUrl?: string
-        homePageId?: string
-    }
-}
-
-const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
-    switch (action.type) {
-        case 'save':
-            return {
-                ...state,
-                ...action.payload,
-            }
-
-        default:
-            throw `Reducer action not valid.`
-    }
-}
 
 const addCredentialsToMagentoUrls = (url: string) => {
     const noCredentialsRegex = /^((?!@).)*$/
@@ -52,7 +22,7 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
+export const Settings: FunctionComponent = () => {
     const { settings, setSettings, setCartId } = useStoryStore()
 
     const apolloClient = useApolloClient()
@@ -63,22 +33,28 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
     const [saving, setSaving] = useState(false)
 
-    const [state, dispatch] = useReducer(reducer, settings)
+    const cart = useCart()
 
-    const {
-        queries: { home },
-    } = useSettings({
-        homePageId: state.homePageId || defaults.homePageId || '',
-    })
+    const homePageQuery = useQuery(
+        gql`
+            query SettingsHomeCheck($id: String!) {
+                store: storeConfig {
+                    id
+                    homePage: cms_home_page
+                }
 
-    const { api: cartApi } = useCart()
+                page: cmsPage(identifier: $id) {
+                    id: url_key
+                }
+            }
+        `,
+        { variables: { id: settings.homePageId }, errorPolicy: 'all' }
+    )
 
-    /**
-     * Initial Values
-     */
-    useEffect(() => {
-        formRef.current?.setValue(Object.keys(settings).map(key => ({ [key]: (state as any)[key] })))
-    }, [formRef, settings, state])
+    const handleInputOnFocus = useCallback((event: FocusEvent) => {
+        // @ts-ignore
+        event.currentTarget?.select()
+    }, [])
 
     const handleSaveOverrides = useCallback(
         async payload => {
@@ -99,25 +75,18 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                         })
                         throw Error
                     }
+                }
 
-                    // Reset Store Cart
-                    const cartId = await cartApi.createCart()
+                // Save in StoryStore Context
+                setSettings(payload)
+
+                // Reset Store Cart if Changing URL
+                if (payload.magentoUrl !== formRef.current?.getValues().magentoUrl) {
+                    const cartId = await cart.api.createCart()
                     setCartId(cartId)
                 }
 
-                // Save Changes
-                dispatch({ type: 'save', payload })
-
-                const values: ReducerState = Object.keys(payload).reduce((result, key) => {
-                    const value = payload[key]
-                    return value ? { ...result, [key]: value } : { ...result }
-                }, {})
-
-                // Save in StoryStore Context
-                setSettings(values)
-
-                // Reset
-                localStorage.clear()
+                // Reset Apollo Store
                 await apolloClient?.resetStore()
 
                 // Refresh
@@ -130,13 +99,22 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
 
             setSaving(false)
         },
-        [router, dispatch, apolloClient, setCartId, setSettings, setSaving, formRef, cartApi]
+        [router, apolloClient, setCartId, setSettings, setSaving, formRef, cart]
     )
 
     const handleOnResetToDefaults = useCallback(() => {
-        formRef.current?.reset()
-        handleSaveOverrides({})
+        handleSaveOverrides({
+            magentoUrl: process.env.MAGENTO_URL,
+            homePageId: process.env.HOME_PAGE_ID,
+        })
     }, [formRef, handleSaveOverrides])
+
+    useEffect(() => {
+        // Override values
+        Object.entries(settings).forEach(([key, value = '']) => {
+            formRef.current?.setValue(key, value)
+        })
+    }, [formRef, settings])
 
     return (
         <Root>
@@ -160,8 +138,9 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                     <Input
                         name="magentoUrl"
                         label="Magento URL"
-                        placeholder={defaults.magentoUrl}
+                        defaultValue={settings.magentoUrl}
                         style={{ textOverflow: 'ellipsis' }}
+                        onFocus={handleInputOnFocus}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
                         }}
@@ -170,10 +149,11 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaults }) => {
                     <Input
                         name="homePageId"
                         label="Home Page URL Key"
-                        placeholder={defaults.homePageId}
+                        defaultValue={settings.homePageId}
                         style={{ textOverflow: 'ellipsis' }}
-                        error={home.loading || home.data?.page ? undefined : `🏡 No Home page found. Did you mean to use "${home.data?.store?.homePage}"?`}
-                        color={home.loading || home.data?.page ? FieldColors.default : FieldColors.warning}
+                        onFocus={handleInputOnFocus}
+                        error={homePageQuery.loading || homePageQuery.data?.page ? undefined : `🏡 No Home page found. Did you mean to use "${homePageQuery.data?.store?.homePage}"?`}
+                        color={homePageQuery.loading || homePageQuery.data?.page ? FieldColors.default : FieldColors.warning}
                     />
 
                     <Buttons>

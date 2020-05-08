@@ -4,20 +4,20 @@ import { withApollo } from '~/lib/apollo/withApollo'
 
 import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
+import Error from '@storystore/ui/dist/components/Error'
 
-type SettingsProps = {
-    defaults: any
-}
+type SettingsProps = {}
 
 const Settings: NextPage<SettingsProps> = ({}) => {
-    const defaults = {
-        magentoUrl: process.env.MAGENTO_URL,
-        homePageId: process.env.HOME_PAGE_ID,
-    }
-
     return (
         <App>
-            <SettingsTemplate defaults={defaults} />
+            {Boolean(process.env.DEMO_MODE) ? (
+                <SettingsTemplate />
+            ) : (
+                <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
+                    Disabled
+                </Error>
+            )}
         </App>
     )
 }

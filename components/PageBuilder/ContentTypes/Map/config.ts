@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '~/components/PageBuilder/lib/getStyleAsObject'
-import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+import useStoryStore from '~/hooks/useStoryStore'
 
 const component = dynamic(() => import('.'))
 
@@ -21,6 +21,8 @@ type Location = {
 }
 
 const props = (elem: HTMLElement) => {
+    const { settings } = useStoryStore()
+
     const style = getStyleAsObject(elem.style)
 
     const locations = JSON.parse(elem.dataset.locations as string).map((location: Location) => {
@@ -55,12 +57,6 @@ const props = (elem: HTMLElement) => {
     })
 
     const controls = elem.dataset.showControls === 'true'
-
-    const settings = process.browser
-        ? updateSettingsFromCookie({
-              googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-          })
-        : undefined
 
     return {
         apiKey: settings?.googleMapsApiKey,

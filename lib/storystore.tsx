@@ -1,9 +1,9 @@
 import React, { createContext, Reducer, useReducer } from 'react'
 import { NextPage } from 'next'
 import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
-import { updateSettingsFromCookie } from '~/lib/updateSettingsFromCookie'
+import { getSettings } from '~/lib/getSettings'
 
-type Settings = {
+export type Settings = {
     magentoUrl: string
     homePageId: string
     footerBlockId?: string
@@ -74,7 +74,9 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
     const WithStoryStore = ({ cookie, ...pageProps }: any) => {
         const [state, dispatch] = useReducer(reducer, {
             cartId: getCookie(COOKIE.cartId, cookie) || '',
-            settings: updateSettingsFromCookie(initialState.settings, cookie),
+            settings: {
+                ...getSettings(cookie),
+            },
         })
 
         return (

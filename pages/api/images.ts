@@ -8,9 +8,15 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
     new Promise(resolve => {
         const imageURL = request.query.url.toString()
 
-        const settings = {
+        let settings = {
             magentoUrl: process.env.MAGENTO_URL,
-            ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+        }
+
+        if (Boolean(process.env.DEMO_MODE)) {
+            settings = {
+                ...settings,
+                ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+            }
         }
 
         const query = request.url?.split('?')[1]
@@ -29,9 +35,7 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
         const proxy = httpx
             .request(magentoUrl, options, res => {
                 // Set Cache Headers – for Now.sh Edge
-                if (!Boolean(process.env.DEMO_MODE)) {
-                    res.headers['Cache-Control'] = 's-maxage=1, stale-while-revalidate'
-                }
+                res.headers['Cache-Control'] = Boolean(process.env.DEMO_MODE) ? 'no-cache' : 's-maxage=1, stale-while-revalidate'
 
                 response.writeHead(res.statusCode as number, res.headers)
 

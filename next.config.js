@@ -23,23 +23,13 @@ module.exports = withOffline({
 
     experimental: {
         async redirects() {
-            const redirects = [
+            return [
                 {
                     source: `/basic-auth`,
                     destination: '/',
                     permanent: false,
                 },
             ]
-
-            if (!Boolean(process.env.DEMO_MODE)) {
-                redirects.push({
-                    source: '/settings',
-                    destination: '/',
-                    permanent: true,
-                })
-            }
-
-            return redirects
         },
         async rewrites() {
             return [

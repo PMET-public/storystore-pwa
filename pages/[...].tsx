@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { NextComponentType } from 'next'
-import { updateSettingsFromCookie } from '../lib/updateSettingsFromCookie'
+import { getSettings } from '../lib/getSettings'
 
 import App from '~/components/App'
 import Link from '../components/Link'
@@ -69,17 +69,7 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
     }
 
     try {
-        const graphQLUrl = process.browser
-            ? new URL('/api/graphql', location.href).href
-            : new URL(
-                  'graphql',
-                  updateSettingsFromCookie(
-                      {
-                          magentoUrl: process.env.MAGENTO_URL,
-                      },
-                      req?.headers.cookie
-                  ).magentoUrl
-              ).href
+        const graphQLUrl = process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', getSettings(req?.headers.cookie).magentoUrl).href
 
         const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
 

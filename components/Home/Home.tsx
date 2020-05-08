@@ -18,11 +18,9 @@ const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: fal
 type HomeProps = {}
 
 export const Home: FunctionComponent<HomeProps> = () => {
-    const {
-        settings: { homePageId: id },
-    } = useStoryStore()
+    const { settings } = useStoryStore()
 
-    const { queries } = useHome({ id })
+    const { queries } = useHome({ id: settings.homePageId })
 
     const online = useNetworkStatus()
 

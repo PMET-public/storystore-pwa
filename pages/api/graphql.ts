@@ -12,9 +12,15 @@ export const config = {
 
 const proxyGraphQl = async (request: NextApiRequest, response: NextApiResponse) =>
     new Promise(resolve => {
-        const settings = {
+        let settings = {
             magentoUrl: process.env.MAGENTO_URL,
-            ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+        }
+
+        if (Boolean(process.env.DEMO_MODE)) {
+            settings = {
+                ...settings,
+                ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+            }
         }
 
         const query = request.url?.split('?')[1]
