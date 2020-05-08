@@ -2,12 +2,12 @@ import React from 'react'
 import Head from 'next/head'
 import App, { AppInitialProps } from 'next/app'
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
-import ApolloClient from 'apollo-client'
 import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
 import { getSettings } from '~/lib/getSettings'
 import { withStoryStore } from '~/lib/storystore'
+import ApolloClient from 'apollo-client'
 
 export interface ApolloProps {
     apolloState?: NormalizedCacheObject
@@ -36,6 +36,7 @@ export const initOnContext = (ctx: any) => {
     // Otherwise, the component would have to call initApollo() again but this
     // time without the context. Once that happens, the following code will make sure we send
     // the prop as `null` to the browser.
+
     apolloClient.toJSON = () => null
 
     // Add apolloClient to NextPageContext & NextAppContext.

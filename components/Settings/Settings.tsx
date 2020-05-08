@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { version, dependencies } from '~/package.json'
+import { setCookie, COOKIE } from '~/lib/cookies'
 import gql from 'graphql-tag'
 
 import { useRouter } from 'next/router'
@@ -102,11 +103,13 @@ export const Settings: FunctionComponent = () => {
         [router, apolloClient, setCartId, setSettings, setSaving, formRef, cart]
     )
 
-    const handleOnResetToDefaults = useCallback(() => {
-        handleSaveOverrides({
+    const handleOnResetToDefaults = useCallback(async () => {
+        await handleSaveOverrides({
             magentoUrl: process.env.MAGENTO_URL,
             homePageId: process.env.HOME_PAGE_ID,
         })
+
+        setCookie(COOKIE.settings, '{}', 365)
     }, [formRef, handleSaveOverrides])
 
     useEffect(() => {

@@ -26,7 +26,7 @@ import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import ProductList from '@storystore/ui/dist/components/ProductList'
-// import Filters from '@storystore/ui/dist/components/Filters'
+// import Filters from '@storystore/ui/dist/components/Filters' f
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
 // import Button from '@storystore/ui/dist/components/Button'
@@ -97,10 +97,10 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
             <Root>
                 {/* PageBuilder Content */}
-                {page && (page.description || page.block?.content) && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && <PageBuilder html={page.block.content || page.description} />}
+                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && (page.description || page.block?.content) && <PageBuilder html={page.block?.content || page.description} />}
 
                 {/* Product List */}
-                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PRODUCTS') && (
+                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PRODUCTS' || !page.mode) && (
                     <React.Fragment>
                         <TopBar>
                             <TopBarWrapper $margin>
@@ -169,6 +169,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
                         <Content>
                             <ProductListWrapper $margin>
                                 <ProductList
+                                    loading={queries.products.loading}
                                     loadingMore={queries.products.loading}
                                     items={products?.items
                                         ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards

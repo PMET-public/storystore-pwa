@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react'
 import { withApollo } from '~/lib/apollo/withApollo'
-import { NextComponentType } from 'next'
-import { getSettings } from '../lib/getSettings'
+import { NextPage } from 'next'
+import { initOnContext } from '~/lib/apollo/withApollo'
+import gql from 'graphql-tag'
 
 import App from '~/components/App'
-import Link from '../components/Link'
-import Error from '../components/Error'
-import Page from '../components/Page '
-import Category from '../components/Category'
-import Product from '../components/Product'
+import Link from '~/components/Link'
+import Error from '~/components/Error'
+import Page from '~/components/Page '
+import Category from '~/components/Category'
+import Product from '~/components/Product'
+import ApolloClient from 'apollo-client'
+import { NormalizedCacheObject } from 'apollo-cache-inmemory'
 
 export enum CONTENT_TYPE {
     CMS_PAGE = 'CMS_PAGE',
@@ -18,12 +21,12 @@ export enum CONTENT_TYPE {
 }
 
 export type ResolverProps = {
+    type: string
     contentId: number
     urlKey: string
-    type: CONTENT_TYPE
 }
 
-const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, contentId, urlKey }) => {
+const UrlResolver: NextPage<ResolverProps> = ({ type, contentId, urlKey }) => {
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -39,7 +42,7 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
             case 'CATEGORY':
                 return <Category key={contentId} id={contentId} />
             case 'PRODUCT':
-                return <Product key={urlKey} urlKey={urlKey} />
+                return <Product key={contentId} urlKey={urlKey} />
             case '404':
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
@@ -49,61 +52,51 @@ const UrlResolver: NextComponentType<any, any, ResolverProps> = ({ type, content
                     </Error>
                 )
         }
-    }, [contentId, type, urlKey])
+    }, [type, contentId, urlKey])
 
     return <App>{renderPage}</App>
 }
 
 // enable next.js ssr
-UrlResolver.getInitialProps = async ({ req, res, query }) => {
+UrlResolver.getInitialProps = async ctx => {
+    const { apolloClient }: { apolloClient: ApolloClient<NormalizedCacheObject> } = initOnContext(ctx)
+
+    const { res, query } = ctx
+
     if (!Boolean(process.env.DEMO_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 
-    const cookie = req?.headers.cookie
+    const { type, contentId } = query
 
-    let { type, contentId, urlKey } = query
+    const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
+
+    const urlKey = url.split('/').pop()?.split('.')[0] || ''
 
     if (type && (contentId || urlKey)) {
-        return { type, contentId, urlKey, cookie }
+        return { type, contentId, urlKey }
     }
 
-    try {
-        const graphQLUrl = process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', getSettings(req?.headers.cookie).magentoUrl).href
-
-        const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
-
-        const graphQlQuery = encodeURI(
-            `
-                query {
-                    urlResolver(url: "${url}") {
-                        id
-                        type
-                        contentId: id
-                    }
+    const { data } = await apolloClient.query({
+        query: gql`
+            query UrlResolver($url: String!) {
+                urlResolver(url: $url) {
+                    id
+                    type
+                    contentId: id
                 }
-            `
-                .replace(/ +(?= )/g, '')
-                .replace(/\n/g, '')
-        )
+            }
+        `,
+        variables: {
+            url,
+        },
+    })
 
-        const page = await fetch(`${graphQLUrl}?query=${graphQlQuery}`)
-
-        const { data = {} } = await page.json()
-
-        type = data.urlResolver?.type || CONTENT_TYPE.NOT_FOUND
-
-        contentId = data.urlResolver?.contentId
-
-        urlKey = url.split('/').pop().split('.')[0]
-
-        if (res && type === CONTENT_TYPE.NOT_FOUND) res.statusCode = 404
-    } catch (e) {
-        console.error(e)
-        if (res) res.statusCode = 500
+    return {
+        type: data.urlResolver.type,
+        contentId: data.urlResolver.contentId,
+        urlKey,
     }
-
-    return { type, contentId, urlKey, storyStore: { cookie } }
 }
 
 export default withApollo(UrlResolver)
