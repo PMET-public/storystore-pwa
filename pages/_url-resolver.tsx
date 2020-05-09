@@ -64,7 +64,7 @@ UrlResolver.getInitialProps = async ctx => {
 
     const { res, query, asPath } = ctx
 
-    const { type, ...rest } = query
+    const { type, ...params } = query
 
     if (!Boolean(process.env.DEMO_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
@@ -73,7 +73,7 @@ UrlResolver.getInitialProps = async ctx => {
     if (type) {
         return {
             type: String(type),
-            ...rest,
+            ...params,
         }
     }
 
@@ -87,7 +87,7 @@ UrlResolver.getInitialProps = async ctx => {
             }
         `,
         variables: {
-            url: asPath,
+            url: asPath || query.pathname,
         },
     })
 
@@ -98,7 +98,7 @@ UrlResolver.getInitialProps = async ctx => {
         if (res) res.statusCode = 404
         return {
             type: '404',
-            ...rest,
+            ...params,
         }
     }
 
@@ -107,7 +107,7 @@ UrlResolver.getInitialProps = async ctx => {
      */
     return {
         ...data.urlResolver,
-        ...rest,
+        ...params,
     }
 }
 
