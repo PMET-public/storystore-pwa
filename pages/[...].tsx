@@ -21,7 +21,7 @@ export enum CONTENT_TYPE {
 }
 
 export type ResolverProps = {
-    type: string
+    type: CONTENT_TYPE
     url: string
     [key: string]: any
 }
@@ -37,14 +37,14 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
         }
 
         switch (type) {
-            case 'CMS_PAGE':
+            case CONTENT_TYPE.CMS_PAGE:
                 return <Page {...props} key={props.id} id={props.id} />
-            case 'CATEGORY':
+            case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
-            case 'PRODUCT':
+            case CONTENT_TYPE.PRODUCT:
                 const urlKey = props.urlKey || url.split('/').pop()?.split('.')[0] || ''
                 return <Product {...props} key={urlKey} urlKey={urlKey} />
-            case '404':
+            case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
                 return (
