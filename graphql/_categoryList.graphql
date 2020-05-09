@@ -6,6 +6,7 @@ fragment categoryList on Query {
             text: name
             href: url_path
             image
+            mode: display_mode
         }
     }
 }

@@ -37,6 +37,7 @@ const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
 
 type CategoryProps = {
     id: number
+    mode?: 'PRODUCTS_AND_PAGE' | 'PRODUCTS' | 'PAGE' | string
 }
 
 const TitleSkeleton = ({ ...props }) => {
@@ -47,7 +48,7 @@ const TitleSkeleton = ({ ...props }) => {
     )
 }
 
-export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
+export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) => {
     const { queries } = useCategory({ id })
 
     const products = queries.products.data?.products
@@ -90,17 +91,19 @@ export const Category: FunctionComponent<CategoryProps> = ({ id }) => {
 
     const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
 
+    const mode = _mode || page?.mode
+
     return (
-        <React.Fragment key={page?.id}>
+        <React.Fragment key={`category--${mode}--${page?.id}`}>
             {/* Head Metadata */}
             {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
             <Root>
                 {/* PageBuilder Content */}
-                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PAGE') && (page.description || page.block?.content) && <PageBuilder html={page.block?.content || page.description} />}
+                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PAGE') && <PageBuilder html={page?.block?.content || page?.description} />}
 
                 {/* Product List */}
-                {page && (page.mode === 'PRODUCTS_AND_PAGE' || page.mode === 'PRODUCTS' || !page.mode) && (
+                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PRODUCTS') && (
                     <React.Fragment>
                         <TopBar>
                             <TopBarWrapper $margin>

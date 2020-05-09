@@ -22,11 +22,12 @@ export enum CONTENT_TYPE {
 
 export type ResolverProps = {
     type: string
-    contentId: number
+    id: number
     urlKey: string
+    mode?: any
 }
 
-const UrlResolver: NextPage<ResolverProps> = ({ type, contentId, urlKey }) => {
+const UrlResolver: NextPage<ResolverProps> = ({ type, id, urlKey, mode }) => {
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -38,11 +39,11 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, contentId, urlKey }) => {
 
         switch (type) {
             case 'CMS_PAGE':
-                return <Page key={contentId} id={contentId} />
+                return <Page key={id} id={id} />
             case 'CATEGORY':
-                return <Category key={contentId} id={contentId} />
+                return <Category key={id} id={id} mode={mode} />
             case 'PRODUCT':
-                return <Product key={contentId} urlKey={urlKey} />
+                return <Product key={urlKey} urlKey={urlKey} />
             case '404':
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
@@ -52,7 +53,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, contentId, urlKey }) => {
                     </Error>
                 )
         }
-    }, [type, contentId, urlKey])
+    }, [type, id, urlKey, mode])
 
     return <App>{renderPage}</App>
 }
@@ -67,14 +68,14 @@ UrlResolver.getInitialProps = async ctx => {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 
-    const { type, contentId } = query
+    const { type, id, mode } = query
 
     const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
 
     const urlKey = url.split('/').pop()?.split('.')[0] || ''
 
-    if (type && (contentId || urlKey)) {
-        return { type, contentId, urlKey }
+    if (type && (id || urlKey)) {
+        return { type, id, urlKey, mode }
     }
 
     const { data } = await apolloClient.query({
@@ -83,7 +84,6 @@ UrlResolver.getInitialProps = async ctx => {
                 urlResolver(url: $url) {
                     id
                     type
-                    contentId: id
                 }
             }
         `,
@@ -94,8 +94,9 @@ UrlResolver.getInitialProps = async ctx => {
 
     return {
         type: data.urlResolver.type,
-        contentId: data.urlResolver.contentId,
+        id: data.urlResolver.id,
         urlKey,
+        mode,
     }
 }
 

@@ -39,11 +39,12 @@ export const Home: FunctionComponent<HomeProps> = () => {
                     <Stories>
                         <BubbleCarousel
                             loading={queries.home.loading && !categories}
-                            items={categories[0]?.children?.map(({ id, text, href, image }: any) => ({
+                            items={categories[0]?.children?.map(({ id, text, href, image, mode }: any) => ({
                                 as: Link,
                                 urlResolver: {
                                     type: 'CATEGORY',
                                     id,
+                                    mode,
                                 },
                                 href: href + categoryUrlSuffix,
                                 image: image && {

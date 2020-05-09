@@ -189,7 +189,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                             title: store?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
-                            items: categories[0]?.children?.map(({ id, text, href: _href }: any) => {
+                            items: categories[0]?.children?.map(({ id, text, href: _href, mode }: any) => {
                                 const href = _href + categoryUrlSuffix
 
                                 return {
@@ -198,6 +198,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                                     urlResolver: {
                                         type: 'CATEGORY',
                                         id,
+                                        mode,
                                     },
                                     href: '/' + href,
                                     text,
