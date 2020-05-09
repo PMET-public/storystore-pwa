@@ -175,7 +175,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                         <Content>
                             <ProductListWrapper $margin>
                                 <ProductList
-                                    loading={queries.products.loading}
                                     loadingMore={queries.products.loading}
                                     items={products?.items
                                         ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
