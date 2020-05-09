@@ -22,12 +22,11 @@ export enum CONTENT_TYPE {
 
 export type ResolverProps = {
     type: string
-    id: number
-    urlKey: string
-    mode?: any
+    url: string
+    [key: string]: any
 }
 
-const UrlResolver: NextPage<ResolverProps> = ({ type, id, urlKey, mode }) => {
+const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -39,11 +38,12 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, id, urlKey, mode }) => {
 
         switch (type) {
             case 'CMS_PAGE':
-                return <Page key={id} id={id} />
+                return <Page {...props} key={props.id} id={props.id} />
             case 'CATEGORY':
-                return <Category key={id} id={id} mode={mode} />
+                return <Category {...props} key={props.id} id={props.id} />
             case 'PRODUCT':
-                return <Product key={urlKey} urlKey={urlKey} />
+                const urlKey = props.urlKey || url.split('/').pop()?.split('.')[0] || ''
+                return <Product {...props} key={urlKey} urlKey={urlKey} />
             case '404':
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
@@ -53,7 +53,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, id, urlKey, mode }) => {
                     </Error>
                 )
         }
-    }, [type, id, urlKey, mode])
+    }, [type, url, props])
 
     return <App>{renderPage}</App>
 }
@@ -64,18 +64,20 @@ UrlResolver.getInitialProps = async ctx => {
 
     const { res, query } = ctx
 
+    const { type, url: _url, ...rest } = query
+
     if (!Boolean(process.env.DEMO_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 
-    const { type, id, mode } = query
+    const url = _url ? _url.toString().split('?')[0] : (query[''] as string[]).join('/')
 
-    const url = query.url ? query.url.toString().split('?')[0] : (query[''] as string[]).join('/')
-
-    const urlKey = url.split('/').pop()?.split('.')[0] || ''
-
-    if (type && (id || urlKey)) {
-        return { type, id, urlKey, mode }
+    if (type) {
+        return {
+            type: String(type),
+            url,
+            ...rest,
+        }
     }
 
     const { data } = await apolloClient.query({
@@ -92,11 +94,24 @@ UrlResolver.getInitialProps = async ctx => {
         },
     })
 
+    /**
+     * Url not-found. Return 404
+     */
+    if (!data?.urlResolver) {
+        if (res) res.statusCode = 404
+        return {
+            type: '404',
+            url,
+        }
+    }
+
+    /**
+     * Return Values
+     */
     return {
-        type: data.urlResolver.type,
-        id: data.urlResolver.id,
-        urlKey,
-        mode,
+        url,
+        ...data.urlResolver,
+        ...rest,
     }
 }
 

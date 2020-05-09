@@ -204,12 +204,13 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                     items={product.categories
                                                         .slice(0, 4) // limit to 3
                                                         .filter((x: any) => !!x.href)
-                                                        .map(({ id, text, href }: any) => ({
+                                                        .map(({ id, mode, text, href }: any) => ({
                                                             _id: id,
                                                             as: Link,
                                                             urlResolver: {
                                                                 type: 'CATEGORY',
                                                                 id,
+                                                                mode,
                                                             },
                                                             href: '/' + href + categoryUrlSuffix,
                                                             text,

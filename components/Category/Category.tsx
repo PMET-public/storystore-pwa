@@ -48,7 +48,7 @@ const TitleSkeleton = ({ ...props }) => {
     )
 }
 
-export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) => {
+export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
     const { queries } = useCategory({ id })
 
     const products = queries.products.data?.products
@@ -91,7 +91,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) 
 
     const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
 
-    const mode = _mode || page?.mode
+    const mode = page?.mode || _mode
 
     return (
         <React.Fragment key={`category--${mode}--${page?.id}`}>
@@ -115,6 +115,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) 
                                                 urlResolver={{
                                                     type: 'CATEGORY',
                                                     id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
+                                                    mode: page.breadcrumbs[page.breadcrumbs.length - 1].mode,
                                                 }}
                                                 href={'/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix}
                                             >
@@ -128,12 +129,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) 
                                     {page?.categories?.length === 0 && page.breadcrumbs && (
                                         <Breadcrumbs
                                             prefix="#"
-                                            items={page.breadcrumbs.map(({ id, text, href }: any) => ({
+                                            items={page.breadcrumbs.map(({ id, mode, text, href }: any) => ({
                                                 _id: id,
                                                 as: Link,
                                                 urlResolver: {
                                                     type: 'CATEGORY',
                                                     id,
+                                                    mode,
                                                 },
                                                 href: '/' + href + categoryUrlSuffix,
                                                 text,
@@ -144,12 +146,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode }) 
                                     {/* Sub-Categories */}
                                     {page?.categories && (
                                         <Pills
-                                            items={page.categories.map(({ id, text, count, href }: any) => ({
+                                            items={page.categories.map(({ id, mode, text, count, href }: any) => ({
                                                 _id: id,
                                                 as: Link,
                                                 urlResolver: {
                                                     type: 'CATEGORY',
                                                     id,
+                                                    mode,
                                                 },
                                                 count,
                                                 text,

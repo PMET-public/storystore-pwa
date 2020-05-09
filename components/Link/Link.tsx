@@ -10,8 +10,8 @@ export type LinkProps = Props<
         external?: boolean
         urlResolver?: {
             type: CONTENT_TYPE
-            id: number
-            urlKey?: string
+            id: number | string
+            [key: string]: any
         }
     } & NextLinkProps
 >
@@ -42,6 +42,7 @@ const Link: FunctionComponent<LinkProps> = forwardRef(
         const query =
             typeof urlResolver === 'object'
                 ? Object.entries(urlResolver)
+                      .filter(([_, value]) => Boolean(value))
                       .map(([key, value]) => `${key}=${value}`)
                       .join('&')
                 : ''

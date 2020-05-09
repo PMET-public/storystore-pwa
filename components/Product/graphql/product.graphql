@@ -23,6 +23,7 @@ query ProductQuery($urlKey: String!) {
                 id
                 text: name
                 href: url_path
+                mode: display_mode
             }
 
             ...price
