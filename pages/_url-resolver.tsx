@@ -42,7 +42,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                const urlKey = props.urlKey || pathname.split('/').pop()?.split('.')[0] || ''
+                const urlKey = pathname.split('/').pop() || ''
                 return <Product {...props} key={urlKey} urlKey={urlKey} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
@@ -70,10 +70,13 @@ UrlResolver.getInitialProps = async ctx => {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 
+    const pathname = asPath?.split('?')[0]
+
     if (type) {
         return {
-            type: String(type),
             ...params,
+            type: String(type),
+            pathname,
         }
     }
 
@@ -87,7 +90,7 @@ UrlResolver.getInitialProps = async ctx => {
             }
         `,
         variables: {
-            url: asPath || query.pathname,
+            url: pathname,
         },
     })
 
@@ -98,7 +101,7 @@ UrlResolver.getInitialProps = async ctx => {
         if (res) res.statusCode = 404
         return {
             type: '404',
-            ...params,
+            pathname,
         }
     }
 
@@ -108,6 +111,7 @@ UrlResolver.getInitialProps = async ctx => {
     return {
         ...data.urlResolver,
         ...params,
+        pathname,
     }
 }
 
