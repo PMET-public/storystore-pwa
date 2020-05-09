@@ -22,11 +22,11 @@ export enum CONTENT_TYPE {
 
 export type ResolverProps = {
     type: CONTENT_TYPE
-    url: string
+    pathname: string
     [key: string]: any
 }
 
-const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
+const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -42,7 +42,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                const urlKey = props.urlKey || url.split('/').pop()?.split('.')[0] || ''
+                const urlKey = props.urlKey || pathname.split('/').pop()?.split('.')[0] || ''
                 return <Product {...props} key={urlKey} urlKey={urlKey} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
@@ -53,7 +53,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
                     </Error>
                 )
         }
-    }, [type, url, props])
+    }, [type, pathname, props])
 
     return <App>{renderPage}</App>
 }
@@ -62,20 +62,17 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, url, ...props }) => {
 UrlResolver.getInitialProps = async ctx => {
     const { apolloClient }: { apolloClient: ApolloClient<NormalizedCacheObject> } = initOnContext(ctx)
 
-    const { res, query } = ctx
+    const { res, query, asPath } = ctx
 
-    const { type, url: _url, ...rest } = query
+    const { type, ...rest } = query
 
     if (!Boolean(process.env.DEMO_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
 
-    const url = _url ? _url.toString().split('?')[0] : (query[''] as string[]).join('/')
-
     if (type) {
         return {
             type: String(type),
-            url,
             ...rest,
         }
     }
@@ -90,7 +87,7 @@ UrlResolver.getInitialProps = async ctx => {
             }
         `,
         variables: {
-            url,
+            url: asPath,
         },
     })
 
@@ -101,7 +98,7 @@ UrlResolver.getInitialProps = async ctx => {
         if (res) res.statusCode = 404
         return {
             type: '404',
-            url,
+            ...rest,
         }
     }
 
@@ -109,7 +106,6 @@ UrlResolver.getInitialProps = async ctx => {
      * Return Values
      */
     return {
-        url,
         ...data.urlResolver,
         ...rest,
     }

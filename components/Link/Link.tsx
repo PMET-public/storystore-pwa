@@ -2,7 +2,7 @@ import React, { FunctionComponent, forwardRef } from 'react'
 import { Props } from '@storystore/ui/dist/lib'
 import styled from 'styled-components'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
-import { CONTENT_TYPE } from '~/pages/[...]'
+import { CONTENT_TYPE } from '~/pages/_url-resolver'
 
 export type LinkProps = Props<
     {
@@ -42,13 +42,13 @@ const Link: FunctionComponent<LinkProps> = forwardRef(
         const query =
             typeof urlResolver === 'object'
                 ? Object.entries(urlResolver)
-                      .filter(([_, value]) => Boolean(value))
+                      .filter(x => Boolean(x[1]))
                       .map(([key, value]) => `${key}=${value}`)
                       .join('&')
                 : ''
 
         const linkProps: NextLinkProps = {
-            href: external === false || urlResolver ? `/[...]?url=${href}&${query}` : href,
+            href: external === false || urlResolver ? `/_url-resolver?${query}` : href,
             as: external === false || urlResolver ? href : as,
             replace,
             scroll,

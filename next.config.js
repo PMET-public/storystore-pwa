@@ -4,6 +4,8 @@ const path = require('path')
 const withOffline = require('next-offline')
 
 module.exports = withOffline({
+    poweredByHeader: false,
+
     // Build environment variables
     env: {
         MAGENTO_URL: process.env.MAGENTO_URL,
@@ -36,6 +38,13 @@ module.exports = withOffline({
                 {
                     source: `/service-worker.js`,
                     destination: '/_next/static/service-worker.js',
+                },
+                /**
+                 * URlResolver
+                 */
+                {
+                    source: '/:pathname*',
+                    destination: '/_url-resolver',
                 },
             ]
         },
