@@ -137,14 +137,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }
 
-    if (!queries.app.loading && !queries.app.data) {
-        return (
-            <Error type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen>
-                No data available.
-            </Error>
-        )
-    }
-
     const { store, categories = [] } = queries.app.data || {}
 
     const { cart } = queries.cart.data || {}
