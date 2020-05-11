@@ -9,6 +9,7 @@ export const ToastsStyles = createGlobalStyle`
         width: 320px;
         box-sizing: border-box;
         color: #fff;
+        font-size: 1.4rem;
     }
 
     .Toastify__toast-container--top-left {

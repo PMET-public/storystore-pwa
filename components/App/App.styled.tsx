@@ -78,3 +78,14 @@ export const TabBarContainer = styled(ContainerWrapper)`
         display: none;
     }
 `
+
+export const OfflineToast = styled.div`
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 1rem;
+    align-items: center;
+    & svg {
+        fill: currentColor;
+        width: 2rem;
+    }
+`
