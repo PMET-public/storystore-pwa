@@ -42,7 +42,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                const urlKey = pathname.split('/').pop() || ''
+                const urlKey = pathname.split('/').pop()?.split('.')?.shift() || ''
                 return <Product {...props} key={urlKey} urlKey={urlKey} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
