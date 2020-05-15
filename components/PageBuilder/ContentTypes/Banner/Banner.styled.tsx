@@ -3,15 +3,17 @@ import styled from 'styled-components'
 export const Container = styled.div``
 
 export const Overlay = styled.div`
-    width: 100%;
-    transition: background-color 305ms ease-out;
     display: flex;
+    width: 100%;
+    max-width: 54rem;
     padding: 2rem;
+    transition: background-color 305ms ease-out;
 `
 
 export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'collage-centered' | 'collage-right' }>`
     display: flex;
     width: auto;
+
 
 
     ${Overlay} {
@@ -20,34 +22,33 @@ export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'c
         ${props =>
             props.$appearance === 'poster' &&
             `                
-                    align-items: center;
-                    justify-content: center;
-                
+                max-width: unset;
+                align-items: center;
+                justify-content: center;
+
+            
             `}
 
         ${props =>
             props.$appearance === 'collage-centered' &&
             `
-                justify-content: center;
-        
+                margin-left: auto;
+                margin-right: auto;
             `}
         
         ${props =>
             props.$appearance === 'collage-right' &&
             `
-                justify-content: flex-end;
-            
+                margin-left: auto;
             `}
     }
 `
 
 export const ContentWrapper = styled.div`
-    width: 100%;
     & > *:not(:nth-child(1)) {
         margin-top: 3rem;
     }
 `
-
 export const Content = styled.div``
 
 export const Button = styled.div<{ $secondary?: boolean }>`
