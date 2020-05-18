@@ -99,7 +99,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
 
     const client = new ApolloClient({
         cache,
-        connectToDevTools: process.browser,
+        connectToDevTools: process.browser && Boolean(process.env.DEMO_MODE),
         link,
         resolvers,
         ssrMode: !process.browser,

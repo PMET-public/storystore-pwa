@@ -1,0 +1,10 @@
+query FiltersQuery {
+    filterTypes: __type(name: "ProductAttributeFilterInput") {
+        fields: inputFields {
+            name
+            type {
+                name
+            }
+        }
+    }
+}

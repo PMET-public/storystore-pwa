@@ -1,5 +1,6 @@
 #import "~/graphql/_pagination.graphql"
 #import "~/graphql/_price.graphql"
+#import "~/graphql/_filters.graphql"
 
 query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
@@ -8,8 +9,10 @@ query ProductsQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 10,
         categoryUrlSuffix: category_url_suffix
     }
 
-    products: products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
+    products(filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
         ...pagination
+
+        ...filters
 
         items @connection(key: "items") {
             id

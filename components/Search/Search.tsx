@@ -2,19 +2,7 @@ import React, { FunctionComponent, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveImage } from '~/lib/resolveImage'
 
-import {
-    Root,
-    TopBar,
-    TopBarWrapper,
-    // TopBarFilterButton,
-    // FiltersIcon,
-    Content,
-    ProductListWrapper,
-    // FiltersWrapper,
-    // FiltersButtons,
-    // FiltersScreen,
-    NoResult,
-} from './Search.styled'
+import { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon, Content, ProductListWrapper, NoResult, FiltersWrapper } from './Search.styled'
 
 import { useSearch } from './useSearch'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
@@ -25,6 +13,7 @@ import Link from '~/components/Link'
 import Head from '~/components/Head'
 import SearchBar from '@storystore/ui/dist/components/SearchBar'
 import ProductList from '@storystore/ui/dist/components/ProductList'
+import Filters from '~/components/Filters'
 
 const Error = dynamic(() => import('~/components/Error'))
 
@@ -35,7 +24,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { query = '' } = history.query
 
-    const { queries } = useSearch({ queryString: query?.toString() })
+    const { queries, api } = useSearch({ queryString: query?.toString() })
 
     const products = queries.search.data?.products
 
@@ -94,13 +83,11 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        {/* TODO: Integrate Filters
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
-                                    <span>
-                                        <FiltersIcon aria-label="Filters" />
-                                    </span>
-                                </TopBarFilterButton> 
-                                */}
+                        <TopBarFilterButton as="button" type="button">
+                            <span>
+                                <FiltersIcon aria-label="Filters" />
+                            </span>
+                        </TopBarFilterButton>
                     </TopBarWrapper>
                 </TopBar>
                 <Content>
@@ -142,23 +129,24 @@ export const Search: FunctionComponent<SearchProps> = () => {
                         />
                     </ProductListWrapper>
                 </Content>
-                {/* TODO: Integrate Filters */}
-                {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
-                            <Filters {...filters} />
-                            {filters.closeButton && (
-                                <FiltersButtons>
-                                    <Button
-                                        as="button"
-                                        type="button"
-                                        onClick={handleCloseFilters}
-                                        {...filters.closeButton}
-                                    />
-                                </FiltersButtons>
-                            )}
-                        </FiltersWrapper>
-
-                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} 
-                )}*/}
+                <FiltersWrapper>
+                    <Filters
+                        items={queries.search.data?.products?.filters?.map(({ title, code, options }: any) => {
+                            return {
+                                title,
+                                code,
+                                options: options.map(({ count, label, value }: any, _id: number) => ({
+                                    _id,
+                                    active: false,
+                                    count,
+                                    label,
+                                    value,
+                                })),
+                            }
+                        })}
+                        onValues={api.setFilter}
+                    />
+                </FiltersWrapper>
             </Root>
 
             {query && products?.count === 0 && (

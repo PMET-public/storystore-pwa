@@ -2,22 +2,7 @@ import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveImage } from '~/lib/resolveImage'
 
-import {
-    Root,
-    TopBar,
-    TopBarWrapper,
-    Heading,
-    Title,
-    BackButton,
-    BackIcon,
-    // TopBarFilterButton,
-    // FiltersIcon,
-    Content,
-    ProductListWrapper,
-    // FiltersWrapper,
-    // FiltersButtons,
-    // FiltersScreen,
-} from './Category.styled'
+import { Root, TopBar, TopBarWrapper, Heading, Title, BackButton, BackIcon, TopBarFilterButton, FiltersIcon, Content, ProductListWrapper, FiltersWrapper } from './Category.styled'
 
 import { useCategory } from './useCategory'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
@@ -26,10 +11,9 @@ import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import ProductList from '@storystore/ui/dist/components/ProductList'
-// import Filters from '@storystore/ui/dist/components/Filters' f
+import Filters from '~/components/Filters'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
-// import Button from '@storystore/ui/dist/components/Button'
 import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
 
 const Error = dynamic(() => import('../Error'))
@@ -49,7 +33,7 @@ const TitleSkeleton = ({ ...props }) => {
 }
 
 export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
-    const { queries } = useCategory({ id })
+    const { queries, api } = useCategory({ id })
 
     const products = queries.products.data?.products
 
@@ -162,13 +146,11 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                {/* TODO: Integrate Filters
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                <TopBarFilterButton as="button" type="button">
                                     <span>
                                         <FiltersIcon aria-label="Filters" />
                                     </span>
-                                </TopBarFilterButton> 
-                                */}
+                                </TopBarFilterButton>
                             </TopBarWrapper>
                         </TopBar>
 
@@ -209,23 +191,26 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                 />
                             </ProductListWrapper>
                         </Content>
-
-                        {/* TODO: Integrate Filters */}
-                        {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
-                            <Filters {...filters} />
-                            {filters.closeButton && (
-                                <FiltersButtons>
-                                    <Button
-                                        as="button"
-                                        type="button"
-                                        onClick={handleCloseFilters}
-                                        {...filters.closeButton}
-                                    />
-                                </FiltersButtons>
-                            )}
+                        <FiltersWrapper>
+                            <Filters
+                                loading={queries.products.loading}
+                                items={queries.products.data?.products?.filters?.map(({ title, code, options }: any) => {
+                                    return {
+                                        _id: code,
+                                        title,
+                                        code,
+                                        options: options.map(({ count, label, value }: any, _id: number) => ({
+                                            _id: `${code}--${value}`,
+                                            active: false,
+                                            count,
+                                            label,
+                                            value,
+                                        })),
+                                    }
+                                })}
+                                onValues={api.setFilter}
+                            />
                         </FiltersWrapper>
-
-                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} */}
                     </React.Fragment>
                 )}
             </Root>

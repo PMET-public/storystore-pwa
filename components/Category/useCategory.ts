@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { queryDefaultOptions } from '~/lib/apollo/client'
 import { useQuery } from '@apollo/react-hooks'
 
@@ -7,7 +7,8 @@ import PRODUCTS_QUERY from './graphql/products.graphql'
 
 type FilterValues = {
     [key: string]: {
-        eq: string
+        in?: string[]
+        eq?: string
     }
 }
 
@@ -19,25 +20,28 @@ export const useCategory = (props: { id: number }) => {
         variables: { id: id.toString() },
     })
 
-    const [filterValues, setFilterValues] = useState<FilterValues>({
+    const [filters, setFilters] = useState<FilterValues>({
         category_id: {
             eq: id.toString(),
         },
     })
 
-    function handleOnClickFilterValue(key: string, value: string) {
-        setFilterValues({
-            ...filterValues,
-            [key]: {
-                eq: value,
-            },
-        })
-    }
-
     const products = useQuery(PRODUCTS_QUERY, {
         ...queryDefaultOptions,
-        variables: { filters: filterValues },
+        variables: { filters },
     })
+
+    const handleSetFilters = useCallback(
+        (filters: { [key: string]: string }) => {
+            setFilters({
+                category_id: {
+                    eq: id.toString(),
+                },
+                ...filters,
+            })
+        },
+        [id, setFilters]
+    )
 
     return {
         queries: {
@@ -45,7 +49,7 @@ export const useCategory = (props: { id: number }) => {
             products,
         },
         api: {
-            setFilter: handleOnClickFilterValue,
+            setFilter: handleSetFilters,
         },
     }
 }

@@ -1,17 +1,22 @@
 import styled from 'styled-components'
 
 import { Wrapper as ContainerWrapper } from '@storystore/ui/dist/components/Container/Container.styled'
-import { Root as FiltersRoot } from '@storystore/ui/dist/components/Filters/Filters.styled'
+// import { Root as FiltersRoot } from '@storystore/ui/dist/components/Filters/Filters.styled'
 
 import FiltersIconSvg from 'remixicon/icons/Media/equalizer-line.svg'
 import BackIconSvg from 'remixicon/icons/System/arrow-left-line.svg'
 
 export const Root = styled.div`
     display: grid;
-    grid-auto-rows: max-content;
+    /* grid-auto-columns: minmax(max-content, max-content);
+    grid-auto-rows: minmax(max-content, max-content); */
+    grid-template-areas:
+        'toolbar toolbar'
+        'filters list';
 `
 
 export const TopBar = styled.div`
+    grid-area: toolbar;
     position: sticky;
     top: 0;
     z-index: 3;
@@ -80,6 +85,7 @@ export const FiltersIcon = styled(FiltersIconSvg)`
 `
 
 export const Content = styled.div`
+    grid-area: list;
     display: grid;
     grid-auto-rows: minmax(max-content, max-content);
     grid-gap: 3rem;
@@ -87,59 +93,7 @@ export const Content = styled.div`
 
 export const ProductListWrapper = styled(ContainerWrapper)``
 
-export const FiltersWrapper = styled.div<{ $active?: boolean; $height: number }>`
-    min-height: calc(${props => props.$height * 0.01}px * 100);
-    max-height: calc(${props => props.$height * 0.01}px * 100);
-    -webkit-overflow-scrolling: touch;
-    background-color: ${props => props.theme.colors.surface};
-    color: ${props => props.theme.colors.onSurface};
-    display: flex;
-    flex-direction: column;
-    max-width: calc(100vw - 3rem);
-    min-width: 30rem;
-    overflow: scroll;
-    position: fixed;
-    right: 0;
-    top: 0;
-    transform: translateX(100%);
-    transition: transform 305ms ease-out;
-    width: auto;
-    z-index: 4;
-
-    ${props =>
-        props.$active &&
-        `
-            box-shadow: 3rem 0 6rem rgba(0, 0, 0, 0.75);
-            transform: translateX(0);    
-        `}
-
-    ${FiltersRoot} {
-        padding: 4rem;
-        flex-grow: 1;
-    }
-`
-
-export const FiltersButtons = styled.div`
-    background-color: ${props => props.theme.colors.surface};
-    bottom: 0;
-    color: ${props => props.theme.colors.onSurface};
-    display: grid;
-    grid-auto-flow: column;
-    grid-gap: 2rem;
+export const FiltersWrapper = styled.div`
+    grid-area: filters;
     padding: 2rem;
-    position: sticky;
-
-    @supports (padding: max(0px)) {
-        padding-bottom: max(2rem, env(safe-area-inset-bottom));
-    }
-`
-
-export const FiltersScreen = styled.div`
-    position: fixed;
-    height: 100%;
-    left: 0;
-    top: 0;
-    width: 100%;
-    z-index: 2;
-    background: ${props => props.theme.colors.surface50};
 `

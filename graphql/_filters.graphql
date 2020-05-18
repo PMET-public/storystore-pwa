@@ -1,0 +1,11 @@
+fragment filters on Products {
+    filters: aggregations {
+        code: attribute_code
+        title: label
+        options {
+            count
+            label
+            value
+        }
+    }
+}
