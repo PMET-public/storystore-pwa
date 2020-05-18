@@ -110,7 +110,7 @@ export const Settings: FunctionComponent = () => {
         })
 
         setCookie(COOKIE.settings, '{}', 365)
-    }, [formRef, handleSaveOverrides])
+    }, [handleSaveOverrides])
 
     useEffect(() => {
         // Override values

@@ -6,7 +6,7 @@ import ReactGA from 'react-ga'
 import Router, { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
-import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer } from './App.styled'
+import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast } from './App.styled'
 
 import { useApp } from './useApp'
 import { resolveImage } from '~/lib/resolveImage'
@@ -26,12 +26,15 @@ import IconBagSvg from 'remixicon/icons/Finance/shopping-bag-line.svg'
 import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
 import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
+import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
 import { FontStyles } from './FontStyles'
 import { ToastsStyles } from './ToastsStyles'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { ssr: false })
+
+const toast = process.browser ? require('react-toastify').toast : {}
 
 type AppProps = {}
 
@@ -111,6 +114,26 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     }, [])
 
     /**
+     * Offline Message
+     */
+    useEffect(() => {
+        if (!online) {
+            toast.info(
+                <OfflineToast>
+                    <CloudOff />
+                    Looks like you lost your connection.
+                </OfflineToast>,
+                {
+                    toastId: 'offline',
+                    autoClose: false,
+                }
+            )
+        } else {
+            toast.dismiss('offline')
+        }
+    }, [online])
+
+    /**
      * Google Analytics
      */
     useEffect(() => {
@@ -135,14 +158,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                 </Error>
             )
         }
-    }
-
-    if (!queries.app.loading && !queries.app.data) {
-        return (
-            <Error type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen>
-                No data available.
-            </Error>
-        )
     }
 
     const { store, categories = [] } = queries.app.data || {}
