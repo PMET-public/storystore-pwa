@@ -196,12 +196,9 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                 loading={queries.products.loading}
                                 items={queries.products.data?.products?.filters?.map(({ title, code, options }: any) => {
                                     return {
-                                        _id: code,
                                         title,
                                         code,
-                                        options: options.map(({ count, label, value }: any, _id: number) => ({
-                                            _id: `${code}--${value}`,
-                                            active: false,
+                                        options: options.map(({ count, label, value }: any) => ({
                                             count,
                                             label,
                                             value,

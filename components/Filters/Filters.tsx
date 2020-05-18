@@ -18,20 +18,22 @@ export const Filters: FunctionComponent<FiltersProps> = ({ loading, items: filte
             disabled={loading}
             onValues={api.onValues(onValues)}
             groups={
-                queries.filters.data?.items?.map(({ title, code, type, options }: any) => {
-                    return {
-                        title,
-                        name: `${type}:${code}`,
-                        items: options.map(({ count, label, value, active, disabled }: any, _id: number) => ({
-                            _id,
-                            active,
-                            count,
-                            label,
-                            value,
-                            disabled,
-                        })),
-                    }
-                }) ?? []
+                queries.filters.data?.items
+                    ?.filter(({ code }) => code !== 'category_id')
+                    .map(({ title, code, type, options }: any) => {
+                        return {
+                            _id: code,
+                            title,
+                            name: `${type}:${code}`,
+                            items: options.map(({ count, label, value, disabled }: any) => ({
+                                _id: `${code}--${value}`,
+                                count,
+                                label,
+                                value,
+                                disabled,
+                            })),
+                        }
+                    }) ?? []
             }
         />
     )
