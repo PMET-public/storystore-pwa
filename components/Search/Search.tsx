@@ -131,13 +131,12 @@ export const Search: FunctionComponent<SearchProps> = () => {
                 </Content>
                 <FiltersWrapper>
                     <Filters
+                        loading={queries.search.loading && queries.search.networkStatus !== 3}
                         items={queries.search.data?.products?.filters?.map(({ title, code, options }: any) => {
                             return {
                                 title,
                                 code,
-                                options: options.map(({ count, label, value }: any, _id: number) => ({
-                                    _id,
-                                    active: false,
+                                options: options.map(({ count, label, value }: any) => ({
                                     count,
                                     label,
                                     value,

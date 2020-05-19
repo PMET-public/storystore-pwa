@@ -35,7 +35,7 @@ const TitleSkeleton = ({ ...props }) => {
 export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
     const { queries, api } = useCategory({ id })
 
-    const products = queries.products.data?.products
+    const products = queries.products.data?.products || []
 
     /**
      * Infinite Scroll Effect
@@ -193,18 +193,20 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                         </Content>
                         <FiltersWrapper>
                             <Filters
-                                loading={queries.products.loading}
-                                items={queries.products.data?.products?.filters?.map(({ title, code, options }: any) => {
-                                    return {
-                                        title,
-                                        code,
-                                        options: options.map(({ count, label, value }: any) => ({
-                                            count,
-                                            label,
-                                            value,
-                                        })),
-                                    }
-                                })}
+                                loading={queries.products.loading && queries.products.networkStatus !== 3}
+                                items={queries.products.data?.products?.filters
+                                    ?.filter(({ code }: any) => code !== 'category_id') // don't include Categories in the filters
+                                    .map(({ title, code, options }: any) => {
+                                        return {
+                                            title,
+                                            code,
+                                            options: options.map(({ count, label, value }: any) => ({
+                                                count,
+                                                label,
+                                                value,
+                                            })),
+                                        }
+                                    })}
                                 onValues={api.setFilter}
                             />
                         </FiltersWrapper>
