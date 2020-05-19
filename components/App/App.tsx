@@ -58,9 +58,9 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const router = useRouter()
 
     const isUrlActive = useCallback(
-        (href: string): boolean => {
+        (_pathname: string): boolean => {
             const { pathname, asPath } = router || {}
-            return href === (asPath || pathname)
+            return _pathname === (asPath || pathname).split('?')[0]
         },
         [router]
     )
