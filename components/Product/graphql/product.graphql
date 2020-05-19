@@ -51,6 +51,12 @@ query ProductQuery($urlKey: String!) {
                         id: value_index
                         label
                         value: value_index
+                        swatch: swatch_data {
+                            value
+                            ... on ImageSwatchData {
+                                thumbnail
+                            }
+                        }
                     }
                 }
                 variants {

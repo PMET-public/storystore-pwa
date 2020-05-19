@@ -110,9 +110,11 @@ export const useFilters = (props: UseFiltersProps) => {
      * Let's transform our data
      */
     const items = filterValues?.map(filter => {
+        /**
+         * * 🩹PATCH: We gotta map Attribute Types since they are not included in the Query
+         */
         const attributeType: keyof typeof TYPES = filterTypes.find((field: any) => field.name === filter.code)?.type.name
 
-        // Get Type
         const type = TYPES[attributeType]
 
         return {

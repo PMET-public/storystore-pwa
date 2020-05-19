@@ -160,7 +160,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     loadingMore={queries.products.loading}
                                     items={products?.items
                                         ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                                        .map(({ id, image, price, title, urlKey }: any, index: number) => ({
+                                        .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
                                             _id: `${id}--${index}`,
                                             as: Link,
                                             href: `/${urlKey + productUrlSuffix}`,
@@ -187,6 +187,9 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                             title: {
                                                 text: title,
                                             },
+                                            colors: options
+                                                ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                                                ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                                         }))}
                                 />
                             </ProductListWrapper>

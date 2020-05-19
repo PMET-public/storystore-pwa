@@ -26,7 +26,18 @@ export const Filters: FunctionComponent<FiltersProps> = ({ loading, items: filte
                         items: options.map(({ count, label, value, disabled }: any) => ({
                             _id: `${code}--${value}`,
                             count,
-                            label,
+                            label: (() => {
+                                switch (label) {
+                                    case '0':
+                                        return 'No'
+
+                                    case '1':
+                                        return 'Yes'
+
+                                    default:
+                                        return label
+                                }
+                            })(),
                             value,
                             disabled,
                         })),

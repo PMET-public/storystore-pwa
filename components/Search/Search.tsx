@@ -96,7 +96,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                             loadingMore={queries.search.loading}
                             items={products?.items
                                 ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                                .map(({ id, image, price, title, urlKey }: any, index: number) => {
+                                .map(({ id, image, price, title, urlKey, options }: any, index: number) => {
                                     return {
                                         _id: `${id}--${index}`,
                                         as: Link,
@@ -124,6 +124,9 @@ export const Search: FunctionComponent<SearchProps> = () => {
                                         title: {
                                             text: title,
                                         },
+                                        colors: options
+                                            ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                                            ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                                     }
                                 })}
                         />
