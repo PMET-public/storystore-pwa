@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveImage } from '~/lib/resolveImage'
 
@@ -62,6 +62,12 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
     })
 
     const online = useNetworkStatus()
+
+    const [showFilters, setShowFilter] = useState(true)
+
+    const handleToggleFilters = useCallback(() => {
+        setShowFilter(!showFilters)
+    }, [showFilters, setShowFilter])
 
     if (!online && !queries.category.data?.page) return <Error type="Offline" />
 
@@ -146,7 +152,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button">
+                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
                                     <span>
                                         <FiltersIcon aria-label="Filters" />
                                     </span>
@@ -194,7 +200,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                 />
                             </ProductListWrapper>
                         </Content>
-                        <FiltersWrapper>
+                        <FiltersWrapper $show={showFilters}>
                             <Filters
                                 loading={queries.products.loading && queries.products.networkStatus !== 3}
                                 items={queries.products.data?.products?.filters

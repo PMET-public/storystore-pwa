@@ -8,11 +8,10 @@ import BackIconSvg from 'remixicon/icons/System/arrow-left-line.svg'
 
 export const Root = styled.div`
     display: grid;
-    /* grid-auto-columns: minmax(max-content, max-content);
-    grid-auto-rows: minmax(max-content, max-content); */
     grid-template-areas:
         'toolbar toolbar'
-        'filters list';
+        'list filters';
+    /* grid-template-columns: auto; */
 `
 
 export const TopBar = styled.div`
@@ -93,7 +92,4 @@ export const Content = styled.div`
 
 export const ProductListWrapper = styled(ContainerWrapper)``
 
-export const FiltersWrapper = styled.div`
-    grid-area: filters;
-    padding: 2rem;
-`
+export const FiltersWrapper = styled.div<{ $show?: boolean }>``
