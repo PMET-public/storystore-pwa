@@ -102,14 +102,18 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
                 console.error('withStoryStore does not support custom next.js _app. Please move to /pages/*.tsx')
             }
 
+            const cookie = (ctx.ctx || ctx).req?.headers.cookie
+
             let props = {}
 
             if (PageComponent.getInitialProps) {
-                props = {
-                    ...(await PageComponent.getInitialProps(ctx)),
-                }
+                props = await PageComponent.getInitialProps(ctx)
             }
-            return { ...props, cookie: ctx.req?.headers.cookie }
+
+            return {
+                cookie,
+                ...props,
+            }
         }
     }
 

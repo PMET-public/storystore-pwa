@@ -79,7 +79,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.category.data?.page) return <Error type="Offline" />
+    if (!online && !queries.category.data?.page) return <Error type="Offline" fullScreen />
 
     if (!queries.category.loading && !queries.category.data?.page) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />

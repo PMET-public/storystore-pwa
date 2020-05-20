@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
-import { withApollo } from '~/lib/apollo/withApollo'
+import { withApollo, initOnContext } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 import { NextPage } from 'next'
-import { initOnContext } from '~/lib/apollo/withApollo'
 import gql from 'graphql-tag'
 
 import App from '~/components/App'
@@ -115,4 +115,4 @@ UrlResolver.getInitialProps = async ctx => {
     }
 }
 
-export default withApollo(UrlResolver)
+export default withApollo(withStoryStore(UrlResolver))

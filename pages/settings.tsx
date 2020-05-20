@@ -1,6 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
@@ -22,4 +23,4 @@ const Settings: NextPage<SettingsProps> = ({}) => {
     )
 }
 
-export default withApollo(Settings)
+export default withApollo(withStoryStore(Settings))

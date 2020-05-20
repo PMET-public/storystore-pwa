@@ -22,7 +22,7 @@ const messages = {
 
 export const Error: Component<ErrorProps> = ({ type = '500', fullScreen = false, button, children = messages[type], ...props }) => {
     return (
-        <ErrorTemplate type={type} style={fullScreen ? { width: '100vw', height: '100vh' } : {}} {...props}>
+        <ErrorTemplate type={type} {...props} style={{ width: fullScreen ? '100%' : props.style?.width, height: fullScreen ? '100%' : props.styles?.height, ...props.style }}>
             <div>{children}</div>
             {button && <Button {...button} style={{ marginTop: '2rem' }} />}
         </ErrorTemplate>

@@ -29,6 +29,7 @@ import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
 import { FontStyles } from './FontStyles'
 import { ToastsStyles } from './ToastsStyles'
+import useValueUpdated from '~/hooks/useValueUpdated'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
@@ -116,7 +117,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     /**
      * Offline Message
      */
-    useEffect(() => {
+    useValueUpdated(() => {
         if (!online) {
             toast.info(
                 <OfflineToast>
@@ -131,7 +132,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         } else {
             toast.dismiss('offline')
         }
-    }, [online])
+    }, online)
 
     /**
      * Google Analytics

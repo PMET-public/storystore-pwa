@@ -35,7 +35,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.cart.data) return <Error type="Offline" />
+    if (!online && !queries.cart.data) return <Error type="Offline" fullScreen />
 
     if (!queries.cart.loading && queries.cart.error) return <Error type="500" />
 
