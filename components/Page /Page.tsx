@@ -23,7 +23,7 @@ export const Page: FunctionComponent<PageProps> = ({ id }) => {
 
     const { page } = queries.page.data || {}
 
-    if (!online && !page) return <Error type="Offline" />
+    if (!online && !page) return <Error type="Offline" fullScreen />
 
     if (!queries.page.loading && !page) {
         return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />

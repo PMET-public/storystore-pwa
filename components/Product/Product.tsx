@@ -129,7 +129,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
             .sort((a: any, b: any) => a.position - b.position)
     }, [product])
 
-    if (!online && !product) return <ErrorComponent type="Offline" />
+    if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
     if (!queries.product.loading && !product) {
         return (

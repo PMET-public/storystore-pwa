@@ -175,7 +175,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !checkout.data) return <Error type="Offline" />
+    if (!online && !checkout.data) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
