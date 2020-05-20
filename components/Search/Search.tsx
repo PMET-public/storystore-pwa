@@ -83,7 +83,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
     }, [products])
 
-    if (!online && !products) return <Error type="Offline" />
+    if (!online && !products) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
