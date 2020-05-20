@@ -78,7 +78,7 @@
     "react-is": "^16.13.1",
     "react-svg-loader": "^3.0.3",
     "rimraf": "^3.0.0",
-    "typescript": "^3.7.3",
+    "typescript": "3.8.3",
     "webpack": "^4.41.2"
   }
 }
