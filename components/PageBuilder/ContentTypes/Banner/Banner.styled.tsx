@@ -45,6 +45,7 @@ export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'c
 `
 
 export const ContentWrapper = styled.div`
+    width: 100%;
     & > *:not(:nth-child(1)) {
         margin-top: 3rem;
     }
