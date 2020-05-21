@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useCallback } from 'react'
+import React, { FunctionComponent, useMemo, useCallback, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveImage } from '~/lib/resolveImage'
 
@@ -31,6 +31,12 @@ export const Search: FunctionComponent<SearchProps> = () => {
     const productUrlSuffix = queries.search.data?.store?.productUrlSuffix ?? ''
 
     const online = useNetworkStatus()
+
+    const [showFilters, setShowFilter] = useState(true)
+
+    const handleToggleFilters = useCallback(() => {
+        setShowFilter(!showFilters)
+    }, [showFilters, setShowFilter])
 
     /**
      * Infinite Scroll Effect
@@ -83,15 +89,17 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        <TopBarFilterButton as="button" type="button">
-                            <span>
-                                <FiltersIcon aria-label="Filters" />
-                            </span>
-                        </TopBarFilterButton>
+                        {queries.search.data?.products?.filters && (
+                            <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                <span>
+                                    <FiltersIcon aria-label="Filters" />
+                                </span>
+                            </TopBarFilterButton>
+                        )}
                     </TopBarWrapper>
                 </TopBar>
-                <Content>
-                    <ProductListWrapper $margin>
+                <Content $showFilters={showFilters}>
+                    <ProductListWrapper>
                         <ProductList
                             loadingMore={queries.search.loading}
                             items={products?.items
@@ -131,24 +139,24 @@ export const Search: FunctionComponent<SearchProps> = () => {
                                 })}
                         />
                     </ProductListWrapper>
+                    <FiltersWrapper>
+                        <Filters
+                            loading={queries.search.loading && queries.search.networkStatus !== 3}
+                            items={queries.search.data?.products?.filters?.map(({ title, code, options }: any) => {
+                                return {
+                                    title,
+                                    code,
+                                    options: options.map(({ count, label, value }: any) => ({
+                                        count,
+                                        label,
+                                        value,
+                                    })),
+                                }
+                            })}
+                            onValues={api.setFilter}
+                        />
+                    </FiltersWrapper>
                 </Content>
-                <FiltersWrapper>
-                    <Filters
-                        loading={queries.search.loading && queries.search.networkStatus !== 3}
-                        items={queries.search.data?.products?.filters?.map(({ title, code, options }: any) => {
-                            return {
-                                title,
-                                code,
-                                options: options.map(({ count, label, value }: any) => ({
-                                    count,
-                                    label,
-                                    value,
-                                })),
-                            }
-                        })}
-                        onValues={api.setFilter}
-                    />
-                </FiltersWrapper>
             </Root>
 
             {query && products?.count === 0 && (
