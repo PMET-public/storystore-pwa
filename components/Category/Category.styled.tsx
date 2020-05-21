@@ -8,14 +8,9 @@ import BackIconSvg from 'remixicon/icons/System/arrow-left-line.svg'
 
 export const Root = styled.div`
     display: grid;
-    grid-template-areas:
-        'toolbar toolbar'
-        'list filters';
-    /* grid-template-columns: auto; */
 `
 
 export const TopBar = styled.div`
-    grid-area: toolbar;
     position: sticky;
     top: 0;
     z-index: 3;
@@ -83,13 +78,31 @@ export const FiltersIcon = styled(FiltersIconSvg)`
     width: 2rem;
 `
 
-export const Content = styled.div`
-    grid-area: list;
-    display: grid;
-    grid-auto-rows: minmax(max-content, max-content);
-    grid-gap: 3rem;
+export const ProductListWrapper = styled.div`
+    position: relative;
+    z-index: 1;
+    background-color: ${({ theme }) => theme.colors.surface};
+    transition: width 250ms ease;
+    will-change: width;
+    transform: translateZ(0);
 `
 
-export const ProductListWrapper = styled(ContainerWrapper)``
+export const FiltersWrapper = styled.div`
+    position: relative;
+    width: 26rem;
+    padding: 2rem 4rem;
+    transition: opacity 450ms ease;
+`
 
-export const FiltersWrapper = styled.div<{ $show?: boolean }>``
+export const Content = styled.div<{ $showFilters?: boolean }>`
+    display: grid;
+    grid-template-columns: 1fr auto;
+
+    ${ProductListWrapper} {
+        width: ${({ $showFilters }) => ($showFilters ? '100%' : 'calc(100% + 26rem)')};
+    }
+
+    ${FiltersWrapper} {
+        opacity: ${({ $showFilters }) => ($showFilters ? 1 : 0)};
+    }
+`

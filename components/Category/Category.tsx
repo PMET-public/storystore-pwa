@@ -63,7 +63,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
 
     const online = useNetworkStatus()
 
-    const [showFilters, setShowFilter] = useState(true)
+    const [showFilters, setShowFilter] = useState(false)
 
     const handleToggleFilters = useCallback(() => {
         setShowFilter(!showFilters)
@@ -152,16 +152,18 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
-                                    <span>
-                                        <FiltersIcon aria-label="Filters" />
-                                    </span>
-                                </TopBarFilterButton>
+                                {queries.products.data?.products?.filters && (
+                                    <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                        <span>
+                                            <FiltersIcon aria-label="Filters" />
+                                        </span>
+                                    </TopBarFilterButton>
+                                )}
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Content>
-                            <ProductListWrapper $margin>
+                        <Content $showFilters={showFilters}>
+                            <ProductListWrapper>
                                 <ProductList
                                     loadingMore={queries.products.loading}
                                     items={products?.items
@@ -199,26 +201,26 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                         }))}
                                 />
                             </ProductListWrapper>
+                            <FiltersWrapper>
+                                <Filters
+                                    loading={queries.products.loading && queries.products.networkStatus !== 3}
+                                    items={queries.products.data?.products?.filters
+                                        ?.filter(({ code }: any) => code !== 'category_id') // don't include Categories in the filters
+                                        .map(({ title, code, options }: any) => {
+                                            return {
+                                                title,
+                                                code,
+                                                options: options.map(({ count, label, value }: any) => ({
+                                                    count,
+                                                    label,
+                                                    value,
+                                                })),
+                                            }
+                                        })}
+                                    onValues={api.setFilter}
+                                />
+                            </FiltersWrapper>
                         </Content>
-                        <FiltersWrapper $show={showFilters}>
-                            <Filters
-                                loading={queries.products.loading && queries.products.networkStatus !== 3}
-                                items={queries.products.data?.products?.filters
-                                    ?.filter(({ code }: any) => code !== 'category_id') // don't include Categories in the filters
-                                    .map(({ title, code, options }: any) => {
-                                        return {
-                                            title,
-                                            code,
-                                            options: options.map(({ count, label, value }: any) => ({
-                                                count,
-                                                label,
-                                                value,
-                                            })),
-                                        }
-                                    })}
-                                onValues={api.setFilter}
-                            />
-                        </FiltersWrapper>
                     </React.Fragment>
                 )}
             </Root>
