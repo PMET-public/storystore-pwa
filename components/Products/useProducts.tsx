@@ -130,7 +130,7 @@ export const useProducts = (props: UseFiltersProps) => {
                 }
 
                 return {
-                    _id: `${filter.code}--${option.value}`,
+                    _id: option.value,
                     count: option.count,
                     label,
                     value: option.value.toString(),
@@ -173,8 +173,6 @@ export const useProducts = (props: UseFiltersProps) => {
         },
         [history]
     )
-
-    console.log(filtersDefaultValues)
 
     return {
         queries: {
