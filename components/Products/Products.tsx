@@ -92,13 +92,15 @@ export const Products: FunctionComponent<CategoryProps> = ({ queries, api, showF
                 />
             </ProductListWrapper>
             <FiltersWrapper>
-                <Filters
-                    key={JSON.stringify(filters.defaultValues)}
-                    disabled={queries.products.loading && queries.products.networkStatus !== 3}
-                    options={{ defaultValues: filters.defaultValues }}
-                    groups={filters.groups.filter(group => group.name !== 'category_id')}
-                    onValues={api.onFilterUpdate}
-                />
+                <div>
+                    <Filters
+                        key={JSON.stringify(filters.defaultValues)}
+                        disabled={queries.products.loading && queries.products.networkStatus !== 3}
+                        options={{ defaultValues: filters.defaultValues }}
+                        groups={filters.groups.filter(group => group.name !== 'category_id')}
+                        onValues={api.onFilterUpdate}
+                    />
+                </div>
             </FiltersWrapper>
         </Root>
     )

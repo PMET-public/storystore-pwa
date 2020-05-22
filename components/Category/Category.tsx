@@ -8,7 +8,7 @@ import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import Products from '~/components/Products'
+import Products, { useProducts } from '~/components/Products'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
 import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
@@ -32,6 +32,8 @@ const TitleSkeleton = ({ ...props }) => {
 
 export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
     const category = useCategory({ id })
+
+    const _products = useProducts({ filters: { category_id: { eq: id.toString() } } })
 
     const online = useNetworkStatus()
 
@@ -124,13 +126,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
 
                                 <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
                                     <span>
-                                        <Icon svg={FiltersIcon} aria-label="Filters" />
+                                        <Icon svg={FiltersIcon} aria-label="Filters" count={_products.queries.filters.data?.count} />
                                     </span>
                                 </TopBarFilterButton>
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Products filters={{ category_id: { eq: id.toString() } }} showFilters={showFilters} />
+                        <Products showFilters={showFilters} {..._products} />
                     </React.Fragment>
                 )}
             </Root>
