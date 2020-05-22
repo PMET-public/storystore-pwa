@@ -2,7 +2,7 @@
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_filters.graphql"
 
-query searchQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
+query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
         id
         productUrlSuffix: product_url_suffix

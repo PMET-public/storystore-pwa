@@ -67,7 +67,7 @@ export const TopBarFilterButton = styled.button`
         align-items: center;
         display: grid;
         fill: currentColor;
-        font-size: 1.4rem;
+        font-size: 2.4rem;
         grid-auto-columns: max-content;
         grid-auto-flow: column;
         grid-gap: 0.75rem;
@@ -76,33 +76,4 @@ export const TopBarFilterButton = styled.button`
 
 export const FiltersIcon = styled(FiltersIconSvg)`
     width: 2rem;
-`
-
-export const ProductListWrapper = styled.div`
-    position: relative;
-    z-index: 1;
-    background-color: ${({ theme }) => theme.colors.surface};
-    transition: width 250ms ease;
-    will-change: width;
-    transform: translateZ(0);
-`
-
-export const FiltersWrapper = styled.div`
-    position: relative;
-    width: 26rem;
-    padding: 2rem 4rem;
-    transition: opacity 450ms ease;
-`
-
-export const Content = styled.div<{ $showFilters?: boolean }>`
-    display: grid;
-    grid-template-columns: 1fr auto;
-
-    ${ProductListWrapper} {
-        width: ${({ $showFilters }) => ($showFilters ? '100%' : 'calc(100% + 26rem)')};
-    }
-
-    ${FiltersWrapper} {
-        opacity: ${({ $showFilters }) => ($showFilters ? 1 : 0)};
-    }
 `
