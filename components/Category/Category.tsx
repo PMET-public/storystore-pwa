@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useCallback } from 'react'
+import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 
 import { Root, TopBar, TopBarWrapper, Heading, Title, BackButton, BackIcon, TopBarFilterButton, FiltersIcon } from './Category.styled'
@@ -36,12 +36,6 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
     const _products = useProducts({ filters: { category_id: { eq: id.toString() } } })
 
     const online = useNetworkStatus()
-
-    const [showFilters, setShowFilter] = useState(false)
-
-    const handleToggleFilters = useCallback(() => {
-        setShowFilter(!showFilters)
-    }, [showFilters, setShowFilter])
 
     if (!online && !category.queries.category.data?.page) return <Error type="Offline" fullScreen />
 
@@ -124,7 +118,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                                <TopBarFilterButton as="button" type="button" onClick={_products.api.toggleFilters}>
                                     <span>
                                         <Icon svg={FiltersIcon} aria-label="Filters" count={_products.queries.filters.data?.count} />
                                     </span>
@@ -132,7 +126,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Products showFilters={showFilters} {..._products} />
+                        <Products {..._products} />
                     </React.Fragment>
                 )}
             </Root>

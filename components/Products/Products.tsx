@@ -1,18 +1,21 @@
 import React, { FunctionComponent } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 
-import { Root, ProductListWrapper, FiltersWrapper } from './Products.styled'
+import { Root, ProductListWrapper, FiltersWrapper, FiltersButtons, FiltersScreen } from './Products.styled'
 
 import { useProducts } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
+import { useResize } from '@storystore/ui/dist/hooks/useResize'
 
 import ProductList from '@storystore/ui/dist/components/ProductList'
 import Filters from '@storystore/ui/dist/components/Filters'
 import Link from '~/components/Link'
+import Button from '@storystore/ui/dist/components/Button'
 
-type CategoryProps = ReturnType<typeof useProducts> & { showFilters?: boolean }
+type CategoryProps = ReturnType<typeof useProducts>
 
-export const Products: FunctionComponent<CategoryProps> = ({ queries, api, showFilters }) => {
+export const Products: FunctionComponent<CategoryProps> = ({ queries, api }) => {
+    const viewport = useResize()
     const products = queries.products.data?.products
     const filters = queries.filters.data
 
@@ -52,7 +55,7 @@ export const Products: FunctionComponent<CategoryProps> = ({ queries, api, showF
     const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
 
     return (
-        <Root $showFilters={showFilters}>
+        <Root>
             <ProductListWrapper>
                 <ProductList
                     loadingMore={queries.products.loading}
@@ -91,17 +94,19 @@ export const Products: FunctionComponent<CategoryProps> = ({ queries, api, showF
                         }))}
                 />
             </ProductListWrapper>
-            <FiltersWrapper>
-                <div>
-                    <Filters
-                        key={JSON.stringify(filters.defaultValues)}
-                        disabled={queries.products.loading && queries.products.networkStatus !== 3}
-                        options={{ defaultValues: filters.defaultValues }}
-                        groups={filters.groups.filter(group => group.name !== 'category_id')}
-                        onValues={api.onFilterUpdate}
-                    />
-                </div>
+            <FiltersWrapper $active={filters.open} style={{ height: viewport.vHeight }}>
+                <Filters
+                    key={JSON.stringify(filters.defaultValues)}
+                    disabled={queries.products.loading && queries.products.networkStatus !== 3}
+                    options={{ defaultValues: filters.defaultValues }}
+                    groups={filters.groups.filter(group => group.name !== 'category_id')}
+                    onValues={api.onFilterUpdate}
+                />
+                <FiltersButtons>
+                    <Button onClick={() => api.toggleFilters(false)}>Done</Button>
+                </FiltersButtons>
             </FiltersWrapper>
+            {filters.open && <FiltersScreen onClick={() => api.toggleFilters(false)} />}
         </Root>
     )
 }

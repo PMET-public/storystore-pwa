@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
@@ -30,6 +30,8 @@ export const useProducts = (props: UseFiltersProps) => {
     const { search, filters: filtersValues = {} } = props
 
     const history = useRouter()
+
+    const [filtersOpen, setFiltersOpen] = useState(false)
 
     /**
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
@@ -147,6 +149,14 @@ export const useProducts = (props: UseFiltersProps) => {
             }
         }) ?? []
 
+    // Handle Toggling of Filters
+    const handleToggleFilters = useCallback(
+        (state = !filtersOpen) => {
+            setFiltersOpen(state)
+        },
+        [filtersOpen]
+    )
+
     // Handle Updates on Filter
     const handleOnFilterUpdate = useCallback(
         fields => {
@@ -179,6 +189,7 @@ export const useProducts = (props: UseFiltersProps) => {
             filters: {
                 ...filters,
                 data: {
+                    open: filtersOpen,
                     count: filtersCount,
                     defaultValues: filtersDefaultValues,
                     groups,
@@ -188,6 +199,7 @@ export const useProducts = (props: UseFiltersProps) => {
         },
 
         api: {
+            toggleFilters: handleToggleFilters,
             onFilterUpdate: handleOnFilterUpdate,
         },
     }

@@ -13,7 +13,7 @@ export const Root = styled.div`
 export const TopBar = styled.div`
     position: sticky;
     top: 0;
-    z-index: 3;
+    z-index: 2;
     background-color: ${props => props.theme.colors.surface};
 `
 
