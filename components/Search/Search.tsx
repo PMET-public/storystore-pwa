@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useCallback, useState } from 'react'
+import React, { FunctionComponent, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 import { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon, NoResult } from './Search.styled'
@@ -27,12 +27,6 @@ export const Search: FunctionComponent<SearchProps> = () => {
     } = _products
 
     const online = useNetworkStatus()
-
-    const [showFilters, setShowFilter] = useState(true)
-
-    const handleToggleFilters = useCallback(() => {
-        setShowFilter(!showFilters)
-    }, [showFilters, setShowFilter])
 
     const handleOnNewSearch = useCallback(
         async (newQuery: string) => {
@@ -69,7 +63,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
+                        <TopBarFilterButton as="button" type="button" onClick={_products.api.toggleFilters}>
                             <span>
                                 <Icon svg={FiltersIcon} aria-label="Filters" count={filters.data?.count} />
                             </span>
@@ -77,7 +71,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     </TopBarWrapper>
                 </TopBar>
 
-                <Products showFilters={showFilters} {..._products} />
+                <Products {..._products} />
             </Root>
 
             {query && products.data?.products?.count === 0 && (
