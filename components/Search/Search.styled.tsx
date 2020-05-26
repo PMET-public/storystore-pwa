@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 import { Wrapper as ContainerWrapper } from '@storystore/ui/dist/components/Container/Container.styled'
 
-export { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon, Content, ProductListWrapper, FiltersWrapper, FiltersButtons, FiltersScreen } from '~/components/Category/Category.styled'
+export { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon } from '~/components/Category/Category.styled'
 
 export const NoResult = styled(ContainerWrapper)`
     height: 70%;

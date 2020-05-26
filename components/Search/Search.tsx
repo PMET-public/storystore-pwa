@@ -1,30 +1,15 @@
 import React, { FunctionComponent, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { resolveImage } from '~/lib/resolveImage'
 
-import {
-    Root,
-    TopBar,
-    TopBarWrapper,
-    // TopBarFilterButton,
-    // FiltersIcon,
-    Content,
-    ProductListWrapper,
-    // FiltersWrapper,
-    // FiltersButtons,
-    // FiltersScreen,
-    NoResult,
-} from './Search.styled'
+import { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon, NoResult } from './Search.styled'
 
-import { useSearch } from './useSearch'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
-import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 
-import Link from '~/components/Link'
 import Head from '~/components/Head'
 import SearchBar from '@storystore/ui/dist/components/SearchBar'
-import ProductList from '@storystore/ui/dist/components/ProductList'
+import Products, { useProducts } from '~/components/Products'
+import Icon from '@storystore/ui/dist/components/Icon'
 
 const Error = dynamic(() => import('~/components/Error'))
 
@@ -35,42 +20,21 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { query = '' } = history.query
 
-    const { queries } = useSearch({ queryString: query?.toString() })
-
-    const products = queries.search.data?.products
-
-    const productUrlSuffix = queries.search.data?.store?.productUrlSuffix ?? ''
+    const products = useProducts({ search: query.toString() })
 
     const online = useNetworkStatus()
-
-    /**
-     * Infinite Scroll Effect
-     */
-    useFetchMoreOnScrolling({ threshold: 400, loading: queries.search.loading, hasNextPage: products?.pagination && products.pagination.current < products.pagination.total }, () => {
-        queries.search
-            .fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            })
-            .catch(() => {})
-    })
 
     const handleOnNewSearch = useCallback(
         async (newQuery: string) => {
             if (newQuery.length === 0 || newQuery.length > 2) {
-                await history.push(`/search?query=${newQuery}`, `/search?query=${newQuery}`, { shallow: true })
+                await history.push({
+                    pathname: history.pathname,
+                    query: {
+                        ...history.query,
+                        query: newQuery,
+                    },
+                })
+
                 window.scrollTo(0, 0)
             }
         },
@@ -78,12 +42,13 @@ export const Search: FunctionComponent<SearchProps> = () => {
     )
 
     const productsCount = useMemo(() => {
-        if (!products) return
-        const { count = 0 } = products
+        const data = products.data?.products
+        if (!data) return
+        const { count = 0 } = data
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
     }, [products])
 
-    if (!online && !products) return <Error type="Offline" fullScreen />
+    if (!online && !products.data?.products) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
@@ -92,76 +57,20 @@ export const Search: FunctionComponent<SearchProps> = () => {
             <Root>
                 <TopBar>
                     <TopBarWrapper $margin>
-                        <SearchBar loading={queries.search.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
+                        <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        {/* TODO: Integrate Filters
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
-                                    <span>
-                                        <FiltersIcon aria-label="Filters" />
-                                    </span>
-                                </TopBarFilterButton> 
-                                */}
+                        <TopBarFilterButton as="button" type="button" onClick={products.api.toggleFilters}>
+                            <span>
+                                <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
+                            </span>
+                        </TopBarFilterButton>
                     </TopBarWrapper>
                 </TopBar>
-                <Content>
-                    <ProductListWrapper $margin>
-                        <ProductList
-                            loadingMore={queries.search.loading}
-                            items={products?.items
-                                ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                                .map(({ id, image, price, title, urlKey }: any, index: number) => {
-                                    return {
-                                        _id: `${id}--${index}`,
-                                        as: Link,
-                                        href: `/${urlKey + productUrlSuffix}`,
-                                        urlResolver: {
-                                            type: 'PRODUCT',
-                                            id,
-                                            urlKey,
-                                        },
-                                        image: {
-                                            alt: image.alt,
-                                            src: {
-                                                desktop: resolveImage(image.src, { width: 1260 }),
-                                                mobile: resolveImage(image.src, { width: 960 }),
-                                            },
-                                            width: 1274,
-                                            height: 1580,
-                                        },
-                                        price: {
-                                            label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                            regular: price.minimum.regular.value,
-                                            special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
-                                            currency: price.minimum.regular.currency,
-                                        },
-                                        title: {
-                                            text: title,
-                                        },
-                                    }
-                                })}
-                        />
-                    </ProductListWrapper>
-                </Content>
-                {/* TODO: Integrate Filters */}
-                {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
-                            <Filters {...filters} />
-                            {filters.closeButton && (
-                                <FiltersButtons>
-                                    <Button
-                                        as="button"
-                                        type="button"
-                                        onClick={handleCloseFilters}
-                                        {...filters.closeButton}
-                                    />
-                                </FiltersButtons>
-                            )}
-                        </FiltersWrapper>
 
-                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} 
-                )}*/}
+                <Products {...products} />
             </Root>
 
-            {query && products?.count === 0 && (
+            {query && products.data?.products?.count === 0 && (
                 <NoResult $margin>
                     <Error type="404">
                         We couldn&apos;t find any results for &quot;{query}&quot;. <br />

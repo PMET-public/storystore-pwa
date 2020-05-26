@@ -21,7 +21,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductCarousel
                 loadingMore={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ id, title, urlKey, image, price }: any) => ({
+                items={data?.products?.items?.map(({ id, title, urlKey, image, price, options }: any) => ({
                     _id: id,
                     title: {
                         text: title,
@@ -45,6 +45,9 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
+                    colors: options
+                        ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                        ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                 }))}
                 {...slider}
                 {...props}
