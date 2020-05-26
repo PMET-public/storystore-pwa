@@ -33,7 +33,7 @@ const TitleSkeleton = ({ ...props }) => {
 export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
     const category = useCategory({ id })
 
-    const _products = useProducts({ filters: { category_id: { eq: id.toString() } } })
+    const products = useProducts({ filters: { category_id: { eq: id.toString() } } })
 
     const online = useNetworkStatus()
 
@@ -118,15 +118,15 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button" onClick={_products.api.toggleFilters}>
+                                <TopBarFilterButton as="button" type="button" onClick={products.api.toggleFilters}>
                                     <span>
-                                        <Icon svg={FiltersIcon} aria-label="Filters" count={_products.queries.filters.data?.count} />
+                                        <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
                                     </span>
                                 </TopBarFilterButton>
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Products {..._products} />
+                        <Products {...products} />
                     </React.Fragment>
                 )}
             </Root>

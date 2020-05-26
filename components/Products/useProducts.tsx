@@ -185,19 +185,17 @@ export const useProducts = (props: UseFiltersProps) => {
     )
 
     return {
-        queries: {
+        ...products,
+        loading: products.loading || filters.loading,
+        data: {
+            ...products.data,
             filters: {
-                ...filters,
-                data: {
-                    open: filtersOpen,
-                    count: filtersCount,
-                    defaultValues: filtersDefaultValues,
-                    groups,
-                },
+                open: filtersOpen,
+                count: filtersCount,
+                defaultValues: filtersDefaultValues,
+                groups,
             },
-            products,
         },
-
         api: {
             toggleFilters: handleToggleFilters,
             onFilterUpdate: handleOnFilterUpdate,

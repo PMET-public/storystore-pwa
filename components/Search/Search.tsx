@@ -20,11 +20,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
 
     const { query = '' } = history.query
 
-    const _products = useProducts({ search: query.toString() })
-
-    const {
-        queries: { products, filters },
-    } = _products
+    const products = useProducts({ search: query.toString() })
 
     const online = useNetworkStatus()
 
@@ -63,15 +59,15 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        <TopBarFilterButton as="button" type="button" onClick={_products.api.toggleFilters}>
+                        <TopBarFilterButton as="button" type="button" onClick={products.api.toggleFilters}>
                             <span>
-                                <Icon svg={FiltersIcon} aria-label="Filters" count={filters.data?.count} />
+                                <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
                             </span>
                         </TopBarFilterButton>
                     </TopBarWrapper>
                 </TopBar>
 
-                <Products {..._products} />
+                <Products {...products} />
             </Root>
 
             {query && products.data?.products?.count === 0 && (

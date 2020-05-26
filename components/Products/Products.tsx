@@ -14,10 +14,10 @@ import Button from '@storystore/ui/dist/components/Button'
 
 type CategoryProps = ReturnType<typeof useProducts>
 
-export const Products: FunctionComponent<CategoryProps> = ({ queries, api }) => {
+export const Products: FunctionComponent<CategoryProps> = ({ loading, data, networkStatus, fetchMore, api }) => {
     const viewport = useResize()
-    const products = queries.products.data?.products
-    const filters = queries.filters.data
+    const products = data?.products
+    const filters = data?.filters
 
     /**
      * Infinite Scroll Effect
@@ -25,40 +25,38 @@ export const Products: FunctionComponent<CategoryProps> = ({ queries, api }) => 
     useFetchMoreOnScrolling(
         {
             threshold: 400,
-            loading: queries.products.loading,
+            loading,
             hasNextPage: products?.pagination && products.pagination.current < products.pagination.total,
         },
         () => {
             if (!products.pagination?.current) return
 
-            queries.products
-                .fetchMore({
-                    variables: {
-                        currentPage: products.pagination.current + 1, // next page
-                    },
-                    updateQuery: (prev: any, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) return prev
-                        return {
-                            ...prev,
-                            products: {
-                                ...prev.products,
-                                ...fetchMoreResult.products,
-                                items: [...prev.products.items, ...fetchMoreResult.products.items],
-                            },
-                        }
-                    },
-                })
-                .catch(() => {})
+            fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        products: {
+                            ...prev.products,
+                            ...fetchMoreResult.products,
+                            items: [...prev.products.items, ...fetchMoreResult.products.items],
+                        },
+                    }
+                },
+            }).catch(() => {})
         }
     )
 
-    const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
     return (
         <Root>
             <ProductListWrapper>
                 <ProductList
-                    loadingMore={queries.products.loading}
+                    loadingMore={loading}
                     items={products?.items
                         ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
                         .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
@@ -97,9 +95,9 @@ export const Products: FunctionComponent<CategoryProps> = ({ queries, api }) => 
             <FiltersWrapper $active={filters.open} style={{ height: viewport.vHeight }}>
                 <Filters
                     key={JSON.stringify(filters.defaultValues)}
-                    disabled={queries.products.loading && queries.products.networkStatus !== 3}
+                    disabled={loading && networkStatus !== 3}
                     options={{ defaultValues: filters.defaultValues }}
-                    groups={filters.groups.filter(group => group.name !== 'category_id')}
+                    groups={filters.groups.filter((group: any) => group.name !== 'category_id')}
                     onValues={api.onFilterUpdate}
                 />
                 <FiltersButtons>
