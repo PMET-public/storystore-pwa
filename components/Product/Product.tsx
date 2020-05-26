@@ -248,7 +248,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                                 rules: { required },
                                                                 items: items?.map(({ id, label, value, image }: any) => ({
                                                                     _id: id,
-                                                                    text: label,
+                                                                    label,
                                                                     type: 'radio',
                                                                     value,
                                                                     image: image && {
