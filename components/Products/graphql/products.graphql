@@ -1,6 +1,7 @@
 #import "~/graphql/_pagination.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_filters.graphql"
+#import "~/graphql/_sorting.graphql"
 
 query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
@@ -12,6 +13,8 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $pag
         count: total_count
 
         ...pagination
+
+        ...sorting
 
         ...filters
 

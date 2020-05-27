@@ -1,11 +1,24 @@
 import styled from 'styled-components'
-import { Root as FiltersRoot } from '@storystore/ui/dist/components/Filters/Filters.styled'
+
+import { Label as FormLabel, Field as FormField } from '@storystore/ui/dist/components/Form/Form.styled'
 
 export const Root = styled.div``
 
 export const ProductListWrapper = styled.div`
     position: relative;
     background-color: ${({ theme }) => theme.colors.surface};
+`
+
+export const SortByWrapper = styled.div`
+    margin-bottom: 2rem;
+
+    ${FormField} {
+        grid-gap: 1.4rem;
+    }
+
+    ${FormLabel} {
+        font-size: 1.8rem;
+    }
 `
 
 export const FiltersWrapper = styled.div<{ $active?: boolean; $height?: string }>`
@@ -22,12 +35,9 @@ export const FiltersWrapper = styled.div<{ $active?: boolean; $height?: string }
     transition: transform 305ms ease-out;
     z-index: 3;
     scrollbar-width: none;
+    padding: 4rem 3rem 0;
     &::-webkit-scrollbar {
         display: none;
-    }
-
-    ${FiltersRoot} {
-        padding: 4rem 3rem;
     }
 
     ${props =>
@@ -36,6 +46,22 @@ export const FiltersWrapper = styled.div<{ $active?: boolean; $height?: string }
             box-shadow: 3rem 0 6rem rgba(0, 0, 0, 0.75);
             transform: translateX(0);    
         `}
+
+    ${SortByWrapper} {
+        margin-bottom: 2rem;
+
+        ${FormField} {
+            grid-gap: 1.4rem;
+        }
+
+        ${FormLabel} {
+            font-size: 1.8rem;
+        }
+
+        @media ${props => props.theme.breakpoints.medium} {
+            display: none;
+        }
+    }
 `
 
 export const FiltersButtons = styled.div`
@@ -46,7 +72,7 @@ export const FiltersButtons = styled.div`
     display: grid;
     grid-auto-flow: column;
     grid-gap: 2rem;
-    padding: 2rem;
+    padding: 2rem 0;
 
     @supports (padding: max(0px)) {
         padding-bottom: max(1rem, env(safe-area-inset-bottom));

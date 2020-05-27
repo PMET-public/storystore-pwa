@@ -30,7 +30,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                 await history.push({
                     pathname: history.pathname,
                     query: {
-                        ...history.query,
+                        // ...history.query,
                         query: newQuery,
                     },
                 })
@@ -42,13 +42,12 @@ export const Search: FunctionComponent<SearchProps> = () => {
     )
 
     const productsCount = useMemo(() => {
-        const data = products.data?.products
-        if (!data) return
-        const { count = 0 } = data
+        if (!products.data) return
+        const { count = 0 } = products.data
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
     }, [products])
 
-    if (!online && !products.data?.products) return <Error type="Offline" fullScreen />
+    if (!online && !products.data?.items) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
@@ -59,7 +58,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        <TopBarFilterButton as="button" type="button" onClick={products.api.toggleFilters}>
+                        <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
                             <span>
                                 <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
                             </span>
@@ -70,7 +69,7 @@ export const Search: FunctionComponent<SearchProps> = () => {
                 <Products {...products} />
             </Root>
 
-            {query && products.data?.products?.count === 0 && (
+            {query && products.data?.count === 0 && (
                 <NoResult $margin>
                     <Error type="404">
                         We couldn&apos;t find any results for &quot;{query}&quot;. <br />

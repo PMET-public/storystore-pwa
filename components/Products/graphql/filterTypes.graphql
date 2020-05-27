@@ -1,4 +1,4 @@
-query FiltersQuery {
+query FilterTypesQuery {
     filterTypes: __type(name: "ProductAttributeFilterInput") {
         fields: inputFields {
             name

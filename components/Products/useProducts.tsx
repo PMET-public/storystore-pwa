@@ -31,7 +31,7 @@ export const useProducts = (props: UseFiltersProps) => {
 
     const history = useRouter()
 
-    const [filtersOpen, setFiltersOpen] = useState(false)
+    const [panelOpen, setPanelOpen] = useState(true)
 
     /**
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
@@ -106,9 +106,29 @@ export const useProducts = (props: UseFiltersProps) => {
         variables: { search, filters: { ...filtersValues, ...filterVariables } },
     })
 
+    const sortingDefaultValues = useMemo(() => {
+        const sorting = products.data?.products?.sorting
+        return history.query?.sortBy ? JSON.parse(history.query.sortBy.toString()) : { sortBy: sorting?.default }
+    }, [history, products])
+
     // Lets transform our groups
-    const groups: FiltersGroupProps[] =
-        products.data?.products?.filters?.map((filter: any) => {
+    const groups: FiltersGroupProps[] = [
+        // Sortings
+        // {
+        //     title: 'Sorty By',
+        //     name: 'sort-by',
+        //     type: 'radio',
+        //     items: [
+        //         ...products.data?.products?.sorting?.options.map(({ label, value }: any) => ({
+        //             _id: `${label}-${value}`,
+        //             label,
+        //             value,
+        //         })),
+        //     ],
+        // },
+
+        // Filters
+        ...(products.data?.products?.filters?.map((filter: any) => {
             /**
              * Let's include the Type since it's not returned within the GraphQL Query.
              */
@@ -147,35 +167,39 @@ export const useProducts = (props: UseFiltersProps) => {
                 name: filter.code,
                 items,
             }
-        }) ?? []
+        }) ?? []),
+    ]
 
     // Handle Toggling of Filters
-    const handleToggleFilters = useCallback(
-        (state = !filtersOpen) => {
-            setFiltersOpen(state)
+    const handleTogglePanel = useCallback(
+        (state = !panelOpen) => {
+            setPanelOpen(state)
         },
-        [filtersOpen]
+        [panelOpen]
     )
 
     // Handle Updates on Filter
     const handleOnFilterUpdate = useCallback(
         fields => {
+            const { pathname, asPath, query } = history
+            delete query.pathname
+
             /** Merge selected values with fields values and filter down to only selected */
             const groups = Object.keys(fields).reduce((accum, key) => (!!fields[key].length ? { ...accum, [key]: fields[key] } : { ...accum }), {})
 
             /** Update the URL Query */
             history.push(
                 {
-                    pathname: history.pathname,
+                    pathname,
                     query: {
-                        ...history.query,
+                        ...query,
                         filters: JSON.stringify({ ...groups }),
                     },
                 },
                 {
-                    pathname: history.asPath.split('?')[0],
+                    pathname: asPath.split('?')[0],
                     query: {
-                        ...history.query,
+                        ...query,
                         filters: JSON.stringify({ ...groups }),
                     },
                 }
@@ -184,21 +208,62 @@ export const useProducts = (props: UseFiltersProps) => {
         [history]
     )
 
+    // Handle Updates on Filter
+    const handleOnSortingUpdate = useCallback(
+        fields => {
+            const sortBy = JSON.stringify({ ...fields })
+            const { pathname, asPath, query } = history
+            delete query.pathname
+
+            /** Update the URL Query */
+            history.push(
+                {
+                    pathname,
+                    query: {
+                        ...query,
+                        sortBy,
+                    },
+                },
+                {
+                    pathname: asPath.split('?')[0],
+                    query: {
+                        ...query,
+                        sortBy,
+                    },
+                }
+            )
+        },
+        [history]
+    )
+
+    const { count, pagination, sorting, items } = products.data?.products ?? {}
+
+    const productUrlSuffix = products.data?.store?.productUrlSuffix
+
     return {
         ...products,
         loading: products.loading || filters.loading,
         data: {
-            ...products.data,
+            panelOpen,
+            productUrlSuffix,
+            count,
+            pagination,
+            items,
+            sorting: {
+                ...sorting,
+                defaultValues: sortingDefaultValues,
+            },
             filters: {
-                open: filtersOpen,
                 count: filtersCount,
                 defaultValues: filtersDefaultValues,
                 groups,
             },
         },
+
         api: {
-            toggleFilters: handleToggleFilters,
+            togglePanel: handleTogglePanel,
             onFilterUpdate: handleOnFilterUpdate,
+            onSortingUpdate: handleOnSortingUpdate,
         },
     }
 }
