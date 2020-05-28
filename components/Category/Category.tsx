@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 
-import { Root, TopBar, TopBarWrapper, Heading, Title, BackButton, BackIcon, TopBarFilterButton, FiltersIcon } from './Category.styled'
+import { Root, TopBar, TopBarWrapper, Heading, Title, TopBarFilterButton, FiltersIcon } from './Category.styled'
 
 import { useCategory } from './useCategory'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
@@ -64,22 +64,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                         <TopBar>
                             <TopBarWrapper $margin>
                                 <Heading>
-                                    <Title>
-                                        {page?.breadcrumbs && (
-                                            <BackButton
-                                                as={Link}
-                                                urlResolver={{
-                                                    type: 'CATEGORY',
-                                                    id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
-                                                    mode: page.breadcrumbs[page.breadcrumbs.length - 1].mode,
-                                                }}
-                                                href={'/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix}
-                                            >
-                                                <BackIcon />
-                                            </BackButton>
-                                        )}
-                                        {!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title.text}
-                                    </Title>
+                                    <Title>{!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title}</Title>
 
                                     {/* Breadcrumbs */}
                                     {page?.categories?.length === 0 && page.breadcrumbs && (
@@ -118,7 +103,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button" onClick={products.api.toggleFilters}>
+                                <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
                                     <span>
                                         <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
                                     </span>

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
+import { getURLSearchAsObject } from '~/lib/getUrlSearchAsObject'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 
 import { useRouter } from 'next/router'
@@ -31,7 +32,7 @@ export const useProducts = (props: UseFiltersProps) => {
 
     const history = useRouter()
 
-    const [filtersOpen, setFiltersOpen] = useState(false)
+    const [panelOpen, setPanelOpen] = useState(false)
 
     /**
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
@@ -41,13 +42,13 @@ export const useProducts = (props: UseFiltersProps) => {
         fetchPolicy: 'cache-first',
     })
 
-    const filterTypes = filters.data?.filterTypes?.fields
-
     const filtersDefaultValues = useMemo(() => {
         return JSON.parse(history.query?.filters?.toString() || '{}')
     }, [history])
 
     const filtersCount = useMemo(() => Object.keys(filtersDefaultValues).reduce((total, key) => (filtersDefaultValues[key]?.length ?? 0) + total, 0), [filtersDefaultValues])
+
+    const filterTypes = filters.data?.filterTypes?.fields
 
     // Get Variables with their corresponding functional value
     const filterVariables = useMemo(() => {
@@ -100,15 +101,27 @@ export const useProducts = (props: UseFiltersProps) => {
         }, {})
     }, [filtersDefaultValues, filterTypes])
 
+    const sortingDefaultValues = useMemo(() => {
+        return history.query?.sortBy && JSON.parse(history.query.sortBy.toString())
+    }, [history])
+
+    const sortingValues = useMemo(() => {
+        if (!sortingDefaultValues?.sortBy) return
+
+        const [key, value] = sortingDefaultValues.sortBy.split(',')
+
+        return { [key]: value }
+    }, [sortingDefaultValues])
+
     /** Get Products */
     const products = useQuery(PRODUCTS_QUERY, {
         ...queryDefaultOptions,
-        variables: { search, filters: { ...filtersValues, ...filterVariables } },
+        variables: { search, sort: sortingValues, filters: { ...filtersValues, ...filterVariables } },
     })
 
     // Lets transform our groups
-    const groups: FiltersGroupProps[] =
-        products.data?.products?.filters?.map((filter: any) => {
+    const groups: FiltersGroupProps[] = [
+        ...(products.data?.products?.filters?.map((filter: any) => {
             /**
              * Let's include the Type since it's not returned within the GraphQL Query.
              */
@@ -147,35 +160,41 @@ export const useProducts = (props: UseFiltersProps) => {
                 name: filter.code,
                 items,
             }
-        }) ?? []
+        }) ?? []),
+    ]
 
     // Handle Toggling of Filters
-    const handleToggleFilters = useCallback(
-        (state = !filtersOpen) => {
-            setFiltersOpen(state)
+    const handleTogglePanel = useCallback(
+        (state = !panelOpen) => {
+            setPanelOpen(state)
         },
-        [filtersOpen]
+        [panelOpen]
     )
 
     // Handle Updates on Filter
     const handleOnFilterUpdate = useCallback(
         fields => {
+            const { pathname, asPath } = history
+
+            /** We use our little helper because getting "query" from Next.js useRouter() also returns urlResolver params */
+            const query = getURLSearchAsObject()
+
             /** Merge selected values with fields values and filter down to only selected */
             const groups = Object.keys(fields).reduce((accum, key) => (!!fields[key].length ? { ...accum, [key]: fields[key] } : { ...accum }), {})
 
             /** Update the URL Query */
             history.push(
                 {
-                    pathname: history.pathname,
+                    pathname,
                     query: {
-                        ...history.query,
+                        ...query,
                         filters: JSON.stringify({ ...groups }),
                     },
                 },
                 {
-                    pathname: history.asPath.split('?')[0],
+                    pathname: asPath.split('?')[0],
                     query: {
-                        ...history.query,
+                        ...query,
                         filters: JSON.stringify({ ...groups }),
                     },
                 }
@@ -184,21 +203,64 @@ export const useProducts = (props: UseFiltersProps) => {
         [history]
     )
 
+    // Handle Updates on Filter
+    const handleOnSortingUpdate = useCallback(
+        fields => {
+            const sortBy = JSON.stringify({ ...fields })
+            const { pathname, asPath } = history
+
+            /** We use our little helper because getting "query" from Next.js useRouter() also returns urlResolver params */
+            const query = getURLSearchAsObject()
+
+            /** Update the URL Query */
+            history.push(
+                {
+                    pathname,
+                    query: {
+                        ...query,
+                        sortBy,
+                    },
+                },
+                {
+                    pathname: asPath.split('?')[0],
+                    query: {
+                        ...query,
+                        sortBy,
+                    },
+                }
+            )
+        },
+        [history]
+    )
+
+    const { count, pagination, sorting, items } = products.data?.products ?? {}
+
+    const productUrlSuffix = products.data?.store?.productUrlSuffix
+
     return {
         ...products,
         loading: products.loading || filters.loading,
         data: {
-            ...products.data,
+            panelOpen,
+            productUrlSuffix,
+            count,
+            pagination,
+            items,
+            sorting: {
+                ...sorting,
+                defaultValues: sortingDefaultValues || { sortBy: `${sorting?.default},DESC` },
+            },
             filters: {
-                open: filtersOpen,
                 count: filtersCount,
                 defaultValues: filtersDefaultValues,
                 groups,
             },
         },
+
         api: {
-            toggleFilters: handleToggleFilters,
+            togglePanel: handleTogglePanel,
             onFilterUpdate: handleOnFilterUpdate,
+            onSortingUpdate: handleOnSortingUpdate,
         },
     }
 }

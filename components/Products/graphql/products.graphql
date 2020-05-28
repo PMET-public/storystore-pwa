@@ -1,17 +1,20 @@
 #import "~/graphql/_pagination.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_filters.graphql"
+#import "~/graphql/_sorting.graphql"
 
-query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $pageSize: Int = 10, $currentPage: Int = 1) {
+query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sort: ProductAttributeSortInput, $pageSize: Int = 10, $currentPage: Int = 1) {
     store: storeConfig {
         id
         productUrlSuffix: product_url_suffix
     }
 
-    products(search: $search, filter: $filters, pageSize: $pageSize, currentPage: $currentPage) {
+    products(search: $search, filter: $filters, sort: $sort, pageSize: $pageSize, currentPage: $currentPage) {
         count: total_count
 
         ...pagination
+
+        ...sorting
 
         ...filters
 

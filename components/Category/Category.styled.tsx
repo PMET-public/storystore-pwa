@@ -26,6 +26,13 @@ export const TopBarWrapper = styled(ContainerWrapper)`
 `
 
 export const Heading = styled.h2`
+    -webkit-overflow-scrolling: touch;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     align-items: center;
     display: grid;
     grid-template-columns: auto auto 1fr;
@@ -48,17 +55,6 @@ export const Title = styled.div`
     font-weight: ${props => props.theme.typography.heading.weight.bold};
     font-size: 1.6rem;
     height: 2rem;
-`
-
-export const BackIcon = styled(BackIconSvg)`
-    width: 2rem;
-    height: 2rem;
-    fill: currentColor;
-`
-export const BackButton = styled.div`
-    display: flex;
-    align-items: center;
-    /* padding-top: 0.3rem; */
 `
 
 export const TopBarFilterButton = styled.button`

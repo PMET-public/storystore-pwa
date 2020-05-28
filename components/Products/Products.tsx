@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 
-import { Root, ProductListWrapper, FiltersWrapper, FiltersButtons, FiltersScreen } from './Products.styled'
+import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons } from './Products.styled'
 
 import { useProducts } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
@@ -10,14 +10,16 @@ import { useResize } from '@storystore/ui/dist/hooks/useResize'
 import ProductList from '@storystore/ui/dist/components/ProductList'
 import Filters from '@storystore/ui/dist/components/Filters'
 import Link from '~/components/Link'
+import SortBy from '@storystore/ui/dist/components/SortBy'
+import { GroupLabel } from '@storystore/ui/dist/components/Filters/Filters.styled'
 import Button from '@storystore/ui/dist/components/Button'
+import Sidebar from '@storystore/ui/dist/components/Sidebar'
 
 type CategoryProps = ReturnType<typeof useProducts>
 
 export const Products: FunctionComponent<CategoryProps> = ({ loading, data, networkStatus, fetchMore, api }) => {
     const viewport = useResize()
-    const products = data?.products
-    const filters = data?.filters
+    const { panelOpen, pagination, productUrlSuffix = '', items, sorting, filters } = data ?? {}
 
     /**
      * Infinite Scroll Effect
@@ -26,14 +28,14 @@ export const Products: FunctionComponent<CategoryProps> = ({ loading, data, netw
         {
             threshold: 400,
             loading,
-            hasNextPage: products?.pagination && products.pagination.current < products.pagination.total,
+            hasNextPage: pagination && pagination.current < pagination.total,
         },
         () => {
-            if (!products.pagination?.current) return
+            if (!pagination?.current) return
 
             fetchMore({
                 variables: {
-                    currentPage: products.pagination.current + 1, // next page
+                    currentPage: pagination.current + 1, // next page
                 },
                 updateQuery: (prev: any, { fetchMoreResult }) => {
                     if (!fetchMoreResult) return prev
@@ -50,14 +52,12 @@ export const Products: FunctionComponent<CategoryProps> = ({ loading, data, netw
         }
     )
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
     return (
         <Root>
             <ProductListWrapper>
                 <ProductList
                     loadingMore={loading}
-                    items={products?.items
+                    items={items
                         ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
                         .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
                             _id: `${id}--${index}`,
@@ -92,19 +92,38 @@ export const Products: FunctionComponent<CategoryProps> = ({ loading, data, netw
                         }))}
                 />
             </ProductListWrapper>
-            <FiltersWrapper $active={filters.open} style={{ height: viewport.vHeight }}>
-                <Filters
-                    key={JSON.stringify(filters.defaultValues)}
-                    disabled={loading && networkStatus !== 3}
-                    options={{ defaultValues: filters.defaultValues }}
-                    groups={filters.groups.filter((group: any) => group.name !== 'category_id')}
-                    onValues={api.onFilterUpdate}
-                />
-                <FiltersButtons>
-                    <Button onClick={() => api.toggleFilters(false)}>Done</Button>
-                </FiltersButtons>
-            </FiltersWrapper>
-            {filters.open && <FiltersScreen onClick={() => api.toggleFilters(false)} />}
+
+            <Sidebar position="right" onClose={() => api.togglePanel(false)}>
+                {panelOpen && (
+                    <FiltersWrapper style={{ height: viewport.vHeight }}>
+                        {sorting?.options && (
+                            <SortByWrapper>
+                                <GroupLabel>Sort By</GroupLabel>
+                                <SortBy
+                                    options={{ defaultValues: sorting.defaultValues }}
+                                    onValues={api.onSortingUpdate}
+                                    items={sorting.options.map(({ label, value }: any) => ({
+                                        _id: `${label}-${value}`,
+                                        label,
+                                        value,
+                                    }))}
+                                />
+                            </SortByWrapper>
+                        )}
+
+                        <Filters
+                            key={JSON.stringify(filters.defaultValues)}
+                            disabled={loading && networkStatus !== 3}
+                            options={{ defaultValues: filters.defaultValues }}
+                            groups={filters.groups.filter((group: any) => group.name !== 'category_id')}
+                            onValues={api.onFilterUpdate}
+                        />
+                        <FiltersButtons>
+                            <Button onClick={() => api.togglePanel(false)}>Done</Button>
+                        </FiltersButtons>
+                    </FiltersWrapper>
+                )}
+            </Sidebar>
         </Root>
     )
 }
