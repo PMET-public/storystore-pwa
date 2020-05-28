@@ -1,10 +1,8 @@
 import styled from 'styled-components'
 
 import { Wrapper as ContainerWrapper } from '@storystore/ui/dist/components/Container/Container.styled'
-// import { Root as FiltersRoot } from '@storystore/ui/dist/components/Filters/Filters.styled'
 
 import FiltersIconSvg from 'remixicon/icons/Media/equalizer-line.svg'
-import BackIconSvg from 'remixicon/icons/System/arrow-left-line.svg'
 
 export const Root = styled.div`
     display: grid;
