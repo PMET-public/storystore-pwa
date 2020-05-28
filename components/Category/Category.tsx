@@ -111,7 +111,29 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Products {...products} />
+                        <Products
+                            {...{
+                                ...products,
+                                data: {
+                                    ...products.data,
+                                    sorting:
+                                        /**
+                                         * Filter Sort By Options for those provided by the User on the Category level.
+                                         * GraphQL Query is returning empty if the user selects the default [] Use All
+                                         */
+                                        page?.availableSortBy.length > 0 && products.data
+                                            ? {
+                                                  ...products.data.sorting,
+                                                  default: page.defaultSortBy,
+                                                  defaultValues: { sortBy: page.defaultSortBy + ',DESC' },
+                                                  options: products.data.sorting?.options?.filter((x: any) => {
+                                                      return page.availableSortBy.findIndex((y: string) => y === x.value) > -1
+                                                  }),
+                                              }
+                                            : products.data?.sorting,
+                                },
+                            }}
+                        />
                     </React.Fragment>
                 )}
             </Root>

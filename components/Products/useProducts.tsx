@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
-import { getURLSearchAsObject } from '~/lib/getUrlSearchAsObject'
+import { getURLSearchAsObject } from '~/lib/getURLSearchAsObject'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 
 import { useRouter } from 'next/router'

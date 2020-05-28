@@ -25,5 +25,8 @@ query CategoryQuery($id: String!) {
             count: product_count
             href: url_path
         }
+
+        defaultSortBy: default_sort_by
+        availableSortBy: available_sort_by
     }
 }
