@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 
-import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons, FiltersScreen } from './Products.styled'
+import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons } from './Products.styled'
 
 import { useProducts } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
@@ -10,8 +10,10 @@ import { useResize } from '@storystore/ui/dist/hooks/useResize'
 import ProductList from '@storystore/ui/dist/components/ProductList'
 import Filters from '@storystore/ui/dist/components/Filters'
 import Link from '~/components/Link'
-import Form, { Checkbox } from '@storystore/ui/dist/components/Form'
+import SortBy from '@storystore/ui/dist/components/SortBy'
+import { GroupLabel } from '@storystore/ui/dist/components/Filters/Filters.styled'
 import Button from '@storystore/ui/dist/components/Button'
+import Sidebar from '@storystore/ui/dist/components/Sidebar'
 
 type CategoryProps = ReturnType<typeof useProducts>
 
@@ -90,34 +92,38 @@ export const Products: FunctionComponent<CategoryProps> = ({ loading, data, netw
                         }))}
                 />
             </ProductListWrapper>
-            <FiltersWrapper $active={panelOpen} style={{ height: viewport.vHeight }}>
-                {sorting?.options && (
-                    <SortByWrapper as={Form} options={{ defaultValues: sorting.defaultValues }} onValues={api.onSortingUpdate}>
-                        <Checkbox
-                            label="Sort By"
-                            name="sortBy"
-                            type="radio"
-                            items={sorting.options.map(({ label, value }: any) => ({
-                                _id: `${label}-${value}`,
-                                label,
-                                value,
-                            }))}
-                        />
-                    </SortByWrapper>
-                )}
 
-                <Filters
-                    key={JSON.stringify(filters.defaultValues)}
-                    disabled={loading && networkStatus !== 3}
-                    options={{ defaultValues: filters.defaultValues }}
-                    groups={filters.groups.filter((group: any) => group.name !== 'category_id')}
-                    onValues={api.onFilterUpdate}
-                />
-                <FiltersButtons>
-                    <Button onClick={() => api.togglePanel(false)}>Done</Button>
-                </FiltersButtons>
-            </FiltersWrapper>
-            {panelOpen && <FiltersScreen onClick={() => api.togglePanel(false)} />}
+            <Sidebar position="right" onClose={() => api.togglePanel(false)}>
+                {panelOpen && (
+                    <FiltersWrapper style={{ height: viewport.vHeight }}>
+                        {sorting?.options && (
+                            <SortByWrapper>
+                                <GroupLabel>Sort By</GroupLabel>
+                                <SortBy
+                                    options={{ defaultValues: sorting.defaultValues }}
+                                    onValues={api.onSortingUpdate}
+                                    items={sorting.options.map(({ label, value }: any) => ({
+                                        _id: `${label}-${value}`,
+                                        label,
+                                        value,
+                                    }))}
+                                />
+                            </SortByWrapper>
+                        )}
+
+                        <Filters
+                            key={JSON.stringify(filters.defaultValues)}
+                            disabled={loading && networkStatus !== 3}
+                            options={{ defaultValues: filters.defaultValues }}
+                            groups={filters.groups.filter((group: any) => group.name !== 'category_id')}
+                            onValues={api.onFilterUpdate}
+                        />
+                        <FiltersButtons>
+                            <Button onClick={() => api.togglePanel(false)}>Done</Button>
+                        </FiltersButtons>
+                    </FiltersWrapper>
+                )}
+            </Sidebar>
         </Root>
     )
 }

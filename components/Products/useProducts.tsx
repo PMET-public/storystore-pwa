@@ -31,7 +31,7 @@ export const useProducts = (props: UseFiltersProps) => {
 
     const history = useRouter()
 
-    const [panelOpen, setPanelOpen] = useState(true)
+    const [panelOpen, setPanelOpen] = useState(false)
 
     /**
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
@@ -41,13 +41,13 @@ export const useProducts = (props: UseFiltersProps) => {
         fetchPolicy: 'cache-first',
     })
 
-    const filterTypes = filters.data?.filterTypes?.fields
-
     const filtersDefaultValues = useMemo(() => {
         return JSON.parse(history.query?.filters?.toString() || '{}')
     }, [history])
 
     const filtersCount = useMemo(() => Object.keys(filtersDefaultValues).reduce((total, key) => (filtersDefaultValues[key]?.length ?? 0) + total, 0), [filtersDefaultValues])
+
+    const filterTypes = filters.data?.filterTypes?.fields
 
     // Get Variables with their corresponding functional value
     const filterVariables = useMemo(() => {
@@ -100,34 +100,26 @@ export const useProducts = (props: UseFiltersProps) => {
         }, {})
     }, [filtersDefaultValues, filterTypes])
 
+    const sortingDefaultValues = useMemo(() => {
+        return history.query.sortBy && JSON.parse(history.query?.sortBy?.toString())
+    }, [history])
+
+    const sortingValues = useMemo(() => {
+        if (!sortingDefaultValues?.sortBy) return
+
+        const [key, value] = sortingDefaultValues.sortBy.split(',')
+
+        return { [key]: value }
+    }, [sortingDefaultValues])
+
     /** Get Products */
     const products = useQuery(PRODUCTS_QUERY, {
         ...queryDefaultOptions,
-        variables: { search, filters: { ...filtersValues, ...filterVariables } },
+        variables: { search, sort: sortingValues, filters: { ...filtersValues, ...filterVariables } },
     })
-
-    const sortingDefaultValues = useMemo(() => {
-        const sorting = products.data?.products?.sorting
-        return history.query?.sortBy ? JSON.parse(history.query.sortBy.toString()) : { sortBy: sorting?.default }
-    }, [history, products])
 
     // Lets transform our groups
     const groups: FiltersGroupProps[] = [
-        // Sortings
-        // {
-        //     title: 'Sorty By',
-        //     name: 'sort-by',
-        //     type: 'radio',
-        //     items: [
-        //         ...products.data?.products?.sorting?.options.map(({ label, value }: any) => ({
-        //             _id: `${label}-${value}`,
-        //             label,
-        //             value,
-        //         })),
-        //     ],
-        // },
-
-        // Filters
         ...(products.data?.products?.filters?.map((filter: any) => {
             /**
              * Let's include the Type since it's not returned within the GraphQL Query.
@@ -183,6 +175,7 @@ export const useProducts = (props: UseFiltersProps) => {
         fields => {
             const { pathname, asPath, query } = history
             delete query.pathname
+            console.log('TODO: Fix URL query')
 
             /** Merge selected values with fields values and filter down to only selected */
             const groups = Object.keys(fields).reduce((accum, key) => (!!fields[key].length ? { ...accum, [key]: fields[key] } : { ...accum }), {})
@@ -214,6 +207,7 @@ export const useProducts = (props: UseFiltersProps) => {
             const sortBy = JSON.stringify({ ...fields })
             const { pathname, asPath, query } = history
             delete query.pathname
+            console.log('TODO: Fix URL query')
 
             /** Update the URL Query */
             history.push(
@@ -251,7 +245,7 @@ export const useProducts = (props: UseFiltersProps) => {
             items,
             sorting: {
                 ...sorting,
-                defaultValues: sortingDefaultValues,
+                defaultValues: sortingDefaultValues || { sortBy: `${sorting?.default},DESC` },
             },
             filters: {
                 count: filtersCount,
