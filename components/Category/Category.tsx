@@ -78,7 +78,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                                 <BackIcon />
                                             </BackButton>
                                         )}
-                                        {!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title.text}
+                                        {!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title}
                                     </Title>
 
                                     {/* Breadcrumbs */}
