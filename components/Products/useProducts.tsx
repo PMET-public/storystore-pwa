@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
+import { getURLSearchAsObject } from '~/lib/getUrlSearchAsObject'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 
 import { useRouter } from 'next/router'
@@ -101,7 +102,7 @@ export const useProducts = (props: UseFiltersProps) => {
     }, [filtersDefaultValues, filterTypes])
 
     const sortingDefaultValues = useMemo(() => {
-        return history.query.sortBy && JSON.parse(history.query?.sortBy?.toString())
+        return history.query?.sortBy && JSON.parse(history.query.sortBy.toString())
     }, [history])
 
     const sortingValues = useMemo(() => {
@@ -173,9 +174,10 @@ export const useProducts = (props: UseFiltersProps) => {
     // Handle Updates on Filter
     const handleOnFilterUpdate = useCallback(
         fields => {
-            const { pathname, asPath, query } = history
-            delete query.pathname
-            console.log('TODO: Fix URL query')
+            const { pathname, asPath } = history
+
+            /** We use our little helper because getting "query" from Next.js useRouter() also returns urlResolver params */
+            const query = getURLSearchAsObject()
 
             /** Merge selected values with fields values and filter down to only selected */
             const groups = Object.keys(fields).reduce((accum, key) => (!!fields[key].length ? { ...accum, [key]: fields[key] } : { ...accum }), {})
@@ -205,9 +207,10 @@ export const useProducts = (props: UseFiltersProps) => {
     const handleOnSortingUpdate = useCallback(
         fields => {
             const sortBy = JSON.stringify({ ...fields })
-            const { pathname, asPath, query } = history
-            delete query.pathname
-            console.log('TODO: Fix URL query')
+            const { pathname, asPath } = history
+
+            /** We use our little helper because getting "query" from Next.js useRouter() also returns urlResolver params */
+            const query = getURLSearchAsObject()
 
             /** Update the URL Query */
             history.push(
