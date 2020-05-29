@@ -2,13 +2,12 @@ import React, { FunctionComponent, useState, useCallback, useRef, useEffect } fr
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { version, dependencies } from '~/package.json'
 import { setCookie, COOKIE } from '~/lib/cookies'
-import gql from 'graphql-tag'
 
 import { useRouter } from 'next/router'
-import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { useApolloClient } from '@apollo/react-hooks'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
-import Form, { Input, FormContext, FieldColors } from '@storystore/ui/dist/components/Form'
+import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
 import { useCart } from '~/components/Cart/useCart'
@@ -23,7 +22,11 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent = () => {
+type SettingsProps = {
+    defaultMagentoUrl: string
+}
+
+export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }) => {
     const { settings, setSettings, setCartId } = useStoryStore()
 
     const apolloClient = useApolloClient()
@@ -35,22 +38,6 @@ export const Settings: FunctionComponent = () => {
     const [saving, setSaving] = useState(false)
 
     const cart = useCart()
-
-    const homePageQuery = useQuery(
-        gql`
-            query SettingsHomeCheck($id: String!) {
-                store: storeConfig {
-                    id
-                    homePage: cms_home_page
-                }
-
-                page: cmsPage(identifier: $id) {
-                    id: url_key
-                }
-            }
-        `,
-        { variables: { id: settings.homePageId }, errorPolicy: 'all' }
-    )
 
     const handleInputOnFocus = useCallback((event: FocusEvent) => {
         // @ts-ignore
@@ -105,19 +92,11 @@ export const Settings: FunctionComponent = () => {
 
     const handleOnResetToDefaults = useCallback(async () => {
         await handleSaveOverrides({
-            magentoUrl: process.env.MAGENTO_URL,
-            homePageId: process.env.HOME_PAGE_ID,
+            magentoUrl: defaultMagentoUrl,
         })
 
         setCookie(COOKIE.settings, '{}', 365)
-    }, [handleSaveOverrides])
-
-    useEffect(() => {
-        // Override values
-        Object.entries(settings).forEach(([key, value = '']) => {
-            formRef.current?.setValue(key, value)
-        })
-    }, [formRef, settings])
+    }, [handleSaveOverrides, defaultMagentoUrl])
 
     return (
         <Root>
@@ -134,6 +113,10 @@ export const Settings: FunctionComponent = () => {
                     options={{
                         mode: 'onSubmit',
                         reValidateMode: 'onSubmit',
+                        defaultValues: {
+                            ...settings,
+                            magentoUrl: settings.magentoUrl ?? defaultMagentoUrl,
+                        },
                     }}
                     onSubmit={handleSaveOverrides}
                     ref={formRef}
@@ -141,22 +124,11 @@ export const Settings: FunctionComponent = () => {
                     <Input
                         name="magentoUrl"
                         label="Magento URL"
-                        defaultValue={settings.magentoUrl}
                         style={{ textOverflow: 'ellipsis' }}
                         onFocus={handleInputOnFocus}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
                         }}
-                    />
-
-                    <Input
-                        name="homePageId"
-                        label="Home Page URL Key"
-                        defaultValue={settings.homePageId}
-                        style={{ textOverflow: 'ellipsis' }}
-                        onFocus={handleInputOnFocus}
-                        error={homePageQuery.loading || homePageQuery.data?.page ? undefined : `🏡 No Home page found. Did you mean to use "${homePageQuery.data?.store?.homePage}"?`}
-                        color={homePageQuery.loading || homePageQuery.data?.page ? FieldColors.default : FieldColors.warning}
                     />
 
                     <Buttons>

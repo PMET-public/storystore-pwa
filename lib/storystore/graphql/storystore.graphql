@@ -1,0 +1,18 @@
+query StoryStoreQuery {
+    storyStore: storeConfig {
+        id
+
+        # Content
+        homePageId: storystore_pwa_home_page
+        footerBlockId: storystore_pwa_footer_block
+
+        # Colors
+        dark: storystore_pwa_dark_mode
+        colorOnAccent: storystore_pwa_accent_content
+        colorAccent: storystore_pwa_accent_surface
+        colorOnPrimary: storystore_pwa_primary_content
+        colorPrimary: storystore_pwa_primary_surface
+        colorOnSecondary: storystore_pwa_secondary_content
+        colorSecondary: storystore_pwa_secondary_surface
+    }
+}

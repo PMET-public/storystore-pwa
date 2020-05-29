@@ -4,7 +4,6 @@ query HomeQuery($id: String!) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
-        homePage: cms_home_page
     }
 
     ...categoryList

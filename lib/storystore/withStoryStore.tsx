@@ -2,12 +2,26 @@ import React, { createContext, Reducer, useReducer } from 'react'
 import { NextPage } from 'next'
 import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
 import { getSettings } from '~/lib/getSettings'
+import { useQuery } from '@apollo/react-hooks'
+import { queryDefaultOptions } from '~/lib/apollo/client'
+
+import STORYSTORE_QUERY from './graphql/storystore.graphql'
 
 export type Settings = {
     magentoUrl: string
-    homePageId: string
+
+    // Content
+    homePageId?: string
     footerBlockId?: string
-    googleMapsApiKey?: string
+
+    // Colors
+    dark?: string
+    colorOnAccent?: string
+    colorAccent?: string
+    colorOnPrimary?: string
+    colorPrimary?: string
+    colorOnSecondary?: string
+    colorSecondary?: string
 }
 
 type ReducerState = {
@@ -29,9 +43,6 @@ const initialState: ReducerState = {
     cartId: '',
     settings: {
         magentoUrl: process.env.MAGENTO_URL,
-        homePageId: process.env.HOME_PAGE_ID,
-        footerBlockId: process.env.FOOTER_BLOCK_ID,
-        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     },
 }
 
@@ -72,10 +83,19 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
 export const withStoryStore = (PageComponent: NextPage<any>) => {
     const WithStoryStore = ({ cookie, ...pageProps }: any) => {
+        const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore' })
+
         const [state, dispatch] = useReducer(reducer, {
+            ...initialState,
             cartId: getCookie(COOKIE.cartId, cookie) || '',
             settings: {
+                ...initialState.settings,
+
+                // Cookie Overwrites
                 ...getSettings(cookie),
+
+                // StoryStore!
+                ...data?.storyStore,
             },
         })
 
