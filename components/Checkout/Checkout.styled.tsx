@@ -20,6 +20,7 @@ export const Root = styled.div`
 `
 
 export const Wrapper = styled.div`
+    background-color: ${props => props.theme.colors.onSurface5};
     display: grid;
     grid-gap: 4rem;
     grid-auto-rows: max-content;
@@ -35,6 +36,7 @@ export const CartSummaryWrapper = styled.div`
     display: grid;
     grid-auto-rows: max-content;
     grid-template-areas: 'summary' 'list';
+    background-color: ${props => props.theme.colors.surface};
 
     ${CartListRoot} {
         grid-area: list;
@@ -46,8 +48,7 @@ export const CartSummaryWrapper = styled.div`
 
     ${CartSummaryRoot} {
         grid-area: summary;
-        padding: 2rem ${props => props.theme.layout.margin};
-        border-top: 0.1rem solid ${props => props.theme.colors.onSurface10};
+        padding: 0 ${props => props.theme.layout.margin};
 
         @media ${props => props.theme.breakpoints.large} {
             padding-top: 4rem;
@@ -62,11 +63,11 @@ export const CartSummaryWrapper = styled.div`
         grid-template-rows: 1fr auto;
 
         ${CartListRoot} {
-            background-color: ${props => props.theme.colors.graySurface};
+            background-color: inherit;
         }
 
         ${CartSummaryRoot} {
-            background-color: ${props => props.theme.colors.graySurface};
+            background-color: inherit;
             position: sticky;
             bottom: 0;
         }
