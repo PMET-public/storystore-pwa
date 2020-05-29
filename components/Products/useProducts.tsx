@@ -235,7 +235,7 @@ export const useProducts = (props: UseFiltersProps) => {
 
     const { count, pagination, sorting, items } = products.data?.products ?? {}
 
-    const productUrlSuffix = products.data?.store?.productUrlSuffix
+    const productUrlSuffix = products.data?.store?.productUrlSuffix || ''
 
     return {
         ...products,
