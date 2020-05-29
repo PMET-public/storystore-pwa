@@ -4,6 +4,7 @@ import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
 import { getSettings } from '~/lib/getSettings'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
+import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
 
 import STORYSTORE_QUERY from './graphql/storystore.graphql'
 
@@ -15,13 +16,10 @@ export type Settings = {
     footerBlockId?: string
 
     // Colors
-    dark?: string
-    colorOnAccent?: string
-    colorAccent?: string
-    colorOnPrimary?: string
-    colorPrimary?: string
-    colorOnSecondary?: string
-    colorSecondary?: string
+    dark?: boolean
+    colors?: {
+        [key: string]: string
+    }
 }
 
 type ReducerState = {
@@ -95,7 +93,22 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
                 ...getSettings(cookie),
 
                 // StoryStore!
-                ...data?.storyStore,
+                ...data?.content,
+
+                colors: data?.colors && {
+                    ...generateColorTheme({
+                        accent: data.colors.accent,
+                        onAccent: data.colors.onAccent,
+                        primary: data.colors.primary,
+                        onPrimary: data.colors.onPrimary,
+                        secondary: data.colors.secondary,
+                        onSecondary: data.colors.onSecondary,
+                        ...(data.colors.dark && {
+                            surface: '#222222',
+                            onSurface: '#ffffff',
+                        }),
+                    }),
+                },
             },
         })
 

@@ -172,7 +172,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const loading = queries.app.loading && !store
 
     return (
-        <ThemeProvider theme={baseTheme}>
+        <ThemeProvider theme={{ ...baseTheme, colors: { ...baseTheme.colors, ...settings.colors } }}>
             <NextNprogress color={baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
             <FontStyles />

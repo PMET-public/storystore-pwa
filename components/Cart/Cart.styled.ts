@@ -17,6 +17,7 @@ export const Root = styled.div`
 `
 
 export const ProductList = styled.div`
+    background-color: ${props => props.theme.colors.onSurface5};
     padding: 0 ${props => props.theme.layout.margin};
     display: grid;
     grid-auto-rows: max-content;
@@ -43,14 +44,13 @@ export const SummaryWrapper = styled.div`
     display: grid;
     grid-gap: 2rem;
     grid-auto-rows: max-content;
+    background-color: ${props => props.theme.colors.surface};
 
     @media ${props => props.theme.breakpoints.untilMedium} {
-        padding: 2rem ${props => props.theme.layout.margin};
-        border-top: 0.1rem solid ${props => props.theme.colors.onSurface10};
+        padding: 0 ${props => props.theme.layout.margin};
     }
 
     @media ${props => props.theme.breakpoints.large} {
-        background-color: ${props => props.theme.colors.graySurface};
         display: flex;
         align-items: flex-end;
         padding: 0 3rem;
