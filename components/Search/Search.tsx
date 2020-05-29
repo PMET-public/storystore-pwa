@@ -58,11 +58,13 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     <TopBarWrapper $margin>
                         <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
-                            <span>
-                                <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
-                            </span>
-                        </TopBarFilterButton>
+                        {products.data?.filters && (
+                            <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
+                                <span>
+                                    <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
+                                </span>
+                            </TopBarFilterButton>
+                        )}
                     </TopBarWrapper>
                 </TopBar>
 

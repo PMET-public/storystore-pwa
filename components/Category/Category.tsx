@@ -103,11 +103,13 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
-                                    <span>
-                                        <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
-                                    </span>
-                                </TopBarFilterButton>
+                                {products.data?.filters && (
+                                    <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
+                                        <span>
+                                            <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
+                                        </span>
+                                    </TopBarFilterButton>
+                                )}
                             </TopBarWrapper>
                         </TopBar>
 
