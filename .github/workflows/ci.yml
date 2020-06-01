@@ -26,6 +26,7 @@ jobs:
           echo khb-curling
           curl -I http://localhost:3000/
           kill $npm_pid
+          env
           echo khb-killing
       - name: run Lighthouse CI
         run: |
