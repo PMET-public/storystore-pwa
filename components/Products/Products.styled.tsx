@@ -32,7 +32,6 @@ export const FiltersButtons = styled.div`
     position: sticky;
     bottom: 0;
     display: grid;
-    grid-auto-flow: column;
     grid-gap: 2rem;
     padding: 2rem 0;
 

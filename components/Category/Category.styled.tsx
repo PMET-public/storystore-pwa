@@ -6,6 +6,9 @@ import FiltersIconSvg from 'remixicon/icons/Media/equalizer-line.svg'
 
 export const Root = styled.div`
     display: grid;
+    grid-auto-rows: max-content;
+    min-height: 100%;
+}
 `
 
 export const TopBar = styled.div`

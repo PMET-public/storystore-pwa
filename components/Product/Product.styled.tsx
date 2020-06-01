@@ -164,9 +164,3 @@ export const ShortDescription = styled.div`
     font-size: 1.4rem;
     line-height: 1.3;
 `
-
-export const Description = styled.div`
-    font-size: 1.4rem;
-    line-height: 1.6;
-    color: ${props => props.theme.colors.onSurface90};
-`

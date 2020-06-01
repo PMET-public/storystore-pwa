@@ -18,7 +18,6 @@ import {
     Sku,
     Buttons,
     ShortDescription,
-    Description,
 } from './Product.styled'
 
 import { useRouter } from 'next/router'
@@ -37,6 +36,7 @@ import Form, { Input } from '@storystore/ui/dist/components/Form'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import TextSwatches from '@storystore/ui/dist/components/Form/TextSwatches'
 import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
+import PageBuilder from '~/components/PageBuilder'
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
@@ -287,8 +287,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                         </Buttons>
 
                                         <Input type="hidden" name="quantity" value={1} rules={{ required: true }} />
-
-                                        {product.description?.html && <Description dangerouslySetInnerHTML={{ __html: product.description.html }} />}
+                                        {product?.description?.html && <PageBuilder html={product.description.html} />}
                                     </React.Fragment>
                                 )}
                             </Info>
