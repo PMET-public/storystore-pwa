@@ -18,21 +18,11 @@ jobs:
           MAGENTO_URL: ${{ secrets.STORYSTOREBACKEND }}
           HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
-      - name: npm run
-        run: |
-          npm start &
-          npm_pid=$!
-          sleep 5
-          echo khb-curling
-          curl -I http://localhost:3000/
-          kill $npm_pid
-          env
-          echo khb-killing
-        env:
-          MAGENTO_URL: ${{ secrets.STORYSTOREBACKEND }}
-          HOME_PAGE_ID: home-luma-ui
-          DEMO_MODE: true
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.4.x
           lhci autorun
+        env:
+          MAGENTO_URL: ${{ secrets.STORYSTOREBACKEND }}
+          HOME_PAGE_ID: home-luma-ui
+          DEMO_MODE: true
