@@ -10,6 +10,8 @@ export const ProductListWrapper = styled.div`
 export const SortByWrapper = styled.div``
 
 export const FiltersWrapper = styled.div`
+    display: grid;
+    grid-template-rows: auto 1fr auto;
     overflow: scroll;
     scrollbar-width: none;
     padding: 4rem 3rem 0;

@@ -3,7 +3,7 @@
 #import "~/graphql/_filters.graphql"
 #import "~/graphql/_sorting.graphql"
 
-query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sort: ProductAttributeSortInput, $pageSize: Int = 10, $currentPage: Int = 1) {
+query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sort: ProductAttributeSortInput, $pageSize: Int = 12, $currentPage: Int = 1) {
     store: storeConfig {
         id
         productUrlSuffix: product_url_suffix
