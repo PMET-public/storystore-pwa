@@ -23,8 +23,10 @@ jobs:
           npm start &
           npm_pid=$!
           sleep 5
+          echo khb-curling
           curl -I http://localhost:3000/
           kill $npm_pid
+          echo khb-killing
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.4.x
