@@ -14,6 +14,10 @@ jobs:
         run: |
           npm install
           npm run build
+        env:
+          MAGENTO_URL: https://venia.magento.com/graphql
+          HOME_PAGE_ID: home-luma-ui
+          DEMO_MODE: true
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.4.x
