@@ -2,7 +2,7 @@ query StoryStoreQuery {
     content: storeConfig {
         id
 
-        # Content
+        defaultHomePageId: cms_home_page
         homePageId: storystore_pwa_home_page
         footerBlockId: storystore_pwa_footer_block
     }
@@ -10,7 +10,6 @@ query StoryStoreQuery {
     colors: storeConfig {
         id
 
-        # Colors
         dark: storystore_pwa_dark_mode
 
         accent: storystore_pwa_accent_surface

@@ -20,7 +20,7 @@ type HomeProps = {}
 export const Home: FunctionComponent<HomeProps> = () => {
     const { settings } = useStoryStore()
 
-    const { queries } = useHome({ id: settings.homePageId })
+    const { queries } = useHome({ id: settings.homePageId ?? settings.defaultHomePageId })
 
     const online = useNetworkStatus()
 

@@ -12,6 +12,7 @@ export type Settings = {
     magentoUrl: string
 
     // Content
+    defaultHomePageId: string
     homePageId?: string
     footerBlockId?: string
 
@@ -41,6 +42,7 @@ const initialState: ReducerState = {
     cartId: '',
     settings: {
         magentoUrl: process.env.MAGENTO_URL,
+        defaultHomePageId: 'home',
     },
 }
 
@@ -111,6 +113,8 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
                 },
             },
         })
+
+        console.log(state)
 
         return (
             <StoryStoreContext.Provider
