@@ -114,8 +114,6 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
             },
         })
 
-        console.log(state)
-
         return (
             <StoryStoreContext.Provider
                 value={{
