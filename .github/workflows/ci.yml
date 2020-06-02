@@ -28,4 +28,5 @@ jobs:
           HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          PROXY_PASS: http://host.docker.internal:3000
+          # use typical linux docker ip (until host.docker.internal is supported)
+          PROXY_PASS: http://172.17.0.1:3000
