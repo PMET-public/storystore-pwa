@@ -20,7 +20,7 @@ jobs:
           DEMO_MODE: true
       - name: run Lighthouse CI
         run: |
-          docker run -d -e PROXY_PASS -p 443:443 pmetpublic/nginx-with-pagespeed:develop
+          docker run -d -e PROXY_PASS -p 80:80 -p 443:443 pmetpublic/nginx-with-pagespeed:develop
           npm install -g @lhci/cli@0.4.x
           lhci autorun
         env:
