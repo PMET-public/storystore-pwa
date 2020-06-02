@@ -20,7 +20,7 @@ jobs:
           DEMO_MODE: true
       - name: run Lighthouse CI
         run: |
-          docker run -p 443:443 pmetpublic/nginx-with-pagespeed echo khb-test
+          docker run -d -e PROXY_PASS -p 443:443 pmetpublic/nginx-with-pagespeed:develop
           npm install -g @lhci/cli@0.4.x
           lhci autorun
         env:
@@ -28,3 +28,4 @@ jobs:
           HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          PROXY_PASS: http://host.docker.internal:3000
