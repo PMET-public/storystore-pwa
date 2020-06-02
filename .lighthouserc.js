@@ -8,7 +8,7 @@ module.exports = {
       startServerCommand: 'npm start',
       startServerReadyPattern: 'listen|Ready',
       startServerReadyTimeout: 60000,
-      numberOfRuns: 5,
+      numberOfRuns: 3,
       settings: {
         disableStorageReset: true,
         chromeFlags: '--ignore-certificate-errors'
