@@ -9,7 +9,9 @@ module.exports = {
       startServerReadyPattern: 'listen|Ready',
       startServerReadyTimeout: 60000,
       numberOfRuns: 5,
-      chromeFlags: '--ignore-certificate-errors'
+      settings: {
+        chromeFlags: '--ignore-certificate-errors'
+      }
     },
     upload: {
       target: 'temporary-public-storage',
