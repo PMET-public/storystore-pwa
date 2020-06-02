@@ -26,3 +26,4 @@ jobs:
           MAGENTO_URL: ${{ secrets.STORYSTOREBACKEND }}
           HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
