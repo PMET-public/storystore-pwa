@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
+import dynamic from 'next/dynamic'
 
 import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons } from './Products.styled'
 
@@ -7,13 +8,14 @@ import { useProducts } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { useResize } from '@storystore/ui/dist/hooks/useResize'
 
-import ProductList from '@storystore/ui/dist/components/ProductList'
 import Filters from '@storystore/ui/dist/components/Filters'
 import Link from '~/components/Link'
 import SortBy from '@storystore/ui/dist/components/SortBy'
 import { GroupLabel } from '@storystore/ui/dist/components/Filters/Filters.styled'
 import Button from '@storystore/ui/dist/components/Button'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
+
+const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
 type CategoryProps = ReturnType<typeof useProducts>
 

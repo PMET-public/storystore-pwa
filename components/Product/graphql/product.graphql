@@ -83,6 +83,63 @@ query ProductQuery($urlKey: String!) {
                     }
                 }
             }
+
+            # Related Products
+            related: related_products {
+                # No Fragment Support :(
+                id
+                title: name
+                urlKey: url_key
+
+                image {
+                    alt: label
+                    src: url
+                }
+
+                ...price
+
+                ... on ConfigurableProduct {
+                    options: configurable_options {
+                        id
+                        items: values {
+                            id: value_index
+                            label
+                            swatch: swatch_data {
+                                value
+                                __typename
+                            }
+                        }
+                    }
+                }
+            }
+
+            upsell: upsell_products {
+                # No Fragment Support :(
+                id
+                title: name
+                urlKey: url_key
+
+                image {
+                    alt: label
+                    src: url
+                }
+
+                ...price
+
+                ... on ConfigurableProduct {
+                    options: configurable_options {
+                        id
+                        items: values {
+                            id: value_index
+                            label
+                            swatch: swatch_data {
+                                value
+                                __typename
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

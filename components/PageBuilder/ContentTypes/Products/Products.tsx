@@ -1,10 +1,15 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
-import ProductList from '@storystore/ui/dist/components/ProductList'
-import ProductCarousel, { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
+import dynamic from 'next/dynamic'
+
 import { useProducts } from './useProducts'
+
+import ProductList from '@storystore/ui/dist/components/ProductList'
+import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
 import Link from '../../../Link'
 import { resolveImage } from '../../../../lib/resolveImage'
+
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
