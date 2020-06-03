@@ -1,5 +1,5 @@
-![CI badge](https://github.com/PMET-public/storystore-pwa/workflows/CI%20with%20Lighthouse/badge.svg?branch=develop)
-![Docker badge](https://github.com/PMET-public/storystore-pwa/workflows/build%20and%20publish%20to%20Docker%20Hub/badge.svg?branch=develop)
+![CI badge](https://github.com/PMET-public/storystore-pwa/workflows/CI%20with%20Lighthouse/badge.svg?branch=master)
+![Docker badge](https://github.com/PMET-public/storystore-pwa/workflows/build%20and%20publish%20to%20Docker%20Hub/badge.svg?branch=master)
 
 # StoryStore PWA
 
