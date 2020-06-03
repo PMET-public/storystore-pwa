@@ -64,8 +64,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductList
                 loadingMore={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ id, title, urlKey, image, price }: any) => ({
-                    _id: id,
+                items={data?.products?.items?.map(({ title, urlKey, image, price }: any) => ({
                     title: {
                         text: title,
                     },

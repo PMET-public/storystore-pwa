@@ -346,8 +346,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         <Title>You may also like</Title>
                         <ProductCarousel
                             loading={queries.product.loading && !product?.upsell}
-                            items={product.upsell.map(({ id, title, urlKey, image, price, options }: any) => ({
-                                _id: id,
+                            items={product.upsell.map(({ title, urlKey, image, price, options }: any) => ({
                                 title: {
                                     text: title,
                                 },
