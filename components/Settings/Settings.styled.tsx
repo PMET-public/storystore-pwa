@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const Root = styled.div`
-    background-color: ${props => props.theme.colors.onSurface15};
+    background-color: ${props => props.theme.colors.onSurface10};
     padding: 2rem;
     min-height: 100%;
 `

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
+import React, { FunctionComponent, useState, useCallback, useRef } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
 import { version, dependencies } from '~/package.json'
 import { setCookie, COOKIE } from '~/lib/cookies'
@@ -103,10 +103,10 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }
             <Title>Storefront Settings</Title>
             <Wrapper>
                 <Details>
-                    <Label>Version</Label>
-                    <Value>
-                        PWA {version} (UI {dependencies['@storystore/ui']})
-                    </Value>
+                    <Label>PWA Version</Label>
+                    <Value>{version}</Value>
+                    <Label>Magento Version</Label>
+                    <Value>***</Value>
                 </Details>
 
                 <Form

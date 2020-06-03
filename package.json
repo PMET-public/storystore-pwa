@@ -6,7 +6,8 @@
   "license": "MIT",
   "main": "server.js",
   "engines": {
-    "node": "10.x"
+    "node": "10.x",
+    "magento": ">= 2.3.5"
   },
   "scripts": {
     "dev": "npm run graphql:schema && next dev",
