@@ -1,0 +1,10 @@
+version: '3.0'
+services:
+  storystore-pwa:
+    build:
+      context: .
+  sut:
+    image: curlimages/curl
+    command: --fail http://storystore-pwa:3000
+    depends_on:
+      - storystore-pwa
