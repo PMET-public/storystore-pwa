@@ -1,7 +1,7 @@
 FROM node:10.20.1-slim AS stage1
 
 ENV MAGENTO_URL=https://venia.magento.com/graphql
-ENV HOME_PAGE_ID=home-luma-ui
+ENV GOOGLE_ANALYTICS=UA-168656142-1
 ENV DEMO_MODE=true
 
 RUN mkdir -p /pwa
@@ -21,8 +21,8 @@ RUN npm prune --production
 FROM node:10.20.1-slim
 
 ENV MAGENTO_URL=https://venia.magento.com/graphql
-ENV HOME_PAGE_ID=home-luma-ui
 ENV DEMO_MODE=true
+ENV GOOGLE_ANALYTICS=UA-168656142-1
 EXPOSE 3000
 
 COPY --from=stage1 /pwa /pwa

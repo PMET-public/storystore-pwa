@@ -16,7 +16,6 @@ jobs:
           npm run build
         env:
           MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
-          HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
       - name: run Lighthouse CI
         run: |
@@ -25,7 +24,6 @@ jobs:
           lhci autorun
         env:
           MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
-          HOME_PAGE_ID: home-luma-ui
           DEMO_MODE: true
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           # use typical linux docker ip (until host.docker.internal is supported)

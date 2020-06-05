@@ -15,8 +15,7 @@
     "build": "npm run graphql:schema && next build",
     "graphql:schema": "node lib/apollo/getGraphQLSchema.js",
     "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
-    "prettier": "prettier --check --write .",
-    "test": "jest"
+    "prettier": "prettier --check --write ."
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.3",
