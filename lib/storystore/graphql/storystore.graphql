@@ -1,4 +1,9 @@
 query StoryStoreQuery {
+    config: storeConfig {
+        id
+        version: storystore_pwa_magento_version
+    }
+
     content: storeConfig {
         id
 
