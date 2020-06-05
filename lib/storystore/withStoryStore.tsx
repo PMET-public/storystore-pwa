@@ -1,18 +1,22 @@
-import React, { createContext, Reducer, useReducer } from 'react'
+import React, { createContext, Reducer, useReducer, useEffect } from 'react'
 import { NextPage } from 'next'
-import { COOKIE, getCookie, setCookie } from '~/lib/cookies'
+import { COOKIE, getCookie, setCookie, deleteCookie } from '~/lib/cookies'
 import { getSettings } from '~/lib/getSettings'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
 import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
+import { useApolloClient } from '@apollo/react-hooks'
 
 import STORYSTORE_QUERY from './graphql/storystore.graphql'
 
 export type Settings = {
-    magentoUrl: string
+    version?: string
+    magentoUrl?: string
+    baseUrl?: string
+    googleMapsApiKey?: string
 
     // Content
-    defaultHomePageId: string
+    defaultHomePageId?: string
     homePageId?: string
     footerBlockId?: string
 
@@ -34,46 +38,49 @@ type ReducerActions =
           payload: string
       }
     | {
-          type: 'setSettings'
-          payload: { [key: string]: any }
+          type: 'setMagentoUrl'
+          payload: string
+      }
+    | {
+          type: 'reset'
       }
 
 const initialState: ReducerState = {
     cartId: '',
     settings: {
-        magentoUrl: process.env.MAGENTO_URL,
-        defaultHomePageId: 'home',
+        magentoUrl: '',
     },
 }
 
 export const StoryStoreContext = createContext({
     ...initialState,
-    setCartId: (payload: string) => {
-        payload
-    },
-    setSettings: (payload: { [key: string]: any }) => {
-        payload
-    },
+    setCartId: (_payload: string) => {},
+    setMagentoUrl: (_payload: string) => {},
+    reset: () => {},
 })
 
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
         case 'setCartId':
-            setCookie(COOKIE.cartId, action.payload, 365)
             return {
                 ...state,
                 cartId: action.payload,
             }
 
-        case 'setSettings':
-            setCookie(COOKIE.settings, JSON.stringify(action.payload), 365)
-
+        case 'setMagentoUrl':
             return {
                 ...state,
+                cartId: '',
                 settings: {
                     ...state.settings,
-                    ...action.payload,
+                    magentoUrl: action.payload,
                 },
+            }
+
+        case 'reset':
+            return {
+                ...state,
+                settings: {},
             }
 
         default:
@@ -83,6 +90,8 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
 export const withStoryStore = (PageComponent: NextPage<any>) => {
     const WithStoryStore = ({ cookie, ...pageProps }: any) => {
+        const apolloClient = useApolloClient()
+
         const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore' })
 
         const [state, dispatch] = useReducer(reducer, {
@@ -93,36 +102,58 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
 
                 // Cookie Overwrites
                 ...getSettings(cookie),
-
-                // StoryStore!
-                ...data?.content,
-
-                colors: data?.colors && {
-                    ...generateColorTheme({
-                        accent: data.colors.accent,
-                        onAccent: data.colors.onAccent,
-                        primary: data.colors.primary,
-                        onPrimary: data.colors.onPrimary,
-                        secondary: data.colors.secondary,
-                        onSecondary: data.colors.onSecondary,
-                        ...(data.colors.dark && {
-                            surface: '#222222',
-                            onSurface: '#ffffff',
-                        }),
-                    }),
-                },
             },
         })
+
+        const { cartId } = state
+
+        useEffect(() => {
+            if (cartId) setCookie(COOKIE.cartId, cartId ?? '', 365)
+            else deleteCookie(COOKIE.cartId)
+        }, [cartId])
 
         return (
             <StoryStoreContext.Provider
                 value={{
                     ...state,
+
+                    settings: {
+                        ...state.settings,
+
+                        // Config
+                        ...data?.config,
+
+                        // Content
+                        ...data?.content,
+
+                        colors: data?.colors && {
+                            ...generateColorTheme({
+                                accent: data.colors.accent,
+                                onAccent: data.colors.onAccent,
+                                primary: data.colors.primary,
+                                onPrimary: data.colors.onPrimary,
+                                secondary: data.colors.secondary,
+                                onSecondary: data.colors.onSecondary,
+                                ...(data.colors.dark && {
+                                    surface: '#222222',
+                                    onSurface: '#ffffff',
+                                }),
+                            }),
+                        },
+                    },
+
                     setCartId: payload => {
                         dispatch({ type: 'setCartId', payload })
                     },
-                    setSettings: payload => {
-                        dispatch({ type: 'setSettings', payload })
+                    setMagentoUrl: payload => {
+                        dispatch({ type: 'setMagentoUrl', payload })
+                        setCookie(COOKIE.settings, JSON.stringify({ magentoUrl: payload }), 365)
+                        apolloClient?.resetStore().catch(() => {})
+                    },
+                    reset: () => {
+                        dispatch({ type: 'reset' })
+                        deleteCookie(COOKIE.settings)
+                        apolloClient?.resetStore().catch(() => {})
                     },
                 }}
             >

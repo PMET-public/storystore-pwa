@@ -1,7 +1,7 @@
 query StoryStoreQuery {
     config: storeConfig {
         id
-        magentoUrl: base_url
+        baseUrl: base_url
         version: storystore_pwa_magento_version
         googleMapsApiKey: storystore_pwa_google_maps_api_key
     }

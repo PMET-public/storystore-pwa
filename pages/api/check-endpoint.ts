@@ -38,7 +38,6 @@ export type ErrorResponse = {
 export type Response = {
     magentoVersion?: string
     magentoDependency?: string
-    storyStoreModule?: boolean
     redirectTo?: string
     errors?: ErrorResponse[]
 }
@@ -76,25 +75,39 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             errorPolicy: 'ignore',
         })
 
+        // Check if the StoryStory Module is installed
+        // if (!data?.storeConfig.version) {
+        //     return res.send({
+        //         magentoDependency,
+        //         errors: [
+        //             {
+        //                 level: ErrorLevels.ERROR,
+        //                 key: Fields.magentoUrl,
+        //                 message: ErrorMessages.MISSING_STORYSTORE,
+        //             },
+        //         ],
+        //     })
+        // }
+
         // Get version of Magento Instance
         const magentoVersion = semver.coerce(data?.storeConfig.version)?.version ?? '2.3.4'
-        // Check if the StoryStory Module is installed
-        const storyStoreModule = Boolean(data?.storeConfig.version)
 
         // Releases Redirect URLS
         const latestReleaseRedirectUrl = process.env.LATEST_RELEASE_REDIRECT_URL && new URL(process.env.LATEST_RELEASE_REDIRECT_URL)
         const prevReleaseRedirectUrl = process.env.PREV_RELEASE_REDIRECT_URL && new URL(process.env.PREV_RELEASE_REDIRECT_URL)
 
-        // TODO: Comment
+        // If request is coming from the Previous environment, check if the Latest environment supports it.
         if (includeOtherReleases === 1 && latestReleaseRedirectUrl && req.headers.host !== latestReleaseRedirectUrl.host) {
-            const latest = await fetch(new URL(`/api/check-endpoint?url=${url}&includeOtherReleases=0`, latestReleaseRedirectUrl.href).href).then(r => r.json())
+            try {
+                const latest = await fetch(new URL(`/api/check-endpoint?url=${url}&includeOtherReleases=0`, latestReleaseRedirectUrl.href).href).then(r => r.json())
 
-            if (!latest.errors) {
-                return res.send({
-                    ...latest,
-                    redirectTo: latestReleaseRedirectUrl.href,
-                })
-            }
+                if (!latest.errors) {
+                    return res.send({
+                        ...latest,
+                        redirectTo: latestReleaseRedirectUrl.href,
+                    })
+                }
+            } catch (error) {}
         }
 
         // If the Magento Instance is supported ...
@@ -103,20 +116,21 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
 
             /** ... lets check if the previous release supports this version of Magento */
             if (includeOtherReleases === 1 && prevReleaseRedirectUrl && req.headers.host !== prevReleaseRedirectUrl.host) {
-                const prev = await fetch(new URL(`/api/check-endpoint?url=${url}&includeOtherReleases=0`, prevReleaseRedirectUrl).href).then(r => r.json())
+                try {
+                    const prev = await fetch(new URL(`/api/check-endpoint?url=${url}&includeOtherReleases=0`, prevReleaseRedirectUrl).href).then(r => r.json())
 
-                if (!prev.errors) {
-                    return res.send({
-                        ...prev,
-                        redirectTo: prevReleaseRedirectUrl.href,
-                    })
-                }
+                    if (!prev.errors) {
+                        return res.send({
+                            ...prev,
+                            redirectTo: prevReleaseRedirectUrl.href,
+                        })
+                    }
+                } catch (error) {}
             }
 
             return res.send({
                 magentoVersion,
                 magentoDependency,
-                storyStoreModule,
                 errors: [
                     {
                         level: ErrorLevels.ERROR,
@@ -131,7 +145,6 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
         return res.send({
             magentoVersion,
             magentoDependency,
-            storyStoreModule,
         })
     } catch (error) {
         res.status(error.networkError?.statusCode ?? 500)

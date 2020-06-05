@@ -21,19 +21,16 @@ export const Title = styled.h2`
 
 export const Details = styled.div`
     display: grid;
-    grid-auto-rows: max-content;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
     font-size: 1.4rem;
     color: ${props => props.theme.colors.onSurace90};
-    grid-gap: 2rem;
+    grid-gap: 1rem;
     align-items: center;
 `
 
 export const Label = styled.div`
     font-weight: ${props => props.theme.typography.heading.weight.bold};
-
-    @media ${props => props.theme.breakpoints.untilMedium} {
-        padding: 0.5rem;
-    }
 `
 
 export const Value = styled.div``

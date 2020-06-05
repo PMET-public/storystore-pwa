@@ -1,16 +1,12 @@
 import React, { FunctionComponent, useState, useCallback, useRef } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
-import { version, dependencies } from '~/package.json'
-import { setCookie, COOKIE } from '~/lib/cookies'
+import { version } from '~/package.json'
 
-import { useRouter } from 'next/router'
-import { useApolloClient } from '@apollo/react-hooks'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
 import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
-import { useCart } from '~/components/Cart/useCart'
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
@@ -22,22 +18,14 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-type SettingsProps = {
-    defaultMagentoUrl: string
-}
+type SettingsProps = {}
 
-export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }) => {
-    const { settings, setSettings, setCartId } = useStoryStore()
-
-    const apolloClient = useApolloClient()
-
-    const router = useRouter()
+export const Settings: FunctionComponent<SettingsProps> = () => {
+    const { settings, setMagentoUrl, reset } = useStoryStore()
 
     const formRef = useRef<FormContext>()
 
     const [saving, setSaving] = useState(false)
-
-    const cart = useCart()
 
     const handleInputOnFocus = useCallback((event: FocusEvent) => {
         // @ts-ignore
@@ -48,9 +36,8 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }
         async payload => {
             setSaving(true)
 
-            try {
-                // Validate
-                if (payload.magentoUrl) {
+            if (payload.magentoUrl) {
+                try {
                     payload.magentoUrl = addCredentialsToMagentoUrls(payload.magentoUrl)
 
                     const res = await fetch(`/api/check-endpoint?url=${payload.magentoUrl}`)
@@ -63,40 +50,27 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }
                         })
                         throw Error
                     }
+
+                    setMagentoUrl(payload.magentoUrl)
+
+                    toast.success('👍 Saved!')
+                } catch (e) {
+                    console.error(e)
+                    toast.error('💩 There was an issue. Try again.')
                 }
-
-                // Save in StoryStore Context
-                setSettings(payload)
-
-                // Reset Store Cart if Changing URL
-                if (payload.magentoUrl !== formRef.current?.getValues().magentoUrl) {
-                    const cartId = await cart.api.createCart()
-                    setCartId(cartId)
-                }
-
-                // Reset Apollo Store
-                await apolloClient?.resetStore()
-
-                // Refresh
-                router.push('/settings')
-                toast.success('👍 Saved!')
-            } catch (e) {
-                console.error(e)
-                toast.error('💩 There was an issue. Try again.')
             }
 
             setSaving(false)
         },
-        [router, apolloClient, setCartId, setSettings, setSaving, formRef, cart]
+        [setMagentoUrl, setSaving, formRef]
     )
 
     const handleOnResetToDefaults = useCallback(async () => {
-        await handleSaveOverrides({
-            magentoUrl: defaultMagentoUrl,
-        })
-
-        setCookie(COOKIE.settings, '{}', 365)
-    }, [handleSaveOverrides, defaultMagentoUrl])
+        setSaving(true)
+        reset()
+        toast.success('👍 Saved!')
+        setSaving(false)
+    }, [reset, setSaving])
 
     return (
         <Root>
@@ -105,17 +79,20 @@ export const Settings: FunctionComponent<SettingsProps> = ({ defaultMagentoUrl }
                 <Details>
                     <Label>PWA Version</Label>
                     <Value>{version}</Value>
+                </Details>
+
+                <Details>
                     <Label>Magento Version</Label>
-                    <Value>***</Value>
+                    <Value>{settings.version || 'n/a'}</Value>
                 </Details>
 
                 <Form
+                    key={settings.baseUrl}
                     options={{
                         mode: 'onSubmit',
                         reValidateMode: 'onSubmit',
                         defaultValues: {
-                            ...settings,
-                            magentoUrl: settings.magentoUrl ?? defaultMagentoUrl,
+                            magentoUrl: settings.baseUrl,
                         },
                     }}
                     onSubmit={handleSaveOverrides}
