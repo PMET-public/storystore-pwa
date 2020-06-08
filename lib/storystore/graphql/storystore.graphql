@@ -1,31 +1,27 @@
 query StoryStoreQuery {
-    config: storeConfig {
+    storyStore: storeConfig {
         id
+
+        # Config
         baseUrl: base_url
         version: storystore_pwa_magento_version
         googleMapsApiKey: storystore_pwa_google_maps_api_key
-    }
 
-    content: storeConfig {
-        id
-
+        # Content
         defaultHomePageId: cms_home_page
         homePageId: storystore_pwa_home_page
         footerBlockId: storystore_pwa_footer_block
-    }
 
-    colors: storeConfig {
-        id
+        # Colors
+        colorDark: storystore_pwa_dark_mode
 
-        dark: storystore_pwa_dark_mode
+        colorAccent: storystore_pwa_accent_surface
+        colorOnAccent: storystore_pwa_accent_content
 
-        accent: storystore_pwa_accent_surface
-        onAccent: storystore_pwa_accent_content
+        colorPrimary: storystore_pwa_primary_surface
+        colorOnPrimary: storystore_pwa_primary_content
 
-        primary: storystore_pwa_primary_surface
-        onPrimary: storystore_pwa_primary_content
-
-        secondary: storystore_pwa_secondary_surface
-        onSecondary: storystore_pwa_secondary_content
+        colorSecondary: storystore_pwa_secondary_surface
+        colorOnSecondary: storystore_pwa_secondary_content
     }
 }
