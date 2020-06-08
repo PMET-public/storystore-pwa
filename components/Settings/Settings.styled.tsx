@@ -40,3 +40,21 @@ export const Buttons = styled.div`
     grid-auto-rows: 1fr;
     grid-gap: 1rem;
 `
+
+export const WarningList = styled.ul``
+
+export const WarningItem = styled.li`
+    background-color: ${props => props.theme.colors.warning5};
+    border: 0.2rem solid ${props => props.theme.colors.warning50};
+    padding: 1rem;
+    display: grid;
+    grid-gap: 1rem;
+    grid-auto-flow: column;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+
+    & > svg {
+        width: 2rem;
+        fill: ${props => props.theme.colors.warning};
+    }
+`

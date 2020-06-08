@@ -1,6 +1,8 @@
 import React, { FunctionComponent, useState, useCallback, useRef } from 'react'
-import { Root, Wrapper, Buttons, Title, Details, Label, Value } from './Settings.styled'
+import { Root, Wrapper, Buttons, Title, Details, Label, Value, WarningList, WarningItem } from './Settings.styled'
 import { version } from '~/package.json'
+
+import IconWarning from 'remixicon/icons/System/error-warning-line.svg'
 
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 
@@ -117,6 +119,15 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                         </Button>
                     </Buttons>
                 </Form>
+
+                <WarningList>
+                    {!settings.version && (
+                        <WarningItem>
+                            <IconWarning />
+                            You are missing StoryStore Module
+                        </WarningItem>
+                    )}
+                </WarningList>
             </Wrapper>
         </Root>
     )
