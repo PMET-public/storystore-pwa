@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useState, useCallback, useRef } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value, WarningList, WarningItem } from './Settings.styled'
-import { version } from '~/package.json'
+import semver from 'semver'
+import { version, magentoDependency } from '~/package.json'
 
 import IconWarning from 'remixicon/icons/System/error-warning-line.svg'
 
@@ -53,6 +54,10 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                         throw Error
                     }
 
+                    if (data?.redirectTo) {
+                        window.location.href = new URL('/settings', data.redirectTo).href
+                    }
+
                     setMagentoUrl(payload.magentoUrl)
 
                     toast.success('👍 Saved!')
@@ -73,6 +78,8 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
         toast.success('👍 Saved!')
         setSaving(false)
     }, [reset, setSaving])
+
+    const magentoVersion = semver.coerce(settings.version)?.version ?? '2.3.4'
 
     return (
         <Root>
@@ -121,6 +128,13 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                 </Form>
 
                 <WarningList>
+                    {magentoVersion && !semver.satisfies(magentoVersion, magentoDependency) && (
+                        <WarningItem $type="error">
+                            <IconWarning />
+                            This Magento Admin is not longer compatible with this Storefront. Please use Magento {magentoDependency}
+                        </WarningItem>
+                    )}
+
                     {!settings.version && (
                         <WarningItem>
                             <IconWarning />

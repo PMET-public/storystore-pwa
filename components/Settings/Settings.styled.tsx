@@ -41,11 +41,14 @@ export const Buttons = styled.div`
     grid-gap: 1rem;
 `
 
-export const WarningList = styled.ul``
+export const WarningList = styled.ul`
+    display: grid;
+    grid-gap: 1rem;
+`
 
-export const WarningItem = styled.li`
-    background-color: ${props => props.theme.colors.warning5};
-    border: 0.2rem solid ${props => props.theme.colors.warning50};
+export const WarningItem = styled.li<{ $type?: 'warning' | 'error' }>`
+    background-color: ${props => (props.$type === 'error' ? props.theme.colors.error5 : props.theme.colors.warning5)};
+    border: 0.2rem solid ${props => (props.$type === 'error' ? props.theme.colors.error50 : props.theme.colors.warning50)};
     padding: 1rem;
     display: grid;
     grid-gap: 1rem;
@@ -55,6 +58,6 @@ export const WarningItem = styled.li`
 
     & > svg {
         width: 2rem;
-        fill: ${props => props.theme.colors.warning};
+        fill: ${props => (props.$type === 'error' ? props.theme.colors.error : props.theme.colors.warning)};
     }
 `
