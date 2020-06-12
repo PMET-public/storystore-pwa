@@ -1,15 +1,14 @@
-import React, { FunctionComponent, useState, useCallback, useRef } from 'react'
-import { Root, Wrapper, Buttons, Title, Details, Label, Value, WarningList, WarningItem } from './Settings.styled'
-import semver from 'semver'
-import { version, magentoDependency } from '~/package.json'
-
-import IconWarning from 'remixicon/icons/System/error-warning-line.svg'
+import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
+import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, ErrorItem } from './Settings.styled'
+import { version } from '~/package.json'
 
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useSettings } from './useSettings'
 
 import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
+import Loader from '@storystore/ui/dist/components/Loader'
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
@@ -26,9 +25,40 @@ type SettingsProps = {}
 export const Settings: FunctionComponent<SettingsProps> = () => {
     const { settings, setMagentoUrl, reset } = useStoryStore()
 
+    const [saving, setSaving] = useState(false)
+
+    const { data, loading: _loading } = useSettings()
+
+    const loading = saving || _loading
+
     const formRef = useRef<FormContext>()
 
-    const [saving, setSaving] = useState(false)
+    const [notices, setNotices] = useState<{ [key: string]: any } | undefined>()
+
+    const handleCheckEndpoint = useCallback(
+        async (url: string) => {
+            const magentoUrl = addCredentialsToMagentoUrls(url)
+
+            const res = await fetch(`/api/check-endpoint?url=${magentoUrl}`)
+
+            const data: Response = await res.json()
+
+            setNotices({ magentoUrl, ...data })
+
+            if (data?.errors) {
+                data.errors.forEach(error => {
+                    formRef.current?.setError(error.key, error.level, error.message)
+                })
+
+                if (data.errors.find(e => e.level === 'error')) {
+                    throw new Error()
+                }
+            }
+
+            return { magentoUrl, ...data }
+        },
+        [formRef, setNotices]
+    )
 
     const handleInputOnFocus = useCallback((event: FocusEvent) => {
         // @ts-ignore
@@ -38,53 +68,41 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
     const handleSaveOverrides = useCallback(
         async payload => {
             setSaving(true)
+            // setNotices(undefined)
 
             if (payload.magentoUrl) {
                 try {
-                    payload.magentoUrl = addCredentialsToMagentoUrls(payload.magentoUrl)
-
-                    const res = await fetch(`/api/check-endpoint?url=${payload.magentoUrl}`)
-
-                    const data: Response = await res.json()
-
-                    if (data?.errors) {
-                        data.errors.forEach(error => {
-                            formRef.current?.setError(error.key, error.level, error.message)
-                        })
-                        throw Error
-                    }
-
-                    if (data?.redirectTo) {
-                        window.location.href = new URL('/settings', data.redirectTo).href
-                    }
-
-                    setMagentoUrl(payload.magentoUrl)
-
+                    const res = await handleCheckEndpoint(payload.magentoUrl)
+                    if (res?.magentoUrl) setMagentoUrl(res.magentoUrl)
                     toast.success('👍 Saved!')
-                } catch (e) {
-                    console.error(e)
+                } catch (error) {
                     toast.error('💩 There was an issue. Try again.')
                 }
             }
-
             setSaving(false)
         },
-        [setMagentoUrl, setSaving, formRef]
+        [setMagentoUrl, setSaving, handleCheckEndpoint]
     )
 
     const handleOnResetToDefaults = useCallback(async () => {
         setSaving(true)
+        setNotices(undefined)
+        formRef.current?.reset()
         reset()
         toast.success('👍 Saved!')
         setSaving(false)
-    }, [reset, setSaving])
+    }, [reset, setSaving, formRef])
 
-    const magentoVersion = semver.coerce(settings.version)?.version ?? '2.3.4'
+    useEffect(() => {
+        if (data?.config.baseUrl) {
+            handleCheckEndpoint(data.config.baseUrl)
+        }
+    }, [data, handleCheckEndpoint])
 
     return (
         <Root>
-            <Title>Storefront Settings</Title>
             <Wrapper>
+                <Title>Storefront Settings</Title>
                 <Details>
                     <Label>PWA Version</Label>
                     <Value>{version}</Value>
@@ -96,53 +114,71 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                 </Details>
 
                 <Form
-                    key={settings.baseUrl}
+                    key={data?.config.baseUrl}
                     options={{
                         mode: 'onSubmit',
                         reValidateMode: 'onSubmit',
-                        defaultValues: {
-                            magentoUrl: settings.baseUrl,
-                        },
                     }}
                     onSubmit={handleSaveOverrides}
                     ref={formRef}
                 >
                     <Input
                         name="magentoUrl"
+                        disabled={loading}
                         label="Magento URL"
                         style={{ textOverflow: 'ellipsis' }}
                         onFocus={handleInputOnFocus}
+                        defaultValue={data?.config.baseUrl}
                         rules={{
                             pattern: /https?:\/\/(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
                         }}
                     />
 
                     <Buttons>
-                        <Button type="submit" loading={saving}>
+                        <Button type="submit" loading={saving} disabled={loading}>
                             Save Changes
                         </Button>
-                        <Button disabled={saving} type="button" secondary onClick={handleOnResetToDefaults}>
+                        <Button disabled={loading} type="button" secondary onClick={handleOnResetToDefaults}>
                             Reset to Defaults
                         </Button>
                     </Buttons>
                 </Form>
-
-                <WarningList>
-                    {magentoVersion && !semver.satisfies(magentoVersion, magentoDependency) && (
-                        <WarningItem $type="error">
-                            <IconWarning />
-                            This Magento Admin is not longer compatible with this Storefront. Please use Magento {magentoDependency}
-                        </WarningItem>
-                    )}
-
-                    {!settings.version && (
-                        <WarningItem>
-                            <IconWarning />
-                            You are missing StoryStore Module
-                        </WarningItem>
-                    )}
-                </WarningList>
             </Wrapper>
+
+            <RootErrors>
+                {loading ? (
+                    <Loader />
+                ) : (
+                    notices && (
+                        <React.Fragment>
+                            {/* Offer to use Previous Version */}
+                            {notices.redirectToPrevious && (
+                                <ErrorItem $level="error">
+                                    PWA Storefront {version} only supports Magento {notices.magentoDependency}. No worries, you can still use the previous version.
+                                    <Button as="a" href={notices.redirectToPrevious}>
+                                        <span>📦</span> Switch to previous release
+                                    </Button>
+                                </ErrorItem>
+                            )}
+
+                            {/* Depracated Message */}
+                            {notices.legacy && (
+                                <ErrorItem $level="warning">
+                                    You are using a deprecated release of the PWA Storefront.
+                                    {notices.redirectToLatest && (
+                                        <Button as="a" href={notices.redirectToLatest}>
+                                            <span>🎉</span> Switch to latest release
+                                        </Button>
+                                    )}
+                                </ErrorItem>
+                            )}
+
+                            {/* StoryStore Module missing */}
+                            {notices.missingStoryStore && <ErrorItem $level="warning">Missing StoryStore</ErrorItem>}
+                        </React.Fragment>
+                    )
+                )}
+            </RootErrors>
         </Root>
     )
 }

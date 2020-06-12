@@ -97,7 +97,7 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
     const WithStoryStore = ({ cookie, ...pageProps }: any) => {
         const apolloClient = useApolloClient()
 
-        const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore' })
+        const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore', returnPartialData: true })
 
         const [state, dispatch] = useReducer(reducer, {
             ...initialState,

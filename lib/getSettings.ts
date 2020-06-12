@@ -1,7 +1,7 @@
 import { getCookie, getCookieValueFromString, COOKIE } from './cookies'
 
 export const getSettings = (cookie?: string) => {
-    if (!Boolean(process.env.DEMO_MODE)) {
+    if (!Boolean(process.env.CLOUD_MODE)) {
         return {}
     }
 

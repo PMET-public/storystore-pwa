@@ -12,7 +12,7 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
             magentoUrl: process.env.MAGENTO_URL,
         }
 
-        if (Boolean(process.env.DEMO_MODE)) {
+        if (Boolean(process.env.CLOUD_MODE)) {
             settings = {
                 ...settings,
                 ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
@@ -35,7 +35,7 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
         const proxy = httpx
             .request(magentoUrl, options, res => {
                 // Set Cache Headers – for Now.sh Edge
-                if (Boolean(!process.env.DEMO_MODE)) {
+                if (Boolean(!process.env.CLOUD_MODE)) {
                     res.headers['Cache-Control'] = 's-maxage=1, stale-while-revalidate'
                 }
 

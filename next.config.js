@@ -9,7 +9,7 @@ module.exports = withOffline({
     // Build environment variables
     env: {
         GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
-        DEMO_MODE: process.env.DEMO_MODE,
+        CLOUD_MODE: process.env.CLOUD_MODE,
     },
     dontAutoRegisterSw: true,
     generateSw: false,

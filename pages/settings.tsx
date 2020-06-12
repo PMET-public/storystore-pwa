@@ -14,7 +14,7 @@ type SettingsProps = {
 const Settings: NextPage<SettingsProps> = () => {
     return (
         <App>
-            {Boolean(process.env.DEMO_MODE) ? (
+            {Boolean(process.env.CLOUD_MODE) ? (
                 <SettingsTemplate />
             ) : (
                 <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>

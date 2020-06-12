@@ -16,7 +16,7 @@ const proxyGraphQl = async (request: NextApiRequest, response: NextApiResponse) 
             magentoUrl: process.env.MAGENTO_URL,
         }
 
-        if (Boolean(process.env.DEMO_MODE)) {
+        if (Boolean(process.env.CLOUD_MODE)) {
             settings = {
                 ...settings,
                 ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
