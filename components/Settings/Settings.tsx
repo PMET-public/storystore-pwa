@@ -162,7 +162,7 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                             )}
 
                             {/* Depracated Message */}
-                            {notices.legacy && (
+                            {notices.upgrade && (
                                 <ErrorItem $level="warning">
                                     You are using a deprecated release of the PWA Storefront.
                                     {notices.redirectToLatest && (

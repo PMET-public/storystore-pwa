@@ -42,7 +42,7 @@ export type Response = {
     redirectToPrevious?: string
     redirectToLatest?: string
     missingStoryStore?: boolean
-    legacy?: boolean
+    upgrade?: boolean
     errors?: ErrorResponse[]
 }
 
@@ -87,7 +87,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
         const latestReleaseRedirectUrl = process.env.LATEST_RELEASE_REDIRECT_URL && new URL('/settings', process.env.LATEST_RELEASE_REDIRECT_URL)
         const prevReleaseRedirectUrl = process.env.PREV_RELEASE_REDIRECT_URL && new URL('/settings', process.env.PREV_RELEASE_REDIRECT_URL)
         const missingStoryStore = !data
-        const legacy = (!!prevReleaseRedirectUrl && req.headers.host === prevReleaseRedirectUrl.host) ?? undefined
+        const upgrade = (latestReleaseRedirectUrl && req.headers.host !== latestReleaseRedirectUrl.host) || undefined
 
         let redirectToPrevious, redirectToLatest
 
@@ -122,7 +122,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
                 redirectToPrevious,
                 redirectToLatest,
                 missingStoryStore,
-                legacy,
+                upgrade,
                 errors: [
                     {
                         level: ErrorLevels.ERROR,
@@ -140,7 +140,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
             redirectToPrevious,
             redirectToLatest,
             missingStoryStore,
-            legacy,
+            upgrade,
         })
     } catch (error) {
         res.status(error.networkError?.statusCode ?? 500)
