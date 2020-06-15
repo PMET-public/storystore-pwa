@@ -40,7 +40,7 @@ import TextSwatches from '@storystore/ui/dist/components/Form/TextSwatches'
 import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import PageBuilder from '~/components/PageBuilder'
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 

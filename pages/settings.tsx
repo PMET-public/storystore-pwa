@@ -11,11 +11,11 @@ type SettingsProps = {
     defaultMagentoUrl: string
 }
 
-const Settings: NextPage<SettingsProps> = ({ defaultMagentoUrl }) => {
+const Settings: NextPage<SettingsProps> = () => {
     return (
         <App>
-            {Boolean(process.env.DEMO_MODE) ? (
-                <SettingsTemplate defaultMagentoUrl={defaultMagentoUrl} />
+            {Boolean(process.env.CLOUD_MODE) ? (
+                <SettingsTemplate />
             ) : (
                 <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
                     Disabled
@@ -23,13 +23,6 @@ const Settings: NextPage<SettingsProps> = ({ defaultMagentoUrl }) => {
             )}
         </App>
     )
-}
-
-// Enable next.js ssr
-Settings.getInitialProps = async () => {
-    return {
-        defaultMagentoUrl: process.env.MAGENTO_URL,
-    }
 }
 
 export default withApollo(withStoryStore(Settings))

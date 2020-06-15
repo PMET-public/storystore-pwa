@@ -19,7 +19,7 @@ const Search: NextPage<SearchProps> = ({}) => {
 
 // Enable next.js ssr
 Search.getInitialProps = async ({ res }) => {
-    if (!Boolean(process.env.DEMO_MODE)) {
+    if (!Boolean(process.env.CLOUD_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
     return {}
