@@ -12,7 +12,7 @@ module.exports = withOffline({
         FOOTER_BLOCK_ID: process.env.FOOTER_BLOCK_ID,
         GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
         GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
-        DEMO_MODE: process.env.DEMO_MODE,
+        CLOUD_MODE: process.env.CLOUD_MODE,
     },
     dontAutoRegisterSw: true,
     generateSw: false,
