@@ -9,7 +9,7 @@ import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCaro
 import Link from '../../../Link'
 import { resolveImage } from '../../../../lib/resolveImage'
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
