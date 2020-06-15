@@ -9,7 +9,7 @@ export const Root = styled.div`
     display: grid;
     grid-gap: 4rem;
     grid-auto-rows: max-content;
-    background-color: ${props => props.theme.colors.onSurface5};
+    background-color: ${props => props.theme.colors.onSurface10};
     max-width: 95rem;
     box-shadow: -0.2rem 0 1rem rgba(0, 0, 0, 0.15) inset;
 `
@@ -77,4 +77,15 @@ export const ErrorItem = styled.li<{ $level?: 'warning' | 'error' | 'notice' }>`
             grid-gap: 0.5rem;
         }
     }
+`
+
+export const ErrorItemContent = styled.div`
+    display: flex;
+    align-items: center;
+`
+
+export const ErrorItemIcon = styled.span`
+    font-size: 2em;
+    padding-right: 1rem;
+    fill: currentColor;
 `

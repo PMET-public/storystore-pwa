@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
-import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, ErrorItem } from './Settings.styled'
+import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, ErrorItem, ErrorItemContent, ErrorItemIcon } from './Settings.styled'
 import { version } from '~/package.json'
 
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
@@ -154,7 +154,10 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                             {/* Offer to use Previous Version */}
                             {notices.redirectToPrevious && (
                                 <ErrorItem $level="error">
-                                    PWA Storefront {version} only supports Magento {notices.magentoDependency}. No worries, you can still use the previous version.
+                                    <ErrorItemContent>
+                                        <ErrorItemIcon>😑</ErrorItemIcon>
+                                        PWA Storefront {version} only supports Magento {notices.magentoDependency}. No worries, you can still use the previous version.
+                                    </ErrorItemContent>
                                     <Button as="a" href={notices.redirectToPrevious}>
                                         <span>📦</span> Switch to previous release
                                     </Button>
@@ -164,17 +167,31 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                             {/* Depracated Message */}
                             {notices.upgrade && (
                                 <ErrorItem $level="warning">
-                                    You are using a deprecated release of the PWA Storefront.
-                                    {notices.redirectToLatest && (
-                                        <Button as="a" href={notices.redirectToLatest}>
-                                            <span>🎉</span> Switch to latest release
-                                        </Button>
-                                    )}
+                                    <ErrorItemContent>
+                                        <ErrorItemIcon>😑</ErrorItemIcon>
+                                        You are using a deprecated release of the PWA Storefront. Please make sure to use the latest release of Magento to enable the latest PWA Storefront.
+                                        {notices.redirectToLatest && (
+                                            <Button as="a" href={notices.redirectToLatest}>
+                                                <span>🎉</span> Switch to latest release
+                                            </Button>
+                                        )}
+                                    </ErrorItemContent>
                                 </ErrorItem>
                             )}
 
                             {/* StoryStore Module missing */}
-                            {notices.missingStoryStore && <ErrorItem $level="warning">Missing StoryStore</ErrorItem>}
+                            {notices.missingStoryStore && (
+                                <ErrorItem $level="warning">
+                                    <ErrorItemContent>
+                                        <ErrorItemIcon>🥺</ErrorItemIcon>
+                                        Your Magento seems to be missing the StoryStore Module. Please install in order to personalize the PWA Storefront.
+                                    </ErrorItemContent>
+
+                                    <Button as="a" href="https://github.com/PMET-public/module-storystore" target="_blank">
+                                        <span>💅</span> Install StoryStore Module
+                                    </Button>
+                                </ErrorItem>
+                            )}
                         </React.Fragment>
                     )
                 )}
