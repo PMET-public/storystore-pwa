@@ -81,16 +81,16 @@ export const useProducts = (props: UseFiltersProps) => {
                     break
 
                 case 'match':
-                    value = { in: [..._values] }
+                    value = { in: typeof _values === 'string' ? _values : [..._values] }
                     break
 
                 case 'equal':
-                    value = { in: [..._values] }
+                    value = { in: typeof _values === 'string' ? _values : [..._values] }
                     break
 
                 default:
                     // let's do "match" as default
-                    value = { match: _values[0] }
+                    value = { match: typeof _values === 'string' ? _values : _values[0] }
                     break
             }
 
