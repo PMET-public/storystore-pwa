@@ -139,6 +139,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
      * Google Analytics
      */
     useEffect(() => {
+        if (!process.env.GOOGLE_ANALYTICS) return
         ReactGA.set({ dimension1: version }) // version
 
         ReactGA.set({ dimension2: window.location.host }) // release
