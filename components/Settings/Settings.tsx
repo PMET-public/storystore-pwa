@@ -170,12 +170,12 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                                     <ErrorItemContent>
                                         <ErrorItemIcon>😑</ErrorItemIcon>
                                         You are using a deprecated release of the PWA Storefront. Please make sure to use the latest release of Magento to enable the latest PWA Storefront.
-                                        {notices.redirectToLatest && (
-                                            <Button as="a" href={notices.redirectToLatest}>
-                                                <span>🎉</span> Switch to latest release
-                                            </Button>
-                                        )}
                                     </ErrorItemContent>
+                                    {notices.redirectToLatest && (
+                                        <Button as="a" href={notices.redirectToLatest}>
+                                            <span>🎉</span> Switch to latest release
+                                        </Button>
+                                    )}
                                 </ErrorItem>
                             )}
 
