@@ -1,3 +1,4 @@
 declare module 'jarallax' {
-    export default any
+    export const jarallax: any
+    export const jarallaxVideo: any
 }

@@ -9,15 +9,32 @@ const props = (elem: HTMLElement) => {
 
     const { appearance, backgroundImages } = elem.dataset
 
-    const background: ContentWithBackgroundProps = {
-        backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
-    }
-
     const fullScreen = elem.classList.contains('full-screen')
 
     const enableParallax = elem.dataset.enableParallax === '1'
 
     const parallaxSpeed = parseFloat(elem.dataset.parallaxSpeed || '1')
+
+    const background: ContentWithBackgroundProps = {
+        backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
+        video:
+            elem.dataset.backgroundType === 'video'
+                ? {
+                      src: elem.dataset.videoSrc,
+                      fallbackSrc: elem.dataset.videoFallbackSrc,
+                      loop: elem.dataset.videoLoop === 'true',
+                      playOnlyVisible: elem.dataset.videoPlayOnlyVisible === 'true',
+                      lazyLoading: elem.dataset.videoLazyLoad === 'true',
+                  }
+                : undefined,
+    }
+
+    if (elem.dataset.backgroundType === 'video') {
+        style.backgroundColor =
+            appearance === 'full-width' || appearance === 'full-bleed'
+                ? elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videOverlayColor
+                : (elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videoOverlayColor) || null
+    }
 
     return {
         /**

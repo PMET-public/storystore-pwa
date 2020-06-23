@@ -2,8 +2,11 @@ import React, { useMemo, useRef, useEffect } from 'react'
 import { Component, Props } from '@storystore/ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 import { LazyImageFull, ImageState } from 'react-lazy-images'
-
+import { BackgroundVideoProps } from './BackgroundVideo'
 import { useImage, ImgSrc } from '@storystore/ui/dist/hooks/useImage'
+import dynamic from 'next/dynamic'
+
+const BackgroundVideo = dynamic(() => import('./BackgroundVideo'), { ssr: false })
 
 export type ParallaxProps = {
     speed: number
@@ -13,10 +16,11 @@ export type ContentWithBackgroundProps = Props<{
     backgroundImages?: ImgSrc
     fullScreen?: boolean
     parallax?: ParallaxProps
+    video?: BackgroundVideoProps
 }>
 
-export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, fullScreen, parallax, children, style, ...props }) => {
-    const backgroundRef = useRef(null)
+export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, video, fullScreen, parallax, children, style, ...props }) => {
+    const backgroundRef = useRef<HTMLDivElement>(null)
 
     const backgroundElem = backgroundRef.current
 
@@ -43,29 +47,38 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
 
     // Parallax
     useEffect(() => {
-        if (!backgroundElem || !parallax) return
+        if (!backgroundElem) return
 
-        const { jarallax } = require('jarallax')
+        let jarallax: any
 
-        const { speed } = parallax
+        if (!video && parallax && backgroundElem) {
+            const { jarallax: _jarallax } = require('jarallax')
 
-        jarallax(backgroundElem, {
-            speed,
-            imgSize: styles.background.backgroundSize,
-            imgPosition: styles.background.backgroundPositionX,
-            imgRepeat: styles.background.backgroundRepeatX ? 'repeat' : 'no-repeat',
-        })
+            jarallax = _jarallax
+
+            jarallax(backgroundElem, {
+                speed: parallax.speed,
+                imgSize: styles.background.backgroundSize,
+                imgPosition: styles.background.backgroundPositionX,
+                imgRepeat: styles.background.backgroundRepeatX ? 'repeat' : 'no-repeat',
+            })
+        }
 
         return () => {
-            jarallax(backgroundElem, 'destroy')
+            if (jarallax) {
+                jarallax(backgroundElem, 'destroy')
+            }
         }
-    }, [backgroundElem, parallax, styles.background.backgroundSize, styles.background.backgroundPositionX, styles.background.backgroundRepeatX])
+    }, [backgroundElem, parallax, video, styles.background.backgroundSize, styles.background.backgroundPositionX, styles.background.backgroundRepeatX])
 
     return (
-        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor || 'transparent'} style={styles.wrapper} {...props}>
-            {bgImage &&
+        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor ?? 'transparent'} style={styles.wrapper} {...props}>
+            {video ? (
+                <BackgroundVideo {...video} />
+            ) : (
+                bgImage &&
                 (parallax ? (
-                    <BgImage $src={bgImage} $loaded style={styles.background} ref={backgroundRef} />
+                    <BgImage ref={backgroundRef} $src={bgImage} $loaded style={styles.background} />
                 ) : (
                     <LazyImageFull src={bgImage}>
                         {({ imageState, ref }) => {
@@ -80,7 +93,8 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
                             )
                         }}
                     </LazyImageFull>
-                ))}
+                ))
+            )}
             <Content>{children}</Content>
         </Root>
     )
