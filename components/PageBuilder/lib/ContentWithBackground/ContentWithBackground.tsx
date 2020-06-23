@@ -74,7 +74,7 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
     return (
         <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor ?? 'transparent'} style={styles.wrapper} {...props}>
             {video ? (
-                <BackgroundVideo {...video} />
+                <BackgroundVideo {...video} parallaxSpeed={parallax?.speed ?? 1} />
             ) : (
                 bgImage &&
                 (parallax ? (

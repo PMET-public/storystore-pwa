@@ -15,7 +15,7 @@ export type BackgroundVideoProps = {
     parallaxSpeed?: number
 }
 
-export const BackgroundVideo: FunctionComponent<BackgroundVideoProps> = ({ src, fallbackSrc, loop, playOnlyVisible, lazyLoading, overlayColor, parallaxSpeed = 1, ...props }) => {
+export const BackgroundVideo: FunctionComponent<BackgroundVideoProps> = ({ src, fallbackSrc, loop, playOnlyVisible, lazyLoading, overlayColor, parallaxSpeed, ...props }) => {
     const backgroundRef = useRef<any>(null)
 
     const backgroundElem = backgroundRef.current
@@ -39,6 +39,10 @@ export const BackgroundVideo: FunctionComponent<BackgroundVideoProps> = ({ src, 
                 self.$video.style.opacity = 1
             }
         })
+
+        return () => {
+            jarallax(backgroundElem, 'destroy')
+        }
     }, [backgroundElem, src, fallbackSrc, loop, playOnlyVisible, lazyLoading, overlayColor, parallaxSpeed])
 
     return <Root ref={backgroundRef} style={{ backgroundColor: overlayColor }} {...props} />
