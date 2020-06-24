@@ -1,7 +1,11 @@
 import styled from 'styled-components'
 
 export const Root = styled.div`
-    position: relative;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
     z-index: 0;
 
     & [id*='jarallax-container'] video,
