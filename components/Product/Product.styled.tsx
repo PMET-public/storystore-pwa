@@ -129,6 +129,7 @@ export const Info = styled.div`
     grid-auto-rows: max-content;
     grid-gap: 3rem;
     padding: 2rem ${props => props.theme.layout.margin};
+    width: 100%;
 `
 
 export const Header = styled.header`

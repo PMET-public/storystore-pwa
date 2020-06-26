@@ -52,9 +52,19 @@ query ProductQuery($urlKey: String!) {
                         label
                         value: value_index
                         swatch: swatch_data {
+                            __typename
                             value
+
+                            ... on TextSwatchData {
+                                text: value
+                            }
+
+                            ... on ColorSwatchData {
+                                color: value
+                            }
+
                             ... on ImageSwatchData {
-                                thumbnail
+                                image: thumbnail
                             }
                         }
                     }

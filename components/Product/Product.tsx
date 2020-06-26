@@ -34,10 +34,11 @@ import { ProductImageSkeleton } from './ProductImage.skeleton'
 import Price from '@storystore/ui/dist/components/Price'
 import Button from '@storystore/ui/dist/components/Button'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
-import Form, { Input } from '@storystore/ui/dist/components/Form'
+import Form, { Input, Select } from '@storystore/ui/dist/components/Form'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import TextSwatches from '@storystore/ui/dist/components/Form/TextSwatches'
 import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
+import ColorSwatches from '@storystore/ui/dist/components/Form/ColorSwatches'
 import PageBuilder from '~/components/PageBuilder'
 
 const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
@@ -253,20 +254,23 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                                     label: selected ? `${label}: ${selected.label}` : label,
                                                                     name: `options.${code}`,
                                                                     rules: { required },
-                                                                    items: items?.map(({ id, label, value, image }: any) => ({
-                                                                        _id: id,
-                                                                        label,
-                                                                        type: 'radio',
-                                                                        value,
-                                                                        image: image && {
-                                                                            alt: image.label || '',
-                                                                            src: resolveImage(image.url, {
-                                                                                width: 200,
-                                                                            }),
-                                                                            width: 160,
-                                                                            height: 198,
-                                                                        },
-                                                                    })),
+                                                                    items: items?.map(({ id, label, value, swatch }: any) => {
+                                                                        return {
+                                                                            _id: id,
+                                                                            label,
+                                                                            type: 'radio',
+                                                                            value,
+                                                                            color: swatch?.color,
+                                                                            image: swatch?.image && {
+                                                                                alt: label || '',
+                                                                                src: resolveImage(swatch.image, {
+                                                                                    width: 200,
+                                                                                }),
+                                                                                width: 160,
+                                                                                height: 198,
+                                                                            },
+                                                                        }
+                                                                    }),
                                                                 },
                                                             }
                                                         })
@@ -275,8 +279,10 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                                             return (
                                                                 <fieldset key={_id || index}>
                                                                     <Field>
-                                                                        {type === 'text' && <TextSwatches {...swatches} />}
-                                                                        {type === 'thumb' && <ThumbSwatches {...swatches} />}
+                                                                        {type === 'TextSwatchData' && <TextSwatches {...swatches} />}
+                                                                        {type === 'ImageSwatchData' && <ThumbSwatches {...swatches} />}
+                                                                        {type === 'ColorSwatchData' && <ColorSwatches {...swatches} />}
+                                                                        {type === undefined && <Select {...swatches} />}
                                                                     </Field>
                                                                 </fieldset>
                                                             )
