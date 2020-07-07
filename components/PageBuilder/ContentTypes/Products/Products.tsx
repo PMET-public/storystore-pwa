@@ -64,7 +64,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductList
                 loadingMore={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ title, urlKey, image, price }: any) => ({
+                items={data?.products?.items?.map(({ title, urlKey, image, options, price }: any) => ({
                     title: {
                         text: title,
                     },
@@ -87,6 +87,9 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
+                    colors: options
+                        ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                        ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                 }))}
                 {...props}
             />
