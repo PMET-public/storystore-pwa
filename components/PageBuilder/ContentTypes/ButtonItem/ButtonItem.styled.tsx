@@ -16,8 +16,8 @@ export const Root = styled.div<{ $appearance?: string; $secondary?: boolean; $li
     }
 
     ${ButtonRoot} {
-        background-color: ${props => (props.$secondary ? '#fff' : '#222')};
-        color: ${props => (props.$secondary ? '#222' : '#fff')};
+        background-color: ${props => (props.$secondary ? props.theme.colors.secondary : props.theme.colors.primary)};
+        color: ${props => (props.$secondary ? props.theme.colors.onSecondary : props.theme.colors.onPrimary)};
 
         ${props =>
             props.$link &&

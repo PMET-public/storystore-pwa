@@ -1,36 +1,18 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
-import { resolveImage } from '~/lib/resolveImage'
 
-import {
-    Root,
-    TopBar,
-    TopBarWrapper,
-    Heading,
-    Title,
-    BackButton,
-    BackIcon,
-    // TopBarFilterButton,
-    // FiltersIcon,
-    Content,
-    ProductListWrapper,
-    // FiltersWrapper,
-    // FiltersButtons,
-    // FiltersScreen,
-} from './Category.styled'
+import { Root, TopBar, TopBarWrapper, Heading, Title, TopBarFilterButton, FiltersIcon } from './Category.styled'
 
 import { useCategory } from './useCategory'
-import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import ProductList from '@storystore/ui/dist/components/ProductList'
-// import Filters from '@storystore/ui/dist/components/Filters' f
+import Products, { useProducts } from '~/components/Products'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
-// import Button from '@storystore/ui/dist/components/Button'
 import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
+import Icon from '@storystore/ui/dist/components/Icon'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
@@ -49,47 +31,21 @@ const TitleSkeleton = ({ ...props }) => {
 }
 
 export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
-    const { queries } = useCategory({ id })
+    const category = useCategory({ id })
 
-    const products = queries.products.data?.products
-
-    /**
-     * Infinite Scroll Effect
-     */
-    useFetchMoreOnScrolling({ threshold: 400, loading: queries.products.loading, hasNextPage: products?.pagination && products.pagination.current < products.pagination.total }, () => {
-        queries.products
-            .fetchMore({
-                variables: {
-                    currentPage: products.pagination.current + 1, // next page
-                },
-                updateQuery: (prev: any, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return {
-                        ...prev,
-                        products: {
-                            ...prev.products,
-                            ...fetchMoreResult.products,
-                            items: [...prev.products.items, ...fetchMoreResult.products.items],
-                        },
-                    }
-                },
-            })
-            .catch(() => {})
-    })
+    const products = useProducts({ filters: { category_id: { eq: id.toString() } } })
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.category.data?.page) return <Error type="Offline" fullScreen />
+    if (!online && !category.queries.category.data?.page) return <Error type="Offline" fullScreen />
 
-    if (!queries.category.loading && !queries.category.data?.page) {
+    if (!category.queries.category.loading && !category.queries.category.data?.page) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
     }
 
-    const page = queries.category.data?.page && queries.category.data.page[0]
+    const page = category.queries.category.data?.page && category.queries.category.data.page[0]
 
-    const categoryUrlSuffix = queries.category.data?.store?.categoryUrlSuffix ?? ''
-
-    const productUrlSuffix = queries.products.data?.store?.productUrlSuffix ?? ''
+    const categoryUrlSuffix = category.queries.category.data?.store?.categoryUrlSuffix ?? ''
 
     const mode = page?.mode || _mode
 
@@ -108,22 +64,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                         <TopBar>
                             <TopBarWrapper $margin>
                                 <Heading>
-                                    <Title>
-                                        {page?.breadcrumbs && (
-                                            <BackButton
-                                                as={Link}
-                                                urlResolver={{
-                                                    type: 'CATEGORY',
-                                                    id: page.breadcrumbs[page.breadcrumbs.length - 1].id,
-                                                    mode: page.breadcrumbs[page.breadcrumbs.length - 1].mode,
-                                                }}
-                                                href={'/' + page.breadcrumbs[page.breadcrumbs.length - 1].href + categoryUrlSuffix}
-                                            >
-                                                <BackIcon />
-                                            </BackButton>
-                                        )}
-                                        {!page?.title && queries.category.loading ? <TitleSkeleton /> : page.title.text}
-                                    </Title>
+                                    <Title>{!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title}</Title>
 
                                     {/* Breadcrumbs */}
                                     {page?.categories?.length === 0 && page.breadcrumbs && (
@@ -162,70 +103,39 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                     )}
                                 </Heading>
 
-                                {/* TODO: Integrate Filters
-                                <TopBarFilterButton as="button" type="button" onClick={handleToggleFilters}>
-                                    <span>
-                                        <FiltersIcon aria-label="Filters" />
-                                    </span>
-                                </TopBarFilterButton> 
-                                */}
+                                {products.data?.filters && (
+                                    <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
+                                        <span>
+                                            <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
+                                        </span>
+                                    </TopBarFilterButton>
+                                )}
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Content>
-                            <ProductListWrapper $margin>
-                                <ProductList
-                                    loadingMore={queries.products.loading}
-                                    items={products?.items
-                                        ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                                        .map(({ id, image, price, title, urlKey }: any, index: number) => ({
-                                            _id: `${id}--${index}`,
-                                            as: Link,
-                                            href: `/${urlKey + productUrlSuffix}`,
-                                            urlResolver: {
-                                                type: 'PRODUCT',
-                                                id,
-                                                urlKey,
-                                            },
-                                            image: {
-                                                alt: image.alt,
-                                                src: {
-                                                    desktop: resolveImage(image.src, { width: 1260 }),
-                                                    mobile: resolveImage(image.src, { width: 960 }),
-                                                },
-                                                width: 1274,
-                                                height: 1580,
-                                            },
-                                            price: {
-                                                label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                                regular: price.minimum.regular.value,
-                                                special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
-                                                currency: price.minimum.regular.currency,
-                                            },
-                                            title: {
-                                                text: title,
-                                            },
-                                        }))}
-                                />
-                            </ProductListWrapper>
-                        </Content>
-
-                        {/* TODO: Integrate Filters */}
-                        {/* <FiltersWrapper $active={showFilter} $height={height} ref={filtersRef}>
-                            <Filters {...filters} />
-                            {filters.closeButton && (
-                                <FiltersButtons>
-                                    <Button
-                                        as="button"
-                                        type="button"
-                                        onClick={handleCloseFilters}
-                                        {...filters.closeButton}
-                                    />
-                                </FiltersButtons>
-                            )}
-                        </FiltersWrapper>
-
-                        {showFilter && <FiltersScreen onClick={handleCloseFilters} />} */}
+                        <Products
+                            {...{
+                                ...products,
+                                data: {
+                                    ...products.data,
+                                    sorting:
+                                        /**
+                                         * Filter Sort By Options for those provided by the User on the Category level.
+                                         * GraphQL Query is returning empty if the user selects the default [] Use All
+                                         */
+                                        page?.availableSortBy.length > 0 && products.data
+                                            ? {
+                                                  ...products.data.sorting,
+                                                  default: page.defaultSortBy,
+                                                  defaultValues: { sortBy: page.defaultSortBy + ',DESC' },
+                                                  options: products.data.sorting?.options?.filter((x: any) => {
+                                                      return page.availableSortBy.findIndex((y: string) => y === x.value) > -1
+                                                  }),
+                                              }
+                                            : products.data?.sorting,
+                                },
+                            }}
+                        />
                     </React.Fragment>
                 )}
             </Root>

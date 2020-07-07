@@ -1,0 +1,6 @@
+query SettingsQuery {
+    config: storeConfig {
+        id
+        baseUrl: base_url
+    }
+}

@@ -5,6 +5,7 @@ services:
       context: .
   sut:
     image: curlimages/curl
-    command: --fail http://storystore-pwa:3000
+    entrypoint: /bin/sh
+    command: -c 'sleep 10; curl -fail http://storystore-pwa:3000'
     depends_on:
       - storystore-pwa

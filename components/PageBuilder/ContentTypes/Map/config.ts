@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '~/components/PageBuilder/lib/getStyleAsObject'
-import useStoryStore from '~/hooks/useStoryStore'
 
 const component = dynamic(() => import('.'))
 
@@ -21,8 +20,6 @@ type Location = {
 }
 
 const props = (elem: HTMLElement) => {
-    const { settings } = useStoryStore()
-
     const style = getStyleAsObject(elem.style)
 
     const locations = JSON.parse(elem.dataset.locations as string).map((location: Location) => {
@@ -59,7 +56,6 @@ const props = (elem: HTMLElement) => {
     const controls = elem.dataset.showControls === 'true'
 
     return {
-        apiKey: settings?.googleMapsApiKey,
         locations,
         controls,
         style,

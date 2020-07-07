@@ -1,5 +1,6 @@
-![CI badge](https://github.com/PMET-public/storystore-pwa/workflows/CI%20with%20Lighthouse/badge.svg?branch=docker)
-![Docker badge](https://github.com/PMET-public/storystore-pwa/workflows/build%20and%20publish%20to%20Docker%20Hub/badge.svg?branch=docker)
+![package.json version](https://img.shields.io/github/package-json/v/pmet-public/storystore-pwa/master)
+![CI badge](https://github.com/PMET-public/storystore-pwa/workflows/CI%20with%20Lighthouse/badge.svg?branch=master)
+![Docker badge](https://github.com/PMET-public/storystore-pwa/workflows/build%20and%20publish%20to%20Docker%20Hub/badge.svg?branch=master)
 
 # StoryStore PWA
 
@@ -7,17 +8,20 @@ https://pwa.storystore.dev
 
 ## Versions
 
-### v1.1 (In Development)
+
+### 📍 v1.1 (Current)
+
 https://github.com/PMET-public/storystore-pwa/milestone/1
 
 #### Requirements:
-- Magento Commerce 2.3.5
 
-### 📍 v1.0 (Current)
+-   Magento Commerce 2.3.5
 
-#### Requirements: 
-- Magento Commerce 2.3.4
+### v1.0
 
+#### Requirements:
+
+-   Magento Commerce 2.3.4
 
 ## CI/CD
 

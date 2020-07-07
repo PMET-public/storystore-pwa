@@ -68,30 +68,18 @@ export const useProduct = ({ urlKey }: UseProduct) => {
         )
 
         const options = _product.options
-            ?.sort((a: any, b: any) => b.position - a.position)
+            ?.sort((a: any, b: any) => a.position - b.position)
             .map((option: any) => {
-                const { id, label, code, items } = option
-                const thumbKey = /color/.test(code) ? code : undefined
-                const type = thumbKey ? 'thumb' : 'text'
+                const { id, label, code, items = [] } = option
+
+                const type = items[0]?.swatch?.__typename
 
                 return {
                     id,
                     type,
                     label,
                     code,
-                    items: items.map((item: any) => {
-                        const disabled = item.stock !== 'IN_STOCK'
-
-                        const { id, value, label } = item
-
-                        return {
-                            id,
-                            value,
-                            label,
-                            disabled,
-                            image: thumbKey && variants.find((x: any) => x[thumbKey] === value).product.thumbnail,
-                        }
-                    }),
+                    items,
                 }
             })
 

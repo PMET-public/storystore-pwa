@@ -2,6 +2,8 @@ import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import MapComponent from '@storystore/ui/dist/components/Map'
 
+import useStoryStore from '~/hooks/useStoryStore'
+
 type Location = {
     _id: number
     name: string
@@ -17,10 +19,11 @@ type Location = {
 }
 
 export type MapProps = {
-    apiKey: string
     locations: Location[]
 }
 
 export const Map: Component<MapProps> = ({ ...props }) => {
-    return <MapComponent {...props} />
+    const { settings } = useStoryStore()
+
+    return <MapComponent apiKey={settings?.googleMapsApiKey ?? ''} {...props} />
 }

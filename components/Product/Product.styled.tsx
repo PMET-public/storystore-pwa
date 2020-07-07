@@ -7,6 +7,8 @@ import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcru
 
 export const Root = styled.div`
     display: grid;
+    grid-gap: 4rem;
+    grid-auto-rows: max-content;
 `
 
 export const Wrapper = styled.div`
@@ -127,6 +129,7 @@ export const Info = styled.div`
     grid-auto-rows: max-content;
     grid-gap: 3rem;
     padding: 2rem ${props => props.theme.layout.margin};
+    width: 100%;
 `
 
 export const Header = styled.header`
@@ -169,4 +172,11 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
+`
+
+export const CarouselWrapper = styled.div`
+    padding-bottom: 2rem;
+    ${Title} {
+        margin: 0 2rem 2rem;
+    }
 `
