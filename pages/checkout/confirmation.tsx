@@ -1,6 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import { Confirmation as ConfirmationPage } from '~/components/Checkout/Confirmation'
@@ -15,4 +16,4 @@ export const Confirmation: NextPage<ConfirmationProps> = ({}) => {
     )
 }
 
-export default withApollo(Confirmation)
+export default withApollo(withStoryStore(Confirmation))

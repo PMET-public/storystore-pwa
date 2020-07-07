@@ -8,7 +8,7 @@ export const getSettings = (cookie?: string) => {
         googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     }
 
-    if (!Boolean(process.env.DEMO_MODE)) {
+    if (!Boolean(process.env.CLOUD_MODE)) {
         return { ...values }
     }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import CartTemplate from '~/components/Cart'
@@ -15,4 +16,4 @@ const Cart: NextPage<CartProps> = ({}) => {
     )
 }
 
-export default withApollo(Cart)
+export default withApollo(withStoryStore(Cart))

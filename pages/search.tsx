@@ -2,6 +2,7 @@ import React from 'react'
 
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import SearchTemplate from '~/components/Search'
@@ -18,10 +19,10 @@ const Search: NextPage<SearchProps> = ({}) => {
 
 // Enable next.js ssr
 Search.getInitialProps = async ({ res }) => {
-    if (!Boolean(process.env.DEMO_MODE)) {
+    if (!Boolean(process.env.CLOUD_MODE)) {
         res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
     }
     return {}
 }
 
-export default withApollo(Search)
+export default withApollo(withStoryStore(Search))

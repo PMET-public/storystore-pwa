@@ -6,7 +6,6 @@ import { NextPage } from 'next'
 import { ApolloProvider } from '@apollo/react-hooks'
 import createApolloClient from './client'
 import { getSettings } from '~/lib/getSettings'
-import { withStoryStore } from '~/lib/storystore'
 import ApolloClient from 'apollo-client'
 
 export interface ApolloProps {
@@ -144,5 +143,5 @@ export const withApollo = (PageComponent: NextPage<any>) => {
         }
     }
 
-    return withStoryStore(WithApollo)
+    return WithApollo
 }

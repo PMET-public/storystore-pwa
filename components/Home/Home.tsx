@@ -20,11 +20,13 @@ type HomeProps = {}
 export const Home: FunctionComponent<HomeProps> = () => {
     const { settings } = useStoryStore()
 
-    const { queries } = useHome({ id: settings.homePageId })
+    const { queries } = useHome({ id: settings.homePageId ?? settings.defaultHomePageId })
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.home.data?.page) return <Error type="Offline" />
+    if (!online && !queries.home.data?.page) {
+        return <Error type="Offline" fullScreen />
+    }
 
     const { page, categories, storeConfig } = queries.home.data || {}
 
@@ -62,7 +64,7 @@ export const Home: FunctionComponent<HomeProps> = () => {
                 {queries.home.loading && !page ? (
                     <HomeSkeleton />
                 ) : !queries.home.loading && !page ? (
-                    <Error type="500" style={{ height: 'calc(100vh - 30rem)' }}>
+                    <Error type="500" fullScreen>
                         Missing Home Page
                     </Error>
                 ) : (

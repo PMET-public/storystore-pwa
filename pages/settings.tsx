@@ -1,6 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
+import { withStoryStore } from '~/lib/storystore'
 
 import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
@@ -11,7 +12,7 @@ type SettingsProps = {}
 const Settings: NextPage<SettingsProps> = ({}) => {
     return (
         <App>
-            {Boolean(process.env.DEMO_MODE) ? (
+            {Boolean(process.env.CLOUD_MODE) ? (
                 <SettingsTemplate />
             ) : (
                 <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
@@ -22,4 +23,4 @@ const Settings: NextPage<SettingsProps> = ({}) => {
     )
 }
 
-export default withApollo(Settings)
+export default withApollo(withStoryStore(Settings))

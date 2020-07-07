@@ -1,0 +1,27 @@
+query StoryStoreQuery {
+    storyStore: storeConfig {
+        id
+
+        # Config
+        baseUrl: base_url
+        version: storystore_pwa_magento_version
+        googleMapsApiKey: storystore_pwa_google_maps_api_key
+
+        # Content
+        defaultHomePageId: cms_home_page
+        homePageId: storystore_pwa_home_page
+        footerBlockId: storystore_pwa_footer_block
+
+        # Colors
+        colorDark: storystore_pwa_dark_mode
+
+        colorAccent: storystore_pwa_accent_surface
+        colorOnAccent: storystore_pwa_accent_content
+
+        colorPrimary: storystore_pwa_primary_surface
+        colorOnPrimary: storystore_pwa_primary_content
+
+        colorSecondary: storystore_pwa_secondary_surface
+        colorOnSecondary: storystore_pwa_secondary_content
+    }
+}
