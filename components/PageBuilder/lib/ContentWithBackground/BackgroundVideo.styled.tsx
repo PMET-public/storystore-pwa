@@ -10,6 +10,7 @@ export const Root = styled.div<{ $overlayColor?: string }>`
 
     & [id*='jarallax-container'] video,
     & [id*='jarallax-container'] iframe {
+        transition: opacity 250ms ease-in;
         opacity: 0;
         z-index: 1 !important;
     }

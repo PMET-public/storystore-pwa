@@ -8,7 +8,7 @@ https://pwa.storystore.dev
 
 ## Versions
 
-### 📍 v1.1 (Current)
+### 📍v1.1 (Current)
 
 https://github.com/PMET-public/storystore-pwa/releases/tag/v1.1.0
 

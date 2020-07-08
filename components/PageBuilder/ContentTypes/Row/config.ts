@@ -1,3 +1,4 @@
+import { resolveImage } from './../../../../lib/resolveImage'
 import { getBackgroundImages } from '../../lib/utils'
 import { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
@@ -21,7 +22,7 @@ const props = (elem: HTMLElement) => {
             elem.dataset.backgroundType === 'video'
                 ? {
                       src: elem.dataset.videoSrc,
-                      fallbackSrc: elem.dataset.videoFallbackSrc,
+                      fallbackSrc: elem.dataset.videoFallbackSrc && resolveImage(elem.dataset.videoFallbackSrc),
                       loop: elem.dataset.videoLoop === 'true',
                       playOnlyVisible: elem.dataset.videoPlayOnlyVisible === 'true',
                       lazyLoading: elem.dataset.videoLazyLoad === 'true',
