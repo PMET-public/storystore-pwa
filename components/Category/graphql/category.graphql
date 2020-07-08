@@ -1,4 +1,9 @@
 query CategoryQuery($id: String!) {
+    store: storeConfig {
+        id
+        categoryUrlSuffix: category_url_suffix
+    }
+
     page: categoryList(filters: { ids: { eq: $id } }) {
         id
 
