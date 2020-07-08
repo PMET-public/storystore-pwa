@@ -1,10 +1,15 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
-import ProductList from '@storystore/ui/dist/components/ProductList'
-import ProductCarousel, { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
+import dynamic from 'next/dynamic'
+
 import { useProducts } from './useProducts'
+
+import ProductList from '@storystore/ui/dist/components/ProductList'
+import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
 import Link from '../../../Link'
 import { resolveImage } from '../../../../lib/resolveImage'
+
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
@@ -21,7 +26,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductCarousel
                 loadingMore={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ id, title, urlKey, image, price }: any) => ({
+                items={data?.products?.items?.map(({ id, title, urlKey, image, price, options }: any) => ({
                     _id: id,
                     title: {
                         text: title,
@@ -45,6 +50,9 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
+                    colors: options
+                        ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                        ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                 }))}
                 {...slider}
                 {...props}
@@ -56,8 +64,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductList
                 loadingMore={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ id, title, urlKey, image, price }: any) => ({
-                    _id: id,
+                items={data?.products?.items?.map(({ title, urlKey, image, options, price }: any) => ({
                     title: {
                         text: title,
                     },
@@ -80,6 +87,9 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                         special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                         currency: price.minimum.regular.currency,
                     },
+                    colors: options
+                        ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                        ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                 }))}
                 {...props}
             />

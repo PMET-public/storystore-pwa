@@ -9,16 +9,18 @@ https://pwa.storystore.dev
 ## Versions
 
 ### 📍 v1.1 (Current)
+
 https://github.com/PMET-public/storystore-pwa/releases/tag/v1.1.0
 
 #### Requirements:
-- Magento Commerce 2.3.5
+
+-   Magento Commerce 2.3.5
 
 ### v1.0
 
-#### Requirements: 
-- Magento Commerce 2.3.4
+#### Requirements:
 
+-   Magento Commerce 2.3.4
 
 ## CI/CD
 

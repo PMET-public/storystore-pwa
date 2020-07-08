@@ -34,6 +34,16 @@ const props = (elem: HTMLElement) => {
     const background: ContentWithBackgroundProps = {
         ...wrapperElem.dataset,
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
+        video:
+            wrapperElem.dataset.backgroundType === 'video'
+                ? {
+                      src: wrapperElem.dataset.videoSrc,
+                      fallbackSrc: wrapperElem.dataset.videoFallbackSrc,
+                      loop: wrapperElem.dataset.videoLoop === 'true',
+                      playOnlyVisible: wrapperElem.dataset.videoPlayOnlyVisible === 'true',
+                      lazyLoading: wrapperElem.dataset.videoLazyLoad === 'true',
+                  }
+                : undefined,
         style: getStyleAsObject(wrapperElem.style),
     }
 
@@ -55,10 +65,16 @@ const props = (elem: HTMLElement) => {
     }
 
     /** Get Overlay */
+    const videoOverlayElement = elem.querySelector('[data-element="video_overlay"]') as HTMLElement
     const overlayElem = elem.querySelector('[data-element="overlay"]') as HTMLElement
+
     const overlay = overlayElem && {
         ...overlayElem.dataset,
         style: getStyleAsObject(overlayElem.style),
+    }
+
+    if (videoOverlayElement?.dataset.videoOverlayColor) {
+        overlay.style.backgroundColor = videoOverlayElement.dataset.videoOverlayColor
     }
 
     return {

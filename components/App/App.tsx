@@ -19,6 +19,7 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@storystore/ui/dist/components/Header'
 import TabBar from '@storystore/ui/dist/components/TabBar'
+import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
@@ -59,9 +60,9 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const router = useRouter()
 
     const isUrlActive = useCallback(
-        (href: string): boolean => {
+        (_pathname: string): boolean => {
             const { pathname, asPath } = router || {}
-            return href === (asPath || pathname)
+            return _pathname === (asPath || pathname).split('?')[0]
         },
         [router]
     )
@@ -138,7 +139,8 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
      * Google Analytics
      */
     useEffect(() => {
-        ReactGA.set({ dimension1: version }) // verion
+        if (!process.env.GOOGLE_ANALYTICS) return
+        ReactGA.set({ dimension1: version }) // version
 
         ReactGA.set({ dimension2: window.location.host }) // release
 
@@ -172,8 +174,27 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const loading = queries.app.loading && !store
 
     return (
-        <ThemeProvider theme={baseTheme}>
-            <NextNprogress color={baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
+        <ThemeProvider
+            theme={{
+                ...baseTheme,
+                colors: {
+                    ...baseTheme.colors,
+                    ...generateColorTheme({
+                        accent: settings.colorAccent || baseTheme.colors.accent,
+                        onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
+                        primary: settings.colorPrimary || baseTheme.colors.primary,
+                        onPrimary: settings.colorOnPrimary || baseTheme.colors.onPrimary,
+                        secondary: settings.colorSecondary || baseTheme.colors.secondary,
+                        onSecondary: settings.colorOnSecondary || baseTheme.colors.onSecondary,
+                        ...(settings.colorDark && {
+                            surface: '#222222',
+                            onSurface: '#ffffff',
+                        }),
+                    }),
+                },
+            }}
+        >
+            <NextNprogress color={settings.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
             <FontStyles />
             <ToastsStyles />

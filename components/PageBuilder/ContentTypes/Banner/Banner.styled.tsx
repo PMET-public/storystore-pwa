@@ -45,7 +45,6 @@ export const Wrapper = styled.div<{ $appearance?: 'poster' | 'collage-left' | 'c
 `
 
 export const ContentWrapper = styled.div`
-    width: 100%;
     & > *:not(:nth-child(1)) {
         margin-top: 3rem;
     }
@@ -54,9 +53,8 @@ export const Content = styled.div``
 
 export const Button = styled.div<{ $secondary?: boolean }>`
     transition: opacity 305ms ease-out;
-    background-color: ${props => (props.$secondary ? '#fff' : '#222')};
-    color: ${props => (props.$secondary ? '#222' : '#fff')};
-    /* color: #fff; */
+    background-color: ${props => (props.$secondary ? props.theme.colors.secondary : props.theme.colors.primary)};
+    color: ${props => (props.$secondary ? props.theme.colors.onSecondary : props.theme.colors.onPrimary)};
 `
 
 export const Root = styled.div<{

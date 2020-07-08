@@ -7,12 +7,14 @@ import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
 import Error from '@storystore/ui/dist/components/Error'
 
-type SettingsProps = {}
+type SettingsProps = {
+    defaultMagentoUrl: string
+}
 
-const Settings: NextPage<SettingsProps> = ({}) => {
+const Settings: NextPage<SettingsProps> = () => {
     return (
         <App>
-            {Boolean(process.env.DEMO_MODE) ? (
+            {Boolean(process.env.CLOUD_MODE) ? (
                 <SettingsTemplate />
             ) : (
                 <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>

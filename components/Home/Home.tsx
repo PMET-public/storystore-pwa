@@ -20,17 +20,21 @@ type HomeProps = {}
 export const Home: FunctionComponent<HomeProps> = () => {
     const { settings } = useStoryStore()
 
-    const { queries } = useHome({ id: settings.homePageId })
+    const { queries } = useHome({ id: settings.homePageId ?? settings.defaultHomePageId })
 
     const online = useNetworkStatus()
+
+    const { page, categories, storeConfig } = queries.home.data || {}
+
+    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
     if (!online && !queries.home.data?.page) {
         return <Error type="Offline" fullScreen />
     }
 
-    const { page, categories, storeConfig } = queries.home.data || {}
-
-    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
+    if (!queries.home.loading && !page) {
+        return <Error type="404">Page not found</Error>
+    }
 
     return (
         <React.Fragment>
@@ -61,15 +65,7 @@ export const Home: FunctionComponent<HomeProps> = () => {
                     </Stories>
                 )}
 
-                {queries.home.loading && !page ? (
-                    <HomeSkeleton />
-                ) : !queries.home.loading && !page ? (
-                    <Error type="500" fullScreen>
-                        Missing Home Page
-                    </Error>
-                ) : (
-                    page?.content && <PageBuilder html={page.content} />
-                )}
+                {queries.home.loading && !page ? <HomeSkeleton /> : page?.content && <PageBuilder html={page.content} />}
             </Root>
         </React.Fragment>
     )

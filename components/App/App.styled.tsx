@@ -19,7 +19,7 @@ export const Root = styled.div`
         'tabBar';
 
     @media ${props => props.theme.breakpoints.medium} {
-        grid-template-rows: auto minmax(100vh, 1fr) auto;
+        grid-template-rows: auto minmax(calc(100vh - 6rem), 1fr) auto;
         grid-template-areas:
             'header'
             'main'
