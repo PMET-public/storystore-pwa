@@ -25,15 +25,12 @@ const props = (elem: HTMLElement) => {
                       loop: elem.dataset.videoLoop === 'true',
                       playOnlyVisible: elem.dataset.videoPlayOnlyVisible === 'true',
                       lazyLoading: elem.dataset.videoLazyLoad === 'true',
+                      overlayColor:
+                          appearance === 'full-width' || appearance === 'full-bleed'
+                              ? elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videoOverlayColor
+                              : (elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videoOverlayColor) || undefined,
                   }
                 : undefined,
-    }
-
-    if (elem.dataset.backgroundType === 'video') {
-        style.backgroundColor =
-            appearance === 'full-width' || appearance === 'full-bleed'
-                ? elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videOverlayColor
-                : (elem.childNodes[0] && (elem.childNodes[0] as HTMLElement).dataset.videoOverlayColor) || null
     }
 
     return {

@@ -45,7 +45,7 @@ export const BackgroundVideo: FunctionComponent<BackgroundVideoProps> = ({ src, 
         }
     }, [backgroundElem, src, fallbackSrc, loop, playOnlyVisible, lazyLoading, overlayColor, parallaxSpeed])
 
-    return <Root ref={backgroundRef} style={{ backgroundColor: overlayColor }} {...props} />
+    return <Root ref={backgroundRef} $overlayColor={overlayColor} {...props} />
 }
 
 export default BackgroundVideo
