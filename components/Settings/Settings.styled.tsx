@@ -52,6 +52,7 @@ export const Buttons = styled.div`
 `
 
 export const RootErrors = styled.ul`
+    list-style-type: none;
     display: grid;
     grid-gap: 1rem;
     grid-auto-rows: max-content;
