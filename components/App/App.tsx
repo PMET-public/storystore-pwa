@@ -1,9 +1,8 @@
 import React, { FunctionComponent, useEffect, useCallback } from 'react'
 import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
-import { version } from '~/package.json'
-import ReactGA from 'react-ga'
-import Router, { useRouter } from 'next/router'
+
+import { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast } from './App.styled'
@@ -11,7 +10,6 @@ import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContaine
 import { useApp } from './useApp'
 import { resolveImage } from '~/lib/resolveImage'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
-import { useServiceWorker } from '~/hooks/useServiceWorker'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 
 import NextNprogress from 'nextjs-progressbar'
@@ -49,8 +47,6 @@ if (process.browser) {
 }
 
 export const App: FunctionComponent<AppProps> = ({ children }) => {
-    const workbox = useServiceWorker()
-
     const { cartId, settings, setCartId } = useStoryStore()
 
     const { queries, api } = useApp({ cartId, footerBlockId: settings.footerBlockId })
@@ -80,42 +76,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     }, [setCartId, queries, api, cartId])
 
     /**
-     * Update SW Cache on Route change
-     */
-    const handleRouteChange = useCallback(
-        (url, error?: any) => {
-            if (error || !workbox) return
-
-            workbox.messageSW({
-                type: 'CACHE_URLS',
-                payload: {
-                    urlsToCache: [url],
-                },
-            })
-
-            ReactGA.pageview(url)
-        },
-        [workbox]
-    )
-
-    useEffect(() => {
-        Router.events.on('routeChangeComplete', handleRouteChange)
-
-        return () => {
-            Router.events.off('routeChangeComplete', handleRouteChange)
-        }
-    }, [handleRouteChange])
-
-    useEffect(() => {
-        if (process.env.GOOGLE_ANALYTICS) {
-            /**
-             * Google Analytics
-             */
-            ReactGA.initialize(process.env.GOOGLE_ANALYTICS)
-        }
-    }, [])
-
-    /**
      * Offline Message
      */
     useValueUpdated(() => {
@@ -134,22 +94,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             toast.dismiss('offline')
         }
     }, online)
-
-    /**
-     * Google Analytics
-     */
-    useEffect(() => {
-        if (!process.env.GOOGLE_ANALYTICS) return
-        ReactGA.set({ dimension1: version }) // version
-
-        ReactGA.set({ dimension2: window.location.host }) // release
-
-        if (settings.magentoUrl) {
-            ReactGA.set({ dimension3: new URL(settings.magentoUrl).host }) // endpoint
-        }
-
-        ReactGA.pageview(window.location.pathname)
-    }, [settings])
 
     if (online && queries.app.error) {
         const networkError = queries.app.error?.networkError as ServerError
