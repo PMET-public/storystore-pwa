@@ -23,7 +23,7 @@ const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
     }, [])
 
     useEffect(() => {
-        if (!process.env.GOOGLE_ANALYTICS) {
+        if (process.env.GOOGLE_ANALYTICS) {
             ReactGA.set({ dimension1: version }) // version
 
             ReactGA.set({ dimension2: window.location.host }) // release
