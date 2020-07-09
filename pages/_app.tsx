@@ -4,6 +4,7 @@ import { AppProps } from 'next/app'
 import { version } from '~/package.json'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
+import { FontStyles } from '~/components/App/FontStyles'
 
 import useServiceWorker from '~/hooks/useServiceWorker'
 import useStoryStore from '~/hooks/useStoryStore'
@@ -65,7 +66,12 @@ const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
         }
     }, [handleRouteChange])
 
-    return <Component {...pageProps} />
+    return (
+        <React.Fragment>
+            <Component {...pageProps} />
+            <FontStyles />
+        </React.Fragment>
+    )
 }
 
 export default MyApp

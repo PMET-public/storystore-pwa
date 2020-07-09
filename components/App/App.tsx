@@ -26,7 +26,6 @@ import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
 import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
-import { FontStyles } from './FontStyles'
 import { ToastsStyles } from './ToastsStyles'
 import useValueUpdated from '~/hooks/useValueUpdated'
 
@@ -140,7 +139,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         >
             <NextNprogress color={settings.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
-            <FontStyles />
             <ToastsStyles />
 
             {/* Head Metadata */}
