@@ -25,7 +25,7 @@ const options: HTMLReactParserOptions = {
         }
 
         if (name === 'img' && attribs.src) {
-            return <Image {...attribs} src={resolveImage(attribs.src)} />
+            return <Image {...attribs} src={resolveImage(attribs?.src)} />
         }
     },
 }
