@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback, useRef } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react'
 import { Workbox } from 'workbox-window'
 import { version } from '../../package.json'
 import { useRouter } from 'next/router'
@@ -28,14 +28,6 @@ export const useServiceWorker = () => {
     const router = useRouter()
 
     const wb = useRef<Workbox | undefined>()
-
-    wb.current = useMemo(() => {
-        if (process.env.NODE_ENV !== 'production' || !process.browser || !navigator?.serviceWorker) return
-
-        if (wb.current) return wb.current
-
-        return new Workbox('/service-worker.js')
-    }, [])
 
     const handleReloadApp = useCallback(() => {
         router.reload()
@@ -79,7 +71,10 @@ export const useServiceWorker = () => {
     }, [wb])
 
     useEffect(() => {
-        if (!wb.current) return
+        if (wb.current || process.env.NODE_ENV !== 'production' || !process.browser || !navigator?.serviceWorker) return
+
+        wb.current = wb.current ?? new Workbox('/service-worker.js')
+
         wb.current.addEventListener('installed', handleServiceWorkerInstalled)
         wb.current.addEventListener('activated', handleServiceWorkerActivated)
 

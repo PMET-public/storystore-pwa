@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
 import parseHtml, { domToReact, HTMLReactParserOptions } from 'html-react-parser'
-import { resolveLink, LinkType } from '../../lib/resolveLink'
+import { resolveLink, LinkType } from '~/lib/resolveLink'
+import { resolveImage } from '~/lib/resolveImage'
 
-import Link from '../../components/Link'
+import Link from '~/components/Link'
+import Image from '@storystore/ui/dist/components/Image'
 
 const options: HTMLReactParserOptions = {
     replace: ({ name, attribs, children }) => {
@@ -20,6 +22,10 @@ const options: HTMLReactParserOptions = {
                     {children && domToReact(children, options)}
                 </Link>
             )
+        }
+
+        if (name === 'img' && attribs?.src) {
+            return <Image {...attribs} src={resolveImage(attribs.src)} />
         }
     },
 }
