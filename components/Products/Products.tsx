@@ -89,7 +89,7 @@ export const Products: FunctionComponent<CategoryProps> = ({ loading, data, netw
                                 text: title,
                             },
                             colors: options
-                                ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
+                                ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch?.__typename === 'ColorSwatchData'))
                                 ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                         }))}
                 />
