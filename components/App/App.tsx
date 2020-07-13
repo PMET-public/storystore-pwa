@@ -312,7 +312,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                         disabled: true,
                     },
                 ]}
-                style={{ position: 'fixed', zIndex: 10, right: 0, top: '1rem' }}
+                style={{ position: 'fixed', zIndex: 10, right: 0, top: '0.5rem' }}
             />
         </ThemeProvider>
     )

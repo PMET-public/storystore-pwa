@@ -90,14 +90,14 @@ export const OfflineToast = styled.div`
     }
 `
 
-export const HamburgerButton = styled.button<{ showMenu?: boolean }>`
+export const HamburgerButton = styled.button`
     position: relative;
     color: ${props => props.theme.colors.primary};
     line-height: 0;
     padding: 1rem;
-    transition: background-color 250ms ease-in, border-radius 250ms ease-in;
-    background-color: ${props => (props.showMenu ? 'transparent' : props.theme.colors.primary10)};
-    border-radius: ${props => (props.showMenu ? '50%' : '0.7rem')};
+    transition: background-color 250ms ease-in;
+    background-color: ${props => props.theme.colors.primary10};
+    border-radius: 0.7rem;
     z-index: 5;
 
     & > svg {
@@ -107,6 +107,5 @@ export const HamburgerButton = styled.button<{ showMenu?: boolean }>`
 
     &:hover {
         background-color: ${props => props.theme.colors.primary15};
-        border-radius: 50%;
     }
 `
