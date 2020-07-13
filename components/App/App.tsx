@@ -1,22 +1,26 @@
-import React, { FunctionComponent, useEffect, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useCallback, useState } from 'react'
 import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 
 import { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
-import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast } from './App.styled'
+import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast, HamburgerButton } from './App.styled'
 
 import { useApp } from './useApp'
 import { resolveImage } from '~/lib/resolveImage'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
+import useValueUpdated from '~/hooks/useValueUpdated'
+
+import { ToastsStyles } from './ToastsStyles'
 
 import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@storystore/ui/dist/components/Header'
 import TabBar from '@storystore/ui/dist/components/TabBar'
+import MobileMenuNav from '@storystore/ui/dist/components/MobileMenuNav'
 import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
 
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
@@ -26,8 +30,8 @@ import IconBagActiveSvg from 'remixicon/icons/Finance/shopping-bag-fill.svg'
 import IconHomeSvg from 'remixicon/icons/Buildings/store-2-line.svg'
 import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
-import { ToastsStyles } from './ToastsStyles'
-import useValueUpdated from '~/hooks/useValueUpdated'
+import MenuSVG from 'remixicon/icons/System/menu-line.svg'
+import CloseSVG from 'remixicon/icons/System/close-line.svg'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
@@ -53,6 +57,12 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     const online = useNetworkStatus()
 
     const router = useRouter()
+
+    const [showMenu, setShowMenu] = useState(false)
+
+    const handleToggleMenu = useCallback(() => {
+        setShowMenu(!showMenu)
+    }, [showMenu, setShowMenu])
 
     const isUrlActive = useCallback(
         (_pathname: string): boolean => {
@@ -209,6 +219,17 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                                         count: cart?.totalQuantity || 0,
                                     },
                                 },
+                                {
+                                    as: HamburgerButton,
+                                    className: 'breakpoint-medium-hidden',
+                                    onClick: handleToggleMenu,
+                                    showMenu,
+                                    text: 'Menu',
+                                    'aria-label': 'Menu',
+                                    icon: {
+                                        svg: showMenu ? CloseSVG : MenuSVG,
+                                    },
+                                },
                             ],
                         }}
                     />
@@ -258,6 +279,41 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                     />
                 </TabBarContainer>
             </Root>
+
+            <MobileMenuNav
+                active={showMenu}
+                onClose={handleToggleMenu}
+                categories={{
+                    title: 'Shop by Category',
+                    items: categories[0]?.children?.map(({ id, text, href: _href, mode, image }: any) => {
+                        const href = _href + categoryUrlSuffix
+
+                        return {
+                            as: Link,
+                            urlResolver: {
+                                type: 'CATEGORY',
+                                id,
+                                mode,
+                            },
+                            image: image && {
+                                alt: text,
+                                src: resolveImage(image, { width: 200, height: 200 }),
+                                width: '100px',
+                                height: '100px',
+                            },
+                            href: '/' + href,
+                            text,
+                        }
+                    }),
+                }}
+                ctas={[
+                    {
+                        text: 'Sign in',
+                        disabled: true,
+                    },
+                ]}
+                style={{ position: 'fixed', zIndex: 10, right: 0, top: '1rem' }}
+            />
         </ThemeProvider>
     )
 }
