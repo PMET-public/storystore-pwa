@@ -35,8 +35,8 @@ export const useCheckout = (props: UseCheckout) => {
      * Cart
      */
     const {
-        queries: { cart },
         api: { createCart, creatingCart, applyCoupon, applyingCoupon, removeCoupon, removingCoupon },
+        ...cart
     } = useCart({ cartId })
 
     /**

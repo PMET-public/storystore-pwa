@@ -26,7 +26,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const history = useRouter()
 
-    const { queries, api } = useCart({ cartId })
+    const { loading, error, data, api } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
         await history.push('/checkout')
@@ -35,19 +35,17 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.cart.data) return <Error type="Offline" fullScreen />
+    if (!online && !data) return <Error type="Offline" fullScreen />
 
-    if (!queries.cart.loading && queries.cart.error) return <Error type="500" />
+    if (!loading && error) return <Error type="500" />
 
-    const { store, cart } = queries.cart.data || {}
+    const { items = [], appliedCoupons } = data?.cart || {}
 
-    const { items = [], appliedCoupons } = cart || {}
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
-    const productUrlSuffix = store?.productUrlSuffix ?? ''
+    if (!data) return <ViewLoader />
 
-    if (!cart) return <ViewLoader />
-
-    if (!queries.cart.loading && cart.totalQuantity < 1) {
+    if (!loading && data?.totalQuantity < 1) {
         return (
             <React.Fragment>
                 <Head title="Shopping Bag" />
@@ -62,13 +60,13 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     return (
         <React.Fragment>
-            <Head title={`Shopping Bag ${cart?.totalQuantity ? `(${cart?.totalQuantity})` : ''}`} />
+            <Head title={`Shopping Bag ${data?.totalQuantity ? `(${data?.totalQuantity})` : ''}`} />
 
             <Root>
                 <ProductList>
                     <Breadcrumbs prefix="#" items={[{ text: 'Shopping Bag', as: Link, href: '/cart' }]} />
                     <CartList
-                        loading={queries.cart.loading && !cart?.totalQuantity}
+                        loading={loading && !data?.totalQuantity}
                         items={items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                             _id: id || index,
                             title: {
@@ -143,14 +141,14 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 // Sub-total
                                 {
                                     label: 'Subtotal',
-                                    price: cart?.prices?.subTotal && {
-                                        currency: cart.prices.subTotal.currency,
-                                        regular: cart.prices.subTotal.value,
+                                    price: data?.prices?.subTotal && {
+                                        currency: data?.cart.prices.subTotal.currency,
+                                        regular: data?.cart.prices.subTotal.value,
                                     },
                                 },
 
                                 // Discounts
-                                ...(cart?.prices?.discounts?.map((discount: any) => ({
+                                ...(data?.prices?.discounts?.map((discount: any) => ({
                                     label: discount.label,
                                     price: {
                                         currency: discount.amount.currency,
@@ -159,7 +157,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 })) || []),
 
                                 // Shipping
-                                ...(cart?.shippingAddresses
+                                ...(data?.shippingAddresses
                                     ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
                                     .map(({ selectedShippingMethod }: any) => ({
                                         label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
@@ -172,9 +170,9 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 // Taxes
                                 {
                                     label: 'Estimated Taxes',
-                                    price: cart?.prices?.taxes[0] && {
-                                        currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
-                                        regular: cart.prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
+                                    price: data?.prices?.taxes[0] && {
+                                        currency: data?.cart.prices.taxes[0] && data?.cart.prices.taxes[0].currency,
+                                        regular: data?.cart.prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
                                     },
                                 },
 
@@ -182,9 +180,9 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 {
                                     appearance: 'bold',
                                     label: 'Total',
-                                    price: cart?.prices?.total && {
-                                        currency: cart.prices.total.currency,
-                                        regular: cart.prices.total.value,
+                                    price: data?.prices?.total && {
+                                        currency: data?.cart.prices.total.currency,
+                                        regular: data?.cart.prices.total.value,
                                     },
                                 },
                             ]}

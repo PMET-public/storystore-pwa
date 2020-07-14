@@ -1,19 +1,26 @@
 import React, { FunctionComponent, useEffect, useCallback, useState } from 'react'
 import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
+import { version } from '~/package.json'
+import ReactGA from 'react-ga'
+import Router from 'next/router'
 
-import { useRouter } from 'next/router'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast, HamburgerButton } from './App.styled'
 
+import useServiceWorker from '~/hooks/useServiceWorker'
+import { useRouter } from 'next/router'
 import { useApp } from './useApp'
+import { useCart } from '../Cart'
 import { resolveImage } from '~/lib/resolveImage'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import useValueUpdated from '~/hooks/useValueUpdated'
+import { useQuery } from '@apollo/react-hooks'
 
 import { ToastsStyles } from './ToastsStyles'
+import { FontStyles } from '~/components/App/FontStyles'
 
 import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
@@ -33,13 +40,16 @@ import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
 import MenuSVG from 'remixicon/icons/System/menu-line.svg'
 import CloseSVG from 'remixicon/icons/System/close-line.svg'
 
+import FOOTER_QUERY from './graphql/footer.graphql'
+import { queryDefaultOptions } from '~/lib/apollo/client'
+
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { ssr: false })
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
-type AppProps = {}
+type AppProps = ReturnType<typeof useApp>
 
 if (process.browser) {
     const toast = require('react-toastify').toast
@@ -49,10 +59,12 @@ if (process.browser) {
     })
 }
 
-export const App: FunctionComponent<AppProps> = ({ children }) => {
+export const App: FunctionComponent<AppProps> = ({ loading, error, data, children }) => {
+    const workbox = useServiceWorker()
+
     const { cartId, settings, setCartId } = useStoryStore()
 
-    const { queries, api } = useApp({ cartId, footerBlockId: settings.footerBlockId })
+    const cart = useCart({ cartId })
 
     const online = useNetworkStatus()
 
@@ -73,16 +85,77 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
     )
 
     /**
+     * Footer
+     */
+    const footer = useQuery(FOOTER_QUERY, {
+        ...queryDefaultOptions,
+        variables: { footerBlockId: settings.footerBlockId },
+        skip: !settings.footerBlockId,
+    })
+
+    /**
      * No Cart no problem. Let's create one
      */
     useEffect(() => {
-        if (queries.cart.loading || api.creatingCart.loading || !!api.creatingCart.data?.cartId) return
+        if (cart.loading || cart.api.creatingCart.loading || !!cart.api.creatingCart.data?.cartId) return
 
-        if (queries.cart.error || !cartId || queries.cart.data?.cart?.id !== cartId) {
+        if (cart.error || !cartId || cart.data?.cart?.id !== cartId) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
-            api.createCart().then(setCartId)
+            cart.api.createCart().then(setCartId)
         }
-    }, [setCartId, queries, api, cartId])
+    }, [cart, cartId, setCartId])
+
+    /**
+     * Google Analytics
+     */
+    useEffect(() => {
+        if (process.env.GOOGLE_ANALYTICS) {
+            ReactGA.initialize(process.env.GOOGLE_ANALYTICS)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (process.env.GOOGLE_ANALYTICS) {
+            ReactGA.set({ dimension1: version }) // version
+
+            ReactGA.set({ dimension2: window.location.host }) // release
+
+            if (settings.magentoUrl) {
+                ReactGA.set({ dimension3: new URL(settings.magentoUrl).host }) // endpoint
+            }
+
+            ReactGA.pageview(window.location.pathname)
+        }
+    }, [settings])
+
+    /**
+     * Handle Route changes
+     */
+    const handleRouteChange = useCallback(
+        (url, error?: any) => {
+            if (error) return
+
+            workbox?.messageSW({
+                type: 'CACHE_URLS',
+                payload: {
+                    urlsToCache: [url],
+                },
+            })
+
+            if (process.env.GOOGLE_ANALYTICS) {
+                ReactGA.pageview(url)
+            }
+        },
+        [workbox]
+    )
+
+    useEffect(() => {
+        Router.events.on('routeChangeComplete', handleRouteChange)
+
+        return () => {
+            Router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [handleRouteChange])
 
     /**
      * Offline Message
@@ -104,8 +177,8 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }, online)
 
-    if (online && queries.app.error) {
-        const networkError = queries.app.error?.networkError as ServerError
+    if (online && error) {
+        const networkError = error?.networkError as ServerError
 
         if (networkError?.statusCode === 401 || networkError?.statusCode === 403) {
             return (
@@ -116,15 +189,9 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         }
     }
 
-    const { store, categories = [] } = queries.app.data || {}
-
-    const { cart } = queries.cart.data || {}
-
-    const { footer } = queries.footer.data || {}
+    const { store, categories = [] } = data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
-
-    const loading = queries.app.loading && !store
 
     return (
         <ThemeProvider
@@ -149,6 +216,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
         >
             <NextNprogress color={settings.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
+            <FontStyles />
             <ToastsStyles />
 
             {/* Head Metadata */}
@@ -167,7 +235,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
             <Root>
                 <HeaderContainer as="header" $margin>
                     <Header
-                        loading={loading}
+                        loading={loading && !store}
                         logo={{
                             as: Link,
                             image: store?.logoSrc && {
@@ -216,7 +284,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                                     'aria-label': 'Bag',
                                     icon: {
                                         svg: isUrlActive('/cart') ? IconBagActiveSvg : IconBagSvg,
-                                        count: cart?.totalQuantity || 0,
+                                        count: cart.data?.cart.totalQuantity || 0,
                                     },
                                 },
                                 {
@@ -237,7 +305,10 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                 <Main>{children}</Main>
 
                 <FooterContainer as="footer">
-                    <Footer loading={queries.app.loading} html={footer?.items[0]?.html ? <PageBuilder html={footer.items[0].html} /> : <Copyright>{store?.copyright}</Copyright>} />
+                    <Footer
+                        loading={footer.loading && !footer.data}
+                        html={footer.data?.cmsBlocks.items[0]?.html ? <PageBuilder html={footer.data.cmsBlocks.items[0].html} /> : <Copyright>{store?.copyright}</Copyright>}
+                    />
                 </FooterContainer>
 
                 <TabBarContainer as="nav">
@@ -271,7 +342,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                                 'aria-label': 'Bag',
                                 icon: {
                                     svg: isUrlActive('/cart') ? IconBagActiveSvg : IconBagSvg,
-                                    count: cart?.totalQuantity || 0,
+                                    count: cart.data?.cart.totalQuantity || 0,
                                 },
                             },
                         ]}
@@ -311,7 +382,8 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                         disabled: true,
                     },
                 ]}
-                style={{ position: 'absolute', zIndex: 10, right: 0, top: '1.1rem' }}
+                style={{ position: 'absolute', zIndex: 10, right: 0, top: '1rem' }}
+                className="breakpoint-medium-hidden"
             />
         </ThemeProvider>
     )

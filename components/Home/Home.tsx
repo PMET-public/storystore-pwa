@@ -1,38 +1,33 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, Stories } from './Home.styled'
-
-import { useHome } from './useHome'
-import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import { resolveImage } from '~/lib/resolveImage'
 
+import { useNetworkStatus } from '~/hooks/useNetworkStatus'
+import { useHome } from './useHome'
+
+import { HomeSkeleton } from './Home.skeleton'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import { HomeSkeleton } from './Home.skeleton'
 import BubbleCarousel from '@storystore/ui/dist/components/BubbleCarousel'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
-type HomeProps = {}
+type HomeProps = ReturnType<typeof useHome>
 
-export const Home: FunctionComponent<HomeProps> = () => {
-    const { settings } = useStoryStore()
-
-    const { queries } = useHome({ id: settings.homePageId ?? settings.defaultHomePageId })
-
+export const Home: FunctionComponent<HomeProps> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
-    const { page, categories, storeConfig } = queries.home.data || {}
+    const { page, categories, storeConfig } = data || {}
 
     const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
-    if (!online && !queries.home.data?.page) {
+    if (!online && !data?.page) {
         return <Error type="Offline" fullScreen />
     }
 
-    if (!queries.home.loading && !page) {
+    if (!loading && !page) {
         return <Error type="404">Page not found</Error>
     }
 
@@ -44,7 +39,7 @@ export const Home: FunctionComponent<HomeProps> = () => {
                 {categories && categories[0]?.children && (
                     <Stories>
                         <BubbleCarousel
-                            loading={queries.home.loading && !categories}
+                            loading={loading && !categories}
                             items={categories[0]?.children?.map(({ id, text, href, image, mode }: any) => ({
                                 as: Link,
                                 urlResolver: {
@@ -65,7 +60,7 @@ export const Home: FunctionComponent<HomeProps> = () => {
                     </Stories>
                 )}
 
-                {queries.home.loading && !page ? <HomeSkeleton /> : page?.content && <PageBuilder html={page.content} />}
+                {loading && !page ? <HomeSkeleton /> : page?.content && <PageBuilder html={page.content} />}
             </Root>
         </React.Fragment>
     )

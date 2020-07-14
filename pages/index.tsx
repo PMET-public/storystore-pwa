@@ -3,26 +3,21 @@ import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
-import App from '~/components/App'
-import HomeTemplate from '../components/Home'
+import HomeTemplate, { useHome } from '../components/Home'
 
-type HomeProps = {}
+import useStoryStore from '~/hooks/useStoryStore'
 
-const Home: NextPage<HomeProps> = ({}) => {
-    return (
-        <App>
-            <HomeTemplate />
-        </App>
-    )
+const Home: NextPage = () => {
+    const { settings } = useStoryStore()
+
+    const home = useHome({ id: settings.homePageId })
+
+    return <HomeTemplate {...home} />
 }
 
 // Enable next.js ssr
-Home.getInitialProps = async ({ res }) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
-        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
-    }
-
-    return {}
+Home.getInitialProps = async () => {
+    return { includeAppData: true }
 }
 
 export default withApollo(withStoryStore(Home))

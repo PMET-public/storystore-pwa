@@ -3,7 +3,6 @@ import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
-import App from '~/components/App'
 import SettingsTemplate from '~/components/Settings'
 import Error from '@storystore/ui/dist/components/Error'
 
@@ -13,7 +12,7 @@ type SettingsProps = {
 
 const Settings: NextPage<SettingsProps> = () => {
     return (
-        <App>
+        <React.Fragment>
             {Boolean(process.env.CLOUD_MODE) ? (
                 <SettingsTemplate />
             ) : (
@@ -21,7 +20,7 @@ const Settings: NextPage<SettingsProps> = () => {
                     Disabled
                 </Error>
             )}
-        </App>
+        </React.Fragment>
     )
 }
 

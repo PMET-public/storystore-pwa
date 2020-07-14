@@ -4,7 +4,6 @@ import { withStoryStore } from '~/lib/storystore'
 import { NextPage } from 'next'
 import gql from 'graphql-tag'
 
-import App from '~/components/App'
 import Link from '~/components/Link'
 import Error from '~/components/Error'
 import Page from '~/components/Page '
@@ -55,7 +54,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
         }
     }, [type, pathname, props])
 
-    return <App>{renderPage}</App>
+    return renderPage
 }
 
 // enable next.js ssr
@@ -65,10 +64,6 @@ UrlResolver.getInitialProps = async ctx => {
     const { res, query, asPath } = ctx
 
     const { type, ...params } = query
-
-    if (!Boolean(process.env.CLOUD_MODE)) {
-        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
-    }
 
     const pathname = asPath?.split('?')[0]
 
@@ -109,6 +104,7 @@ UrlResolver.getInitialProps = async ctx => {
      * Return Values
      */
     return {
+        includeAppData: true,
         ...data.urlResolver,
         ...params,
         pathname,

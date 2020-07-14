@@ -4,14 +4,8 @@ import ErrorComponent from '~/components/Error'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
-import App from '~/components/App'
-
 const Error: NextPage = () => {
-    return (
-        <App>
-            <ErrorComponent type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen />
-        </App>
-    )
+    return <ErrorComponent type="500" button={{ text: 'Reload App', onClick: () => window.location.reload() }} fullScreen />
 }
 
 export default withApollo(withStoryStore(Error))

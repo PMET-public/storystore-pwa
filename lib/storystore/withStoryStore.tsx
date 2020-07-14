@@ -5,8 +5,12 @@ import { getSettings } from '~/lib/getSettings'
 import { useQuery } from '@apollo/react-hooks'
 import { queryDefaultOptions } from '~/lib/apollo/client'
 import { useApolloClient } from '@apollo/react-hooks'
+import { NormalizedCacheObject } from 'apollo-cache-inmemory'
+import ApolloClient from 'apollo-client'
+import { initOnContext } from '~/lib/apollo/withApollo'
 
 import STORYSTORE_QUERY from './graphql/storystore.graphql'
+import APP_QUERY from '~/components/App/graphql/app.graphql'
 
 export type Settings = {
     version?: string
@@ -94,10 +98,10 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 }
 
 export const withStoryStore = (PageComponent: NextPage<any>) => {
-    const WithStoryStore = ({ cookie, ...pageProps }: any) => {
+    const WithStoryStore = ({ cookie, settings, ...pageProps }: any) => {
         const apolloClient = useApolloClient()
 
-        const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore' })
+        const { data } = useQuery(STORYSTORE_QUERY, { ...queryDefaultOptions, errorPolicy: 'ignore', skip: !!settings })
 
         const [state, dispatch] = useReducer(reducer, {
             ...initialState,
@@ -124,6 +128,8 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
 
                     settings: {
                         ...state.settings,
+
+                        ...settings,
                         ...data?.storyStore,
                     },
 
@@ -153,16 +159,28 @@ export const withStoryStore = (PageComponent: NextPage<any>) => {
                 console.error('withStoryStore does not support custom next.js _app. Please move to /pages/*.tsx')
             }
 
-            const cookie = (ctx.ctx || ctx).req?.headers.cookie
+            const context = ctx.ctx || ctx
 
-            let props = {}
-
-            if (PageComponent.getInitialProps) {
-                props = await PageComponent.getInitialProps(ctx)
+            // Enable Cache Header
+            if (!Boolean(process.env.CLOUD_MODE)) {
+                context.res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
             }
+
+            const cookie = context.req?.headers.cookie
+
+            const props = PageComponent.getInitialProps ? await PageComponent.getInitialProps(context) : undefined
+
+            // SSR Settings
+            const { apolloClient }: { apolloClient: ApolloClient<NormalizedCacheObject> } = initOnContext(context)
+            const settings = await apolloClient.query({ query: STORYSTORE_QUERY })
+
+            // SSR App
+            const app = props.includeAppData ? await apolloClient.query({ query: APP_QUERY }) : undefined
 
             return {
                 cookie,
+                settings: settings.data?.storyStore,
+                app,
                 ...props,
             }
         }

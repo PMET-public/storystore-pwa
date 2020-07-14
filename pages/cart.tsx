@@ -3,17 +3,12 @@ import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
-import App from '~/components/App'
 import CartTemplate from '~/components/Cart'
 
 type CartProps = {}
 
 const Cart: NextPage<CartProps> = ({}) => {
-    return (
-        <App>
-            <CartTemplate />
-        </App>
-    )
+    return <CartTemplate />
 }
 
 export default withApollo(withStoryStore(Cart))

@@ -145,9 +145,7 @@ export const useCart = (props: UseCart = {}) => {
     }, [createCart])
 
     return {
-        queries: {
-            cart,
-        },
+        ...cart,
         api: {
             updateCartItem: handleUpdateCartItem,
             updatingCartItem,

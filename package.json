@@ -20,7 +20,7 @@
   "dependencies": {
     "@apollo/react-hooks": "3.1.3",
     "@apollo/react-ssr": "^3.1.3",
-    "@storystore/ui": "1.1.2-beta2",
+    "@storystore/ui": "1.1.2-beta3",
     "@types/semver": "^7.2.0",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",

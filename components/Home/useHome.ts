@@ -11,8 +11,6 @@ export const useHome = ({ id }: { id?: string }) => {
     })
 
     return {
-        queries: {
-            home,
-        },
+        ...home,
     }
 }
