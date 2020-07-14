@@ -3,7 +3,7 @@ import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, Error
 import { version } from '~/package.json'
 
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
-import { useSettings } from './useSettings'
+import { SettingsProps } from './useSettings'
 
 import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
@@ -20,14 +20,10 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-type SettingsProps = {}
-
-export const Settings: FunctionComponent<SettingsProps> = () => {
+export const Settings: FunctionComponent<SettingsProps> = ({ data, loading: _loading }) => {
     const { settings, setMagentoUrl, reset } = useStoryStore()
 
     const [saving, setSaving] = useState(false)
-
-    const { data, loading: _loading } = useSettings()
 
     const loading = saving || _loading
 

@@ -12,3 +12,5 @@ export const useSettings = () => {
         ...settings,
     }
 }
+
+export type SettingsProps = ReturnType<typeof useSettings>

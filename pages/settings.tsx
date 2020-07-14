@@ -3,18 +3,18 @@ import { NextPage } from 'next'
 import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
+import { useSettings } from '~/components/Settings/useSettings'
+
 import SettingsTemplate from '~/components/Settings'
 import Error from '@storystore/ui/dist/components/Error'
 
-type SettingsProps = {
-    defaultMagentoUrl: string
-}
+const Settings: NextPage = () => {
+    const settings = useSettings()
 
-const Settings: NextPage<SettingsProps> = () => {
     return (
         <React.Fragment>
             {Boolean(process.env.CLOUD_MODE) ? (
-                <SettingsTemplate />
+                <SettingsTemplate {...settings} />
             ) : (
                 <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
                     Disabled
