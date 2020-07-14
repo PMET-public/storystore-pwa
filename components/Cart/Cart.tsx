@@ -3,9 +3,9 @@ import { resolveImage } from '~/lib/resolveImage'
 import dynamic from 'next/dynamic'
 import { Root, SummaryWrapper, CartSummaryWrapper, ProductList, StickyButtonWrapper } from './Cart.styled'
 
-import { useCart } from './useCart'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { CartProps } from './useCart'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
+import useStoryStore from '~/hooks/useStoryStore'
 
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
@@ -19,14 +19,10 @@ import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
 
 const Error = dynamic(() => import('../Error'))
 
-type CartProps = {}
-
-export const Cart: FunctionComponent<CartProps> = () => {
+export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }) => {
     const { cartId } = useStoryStore()
 
     const history = useRouter()
-
-    const { loading, error, data, api } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
         await history.push('/checkout')
@@ -39,13 +35,13 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     if (!loading && error) return <Error type="500" />
 
-    const { items = [], appliedCoupons } = data?.cart || {}
+    const { items = [], appliedCoupons, totalQuantity } = data?.cart || {}
 
     const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
-    if (!data) return <ViewLoader />
+    if (loading && !data) return <ViewLoader />
 
-    if (!loading && data?.totalQuantity < 1) {
+    if ((!loading && totalQuantity < 1) || !data) {
         return (
             <React.Fragment>
                 <Head title="Shopping Bag" />
@@ -60,13 +56,13 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     return (
         <React.Fragment>
-            <Head title={`Shopping Bag ${data?.totalQuantity ? `(${data?.totalQuantity})` : ''}`} />
+            <Head title={`Shopping Bag ${totalQuantity ? `(${totalQuantity})` : ''}`} />
 
             <Root>
                 <ProductList>
                     <Breadcrumbs prefix="#" items={[{ text: 'Shopping Bag', as: Link, href: '/cart' }]} />
                     <CartList
-                        loading={loading && !data?.totalQuantity}
+                        loading={loading && !totalQuantity}
                         items={items.map(({ id, quantity, price, product, options }: any, index: number) => ({
                             _id: id || index,
                             title: {

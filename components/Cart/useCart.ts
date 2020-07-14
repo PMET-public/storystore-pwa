@@ -160,3 +160,5 @@ export const useCart = (props: UseCart = {}) => {
         },
     }
 }
+
+export type CartProps = ReturnType<typeof useCart>
