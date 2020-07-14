@@ -223,7 +223,6 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                                     as: HamburgerButton,
                                     className: 'breakpoint-medium-hidden',
                                     onClick: handleToggleMenu,
-                                    showMenu,
                                     text: 'Menu',
                                     'aria-label': 'Menu',
                                     icon: {
@@ -312,7 +311,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
                         disabled: true,
                     },
                 ]}
-                style={{ position: 'fixed', zIndex: 10, right: 0, top: '0.5rem' }}
+                style={{ position: 'absolute', zIndex: 10, right: 0, top: '1.1rem' }}
             />
         </ThemeProvider>
     )

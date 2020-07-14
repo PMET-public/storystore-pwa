@@ -72,5 +72,5 @@ export const TopBarFilterButton = styled.button`
 `
 
 export const FiltersIcon = styled(FiltersIconSvg)`
-    width: 2rem;
+    font-size: 1.8rem;
 `

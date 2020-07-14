@@ -94,7 +94,7 @@ export const HamburgerButton = styled.button`
     position: relative;
     color: ${props => props.theme.colors.primary};
     line-height: 0;
-    padding: 1rem;
+    padding: 0.6rem;
     transition: background-color 250ms ease-in;
     background-color: ${props => props.theme.colors.primary10};
     border-radius: 0.7rem;
