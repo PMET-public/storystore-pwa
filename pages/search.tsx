@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
 import SearchTemplate from '~/components/Search'
@@ -17,4 +16,4 @@ Search.getInitialProps = async () => {
     return { includeAppData: true }
 }
 
-export default withApollo(withStoryStore(Search))
+export default withStoryStore(Search)

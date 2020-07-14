@@ -1,6 +1,5 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
 import HomeTemplate, { useHome } from '../components/Home'
@@ -20,4 +19,4 @@ Home.getInitialProps = async () => {
     return { includeAppData: true }
 }
 
-export default withApollo(withStoryStore(Home))
+export default withStoryStore(Home)

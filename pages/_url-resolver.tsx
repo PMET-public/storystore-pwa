@@ -126,4 +126,4 @@ UrlResolver.getInitialProps = async ctx => {
     }
 }
 
-export default withApollo(withStoryStore(UrlResolver))
+export default withStoryStore(MyApp)

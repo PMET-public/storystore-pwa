@@ -1,6 +1,5 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 
 import { useSettings } from '~/components/Settings/useSettings'
@@ -24,4 +23,4 @@ const Settings: NextPage = () => {
     )
 }
 
-export default withApollo(withStoryStore(Settings))
+export default withStoryStore(Settings)
