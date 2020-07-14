@@ -23,7 +23,7 @@ import {
 } from './Product.styled'
 
 import { useRouter } from 'next/router'
-import { useProduct } from './useProduct'
+import { ProductProps } from './useProduct'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { resolveImage } from '~/lib/resolveImage'
 
@@ -45,18 +45,12 @@ const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/Pro
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
-export type ProductProps = {
-    urlKey: string
-}
-
 type SelectedOptions = {
     [code: string]: string
 }
 
-export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
+export const Product: FunctionComponent<ProductProps> = ({ loading, data, api }) => {
     const { cartId } = useStoryStore()
-
-    const { queries, api } = useProduct({ urlKey })
 
     const history = useRouter()
 
@@ -64,7 +58,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({})
 
-    const { store, product } = queries.product.data || {}
+    const { store, product } = data || {}
 
     const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
 
@@ -138,7 +132,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
 
     if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
-    if (!queries.product.loading && !product) {
+    if (!loading && !product) {
         return (
             <ErrorComponent type="404" button={{ text: 'Search', as: Link, href: '/search' }}>
                 We&apos;re sorry, we coudn&apos;t find the product.
@@ -201,7 +195,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                         <InfoWrapper ref={infoRef}>
                             <InfoInnerWrapper>
                                 <Info>
-                                    {queries.product.loading && !product ? (
+                                    {loading && !product ? (
                                         <ProductDetailsSkeleton style={{ width: '56rem', minWidth: '100%', maxWidth: '100%' }} />
                                     ) : (
                                         <React.Fragment>
@@ -313,7 +307,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     <CarouselWrapper>
                         <Title>Related Products</Title>
                         <ProductCarousel
-                            loading={queries.product.loading && !product?.related}
+                            loading={loading && !product?.related}
                             items={product.related.map(({ id, title, urlKey, image, price, options }: any) => ({
                                 _id: id,
                                 title: {
@@ -351,7 +345,7 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                     <CarouselWrapper>
                         <Title>You may also like</Title>
                         <ProductCarousel
-                            loading={queries.product.loading && !product?.upsell}
+                            loading={loading && !product?.upsell}
                             items={product.upsell.map(({ title, urlKey, image, price, options }: any) => ({
                                 title: {
                                     text: title,

@@ -11,7 +11,7 @@ import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContaine
 
 import useServiceWorker from '~/hooks/useServiceWorker'
 import { useRouter } from 'next/router'
-import { useApp } from './useApp'
+import { AppProps } from './useApp'
 import { useCart } from '../Cart'
 import { resolveImage } from '~/lib/resolveImage'
 import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
@@ -48,8 +48,6 @@ const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: fal
 const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { ssr: false })
 
 const toast = process.browser ? require('react-toastify').toast : {}
-
-type AppProps = ReturnType<typeof useApp>
 
 if (process.browser) {
     const toast = require('react-toastify').toast

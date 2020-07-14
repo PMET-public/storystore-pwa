@@ -12,8 +12,8 @@ export const usePage = (props: { id: number }) => {
     })
 
     return {
-        queries: {
-            page,
-        },
+        ...page,
     }
 }
+
+export type PageProps = ReturnType<typeof usePage>

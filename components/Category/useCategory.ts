@@ -12,8 +12,8 @@ export const useCategory = (props: { id: number }) => {
     })
 
     return {
-        queries: {
-            category,
-        },
+        ...category,
     }
 }
+
+export type CategoryProps = ReturnType<typeof useCategory>

@@ -264,3 +264,5 @@ export const useProducts = (props: UseFiltersProps) => {
         },
     }
 }
+
+export type ProductsProps = ReturnType<typeof useProducts>

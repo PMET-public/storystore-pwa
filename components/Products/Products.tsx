@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 
 import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons } from './Products.styled'
 
-import { useProducts } from './useProducts'
+import { ProductsProps } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { useResize } from '@storystore/ui/dist/hooks/useResize'
 
@@ -17,9 +17,7 @@ import Sidebar from '@storystore/ui/dist/components/Sidebar'
 
 const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
-type CategoryProps = ReturnType<typeof useProducts>
-
-export const Products: FunctionComponent<CategoryProps> = ({ loading, data, networkStatus, fetchMore, api }) => {
+export const Products: FunctionComponent<ProductsProps> = ({ loading, data, networkStatus, fetchMore, api }) => {
     const viewport = useResize()
     const { panelOpen, pagination, productUrlSuffix = '', items, sorting, filters } = data ?? {}
 

@@ -179,20 +179,16 @@ export const useProduct = ({ urlKey }: UseProduct) => {
     )
 
     return {
-        queries: {
-            product: {
-                ...product,
-                data: {
-                    ...product.data,
-                    product: _product
-                        ? {
-                              ..._product,
-                              ...productVariant,
-                              ...optionsAndVariants,
-                          }
-                        : undefined,
-                },
-            },
+        ...product,
+        data: {
+            ...product.data,
+            product: _product
+                ? {
+                      ..._product,
+                      ...productVariant,
+                      ...optionsAndVariants,
+                  }
+                : undefined,
         },
         api: {
             selectVariant: handleSelectVariant,
@@ -203,3 +199,5 @@ export const useProduct = ({ urlKey }: UseProduct) => {
         },
     }
 }
+
+export type ProductProps = ReturnType<typeof useProduct>

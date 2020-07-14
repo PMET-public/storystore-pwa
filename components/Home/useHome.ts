@@ -14,3 +14,5 @@ export const useHome = ({ id }: { id?: string }) => {
         ...home,
     }
 }
+
+export type HomeProps = ReturnType<typeof useHome>

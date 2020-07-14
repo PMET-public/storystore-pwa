@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 
 import { Root, TopBar, TopBarWrapper, Heading, Title, TopBarFilterButton, FiltersIcon } from './Category.styled'
 
-import { useCategory } from './useCategory'
+import { CategoryProps } from './useCategory'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 
 import Link from '~/components/Link'
@@ -17,11 +17,6 @@ import Icon from '@storystore/ui/dist/components/Icon'
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
 
-type CategoryProps = {
-    id: number
-    mode?: 'PRODUCTS_AND_PAGE' | 'PRODUCTS' | 'PAGE' | string
-}
-
 const TitleSkeleton = ({ ...props }) => {
     return (
         <Skeleton height={16} width={200} {...props}>
@@ -30,24 +25,22 @@ const TitleSkeleton = ({ ...props }) => {
     )
 }
 
-export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
-    const category = useCategory({ id })
-
+export const Category: FunctionComponent<CategoryProps & { id: number }> = ({ id, loading, data }) => {
     const products = useProducts({ filters: { category_id: { eq: id.toString() } } })
 
     const online = useNetworkStatus()
 
-    if (!online && !category.queries.category.data?.page) return <Error type="Offline" fullScreen />
+    if (!online && !data?.page) return <Error type="Offline" fullScreen />
 
-    if (!category.queries.category.loading && !category.queries.category.data?.page) {
+    if (!loading && !data?.page) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
     }
 
-    const page = category.queries.category.data?.page && category.queries.category.data.page[0]
+    const page = data?.page && data.page[0]
 
-    const categoryUrlSuffix = category.queries.category.data?.store?.categoryUrlSuffix ?? ''
+    const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
 
-    const mode = page?.mode || _mode
+    const mode = page?.mode || 'PRODUCTS'
 
     return (
         <React.Fragment key={`category--${mode}--${page?.id}`}>
@@ -64,7 +57,7 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                         <TopBar>
                             <TopBarWrapper $margin>
                                 <Heading>
-                                    <Title>{!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title}</Title>
+                                    <Title>{!page?.title && loading ? <TitleSkeleton /> : page.title}</Title>
 
                                     {/* Breadcrumbs */}
                                     {page?.categories?.length === 0 && page.breadcrumbs && (

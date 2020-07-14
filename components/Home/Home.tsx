@@ -4,7 +4,7 @@ import { Root, Stories } from './Home.styled'
 import { resolveImage } from '~/lib/resolveImage'
 
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-import { useHome } from './useHome'
+import { HomeProps } from './useHome'
 
 import { HomeSkeleton } from './Home.skeleton'
 import Link from '~/components/Link'
@@ -13,8 +13,6 @@ import BubbleCarousel from '@storystore/ui/dist/components/BubbleCarousel'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
-
-type HomeProps = ReturnType<typeof useHome>
 
 export const Home: FunctionComponent<HomeProps> = ({ loading, data }) => {
     const online = useNetworkStatus()

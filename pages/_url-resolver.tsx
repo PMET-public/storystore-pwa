@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, FunctionComponent } from 'react'
 import { withApollo, initOnContext } from '~/lib/apollo/withApollo'
 import { withStoryStore } from '~/lib/storystore'
 import { NextPage } from 'next'
@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 
 import Link from '~/components/Link'
 import Error from '~/components/Error'
-import Page from '~/components/Page '
-import Category from '~/components/Category'
-import Product from '~/components/Product'
+import PageComponent, { usePage } from '~/components/Page '
+import CategoryComponent, { useCategory } from '~/components/Category'
+import ProductComponent, { useProduct } from '~/components/Product'
 import ApolloClient from 'apollo-client'
 import { NormalizedCacheObject } from 'apollo-cache-inmemory'
 
@@ -25,6 +25,21 @@ export type ResolverProps = {
     [key: string]: any
 }
 
+const Page: FunctionComponent<{ id: number }> = ({ id }) => {
+    const page = usePage({ id })
+    return <PageComponent {...page} />
+}
+
+const Category: FunctionComponent<{ id: number }> = ({ id }) => {
+    const category = useCategory({ id })
+    return <CategoryComponent {...category} id={id} />
+}
+
+const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
+    const product = useProduct({ urlKey })
+    return <ProductComponent {...product} />
+}
+
 const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
     const renderPage = useMemo(() => {
         if (!type) {
@@ -37,7 +52,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
 
         switch (type) {
             case CONTENT_TYPE.CMS_PAGE:
-                return <Page {...props} key={props.id} id={props.id} />
+                return <Page key={props.id} id={props.id} />
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:

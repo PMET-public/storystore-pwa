@@ -12,3 +12,5 @@ export const useApp = () => {
         ...app,
     }
 }
+
+export type AppProps = ReturnType<typeof useApp>
