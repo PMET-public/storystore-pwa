@@ -6,7 +6,7 @@ import { useCheckout } from './useCheckout'
 import { resolveImage } from '~/lib/resolveImage'
 
 import useNetworkStatus from '~/hooks/useNetworkStatus'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 
 import Link from '~/components/Link'

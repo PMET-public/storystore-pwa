@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { NextPage } from 'next'
-import { withStoryStore } from '~/lib/storystore'
 
 import SearchTemplate from '~/components/Search'
 
@@ -12,8 +11,6 @@ const Search: NextPage<SearchProps> = ({}) => {
 }
 
 // Enable next.js ssr
-Search.getInitialProps = async () => {
-    return { includeAppData: true }
-}
+Search.getInitialProps = async () => {}
 
-export default withStoryStore(Search)
+export default Search

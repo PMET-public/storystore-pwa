@@ -1,6 +1,5 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withStoryStore } from '~/lib/storystore'
 
 import { useSettings } from '~/components/Settings/useSettings'
 
@@ -23,4 +22,4 @@ const Settings: NextPage = () => {
     )
 }
 
-export default withStoryStore(Settings)
+export default Settings

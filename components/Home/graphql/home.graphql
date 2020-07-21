@@ -1,12 +1,8 @@
-#import "~/graphql/_categoryList.graphql"
-
-query HomeQuery($id: String!) {
+query HomePageQuery($id: String!) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
     }
-
-    ...categoryList
 
     page: cmsPage(identifier: $id) {
         id: url_key

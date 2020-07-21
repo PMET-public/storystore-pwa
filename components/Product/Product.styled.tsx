@@ -119,11 +119,6 @@ export const InfoInnerWrapper = styled.div`
     }
 `
 
-export const InfoOptions = styled.div`
-    display: grid;
-    grid-gap: 3rem;
-`
-
 export const Info = styled.div`
     display: grid;
     grid-auto-rows: max-content;
@@ -142,11 +137,6 @@ export const Header = styled.header`
     }
 `
 
-export const Field = styled.div`
-    display: grid;
-    grid-gap: 1.4rem;
-`
-
 export const Title = styled.h2`
     font-family: ${props => props.theme.typography.heading.family};
     font-weight: ${props => props.theme.typography.heading.weight.semi};
@@ -156,11 +146,6 @@ export const Title = styled.h2`
 export const Sku = styled.span`
     font-size: 1.3rem;
     color: ${props => props.theme.colors.onSurface75};
-`
-
-export const Buttons = styled.div`
-    display: grid;
-    grid-gap: 1rem;
 `
 
 export const ShortDescription = styled.div`

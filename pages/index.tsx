@@ -1,22 +1,42 @@
 import React from 'react'
-import { NextPage } from 'next'
-import { withStoryStore } from '~/lib/storystore'
+import { NextPage, GetServerSideProps } from 'next'
+import { useStoryStore } from '~/lib/storystore'
+import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
+import { APP_QUERY } from '~/components/App'
+import { initializeApollo } from '~/lib/apollo/client'
+import { useQuery } from '@apollo/client'
 
-import HomeTemplate, { useHome } from '../components/Home'
-
-import useStoryStore from '~/hooks/useStoryStore'
-
-const Home: NextPage = () => {
+const Home: NextPage<{ homePageId: string }> = ({ homePageId }) => {
     const { settings } = useStoryStore()
 
-    const home = useHome({ id: settings.homePageId })
+    const home = useQuery(HOME_PAGE_QUERY, {
+        variables: { id: homePageId ?? settings.homePageId },
+    })
 
     return <HomeTemplate {...home} />
 }
 
-// Enable next.js ssr
-Home.getInitialProps = async () => {
-    return { includeAppData: true }
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    if (!Boolean(process.env.CLOUD_MODE)) {
+        // Vercel Edge Caching
+        res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    }
+
+    const apolloClient = initializeApollo(null, req.headers.cookie)
+
+    // SSR Queries
+    const app = await apolloClient.query({ query: APP_QUERY }) // Preload App Data
+
+    const homePageId = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+
+    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePageId } })
+
+    return {
+        props: {
+            homePageId,
+            initialState: apolloClient.cache.extract(),
+        },
+    }
 }
 
-export default withStoryStore(Home)
+export default Home

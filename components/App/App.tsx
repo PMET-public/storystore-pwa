@@ -1,35 +1,24 @@
 import React, { FunctionComponent, useEffect, useCallback, useState } from 'react'
-import { ServerError } from 'apollo-link-http-common'
 import dynamic from 'next/dynamic'
 import { version } from '~/package.json'
 import ReactGA from 'react-ga'
 import Router from 'next/router'
-
-import { ThemeProvider } from 'styled-components'
-import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
 import { Root, HeaderContainer, Main, FooterContainer, Copyright, TabBarContainer, OfflineToast, HamburgerButton } from './App.styled'
-
 import useServiceWorker from '~/hooks/useServiceWorker'
 import { useRouter } from 'next/router'
-import { AppProps } from './useApp'
-import { useCart } from '../Cart'
 import { resolveImage } from '~/lib/resolveImage'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useStoryStore } from '~/lib/storystore'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import useValueUpdated from '~/hooks/useValueUpdated'
-import { useQuery } from '@apollo/react-hooks'
-
+import { useQuery, ServerError, QueryResult, gql } from '@apollo/client'
 import { ToastsStyles } from './ToastsStyles'
 import { FontStyles } from '~/components/App/FontStyles'
-
 import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import Header from '@storystore/ui/dist/components/Header'
 import TabBar from '@storystore/ui/dist/components/TabBar'
 import MobileMenuNav from '@storystore/ui/dist/components/MobileMenuNav'
-import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
-
 import IconSearchSvg from 'remixicon/icons/System/search-line.svg'
 import IconSearchActiveSvg from 'remixicon/icons/System/search-fill.svg'
 import IconBagSvg from 'remixicon/icons/Finance/shopping-bag-line.svg'
@@ -39,9 +28,9 @@ import IconHomeActiveSvg from 'remixicon/icons/Buildings/store-2-fill.svg'
 import CloudOff from 'remixicon/icons/Business/cloud-off-line.svg'
 import MenuSVG from 'remixicon/icons/System/menu-line.svg'
 import CloseSVG from 'remixicon/icons/System/close-line.svg'
-
-import FOOTER_QUERY from './graphql/footer.graphql'
-import { queryDefaultOptions } from '~/lib/apollo/client'
+import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
+import { CART_QUERY } from '~/components/Cart'
+import { useCart } from '~/hooks/useCart/useCart'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
@@ -57,12 +46,12 @@ if (process.browser) {
     })
 }
 
-export const App: FunctionComponent<AppProps> = ({ loading, error, data, children }) => {
+export const App: FunctionComponent<QueryResult> = ({ loading, error, data, children }) => {
     const workbox = useServiceWorker()
 
     const { cartId, settings, setCartId } = useStoryStore()
 
-    const cart = useCart({ cartId })
+    const { createCart, creatingCart } = useCart()
 
     const online = useNetworkStatus()
 
@@ -83,25 +72,21 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
     )
 
     /**
-     * Footer
+     * Shopping Cart
      */
-    const footer = useQuery(FOOTER_QUERY, {
-        ...queryDefaultOptions,
-        variables: { footerBlockId: settings.footerBlockId },
-        skip: !settings.footerBlockId,
-    })
+    const cart = useQuery(CART_QUERY, { variables: { cartId }, skip: !cartId })
 
     /**
      * No Cart no problem. Let's create one
      */
     useEffect(() => {
-        if (cart.loading || cart.api.creatingCart.loading || !!cart.api.creatingCart.data?.cartId) return
+        if (cart.loading || creatingCart.loading || !!creatingCart.data?.cartId) return
 
         if (cart.error || !cartId || cart.data?.cart?.id !== cartId) {
             if (process.env.NODE_ENV !== 'production') console.log('🛒 Creating new Cart')
-            cart.api.createCart().then(setCartId)
+            createCart().then(setCartId)
         }
-    }, [cart, cartId, setCartId])
+    }, [cart, cartId, setCartId, createCart, creatingCart])
 
     /**
      * Google Analytics
@@ -175,6 +160,26 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
         }
     }, online)
 
+    /**
+     * Footer Block
+     */
+    const footer = useQuery(
+        gql`
+            query AppSFooterQuery($footerBlockId: String!) {
+                cmsBlocks(identifiers: [$footerBlockId]) {
+                    items {
+                        id: identifier
+                        html: content
+                    }
+                }
+            }
+        `,
+        {
+            variables: { footerBlockId: settings.footerBlockId },
+            skip: !settings.footerBlockId,
+        }
+    )
+
     if (online && error) {
         const networkError = error?.networkError as ServerError
 
@@ -187,45 +192,26 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
         }
     }
 
-    const { store, categories = [] } = data || {}
+    const { storeConfig, categories = [] } = data || {}
 
-    const categoryUrlSuffix = store?.categoryUrlSuffix ?? ''
+    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
 
     return (
-        <ThemeProvider
-            theme={{
-                ...baseTheme,
-                colors: {
-                    ...baseTheme.colors,
-                    ...generateColorTheme({
-                        accent: settings.colorAccent || baseTheme.colors.accent,
-                        onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
-                        primary: settings.colorPrimary || baseTheme.colors.primary,
-                        onPrimary: settings.colorOnPrimary || baseTheme.colors.onPrimary,
-                        secondary: settings.colorSecondary || baseTheme.colors.secondary,
-                        onSecondary: settings.colorOnSecondary || baseTheme.colors.onSecondary,
-                        ...(settings.colorDark && {
-                            surface: '#222222',
-                            onSurface: '#ffffff',
-                        }),
-                    }),
-                },
-            }}
-        >
+        <React.Fragment>
             <NextNprogress color={settings.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
             <FontStyles />
             <ToastsStyles />
 
             {/* Head Metadata */}
-            {store && (
+            {storeConfig && (
                 <Head
                     defaults={{
-                        title: store.metaTitle,
-                        titlePrefix: store.metaTitlePrefix,
-                        titleSuffix: store.metaTitleSuffix,
-                        description: store.metaDescription,
-                        keywords: store.metaKeywords,
+                        title: storeConfig.metaTitle,
+                        titlePrefix: storeConfig.metaTitlePrefix,
+                        titleSuffix: storeConfig.metaTitleSuffix,
+                        description: storeConfig.metaDescription,
+                        keywords: storeConfig.metaKeywords,
                     }}
                 />
             )}
@@ -233,15 +219,15 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
             <Root>
                 <HeaderContainer as="header" $margin>
                     <Header
-                        loading={loading && !store}
+                        loading={loading && !storeConfig}
                         logo={{
                             as: Link,
-                            image: store?.logoSrc && {
-                                src: resolveImage(store.baseMediaUrl + 'logo/' + store.logoSrc),
-                                alt: store?.logoAlt || 'StoryStore PWA',
+                            image: storeConfig?.logoSrc && {
+                                src: resolveImage(storeConfig.baseMediaUrl + 'logo/' + storeConfig.logoSrc),
+                                alt: storeConfig?.logoAlt || 'StoryStore PWA',
                             },
                             href: '/',
-                            title: store?.logoAlt || 'StoryStore PWA',
+                            title: storeConfig?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
                             items: categories[0]?.children?.map(({ id, text, href: _href, mode }: any) => {
@@ -305,7 +291,7 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
                 <FooterContainer as="footer">
                     <Footer
                         loading={footer.loading && !footer.data}
-                        html={footer.data?.cmsBlocks.items[0]?.html ? <PageBuilder html={footer.data.cmsBlocks.items[0].html} /> : <Copyright>{store?.copyright}</Copyright>}
+                        html={footer.data?.cmsBlocks.items[0]?.html ? <PageBuilder html={footer.data.cmsBlocks.items[0].html} /> : <Copyright>{storeConfig?.copyright}</Copyright>}
                     />
                 </FooterContainer>
 
@@ -383,6 +369,6 @@ export const App: FunctionComponent<AppProps> = ({ loading, error, data, childre
                 style={{ position: 'absolute', zIndex: 10, right: 0, top: '1rem' }}
                 className="breakpoint-medium-hidden"
             />
-        </ThemeProvider>
+        </React.Fragment>
     )
 }

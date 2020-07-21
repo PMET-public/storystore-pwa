@@ -1,18 +1,16 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import dynamic from 'next/dynamic'
-
-import { Root, TopBar, TopBarWrapper, Heading, Title, TopBarFilterButton, FiltersIcon } from './Category.styled'
-
-import { CategoryProps } from './useCategory'
+import { Root, TopBar, TopBarWrapper, Heading, Title } from './Category.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import Products, { useProducts } from '~/components/Products'
+import ProductList from '@storystore/ui/dist/components/ProductList'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
 import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
-import Icon from '@storystore/ui/dist/components/Icon'
+import { QueryResult } from '@apollo/client'
+import { resolveImage } from '~/lib/resolveImage'
+import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 
 const Error = dynamic(() => import('../Error'))
 const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
@@ -25,22 +23,68 @@ const TitleSkeleton = ({ ...props }) => {
     )
 }
 
-export const Category: FunctionComponent<CategoryProps & { id: number }> = ({ id, loading, data }) => {
-    const products = useProducts({ filters: { category_id: { eq: id.toString() } } })
+export const Category: FunctionComponent<QueryResult> = ({ loading, data, fetchMore }) => {
+    const categoryUrlSuffix = data?.storeConfig.categoryUrlSuffix
+
+    const productUrlSuffix = data?.storeConfig.categoryUrlSuffix
+
+    const page = data?.categoryList && data.categoryList[0]
+
+    const mode = page?.mode || 'PRODUCTS'
+
+    const products = page?.products
+
+    const [loadingMoreProducts, setLoadingMoreProducts] = useState(false)
+
+    /**
+     * Infinite Scroll Effect
+     */
+    useFetchMoreOnScrolling(
+        {
+            threshold: 400,
+            loading: loading || loadingMoreProducts,
+            hasNextPage: products?.pagination && products?.pagination.current < products?.pagination.total,
+        },
+        () => {
+            if (!products?.pagination?.current) return
+
+            setLoadingMoreProducts(true)
+
+            fetchMore({
+                variables: {
+                    currentPage: products.pagination.current + 1, // next page
+                },
+                updateQuery: (prev: any, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev
+                    return {
+                        ...prev,
+                        categoryList: [
+                            {
+                                ...prev.categoryList[0],
+                                products: {
+                                    ...prev.categoryList[0].products,
+                                    ...fetchMoreResult.categoryList[0].products,
+                                    items: [...prev.categoryList[0].products.items, ...fetchMoreResult.categoryList[0].products.items],
+                                },
+                            },
+                        ],
+                    }
+                },
+            })
+                .then(() => {
+                    setLoadingMoreProducts(false)
+                })
+                .catch(() => {})
+        }
+    )
 
     const online = useNetworkStatus()
 
-    if (!online && !data?.page) return <Error type="Offline" fullScreen />
+    if (!online && !data?.categoryList) return <Error type="Offline" fullScreen />
 
-    if (!loading && !data?.page) {
+    if (!loading && !data?.categoryList) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
     }
-
-    const page = data?.page && data.page[0]
-
-    const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
-
-    const mode = page?.mode || 'PRODUCTS'
 
     return (
         <React.Fragment key={`category--${mode}--${page?.id}`}>
@@ -95,39 +139,45 @@ export const Category: FunctionComponent<CategoryProps & { id: number }> = ({ id
                                         />
                                     )}
                                 </Heading>
-
-                                {products.data?.filters && (
-                                    <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
-                                        <span>
-                                            <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
-                                        </span>
-                                    </TopBarFilterButton>
-                                )}
                             </TopBarWrapper>
                         </TopBar>
 
-                        <Products
-                            {...{
-                                ...products,
-                                data: {
-                                    ...products.data,
-                                    sorting:
-                                        /**
-                                         * Filter Sort By Options for those provided by the User on the Category level.
-                                         * GraphQL Query is returning empty if the user selects the default [] Use All
-                                         */
-                                        page?.availableSortBy.length > 0 && products.data
-                                            ? {
-                                                  ...products.data.sorting,
-                                                  default: page.defaultSortBy,
-                                                  defaultValues: { sortBy: page.defaultSortBy + ',DESC' },
-                                                  options: products.data.sorting?.options?.filter((x: any) => {
-                                                      return page.availableSortBy.findIndex((y: string) => y === x.value) > -1
-                                                  }),
-                                              }
-                                            : products.data?.sorting,
-                                },
-                            }}
+                        <ProductList
+                            loading={loading}
+                            loadingMore={loading || loadingMoreProducts}
+                            items={products?.items
+                                ?.filter((x: any) => !!x) // patches results returning nulls. I'm looking at you Gift Cards
+                                .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
+                                    _id: `${id}--${index}`,
+                                    as: Link,
+                                    href: `/${urlKey + productUrlSuffix}`,
+                                    urlResolver: {
+                                        type: 'PRODUCT',
+                                        id,
+                                        urlKey,
+                                    },
+                                    image: {
+                                        alt: image.alt,
+                                        src: {
+                                            desktop: resolveImage(image.src, { width: 1260 }),
+                                            mobile: resolveImage(image.src, { width: 960 }),
+                                        },
+                                        width: 1274,
+                                        height: 1580,
+                                    },
+                                    price: {
+                                        label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
+                                        regular: price.minimum.regular.value,
+                                        special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
+                                        currency: price.minimum.regular.currency,
+                                    },
+                                    title: {
+                                        text: title,
+                                    },
+                                    colors: options
+                                        ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch?.__typename === 'ColorSwatchData'))
+                                        ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
+                                }))}
                         />
                     </React.Fragment>
                 )}

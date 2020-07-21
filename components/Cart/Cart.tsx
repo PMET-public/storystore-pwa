@@ -2,11 +2,8 @@ import React, { FunctionComponent, useCallback } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 import dynamic from 'next/dynamic'
 import { Root, SummaryWrapper, CartSummaryWrapper, ProductList, StickyButtonWrapper } from './Cart.styled'
-
-import { CartProps } from './useCart'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
-import useStoryStore from '~/hooks/useStoryStore'
-
+import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
@@ -16,13 +13,17 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
 import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
+import { QueryResult } from '@apollo/client'
+import { useCart } from '~/hooks/useCart/useCart'
 
 const Error = dynamic(() => import('../Error'))
 
-export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }) => {
+export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) => {
     const { cartId } = useStoryStore()
 
     const history = useRouter()
+
+    const { updateCartItem, updatingCartItem, removeCartItem, removingCartItem, applyCoupon, applyingCoupon, removeCoupon, removingCoupon } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
         await history.push('/checkout')
@@ -84,8 +85,8 @@ export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }
                                 addLabel: `Add another ${product.name} from shopping bag`,
                                 substractLabel: `Remove one ${product.name} from shopping bag`,
                                 removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => api.updateCartItem({ cartId, productId: id, quantity }),
-                                onRemove: () => api.removeCartItem({ cartId, productId: id }),
+                                onUpdate: (quantity: number) => updateCartItem({ cartId, productId: id, quantity }),
+                                onRemove: () => removeCartItem({ cartId, productId: id }),
                             },
                             price: {
                                 currency: price.amount.currency,
@@ -114,7 +115,7 @@ export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }
                                         field: {
                                             label: 'Coupon Code',
                                             name: 'couponCode',
-                                            error: api.applyingCoupon.error?.message || api.removingCoupon.error?.message,
+                                            error: applyingCoupon.error?.message || removingCoupon.error?.message,
                                             disabled: !!appliedCoupons,
                                             defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
                                         },
@@ -122,13 +123,13 @@ export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }
                                             text: appliedCoupons ? 'Remove' : 'Apply',
                                             type: appliedCoupons ? 'reset' : 'submit',
                                         },
-                                        submitting: api.applyingCoupon.loading || api.removingCoupon.loading,
+                                        submitting: applyingCoupon.loading || removingCoupon.loading,
                                         onReset: () => {
-                                            api.removeCoupon({ cartId })
+                                            removeCoupon({ cartId })
                                         },
                                         onSubmit: (values: any) => {
                                             const { couponCode } = values
-                                            api.applyCoupon({ cartId, couponCode })
+                                            applyCoupon({ cartId, couponCode })
                                         },
                                     },
                                 ],
@@ -183,24 +184,12 @@ export const Cart: FunctionComponent<CartProps> = ({ loading, error, data, api }
                                 },
                             ]}
                         />
-                        <ButtonComponent
-                            linkTagAs="button"
-                            onClick={handleGoToCheckout}
-                            disabled={items.length === 0}
-                            text="Checkout"
-                            loading={api.updatingCartItem.loading || api.removingCartItem.loading}
-                        />
+                        <ButtonComponent linkTagAs="button" onClick={handleGoToCheckout} disabled={items.length === 0} text="Checkout" loading={updatingCartItem.loading || removingCartItem.loading} />
                     </CartSummaryWrapper>
                 </SummaryWrapper>
 
                 <StickyButtonWrapper>
-                    <ButtonComponent
-                        linkTagAs="button"
-                        onClick={handleGoToCheckout}
-                        disabled={items.length === 0}
-                        text="Checkout"
-                        loading={api.updatingCartItem.loading || api.removingCartItem.loading}
-                    />
+                    <ButtonComponent linkTagAs="button" onClick={handleGoToCheckout} disabled={items.length === 0} text="Checkout" loading={updatingCartItem.loading || removingCartItem.loading} />
                 </StickyButtonWrapper>
             </Root>
         </React.Fragment>

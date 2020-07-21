@@ -2,13 +2,14 @@ import React, { FunctionComponent, useState, useCallback, useRef, useEffect } fr
 import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, ErrorItem, ErrorItemContent, ErrorItemIcon } from './Settings.styled'
 import { version } from '~/package.json'
 
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
+import { useStoryStore } from '~/lib/storystore'
 import { SettingsProps } from './useSettings'
 
-import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
+import Form, { Input } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
 import Loader from '@storystore/ui/dist/components/Loader'
+import { AnyARecord } from 'dns'
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
@@ -27,7 +28,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ data, loading: _loa
 
     const loading = saving || _loading
 
-    const formRef = useRef<FormContext>()
+    const formRef = useRef<AnyARecord>()
 
     const [notices, setNotices] = useState<{ [key: string]: any } | undefined>()
 
@@ -43,7 +44,7 @@ export const Settings: FunctionComponent<SettingsProps> = ({ data, loading: _loa
 
             if (data?.errors) {
                 data.errors.forEach(error => {
-                    formRef.current?.setError(error.key, error.level, error.message)
+                    formRef.current?.setError(error.key, { type: error.level, message: error.message })
                 })
 
                 if (data.errors.find(e => e.level === 'error')) {

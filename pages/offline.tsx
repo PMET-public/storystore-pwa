@@ -1,8 +1,6 @@
 import React from 'react'
 import { NextPage } from 'next'
 
-import { withStoryStore } from '~/lib/storystore'
-
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 import useValueUpdated from '~/hooks/useValueUpdated'
@@ -28,4 +26,4 @@ const Offline: NextPage<OfflineProps> = ({}) => {
     return <Error type="Offline" fullScreen />
 }
 
-export default withStoryStore(Offline)
+export default Offline

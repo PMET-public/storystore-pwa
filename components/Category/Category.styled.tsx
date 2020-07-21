@@ -57,20 +57,3 @@ export const Title = styled.div`
     font-size: 1.6rem;
     height: 2rem;
 `
-
-export const TopBarFilterButton = styled.button`
-    margin-left: 1rem;
-    & > span {
-        align-items: center;
-        display: grid;
-        fill: currentColor;
-        font-size: 2.4rem;
-        grid-auto-columns: max-content;
-        grid-auto-flow: column;
-        grid-gap: 0.75rem;
-    }
-`
-
-export const FiltersIcon = styled(FiltersIconSvg)`
-    font-size: 1.8rem;
-`

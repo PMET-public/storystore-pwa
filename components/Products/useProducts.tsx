@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useQuery } from '@apollo/react-hooks'
-import { queryDefaultOptions } from '~/lib/apollo/client'
+import { useQuery } from '@apollo/client'
 import { getURLSearchAsObject } from '~/lib/getURLSearchAsObject'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 
@@ -38,7 +37,6 @@ export const useProducts = (props: UseFiltersProps) => {
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
      */
     const filters = useQuery(FILTERS_QUERY, {
-        ...queryDefaultOptions,
         fetchPolicy: 'cache-first',
     })
 
@@ -115,7 +113,6 @@ export const useProducts = (props: UseFiltersProps) => {
 
     /** Get Products */
     const products = useQuery(PRODUCTS_QUERY, {
-        ...queryDefaultOptions,
         variables: { search, sort: sortingValues, filters: { ...filtersValues, ...filterVariables } },
     })
 

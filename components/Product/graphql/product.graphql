@@ -82,11 +82,6 @@ query ProductQuery($urlKey: String!) {
 
                         ...price
 
-                        thumbnail {
-                            label
-                            url
-                        }
-
                         gallery: media_gallery {
                             ...Gallery
                         }

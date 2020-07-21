@@ -1,8 +1,0 @@
-query AppShellFooterQuery($footerBlockId: String!) {
-    cmsBlocks(identifiers: [$footerBlockId]) {
-        items {
-            id: identifier
-            html: content
-        }
-    }
-}

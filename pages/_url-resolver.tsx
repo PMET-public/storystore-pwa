@@ -1,16 +1,13 @@
 import React, { useMemo, FunctionComponent } from 'react'
-import { withApollo, initOnContext } from '~/lib/apollo/withApollo'
-import { withStoryStore } from '~/lib/storystore'
 import { NextPage } from 'next'
-import gql from 'graphql-tag'
-
+import { gql, useQuery } from '@apollo/client'
+import { initializeApollo } from '~/lib/apollo/client'
 import Link from '~/components/Link'
 import Error from '~/components/Error'
-import PageComponent, { usePage } from '~/components/Page '
-import CategoryComponent, { useCategory } from '~/components/Category'
-import ProductComponent, { useProduct } from '~/components/Product'
-import ApolloClient from 'apollo-client'
-import { NormalizedCacheObject } from 'apollo-cache-inmemory'
+import { APP_QUERY } from '~/components/App'
+import PageComponent, { PAGE_QUERY } from '~/components/Page '
+import CategoryComponent, { CATEGORY_QUERY } from '~/components/Category'
+import ProductComponent, { PRODUCT_QUERY } from '~/components/Product'
 
 export enum CONTENT_TYPE {
     CMS_PAGE = 'CMS_PAGE',
@@ -26,21 +23,29 @@ export type ResolverProps = {
 }
 
 const Page: FunctionComponent<{ id: number }> = ({ id }) => {
-    const page = usePage({ id })
+    const page = useQuery(PAGE_QUERY, {
+        variables: { id },
+    })
+
     return <PageComponent {...page} />
 }
 
 const Category: FunctionComponent<{ id: number }> = ({ id }) => {
-    const category = useCategory({ id })
-    return <CategoryComponent {...category} id={id} />
+    const category = useQuery(CATEGORY_QUERY, {
+        variables: { id: id.toString() },
+    })
+
+    return <CategoryComponent {...category} />
 }
 
 const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
-    const product = useProduct({ urlKey })
+    const product = useQuery(PRODUCT_QUERY, {
+        variables: { urlKey },
+    })
     return <ProductComponent {...product} />
 }
 
-const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
+const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
     const renderPage = useMemo(() => {
         if (!type) {
             return (
@@ -56,7 +61,6 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                const urlKey = pathname.split('/').pop()?.split('.')?.shift() || ''
                 return <Product {...props} key={urlKey} urlKey={urlKey} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
@@ -67,29 +71,34 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, pathname, ...props }) => {
                     </Error>
                 )
         }
-    }, [type, pathname, props])
+    }, [type, urlKey, props])
 
     return renderPage
 }
 
-// enable next.js ssr
-UrlResolver.getInitialProps = async ctx => {
-    const { apolloClient }: { apolloClient: ApolloClient<NormalizedCacheObject> } = initOnContext(ctx)
+UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
+    if (!Boolean(process.env.CLOUD_MODE)) {
+        // Vercel Edge Caching
+        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    }
 
-    const { res, query, asPath } = ctx
-
-    const { type, ...params } = query
+    const apolloClient = initializeApollo(null, req?.headers.cookie)
 
     const pathname = asPath?.split('?')[0]
 
-    if (type) {
+    const urlKey = pathname?.split('/').pop()?.split('.')?.shift() || ''
+
+    if (query.type) {
         return {
-            ...params,
-            type: String(type),
-            pathname,
+            ...query,
+            type: String(query.type),
+            urlKey,
         }
     }
 
+    /**
+     * Resolver URL
+     */
     const { data } = await apolloClient.query({
         query: gql`
             query UrlResolver($url: String!) {
@@ -105,7 +114,7 @@ UrlResolver.getInitialProps = async ctx => {
     })
 
     /**
-     * Url not-found. Return 404
+     * URL not-found. Return 404
      */
     if (!data?.urlResolver) {
         if (res) res.statusCode = 404
@@ -116,14 +125,37 @@ UrlResolver.getInitialProps = async ctx => {
     }
 
     /**
+     * If SSR, load data in cache
+     */
+    if (!!req) {
+        const { type, id } = data.urlResolver
+
+        await apolloClient.query({ query: APP_QUERY }) // Preload App Data
+
+        switch (type) {
+            case CONTENT_TYPE.CMS_PAGE:
+                await apolloClient.query({ query: PAGE_QUERY, variables: { id } })
+                break
+            case CONTENT_TYPE.CATEGORY:
+                await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
+                break
+            case CONTENT_TYPE.PRODUCT:
+                await apolloClient.query({ query: PRODUCT_QUERY, variables: { urlKey } })
+                break
+            default:
+                break
+        }
+    }
+
+    /**
      * Return Values
      */
     return {
-        includeAppData: true,
+        ...query,
         ...data.urlResolver,
-        ...params,
-        pathname,
+        urlKey,
+        initialState: apolloClient.cache.extract(),
     }
 }
 
-export default withStoryStore(MyApp)
+export default UrlResolver

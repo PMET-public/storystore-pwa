@@ -1,15 +1,15 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withStoryStore } from '~/lib/storystore'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
-import CartTemplate, { useCart } from '~/components/Cart'
+import { useStoryStore } from '~/lib/storystore'
+import CartTemplate, { CART_QUERY } from '~/components/Cart'
+import { useQuery } from '@apollo/client'
 
 const Cart: NextPage = () => {
     const { cartId } = useStoryStore()
 
-    const cart = useCart({ cartId })
+    const cart = useQuery(CART_QUERY, { variables: { cartId } })
 
     return <CartTemplate {...cart} />
 }
 
-export default withStoryStore(Cart)
+export default Cart

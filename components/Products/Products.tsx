@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 
 import { Root, ProductListWrapper, FiltersWrapper, SortByWrapper, FiltersButtons } from './Products.styled'
 
-import { ProductsProps } from './useProducts'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { useResize } from '@storystore/ui/dist/hooks/useResize'
 
@@ -14,10 +13,11 @@ import SortBy from '@storystore/ui/dist/components/SortBy'
 import { GroupLabel } from '@storystore/ui/dist/components/Filters/Filters.styled'
 import Button from '@storystore/ui/dist/components/Button'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
+import { QueryResult } from '@apollo/client'
 
 const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
-export const Products: FunctionComponent<ProductsProps> = ({ loading, data, networkStatus, fetchMore, api }) => {
+export const Products: FunctionComponent<QueryResult> = ({ loading, data, networkStatus, fetchMore, api }) => {
     const viewport = useResize()
     const { panelOpen, pagination, productUrlSuffix = '', items, sorting, filters } = data ?? {}
 
@@ -93,7 +93,7 @@ export const Products: FunctionComponent<ProductsProps> = ({ loading, data, netw
                 />
             </ProductListWrapper>
 
-            <Sidebar position="right" onClose={() => api.togglePanel(false)}>
+            {/* <Sidebar position="right" onClose={() => api.togglePanel(false)}>
                 {panelOpen && (
                     <FiltersWrapper style={{ height: viewport.vHeight }}>
                         {sorting?.options && (
@@ -123,7 +123,7 @@ export const Products: FunctionComponent<ProductsProps> = ({ loading, data, netw
                         </FiltersButtons>
                     </FiltersWrapper>
                 )}
-            </Sidebar>
+            </Sidebar> */}
         </Root>
     )
 }

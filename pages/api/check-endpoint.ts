@@ -1,7 +1,7 @@
 import { magentoDependency } from '~/package.json'
 import { NextApiRequest, NextApiResponse } from 'next'
-import createApolloClient from '~/lib/apollo/client'
-import gql from 'graphql-tag'
+import { initializeApollo } from '~/lib/apollo/client'
+import gql from '@apollo/client'
 import semver from 'semver'
 import { URL } from 'url'
 
@@ -66,7 +66,7 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
     }
 
     try {
-        const apolloClient = createApolloClient(url)
+        const apolloClient = initializeApollo(url)
 
         const { data } = await apolloClient.query({
             query: gql`

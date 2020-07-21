@@ -2,19 +2,17 @@ import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, Stories } from './Home.styled'
 import { resolveImage } from '~/lib/resolveImage'
-
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-import { HomeProps } from './useHome'
-
 import { HomeSkeleton } from './Home.skeleton'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
 import BubbleCarousel from '@storystore/ui/dist/components/BubbleCarousel'
+import { QueryResult } from '@apollo/client'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
 
-export const Home: FunctionComponent<HomeProps> = ({ loading, data }) => {
+export const Home: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
     const { page, categories, storeConfig } = data || {}
@@ -58,7 +56,7 @@ export const Home: FunctionComponent<HomeProps> = ({ loading, data }) => {
                     </Stories>
                 )}
 
-                {loading && !page ? <HomeSkeleton /> : page?.content && <PageBuilder html={page.content} />}
+                {loading && !page ? <HomeSkeleton /> : page.content && <PageBuilder html={page.content} />}
             </Root>
         </React.Fragment>
     )

@@ -1,7 +1,6 @@
-import { useCart } from '~/components/Cart/useCart'
+import { useCart } from '~/hooks/useCart/useCart'
 import { useCallback, useEffect } from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import { queryDefaultOptions } from '~/lib/apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 
 import CHECKOUT_QUERY from './graphql/checkout.graphql'
 
@@ -27,9 +26,7 @@ export const useCheckout = (props: UseCheckout) => {
     /**
      * Data Query
      */
-    const checkout = useQuery(CHECKOUT_QUERY, {
-        ...queryDefaultOptions,
-    })
+    const checkout = useQuery(CHECKOUT_QUERY)
 
     /**
      * Cart
@@ -59,7 +56,6 @@ export const useCheckout = (props: UseCheckout) => {
      */
 
     const contactInfo = useQuery(CONTACT_INFO_QUERY, {
-        ...queryDefaultOptions,
         variables: { cartId },
         fetchPolicy: 'no-cache',
     })
@@ -114,7 +110,6 @@ export const useCheckout = (props: UseCheckout) => {
      * Shipping Methods
      */
     const shippingMethods = useQuery(SHIPPING_METHODS_QUERY, {
-        ...queryDefaultOptions,
         variables: { cartId },
     })
 
@@ -144,7 +139,6 @@ export const useCheckout = (props: UseCheckout) => {
      * Selected Payment Method
      */
     const paymentMethod = useQuery(SELECTED_PAYMENT_METHOD_QUERY, {
-        ...queryDefaultOptions,
         variables: { cartId },
     })
 

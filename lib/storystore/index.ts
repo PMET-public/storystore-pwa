@@ -1,1 +1,1 @@
-export * from './withStoryStore'
+export * from './storystore'
