@@ -47,14 +47,6 @@ export const ProductContext = createContext<{
     setSelectedVariantIndex: _ => {},
 })
 
-// export const getProductPropsFromQuery = ({ loading, data }: QueryResult) => {
-//     const product = data?.product?.items[0]
-
-//     return {
-//         product,
-//     }
-// }
-
 export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 

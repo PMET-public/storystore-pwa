@@ -42,6 +42,7 @@ const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
     const product = useQuery(PRODUCT_QUERY, {
         variables: { urlKey },
     })
+
     return <ProductComponent {...product} />
 }
 
