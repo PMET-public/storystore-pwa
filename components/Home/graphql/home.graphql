@@ -1,9 +1,4 @@
 query HomePageQuery($id: String!) {
-    store: storeConfig {
-        id
-        categoryUrlSuffix: category_url_suffix
-    }
-
     page: cmsPage(identifier: $id) {
         id: url_key
         title

@@ -1,12 +1,9 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
-import { Root, Stories } from './Home.styled'
-import { resolveImage } from '~/lib/resolveImage'
+import { Root } from './Home.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { HomeSkeleton } from './Home.skeleton'
-import Link from '~/components/Link'
 import Head from '~/components/Head'
-import BubbleCarousel from '@storystore/ui/dist/components/BubbleCarousel'
 import { QueryResult } from '@apollo/client'
 
 const Error = dynamic(() => import('~/components/Error'))
@@ -15,9 +12,7 @@ const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: fal
 export const Home: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
-    const { page, categories, storeConfig } = data || {}
-
-    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
+    const { page } = data || {}
 
     if (!online && !data?.page) {
         return <Error type="Offline" fullScreen />
@@ -31,33 +26,7 @@ export const Home: FunctionComponent<QueryResult> = ({ loading, data }) => {
         <React.Fragment>
             {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
-            <Root>
-                {categories && categories[0]?.children && (
-                    <Stories>
-                        <BubbleCarousel
-                            loading={loading && !categories}
-                            items={categories[0]?.children?.map(({ id, text, href, image, mode }: any) => ({
-                                as: Link,
-                                urlResolver: {
-                                    type: 'CATEGORY',
-                                    id,
-                                    mode,
-                                },
-                                href: href + categoryUrlSuffix,
-                                image: image && {
-                                    alt: text,
-                                    src: resolveImage(image, { width: 200, height: 200 }),
-                                    width: '100px',
-                                    height: '100px',
-                                },
-                                text,
-                            }))}
-                        />
-                    </Stories>
-                )}
-
-                {loading && !page ? <HomeSkeleton /> : page.content && <PageBuilder html={page.content} />}
-            </Root>
+            <Root>{loading && !page ? <HomeSkeleton /> : page.content && <PageBuilder html={page.content} />}</Root>
         </React.Fragment>
     )
 }

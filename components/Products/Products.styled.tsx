@@ -1,13 +1,15 @@
 import styled from 'styled-components'
+import { Wrapper as ContainerWrapper } from '@storystore/ui/dist/components/Container/Container.styled'
 
 export const Root = styled.div``
 
-export const ProductListWrapper = styled.div`
+export const Wrapper = styled.div`
     position: relative;
     background-color: ${({ theme }) => theme.colors.surface};
+    display: flex;
 `
 
-export const SortByWrapper = styled.div``
+export const ProductListWrapper = styled(ContainerWrapper)``
 
 export const FiltersWrapper = styled.div`
     display: grid;
@@ -17,12 +19,6 @@ export const FiltersWrapper = styled.div`
     padding: 4rem 3rem 0;
     &::-webkit-scrollbar {
         display: none;
-    }
-
-    ${SortByWrapper} {
-        margin-bottom: 4rem;
-        display: grid;
-        grid-gap: 1.4rem;
     }
 `
 
@@ -34,7 +30,6 @@ export const FiltersButtons = styled.div`
     display: grid;
     grid-gap: 2rem;
     padding: 2rem 0;
-
     @supports (padding: max(0px)) {
         padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }

@@ -1,8 +1,7 @@
-query CategoryQuery($id: String!, $sort: ProductAttributeSortInput, $pageSize: Int = 12, $currentPage: Int = 1) {
+query CategoryQuery($id: String!) {
     storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
-        productUrlSuffix: product_url_suffix
     }
 
     categoryList(filters: { ids: { eq: $id } }) {
@@ -34,58 +33,5 @@ query CategoryQuery($id: String!, $sort: ProductAttributeSortInput, $pageSize: I
 
         defaultSortBy: default_sort_by
         availableSortBy: available_sort_by
-
-        products(sort: $sort, pageSize: $pageSize, currentPage: $currentPage) {
-            pagination: page_info {
-                current: current_page
-                total: total_pages
-            }
-
-            items {
-                id
-                title: name
-                urlKey: url_key
-
-                price: price_range {
-                    minimum: minimum_price {
-                        discount {
-                            amountOff: amount_off
-                        }
-                        regular: regular_price {
-                            value
-                            currency
-                        }
-                        final: final_price {
-                            value
-                            currency
-                        }
-                    }
-                    maximum: maximum_price {
-                        regular: regular_price {
-                            value
-                        }
-                    }
-                }
-
-                image {
-                    alt: label
-                    src: url
-                }
-
-                ... on ConfigurableProduct {
-                    options: configurable_options {
-                        id
-                        items: values {
-                            id: value_index
-                            label
-                            swatch: swatch_data {
-                                value
-                                __typename
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }
