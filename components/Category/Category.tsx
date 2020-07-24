@@ -14,7 +14,7 @@ import { QueryResult } from '@apollo/client'
 import Products from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
-import { Filters, FilterValues } from '~/components/Filters'
+import { Filters, FilterVariables, FilterSelected } from '~/components/Filters'
 
 const Error = dynamic(() => import('../Error'))
 
@@ -31,7 +31,7 @@ const TitleSkeleton = ({ ...props }) => {
 export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const [panelOpen, setPanelOpen] = useState(false)
 
-    const [filters, setFilters] = useState<FilterValues>({})
+    const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
 
     const categoryUrlSuffix = data?.storeConfig.categoryUrlSuffix
 
@@ -41,8 +41,8 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const online = useNetworkStatus()
 
-    const handleOnFiltersUpdate = useCallback(values => {
-        setFilters(values)
+    const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
+        setFilters({ selected, variables })
     }, [])
 
     if (!online && !data?.categoryList) return <Error type="Offline" fullScreen />
@@ -107,14 +107,14 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             </HeadingWrapper>
 
                             <TopBarFilterToggleButton onClick={() => setPanelOpen(!panelOpen)}>
-                                <Icon svg={panelOpen ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={Object.keys(filters).length > 0} />
+                                <Icon svg={panelOpen ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={Object.keys(filters.selected).length > 0} />
                             </TopBarFilterToggleButton>
                         </TopBar>
 
-                        <Products filters={{ category_id: { eq: page.id }, ...filters }} />
+                        <Products filters={{ category_id: { eq: page.id }, ...filters.variables }} />
 
                         <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
-                            {panelOpen && <Filters filters={{ category_id: { eq: page.id }, ...filters }} onUpdate={handleOnFiltersUpdate} />}
+                            {panelOpen && <Filters filters={{ category_id: { eq: page.id }, ...filters.variables }} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
                         </Sidebar>
                     </React.Fragment>
                 )}

@@ -12,22 +12,25 @@ const TYPES = {
     FilterRangeTypeInput: 'range',
 }
 
-export type FilterValues = {
+export type FilterVariables = {
     [key: string]: {
         in?: string[]
         eq?: string
     }
 }
 
+export type FilterSelected = { [key: string]: any[] }
+
 export type FiltersProps = {
     search?: string
-    filters?: FilterValues
-    onUpdate?: (_: FilterValues) => any
+    filters?: FilterVariables
+    defaultSelected?: FilterSelected
+    onUpdate?: (_: FilterVariables) => any
     onClose?: () => any
 }
 
-export const Filters: FunctionComponent<FiltersProps> = ({ search, filters = {}, onUpdate }) => {
-    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: any[] }>({})
+export const Filters: FunctionComponent<FiltersProps> = ({ search, filters = {}, defaultSelected = {}, onUpdate }) => {
+    const [selectedFilters, setSelectedFilters] = useState<FilterSelected>(defaultSelected)
 
     const { data, loading } = useQuery(FILTERS_QUERY, {
         variables: {
@@ -151,7 +154,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ search, filters = {},
             setSelectedFilters(selected)
 
             // execute callback
-            onUpdate(variables)
+            onUpdate({ selected, variables })
         },
         [filterTypes, onUpdate]
     )

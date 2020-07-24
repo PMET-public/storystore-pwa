@@ -4,13 +4,13 @@ import { Root, Wrapper, ProductListWrapper } from './Products.styled'
 import Link from '~/components/Link'
 import { useQuery } from '@apollo/client'
 import ProductList from '@storystore/ui/dist/components/ProductList'
-import { FilterValues } from '~/components/Filters'
+import { FilterVariables } from '~/components/Filters'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
 import { PRODUCTS_QUERY } from '.'
 
 export type ProductsProps = {
     search?: string
-    filters?: FilterValues
+    filters?: FilterVariables
 }
 
 export const Products: FunctionComponent<ProductsProps> = ({ search, filters = {} }) => {
