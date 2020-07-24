@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client'
 const Cart: NextPage = () => {
     const { cartId } = useStoryStore()
 
-    const cart = useQuery(CART_QUERY, { variables: { cartId } })
+    const cart = useQuery(CART_QUERY, { variables: { cartId }, skip: !cartId })
 
     return <CartTemplate {...cart} />
 }
