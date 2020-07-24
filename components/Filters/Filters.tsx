@@ -1,9 +1,8 @@
 import React, { FunctionComponent, useMemo, useCallback, useState, useEffect } from 'react'
 import { Root } from './Filters.styled'
-import { useQuery } from '@apollo/client'
+import { useQuery, QueryResult } from '@apollo/client'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 import FiltersComponent from '@storystore/ui/dist/components/Filters'
-import { FILTERS_QUERY } from '.'
 import FILTERS_TYPES_QUERY from './graphql/filtersTypes.graphql'
 
 const TYPES = {
@@ -22,22 +21,13 @@ export type FilterVariables = {
 export type FilterSelected = { [key: string]: any[] }
 
 export type FiltersProps = {
-    search?: string
-    filters?: FilterVariables
     defaultSelected?: FilterSelected
     onUpdate?: (_: FilterVariables) => any
     onClose?: () => any
 }
 
-export const Filters: FunctionComponent<FiltersProps> = ({ search, filters = {}, defaultSelected = {}, onUpdate }) => {
+export const Filters: FunctionComponent<QueryResult & FiltersProps> = ({ data, loading, defaultSelected = {}, onUpdate }) => {
     const [selectedFilters, setSelectedFilters] = useState<FilterSelected>(defaultSelected)
-
-    const { data, loading } = useQuery(FILTERS_QUERY, {
-        variables: {
-            search,
-            filters,
-        },
-    })
 
     const [cachedData, setCachedData] = useState<any>(null)
 

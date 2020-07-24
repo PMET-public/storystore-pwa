@@ -2,23 +2,12 @@ import React, { FunctionComponent, useState, useRef } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 import { Root, Wrapper, ProductListWrapper } from './Products.styled'
 import Link from '~/components/Link'
-import { useQuery } from '@apollo/client'
+import { QueryResult } from '@apollo/client'
 import ProductList from '@storystore/ui/dist/components/ProductList'
-import { FilterVariables } from '~/components/Filters'
 import { useFetchMoreOnScrolling } from '@storystore/ui/dist/hooks/useFetchMoreOnScrolling'
-import { PRODUCTS_QUERY } from '.'
 
-export type ProductsProps = {
-    search?: string
-    filters?: FilterVariables
-}
-
-export const Products: FunctionComponent<ProductsProps> = ({ search, filters = {} }) => {
+export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchMore }) => {
     const [fetchingMore, setFetchingMore] = useState(false)
-
-    const { data, loading, fetchMore } = useQuery(PRODUCTS_QUERY, {
-        variables: { search, filters },
-    })
 
     const { pagination, items } = data?.products ?? {}
 

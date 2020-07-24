@@ -10,8 +10,8 @@ import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
 import TopBar from '@storystore/ui/dist/components/TopBar'
 import FiltersIcon from 'remixicon/icons/System/list-settings-line.svg'
 import FiltersCloseIcon from 'remixicon/icons/System/list-settings-fill.svg'
-import { QueryResult } from '@apollo/client'
-import Products from '~/components/Products'
+import { QueryResult, useQuery } from '@apollo/client'
+import Products, { PRODUCTS_QUERY } from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
 import { Filters, FilterVariables, FilterSelected } from '~/components/Filters'
@@ -40,6 +40,10 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const mode = page?.mode || 'PRODUCTS'
 
     const online = useNetworkStatus()
+
+    const products = useQuery(PRODUCTS_QUERY, {
+        variables: { filters: { category_id: { eq: page.id }, ...filters.variables } },
+    })
 
     const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
         setFilters({ selected, variables })
@@ -111,10 +115,10 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             </TopBarFilterToggleButton>
                         </TopBar>
 
-                        <Products filters={{ category_id: { eq: page.id }, ...filters.variables }} />
+                        <Products {...products} />
 
                         <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
-                            {panelOpen && <Filters filters={{ category_id: { eq: page.id }, ...filters.variables }} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
+                            {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
                         </Sidebar>
                     </React.Fragment>
                 )}
