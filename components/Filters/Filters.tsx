@@ -161,7 +161,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ search, filters = {},
 
     return (
         <Root>
-            <FiltersComponent disabled={loading} options={{ defaultValues: selectedFilters }} groups={groups} onValues={handleOnFilterUpdate} />
+            <FiltersComponent loading={loading && !cachedData} title="Filters" disabled={loading} options={{ defaultValues: selectedFilters }} groups={groups} onValues={handleOnFilterUpdate} />
         </Root>
     )
 }
