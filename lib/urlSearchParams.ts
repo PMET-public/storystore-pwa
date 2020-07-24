@@ -17,7 +17,7 @@ export const setURLSearchParams = (values: { [key: string]: string }) => {
 
     url.search = params.toString()
 
-    return url.toString()
+    history.pushState(null, '', url.toString())
 }
 
 export const getURLSearchParams = () => {

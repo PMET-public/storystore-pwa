@@ -5,6 +5,7 @@ export const Root = styled.div`
     grid-auto-rows: max-content;
     min-height: 100%;
 `
+
 export const HeadingWrapper = styled.div`
     overflow-y: hidden;
 `

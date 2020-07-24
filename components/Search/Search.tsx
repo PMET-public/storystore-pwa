@@ -1,77 +1,82 @@
-import React, { FunctionComponent, useMemo, useCallback } from 'react'
+import React, { FunctionComponent, useMemo, useCallback, useState } from 'react'
 import dynamic from 'next/dynamic'
-
-import { Root, TopBar, TopBarWrapper, TopBarFilterButton, FiltersIcon, NoResult } from './Search.styled'
-
+import { Root, NoResult } from './Search.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
-
 import Head from '~/components/Head'
 import SearchBar from '@storystore/ui/dist/components/SearchBar'
-import Products, { useProducts } from '~/components/Products'
+import Products, { PRODUCTS_QUERY } from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
-
+import { useQuery } from '@apollo/client'
+import TopBar from '@storystore/ui/dist/components/TopBar'
+import { TopBarFilterToggleButton } from '../Category/Category.styled'
+import FiltersIcon from 'remixicon/icons/System/list-settings-line.svg'
+import FiltersCloseIcon from 'remixicon/icons/System/list-settings-fill.svg'
+import Filters, { FilterSelected, FilterVariables } from '~/components/Filters'
+import Sidebar from '@storystore/ui/dist/components/Sidebar'
+import { setURLSearchParams } from '~/lib/urlSearchParams'
 const Error = dynamic(() => import('~/components/Error'))
 
-type SearchProps = {}
+export const Search: FunctionComponent = () => {
+    const router = useRouter()
 
-export const Search: FunctionComponent<SearchProps> = () => {
-    const history = useRouter()
+    const [panelOpen, setPanelOpen] = useState(false)
 
-    const { query = '' } = history.query
+    const [query, setQuery] = useState(router.query.query ?? '')
 
-    const products = useProducts({ search: query.toString() })
+    const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
+
+    const products = useQuery(PRODUCTS_QUERY, {
+        variables: {
+            search: query.toString(),
+            filters: filters.variables,
+        },
+        notifyOnNetworkStatusChange: true,
+    })
+
+    const { data, loading } = products
 
     const online = useNetworkStatus()
 
-    const handleOnNewSearch = useCallback(
-        async (newQuery: string) => {
-            if (newQuery.length === 0 || newQuery.length > 2) {
-                await history.push({
-                    pathname: history.pathname,
-                    query: {
-                        // ...history.query,
-                        query: newQuery,
-                    },
-                })
+    const handleOnNewSearch = useCallback(async (newQuery: string) => {
+        if (newQuery.length === 0 || newQuery.length > 2) {
+            setQuery(newQuery)
 
-                window.scrollTo(0, 0)
-            }
-        },
-        [history]
-    )
+            setURLSearchParams({ query: newQuery })
+
+            window.scrollTo(0, 0)
+        }
+    }, [])
+
+    const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
+        setFilters({ selected, variables })
+    }, [])
 
     const productsCount = useMemo(() => {
-        if (!products.data) return
-        const { count = 0 } = products.data
+        if (!data) return
+        const { count = 0 } = data.products
         return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
-    }, [products])
+    }, [data])
 
-    if (!online && !products.data?.items) return <Error type="Offline" fullScreen />
+    if (!online && !data?.products.items) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
             <Head title="Search" />
 
             <Root>
-                <TopBar>
-                    <TopBarWrapper $margin>
-                        <SearchBar loading={products.loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
+                <TopBar sticky>
+                    <SearchBar loading={loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
 
-                        {products.data?.filters && (
-                            <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
-                                <span>
-                                    <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
-                                </span>
-                            </TopBarFilterButton>
-                        )}
-                    </TopBarWrapper>
+                    <TopBarFilterToggleButton onClick={() => setPanelOpen(!panelOpen)}>
+                        <Icon svg={panelOpen ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={Object.keys(filters.selected).length > 0} />
+                    </TopBarFilterToggleButton>
                 </TopBar>
 
                 <Products {...products} />
             </Root>
 
-            {query && products.data?.count === 0 && (
+            {query && data?.products.count === 0 && (
                 <NoResult $margin>
                     <Error type="404">
                         We couldn&apos;t find any results for &quot;{query}&quot;. <br />
@@ -79,6 +84,10 @@ export const Search: FunctionComponent<SearchProps> = () => {
                     </Error>
                 </NoResult>
             )}
+
+            <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
+                {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
+            </Sidebar>
         </React.Fragment>
     )
 }
