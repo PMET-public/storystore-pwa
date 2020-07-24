@@ -1,13 +1,12 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
-
-import { useProducts } from './useProducts'
-
 import ProductList from '@storystore/ui/dist/components/ProductList'
 import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
-import Link from '../../../Link'
-import { resolveImage } from '../../../../lib/resolveImage'
+import Link from '~/components/Link'
+import { resolveImage } from '~/lib/resolveImage'
+import { useQuery } from '@apollo/client'
+import { PRODUCTS_QUERY } from '.'
 
 const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
 
@@ -18,7 +17,9 @@ export type ProductsProps = {
 }
 
 export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, slider, ...props }) => {
-    const { loading, data } = useProducts({ skus })
+    const { data, loading } = useQuery(PRODUCTS_QUERY, {
+        variables: { skus, pageSize: skus.length },
+    })
 
     const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 

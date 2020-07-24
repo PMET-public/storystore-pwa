@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import dynamic from 'next/dynamic'
-import { Root } from './Page.styled'
+import { Root, Heading } from './Page.styled'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { PageSkeleton } from './Page.skeleton'
 import { QueryResult } from '@apollo/client'
@@ -25,7 +25,16 @@ export const Page: FunctionComponent<QueryResult> = ({ loading, data }) => {
         <React.Fragment>
             {page && <Head title={page.metaTitle || page.title} description={page.metaDescription} keywords={page.metaKeywords} />}
 
-            <Root>{loading && !page?.content ? <PageSkeleton /> : <PageBuilder html={page.content} />}</Root>
+            <Root>
+                {loading && !page?.content ? (
+                    <PageSkeleton />
+                ) : (
+                    <React.Fragment>
+                        {page.heading && <Heading>{page.heading}</Heading>}
+                        <PageBuilder html={page.content} />
+                    </React.Fragment>
+                )}
+            </Root>
         </React.Fragment>
     )
 }

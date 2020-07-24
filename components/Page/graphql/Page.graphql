@@ -4,6 +4,7 @@ query PageQuery($id: Int!) {
         metaTitle: meta_title
         metaDescription: meta_description
         metaKeywords: meta_keywords
+        heading: content_heading
         title
         content
     }

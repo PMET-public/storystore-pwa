@@ -15,6 +15,7 @@ import Products, { PRODUCTS_QUERY } from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
 import { Filters, FilterVariables, FilterSelected } from '~/components/Filters'
+import { PageSkeleton } from '~/components/Page/Page.skeleton'
 
 const Error = dynamic(() => import('../Error'))
 
@@ -42,7 +43,8 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
     const products = useQuery(PRODUCTS_QUERY, {
-        variables: { filters: { category_id: { eq: page.id }, ...filters.variables } },
+        variables: { filters: { category_id: { eq: page?.id }, ...filters.variables } },
+        skip: !page,
     })
 
     const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
@@ -62,18 +64,20 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
             <Root>
                 {/* PageBuilder Content */}
-                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PAGE') && <PageBuilder html={page?.block?.content || page?.description} />}
+                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PAGE') && (
+                    <React.Fragment>{mode === 'PAGE' && loading && page ? <PageSkeleton /> : <PageBuilder html={page.block?.content || page.description} />}</React.Fragment>
+                )}
 
                 {/* Product List */}
-                {page?.id && (mode === 'PRODUCTS_AND_PAGE' || mode === 'PRODUCTS') && (
+                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PRODUCTS') && (
                     <React.Fragment>
                         <TopBar sticky>
                             <HeadingWrapper>
                                 <Heading>
-                                    <Title>{!page.title && loading ? <TitleSkeleton /> : page.title}</Title>
+                                    <Title>{!page?.title && loading ? <TitleSkeleton /> : page.title}</Title>
 
                                     {/* Sub-Categories */}
-                                    {page.categories?.length > 0 && (
+                                    {page?.categories?.length > 0 && (
                                         <Pills
                                             items={page.categories.map(({ id, mode, text, count, href }: any) => ({
                                                 _id: id,
@@ -91,7 +95,7 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                     )}
 
                                     {/* Breadcrumbs */}
-                                    {page.categories?.length === 0 && page.breadcrumbs && (
+                                    {page?.categories?.length === 0 && page.breadcrumbs && (
                                         <Breadcrumbs
                                             prefix="#"
                                             items={page.breadcrumbs.map(({ id, mode, text, href }: any) => ({
@@ -115,7 +119,7 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             </TopBarFilterToggleButton>
                         </TopBar>
 
-                        <Products {...products} />
+                        <Products {...products} loading={loading || products.loading} />
 
                         <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
                             {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}

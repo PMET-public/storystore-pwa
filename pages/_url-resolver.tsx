@@ -5,7 +5,7 @@ import { initializeApollo } from '~/lib/apollo/client'
 import Link from '~/components/Link'
 import Error from '~/components/Error'
 import { APP_QUERY } from '~/components/App'
-import PageComponent, { PAGE_QUERY } from '~/components/Page '
+import PageComponent, { PAGE_QUERY } from '~/components/Page'
 import CategoryComponent, { CATEGORY_QUERY } from '~/components/Category'
 import ProductComponent, { PRODUCT_QUERY } from '~/components/Product'
 
