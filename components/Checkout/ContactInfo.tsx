@@ -16,7 +16,7 @@ export const ContactInfo: FunctionComponent<ContactInfoProps> = ({ edit, onEdit,
 
     const api = useCart({ cartId })
 
-    const { loading, data } = useQuery(CONTACT_INFO_QUERY, { variables: { cartId }, skip: !cartId })
+    const { loading, data } = useQuery(CONTACT_INFO_QUERY, { variables: { cartId }, skip: !cartId, fetchPolicy: 'network-only' })
 
     const { cart } = data ?? {}
 

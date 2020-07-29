@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
+import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
 import PaymentMethodForm from '@storystore/ui/dist/components/Checkout/PaymentMethodForm'
 import { useStoryStore } from '~/lib/storystore'
 import { useCart } from '~/hooks/useCart/useCart'
@@ -12,22 +12,24 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({ onSave })
 
     const api = useCart({ cartId })
 
-    const [authorization, setAuthorization] = useState('')
+    const authorizationRef = useRef('')
+
+    const authorization = authorizationRef.current
 
     useEffect(() => {
+        if (api.creatingBraintreeToken.loading) return
+
         if (!authorization) {
-            api.createBraintreeToken().then(({ braintreeToken }) => setAuthorization(braintreeToken))
+            api.createBraintreeToken().then(({ braintreeToken }) => (authorizationRef.current = braintreeToken))
         }
     }, [api, authorization])
-
-    console.log('PaymentMethod.tsx', authorization)
 
     const handleSetPaymentMethod = useCallback(
         async formData => {
             const { nonce } = formData
-            debugger
+
             await api.setPaymentMethod({ nonce })
-            debugger
+
             if (onSave) onSave()
         },
         [api, onSave]
@@ -35,9 +37,8 @@ export const PaymentMethod: FunctionComponent<PaymentMethodProps> = ({ onSave })
 
     return (
         <PaymentMethodForm
-            key={authorization}
             title="Payment"
-            loading={api.creatingBraintreeToken.loading}
+            loading={api.creatingBraintreeToken.loading || !authorization}
             submitting={api.settingPaymentMethod.loading}
             error={api.settingPaymentMethod.error?.message}
             braintree={{

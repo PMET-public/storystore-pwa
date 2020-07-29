@@ -13,6 +13,7 @@ import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethod.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+// import { CART_QUERY } from '~/components/Cart'
 
 type UseCart = {
     cartId?: string
@@ -24,10 +25,7 @@ export const useCart = (options: UseCart = {}) => {
     /**
      * Handle Creating a New Cart
      */
-    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION, {
-        // TODO: Do I still need this here?
-        // refetchQueries: ({ data }) => [{ query: CART_QUERY, variables: { cartId: data.cartId } }],
-    })
+    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION)
 
     const handleCreateCart = useCallback(async () => {
         const {
@@ -91,8 +89,8 @@ export const useCart = (options: UseCart = {}) => {
     })
 
     const handleRemoveCartItem = useCallback(
-        (props: { cartId: string; productId: number }) => {
-            const { cartId, productId } = props
+        (props: { productId: number }) => {
+            const { productId } = props
             return removeCartItem({
                 variables: {
                     cartId,
@@ -100,7 +98,7 @@ export const useCart = (options: UseCart = {}) => {
                 },
             })
         },
-        [removeCartItem]
+        [cartId, removeCartItem]
     )
 
     /**
@@ -124,8 +122,8 @@ export const useCart = (options: UseCart = {}) => {
     })
 
     const handleApplyCoupon = useCallback(
-        (props: { cartId: string; couponCode: string }) => {
-            const { cartId, couponCode } = props
+        (props: { couponCode: string }) => {
+            const { couponCode } = props
             return applyCoupon({
                 variables: {
                     cartId,
@@ -133,7 +131,7 @@ export const useCart = (options: UseCart = {}) => {
                 },
             })
         },
-        [applyCoupon]
+        [cartId, applyCoupon]
     )
 
     /**
@@ -156,17 +154,13 @@ export const useCart = (options: UseCart = {}) => {
         },
     })
 
-    const handleRemoveCoupon = useCallback(
-        (props: { cartId: string }) => {
-            const { cartId } = props
-            return removeCoupon({
-                variables: {
-                    cartId,
-                },
-            })
-        },
-        [removeCoupon]
-    )
+    const handleRemoveCoupon = useCallback(() => {
+        return removeCoupon({
+            variables: {
+                cartId,
+            },
+        })
+    }, [cartId, removeCoupon])
 
     /**
      * Handle Add To Cart Configurable Product

@@ -86,16 +86,51 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         possibleTypes,
 
         typePolicies: {
-            Query: {
-                fields: {
-                    // TODO:
-                    // cart: {
-                    //     keyArgs: () => 'AppCart',
-                    // },
-                },
-            },
+            // Query: {
+            //     fields: {
+            //         cart: {
+            //             keyArgs: () => 'AppCart',
+            //         },
+            //     },
+            // },
             Cart: {
                 keyFields: () => 'AppCart',
+                fields: {
+                    applied_coupons: {
+                        merge(_, incoming) {
+                            if (!incoming) {
+                                // A null incoming value means no coupons are applied.
+                                return null
+                            }
+                            return [...incoming]
+                        },
+                    },
+                    applied_gift_cards: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    available_payment_methods: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    items: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    prices: {
+                        merge(existing = {}, incoming) {
+                            return { ...existing, ...incoming }
+                        },
+                    },
+                    shipping_addresses: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                },
             },
             SelectedConfigurableOption: {
                 keyFields: ['id', 'value'],

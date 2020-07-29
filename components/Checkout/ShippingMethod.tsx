@@ -16,7 +16,7 @@ export const ShippingMethod: FunctionComponent<ShippingMethodProps> = ({ edit, o
 
     const api = useCart({ cartId })
 
-    const { loading, data } = useQuery(SHIPPING_METHOD_QUERY, { variables: { cartId }, skip: !cartId })
+    const { loading, data } = useQuery(SHIPPING_METHOD_QUERY, { variables: { cartId }, skip: !cartId, fetchPolicy: 'network-only' })
 
     const { cart } = data ?? {}
 

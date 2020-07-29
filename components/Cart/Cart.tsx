@@ -85,8 +85,8 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                 addLabel: `Add another ${product.name} from shopping bag`,
                                 substractLabel: `Remove one ${product.name} from shopping bag`,
                                 removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => updateCartItem({ cartId, productId: id, quantity }),
-                                onRemove: () => removeCartItem({ cartId, productId: id }),
+                                onUpdate: (quantity: number) => updateCartItem({ productId: id, quantity }),
+                                onRemove: () => removeCartItem({ productId: id }),
                             },
                             price: {
                                 currency: price.amount.currency,
@@ -117,7 +117,7 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                             name: 'couponCode',
                                             error: applyingCoupon.error?.message || removingCoupon.error?.message,
                                             disabled: !!appliedCoupons,
-                                            defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
+                                            defaultValue: appliedCoupons ? appliedCoupons[0]?.code : undefined,
                                         },
                                         submitButton: {
                                             text: appliedCoupons ? 'Remove' : 'Apply',
@@ -125,11 +125,11 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                         },
                                         submitting: applyingCoupon.loading || removingCoupon.loading,
                                         onReset: () => {
-                                            removeCoupon({ cartId })
+                                            removeCoupon()
                                         },
                                         onSubmit: (values: any) => {
                                             const { couponCode } = values
-                                            applyCoupon({ cartId, couponCode })
+                                            applyCoupon({ couponCode })
                                         },
                                     },
                                 ],
