@@ -165,7 +165,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
      */
     const footer = useQuery(
         gql`
-            query AppSFooterQuery($footerBlockId: String!) {
+            query AppFooterQuery($footerBlockId: String!) {
                 cmsBlocks(identifiers: [$footerBlockId]) {
                     items {
                         id: identifier

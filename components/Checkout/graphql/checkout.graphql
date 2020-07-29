@@ -1,12 +1,7 @@
-query CheckoutQuery {
-    braintreeToken @client
-    countries {
-        id
-        code: id
-        name: full_name_locale
-        regions: available_regions {
-            code
-            name
-        }
+#import "~/graphql/_CartContent.graphql"
+
+query CheckoutQuery($cartId: String!) {
+    cart(cart_id: $cartId) {
+        ...CartContent
     }
 }

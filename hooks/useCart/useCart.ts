@@ -8,6 +8,11 @@ import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
+import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
+import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
+import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethod.graphql'
+import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
+import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
 
 type UseCart = {
     cartId?: string
@@ -41,7 +46,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartUpdateItem {
                         cart
                     }
                 `,
@@ -74,7 +79,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartRemoveItem {
                         cart
                     }
                 `,
@@ -107,7 +112,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartApplyCoupon {
                         cart
                     }
                 `,
@@ -140,7 +145,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartRemoveCoupon {
                         cart
                     }
                 `,
@@ -172,7 +177,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartAddConfigurableProducts {
                         cart
                     }
                 `,
@@ -208,7 +213,7 @@ export const useCart = (options: UseCart = {}) => {
 
             client.writeQuery({
                 query: gql`
-                    query Cart {
+                    query CartAddSimpleProducts {
                         cart
                     }
                 `,
@@ -234,6 +239,128 @@ export const useCart = (options: UseCart = {}) => {
         [cartId, addSimpleProductsToCart]
     )
 
+    /**
+     * Create Braintree Token
+     */
+    const [createBraintreeToken, creatingBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION)
+
+    const handleCreateBraintreeToken = useCallback(async () => {
+        const { data } = await createBraintreeToken()
+        return data
+    }, [createBraintreeToken])
+
+    /**
+     * Contact Info
+     */
+    const [setContactInfo, settingContactInfo] = useMutation(SET_CONTACT_INFO_MUTATION, {
+        update(client, { data: { billingAddress } }) {
+            const { cart } = billingAddress
+
+            client.writeQuery({
+                query: gql`
+                    query CartSetContactInfo {
+                        cart
+                    }
+                `,
+                data: { cart },
+            })
+        },
+    })
+
+    const handleSetContactInfo = useCallback(
+        (props: {
+            email: string
+            city: string
+            company?: string
+            country: string
+            firstName: string
+            lastName: string
+            postalCode?: string
+            region?: string
+            street: [string, string?]
+            phone: string
+            saveInAddressBook: boolean
+        }) => {
+            const { email, city, company, country, firstName, lastName, postalCode, region, street, phone, saveInAddressBook } = props
+            return setContactInfo({
+                variables: {
+                    cartId,
+                    email: email,
+                    address: {
+                        city: city,
+                        company: company,
+                        country_code: country,
+                        firstname: firstName,
+                        lastname: lastName,
+                        postcode: postalCode,
+                        region: region,
+                        save_in_address_book: saveInAddressBook,
+                        street: street,
+                        telephone: phone,
+                    },
+                },
+            })
+        },
+        [setContactInfo, cartId]
+    )
+
+    /**
+     * Shipping Methods
+     */
+    const [setShippingMethod, settingShippingMethod] = useMutation(SET_SHIPPING_METHOD_MUTATION, {
+        update(client, { data: { setShippingMethodsOnCart } }) {
+            const { cart } = setShippingMethodsOnCart
+
+            client.writeQuery({
+                query: gql`
+                    query CartSetShippingMethod {
+                        cart
+                    }
+                `,
+                data: { cart },
+            })
+        },
+    })
+
+    const handleSetShippingMethod = useCallback(
+        (props: { methodCode: string; carrierCode: string }) => {
+            const { methodCode, carrierCode } = props
+            return setShippingMethod({
+                variables: {
+                    cartId,
+                    shippingMethods: [{ carrier_code: carrierCode, method_code: methodCode }],
+                },
+            })
+        },
+        [setShippingMethod, cartId]
+    )
+
+    /**
+     * Payment Method
+     */
+    const [setPaymentMethod, settingPaymentMethod] = useMutation(SET_PAYMENT_METHOD_MUTATION)
+
+    const handleSetPaymentMethod = useCallback(
+        async (props: { nonce: string }) => {
+            const { nonce } = props
+
+            return await setPaymentMethod({
+                variables: { cartId, nonce },
+            })
+        },
+        [setPaymentMethod, cartId]
+    )
+
+    /**
+     * Place Order
+     */
+    const [placeOrder, placingOrder] = useMutation(PLACE_ORDER_MUTATION)
+
+    const handlePlaceOrder = useCallback(async () => {
+        const { data } = await placeOrder({ variables: { cartId } })
+        return data.placeOrder?.order
+    }, [placeOrder, cartId])
+
     return {
         createCart: handleCreateCart,
         creatingCart,
@@ -249,5 +376,15 @@ export const useCart = (options: UseCart = {}) => {
         addingSimpleProductsToCart,
         addConfigurableProductToCart: handleAddConfigurableProductToCart,
         addingConfigurableProductToCart,
+        createBraintreeToken: handleCreateBraintreeToken,
+        creatingBraintreeToken,
+        setContactInfo: handleSetContactInfo,
+        settingContactInfo,
+        setShippingMethod: handleSetShippingMethod,
+        settingShippingMethod,
+        setPaymentMethod: handleSetPaymentMethod,
+        settingPaymentMethod,
+        placeOrder: handlePlaceOrder,
+        placingOrder,
     }
 }

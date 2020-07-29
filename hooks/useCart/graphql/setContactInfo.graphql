@@ -1,4 +1,4 @@
-#import "./_ShippingMethods.graphql"
+#import "~/graphql/_ShippingMethods.graphql"
 #import "~/graphql/_CartContent.graphql"
 
 mutation SetContactInfo($cartId: String!, $email: String!, $address: CartAddressInput!) {

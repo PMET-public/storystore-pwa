@@ -36,7 +36,7 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
 
     if (!loading && error) return <Error type="500" />
 
-    const { items = [], appliedCoupons, totalQuantity } = data?.cart || {}
+    const { items = [], appliedCoupons, totalQuantity, prices, shippingAddresses } = data?.cart || {}
 
     const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
@@ -138,14 +138,14 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                 // Sub-total
                                 {
                                     label: 'Subtotal',
-                                    price: data?.prices?.subTotal && {
-                                        currency: data?.cart.prices.subTotal.currency,
-                                        regular: data?.cart.prices.subTotal.value,
+                                    price: prices?.subTotal && {
+                                        currency: prices.subTotal.currency,
+                                        regular: prices.subTotal.value,
                                     },
                                 },
 
                                 // Discounts
-                                ...(data?.prices?.discounts?.map((discount: any) => ({
+                                ...(prices?.discounts?.map((discount: any) => ({
                                     label: discount.label,
                                     price: {
                                         currency: discount.amount.currency,
@@ -154,7 +154,7 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                 })) || []),
 
                                 // Shipping
-                                ...(data?.shippingAddresses
+                                ...(shippingAddresses
                                     ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
                                     .map(({ selectedShippingMethod }: any) => ({
                                         label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
@@ -167,9 +167,9 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                 // Taxes
                                 {
                                     label: 'Estimated Taxes',
-                                    price: data?.prices?.taxes[0] && {
-                                        currency: data?.cart.prices.taxes[0] && data?.cart.prices.taxes[0].currency,
-                                        regular: data?.cart.prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
+                                    price: prices?.taxes[0] && {
+                                        currency: prices.taxes[0] && prices.taxes[0].currency,
+                                        regular: prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
                                     },
                                 },
 
@@ -177,9 +177,9 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                 {
                                     appearance: 'bold',
                                     label: 'Total',
-                                    price: data?.prices?.total && {
-                                        currency: data?.cart.prices.total.currency,
-                                        regular: data?.cart.prices.total.value,
+                                    price: prices?.total && {
+                                        currency: prices.total.currency,
+                                        regular: prices.total.value,
                                     },
                                 },
                             ]}

@@ -1,5 +1,5 @@
 import { getSettings } from '~/lib/storystore'
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, defaultDataIdFromObject } from '@apollo/client'
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, gql } from '@apollo/client'
 import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
@@ -88,52 +88,21 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         typePolicies: {
             Query: {
                 fields: {
-                    braintreeToken: {
-                        read() {
-                            return ''
-                        },
-                    },
-                    countries({ countries }) {
-                        /**
-                         * 🩹Patch:
-                         * return countries sorted by name
-                         * and filter empty values
-                         */
-
-                        if (!countries) return countries
-
-                        return countries
-                            .filter((x: any) => !!x.name)
-                            .sort(function compare(a: any, b: any) {
-                                // Use toUpperCase() to ignore character casing
-                                const genreA = a.name.toUpperCase()
-                                const genreB = b.name.toUpperCase()
-
-                                let comparison = 0
-                                if (genreA > genreB) {
-                                    comparison = 1
-                                } else if (genreA < genreB) {
-                                    comparison = -1
-                                }
-                                return comparison
-                            })
-                    },
+                    // TODO:
+                    // cart: {
+                    //     keyArgs: () => 'AppCart',
+                    // },
                 },
             },
-        },
-
-        // https://github.com/apollographql/react-apollo/issues/2387
-        dataIdFromObject: (object: any) => {
-            switch (object.__typename) {
-                case 'Cart':
-                    return 'appCart' // we only need one Cart
-                case 'SelectedConfigurableOption':
-                    // Fixes cache
-                    return object.id ? `${object.id}:${object.value}` : defaultDataIdFromObject(object)
-
-                default:
-                    return defaultDataIdFromObject(object)
-            }
+            Cart: {
+                keyFields: () => 'AppCart',
+            },
+            SelectedConfigurableOption: {
+                keyFields: ['id', 'value'],
+            },
+            Breadcrumb: {
+                keyFields: ['category_id'],
+            },
         },
     })
 

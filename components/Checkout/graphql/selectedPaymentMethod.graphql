@@ -1,7 +1,0 @@
-#import "./_SelectedPaymentMethod.graphql"
-
-query SelectedPaymentMethodQuery($cartId: String!) {
-    cart(cart_id: $cartId) @connection(key: "appCart") {
-        ...SelectedPaymentMethod
-    }
-}
