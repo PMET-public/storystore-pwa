@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useCallback, useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, Wrapper, Steps, Title, CartSummaryWrapper, DoneIcon, PendingIcon } from './Checkout.styled'
-import { CHECKOUT_QUERY } from '.'
 import { resolveImage } from '~/lib/resolveImage'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { useStoryStore } from '~/lib/storystore'
@@ -12,7 +11,7 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import PlaceOrderForm from '@storystore/ui/dist/components/Checkout/PlaceOrderForm'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
-import { useQuery } from '@apollo/client'
+import { QueryResult } from '@apollo/client'
 import { useCart } from '~/hooks/useCart/useCart'
 import { ContactInfo } from './ContactInfo'
 import { ShippingMethod } from './ShippingMethod'
@@ -20,9 +19,7 @@ import { PaymentMethod } from './PaymentMethod'
 
 const Error = dynamic(() => import('~/components/Error'))
 
-type CheckoutProps = {}
-
-export const Checkout: FunctionComponent<CheckoutProps> = () => {
+export const Checkout: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const contactInfoElem = useRef<HTMLDivElement>(null)
     const shippingMethodElem = useRef<HTMLDivElement>(null)
     const paymentMethodElem = useRef<HTMLDivElement>(null)
@@ -33,11 +30,6 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
     const { cartId, setCartId } = useStoryStore()
 
     const api = useCart({ cartId })
-
-    const { loading, data } = useQuery(CHECKOUT_QUERY, {
-        variables: { cartId },
-        skip: !cartId,
-    })
 
     const { cart } = data ?? {}
 

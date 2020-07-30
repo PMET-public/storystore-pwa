@@ -13,7 +13,6 @@ import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethod.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
-// import { CART_QUERY } from '~/components/Cart'
 
 type UseCart = {
     cartId?: string

@@ -2,12 +2,11 @@ import React, { FunctionComponent, useMemo, useCallback, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, NoResult } from './Search.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-import { useRouter } from 'next/router'
 import Head from '~/components/Head'
 import SearchBar from '@storystore/ui/dist/components/SearchBar'
-import Products, { PRODUCTS_QUERY } from '~/components/Products'
+import Products from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
-import { useQuery } from '@apollo/client'
+import { QueryResult } from '@apollo/client'
 import TopBar from '@storystore/ui/dist/components/TopBar'
 import { TopBarFilterToggleButton } from '../Category/Category.styled'
 import FiltersIcon from 'remixicon/icons/System/list-settings-line.svg'
@@ -17,40 +16,39 @@ import Sidebar from '@storystore/ui/dist/components/Sidebar'
 import { setURLSearchParams } from '~/lib/urlSearchParams'
 const Error = dynamic(() => import('~/components/Error'))
 
-export const Search: FunctionComponent = () => {
-    const router = useRouter()
+export const Search: FunctionComponent<QueryResult & { query: string }> = ({ query: _query = '', ...products }) => {
+    const { data, loading, refetch } = products
 
     const [panelOpen, setPanelOpen] = useState(false)
 
-    const [query, setQuery] = useState(router.query.query ?? '')
+    const [query, setQuery] = useState(_query)
 
     const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
 
-    const products = useQuery(PRODUCTS_QUERY, {
-        variables: {
-            search: query.toString(),
-            filters: filters.variables,
-        },
-        notifyOnNetworkStatusChange: true,
-    })
-
-    const { data, loading } = products
-
     const online = useNetworkStatus()
 
-    const handleOnNewSearch = useCallback(async (newQuery: string) => {
-        if (newQuery.length === 0 || newQuery.length > 2) {
-            setQuery(newQuery)
+    const handleOnNewSearch = useCallback(
+        async (newQuery: string) => {
+            if (newQuery.length === 0 || newQuery.length > 2) {
+                setQuery(newQuery)
 
-            setURLSearchParams({ query: newQuery })
+                refetch({ search: newQuery })
 
-            window.scrollTo(0, 0)
-        }
-    }, [])
+                setURLSearchParams({ query: newQuery })
 
-    const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
-        setFilters({ selected, variables })
-    }, [])
+                window.scrollTo(0, 0)
+            }
+        },
+        [refetch]
+    )
+
+    const handleOnFiltersUpdate = useCallback(
+        ({ selected, variables }) => {
+            refetch({ filters: variables })
+            setFilters({ selected, variables })
+        },
+        [refetch]
+    )
 
     const productsCount = useMemo(() => {
         if (!data) return
@@ -73,7 +71,7 @@ export const Search: FunctionComponent = () => {
                     </TopBarFilterToggleButton>
                 </TopBar>
 
-                <Products {...products} />
+                <Products {...products} loading={false} />
             </Root>
 
             {query && data?.products.count === 0 && (

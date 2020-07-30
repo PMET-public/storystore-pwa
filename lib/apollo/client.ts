@@ -86,23 +86,19 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         possibleTypes,
 
         typePolicies: {
-            // Query: {
-            //     fields: {
-            //         cart: {
-            //             keyArgs: () => 'AppCart',
-            //         },
-            //     },
-            // },
+            Query: {
+                fields: {
+                    cart: {
+                        keyArgs: () => 'AppCart',
+                    },
+                },
+            },
             Cart: {
                 keyFields: () => 'AppCart',
                 fields: {
                     applied_coupons: {
                         merge(_, incoming) {
-                            if (!incoming) {
-                                // A null incoming value means no coupons are applied.
-                                return null
-                            }
-                            return [...incoming]
+                            return incoming ? [...incoming] : null
                         },
                     },
                     applied_gift_cards: {
