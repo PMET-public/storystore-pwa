@@ -177,6 +177,7 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                             thumbnail: {
                                 alt: product.thumbnail.label,
                                 src: resolveImage(product.thumbnail.url, { width: 300 }),
+                                vignette: false,
                             },
                             quantity: {
                                 value: quantity,
@@ -214,11 +215,11 @@ export const Checkout: FunctionComponent<CheckoutProps> = () => {
                                     },
                                     submitting: api.applyingCoupon.loading || api.removingCoupon.loading,
                                     onReset: () => {
-                                        api.removeCoupon({ cartId })
+                                        api.removeCoupon()
                                     },
                                     onSubmit: (values: any) => {
                                         const { couponCode } = values
-                                        api.applyCoupon({ cartId, couponCode })
+                                        api.applyCoupon({ couponCode })
                                     },
                                 },
                             ],

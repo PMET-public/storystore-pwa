@@ -16,7 +16,7 @@ export const ContactInfo: FunctionComponent<ContactInfoProps> = ({ edit, onEdit,
 
     const api = useCart({ cartId })
 
-    const { loading, data } = useQuery(CONTACT_INFO_QUERY, { variables: { cartId }, skip: !cartId, fetchPolicy: 'network-only' })
+    const { loading, data } = useQuery(CONTACT_INFO_QUERY, { variables: { cartId }, skip: !cartId, fetchPolicy: 'network-only', ssr: false })
 
     const { cart } = data ?? {}
 
@@ -124,7 +124,6 @@ export const ContactInfo: FunctionComponent<ContactInfoProps> = ({ edit, onEdit,
                         .map((country: { name: string; code: string }) => ({
                             text: country.name,
                             value: country.code,
-                            selected: selectedShippingCountryCode === country.code,
                         })),
                 },
                 region: {
