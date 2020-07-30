@@ -4,6 +4,7 @@ import { DetailsWrapper as CartListDetailsWrapper } from '@storystore/ui/dist/co
 import { Root as ButtonRoot } from '@storystore/ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div`
+    background-color: ${props => props.theme.colors.graySurface};
     display: grid;
     grid-template-rows: 1fr auto auto;
     grid-row-gap: 2rem;
@@ -17,14 +18,17 @@ export const Root = styled.div`
 `
 
 export const ProductList = styled.div`
-    background-color: ${props => props.theme.colors.onSurface5};
+    background-color: ${props => props.theme.colors.surface};
     padding: 0 ${props => props.theme.layout.margin};
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 4rem;
     padding-top: 2rem;
+    padding-bottom: 4rem;
 
     @media ${props => props.theme.breakpoints.medium} {
+        padding-bottom: 0;
+
         ${CartListDetailsWrapper} {
             grid-template:
                 'title price quantity'
@@ -44,10 +48,9 @@ export const SummaryWrapper = styled.div`
     display: grid;
     grid-gap: 2rem;
     grid-auto-rows: max-content;
-    background-color: ${props => props.theme.colors.surface};
 
     @media ${props => props.theme.breakpoints.untilMedium} {
-        padding: 0 ${props => props.theme.layout.margin};
+        padding: 2rem ${props => props.theme.layout.margin};
     }
 
     @media ${props => props.theme.breakpoints.large} {
@@ -77,7 +80,7 @@ export const CartSummaryWrapper = styled.div`
 `
 
 export const StickyButtonWrapper = styled.div`
-    background-color: ${props => props.theme.colors.surface};
+    background-color: ${props => props.theme.colors.graySurface};
     border-top: 0.1rem solid ${props => props.theme.colors.onSurface10};
     bottom: 5.2rem; /* Include Tab  */
     display: grid;

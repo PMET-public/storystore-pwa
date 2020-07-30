@@ -33,6 +33,9 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                                 onSurface: '#ffffff',
                             }),
                         }),
+                        ...(settings.colorDark && {
+                            graySurface: '#333333',
+                        }),
                     },
                 }}
             >
