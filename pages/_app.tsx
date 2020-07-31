@@ -20,22 +20,32 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                 theme={{
                     ...baseTheme,
                     colors: {
-                        ...baseTheme.colors,
                         ...generateColorTheme({
-                            accent: settings.colorAccent || baseTheme.colors.accent,
-                            onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
+                            surface: settings.colorDark ? '#222222' : '#ffffff',
+                            onSurface: settings.colorDark ? '#ffffff' : '#222222',
+
                             primary: settings.colorPrimary || baseTheme.colors.primary,
                             onPrimary: settings.colorOnPrimary || baseTheme.colors.onPrimary,
+
                             secondary: settings.colorSecondary || baseTheme.colors.secondary,
                             onSecondary: settings.colorOnSecondary || baseTheme.colors.onSecondary,
-                            ...(settings.colorDark && {
-                                surface: '#222222',
-                                onSurface: '#ffffff',
-                            }),
+
+                            accent: settings.colorAccent || baseTheme.colors.accent,
+                            onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
+
+                            error: '#ef5350',
+                            onError: '#ffffff',
+
+                            warning: '#f57c00',
+                            onWarning: '#ffffff',
+
+                            notice: '#0070f3',
+                            onNotice: '#ffffff',
+
+                            success: '#008b8b',
+                            onSuccess: '#ffffff',
                         }),
-                        ...(settings.colorDark && {
-                            graySurface: '#333333',
-                        }),
+                        graySurface: settings.colorDark ? '#333333' : '#f3f3f3',
                     },
                 }}
             >
