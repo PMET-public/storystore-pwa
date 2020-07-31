@@ -21,7 +21,7 @@ const Search: NextPage = () => {
     return <SearchTemplate {...products} query={query} />
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     const apolloClient = initializeApollo(null, req.headers.cookie)
 
     // SSR Queries
