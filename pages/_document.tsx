@@ -32,7 +32,7 @@ export default class extends Document<any> {
 
     render() {
         return (
-            <Html>
+            <Html lang="en">
                 <Head />
 
                 <body>
