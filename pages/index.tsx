@@ -10,7 +10,7 @@ const Home: NextPage<{ homePageId: string }> = ({ homePageId }) => {
     const { settings } = useStoryStore()
 
     const home = useQuery(HOME_PAGE_QUERY, {
-        variables: { id: homePageId ?? settings.homePageId },
+        variables: { id: homePageId ?? settings?.homePageId },
     })
 
     return <HomeTemplate {...home} />

@@ -4,7 +4,6 @@ import { useApolloClient } from '@apollo/client'
 
 export type Settings = {
     version?: string
-    magentoUrl?: string
     baseUrl?: string
     googleMapsApiKey?: string
 
@@ -27,7 +26,7 @@ export type Settings = {
 
 type ReducerState = {
     cartId: string
-    settings: Settings
+    magentoUrl?: string
 }
 
 type ReducerActions =
@@ -45,12 +44,16 @@ type ReducerActions =
 
 const initialState: ReducerState = {
     cartId: '',
-    settings: {
-        magentoUrl: '',
-    },
 }
 
-export const StoryStoreContext = createContext({
+type StoryStore = ReducerState & {
+    settings?: Settings
+    setCartId: (_payload: string) => void
+    setMagentoUrl: (_payload: string) => void
+    reset: () => void
+}
+
+export const StoryStoreContext = createContext<StoryStore>({
     ...initialState,
     setCartId: (_payload: string) => {},
     setMagentoUrl: (_payload: string) => {},
@@ -71,18 +74,13 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
 
         case 'setMagentoUrl':
             return {
-                ...state,
                 cartId: '',
-                settings: {
-                    ...state.settings,
-                    magentoUrl: action.payload,
-                },
+                magentoUrl: action.payload,
             }
 
         case 'reset':
             return {
-                ...state,
-                settings: {},
+                ...initialState,
             }
 
         default:
@@ -90,21 +88,16 @@ const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     }
 }
 
-export const StoryStoreProvider: FunctionComponent<{ values?: { cartId: string; settings?: Settings } }> = ({ children, values }) => {
+export const StoryStoreProvider: FunctionComponent<{ cartId: string; settings?: Settings }> = ({ children, cartId, settings }) => {
     const apolloClient = useApolloClient()
 
-    const [state, dispatch] = useReducer(reducer, {
-        ...initialState,
-        ...values,
-    })
+    const [state, dispatch] = useReducer(reducer, { ...initialState, cartId })
 
     return (
         <StoryStoreContext.Provider
             value={{
                 ...state,
-                settings: {
-                    ...state.settings,
-                },
+                settings,
 
                 setCartId: payload => {
                     dispatch({ type: 'setCartId', payload })

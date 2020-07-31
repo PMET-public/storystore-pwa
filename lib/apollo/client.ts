@@ -1,5 +1,5 @@
 import { getSettings } from '~/lib/storystore'
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client'
 import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
@@ -148,9 +148,9 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
     return client
 }
 
-export function initializeApollo(initialState = null, cookie?: string) {
+export function initializeApollo(initialState = null, cookie?: string, overrideMagentoUrl?: string) {
     // Override Magento URL w/ value from Cookie
-    const { magentoUrl } = getSettings(cookie)
+    const { magentoUrl = overrideMagentoUrl } = getSettings(cookie)
 
     const _apolloClient = apolloClient ?? createApolloClient(magentoUrl, cookie)
 

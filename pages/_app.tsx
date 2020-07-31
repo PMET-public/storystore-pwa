@@ -15,7 +15,7 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
     const settings = app.data?.storyStore ?? {}
 
     return (
-        <StoryStoreProvider values={{ cartId, settings }}>
+        <StoryStoreProvider cartId={cartId} settings={settings}>
             <ThemeProvider
                 theme={{
                     ...baseTheme,

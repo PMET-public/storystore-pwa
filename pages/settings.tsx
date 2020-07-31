@@ -1,25 +1,29 @@
-import React from 'react'
-import { NextPage } from 'next'
-
-import { useSettings } from '~/components/Settings/useSettings'
-
-import SettingsTemplate from '~/components/Settings'
+import React, { FunctionComponent } from 'react'
+import { NextPage, GetStaticProps } from 'next'
+import SettingsTemplate, { SETTINGS_QUERY } from '~/components/Settings'
 import Error from '@storystore/ui/dist/components/Error'
+import { useQuery } from '@apollo/client'
 
-const Settings: NextPage = () => {
-    const settings = useSettings()
+const Form: FunctionComponent = () => {
+    const settings = useQuery(SETTINGS_QUERY)
+
+    return <SettingsTemplate {...settings} />
+}
+
+const Settings: NextPage<{ enabled?: boolean }> = ({ enabled }) => {
+    if (enabled) return <Form />
 
     return (
-        <React.Fragment>
-            {Boolean(process.env.CLOUD_MODE) ? (
-                <SettingsTemplate {...settings} />
-            ) : (
-                <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
-                    Disabled
-                </Error>
-            )}
-        </React.Fragment>
+        <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
+            Disabled
+        </Error>
     )
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+    return {
+        props: { enabled: !!process.env.CLOUD_MODE },
+    }
 }
 
 export default Settings

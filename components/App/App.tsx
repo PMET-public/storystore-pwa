@@ -49,7 +49,7 @@ if (process.browser) {
 export const App: FunctionComponent<QueryResult> = ({ loading, error, data, children }) => {
     const workbox = useServiceWorker()
 
-    const { cartId, settings, setCartId } = useStoryStore()
+    const { cartId, magentoUrl, settings, setCartId } = useStoryStore()
 
     const { createCart, creatingCart } = useCart()
 
@@ -103,13 +103,13 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
 
             ReactGA.set({ dimension2: window.location.host }) // release
 
-            if (settings.magentoUrl) {
-                ReactGA.set({ dimension3: new URL(settings.magentoUrl).host }) // endpoint
+            if (magentoUrl) {
+                ReactGA.set({ dimension3: new URL(magentoUrl).host }) // endpoint
             }
 
             ReactGA.pageview(window.location.pathname)
         }
-    }, [settings])
+    }, [magentoUrl])
 
     /**
      * Handle Route changes
@@ -175,8 +175,8 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
             }
         `,
         {
-            variables: { footerBlockId: settings.footerBlockId },
-            skip: !settings.footerBlockId,
+            variables: { footerBlockId: settings?.footerBlockId },
+            skip: !settings?.footerBlockId,
         }
     )
 
@@ -198,7 +198,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
 
     return (
         <React.Fragment>
-            <NextNprogress color={settings.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
+            <NextNprogress color={settings?.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
             <FontStyles />
             <ToastsStyles />
