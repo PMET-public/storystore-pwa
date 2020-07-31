@@ -13,8 +13,6 @@ const Home: NextPage<{ homePageId: string }> = ({ homePageId }) => {
         variables: { id: homePageId ?? settings?.homePageId },
     })
 
-    console.log(home.loading, home.data)
-
     return <HomeTemplate {...home} />
 }
 
