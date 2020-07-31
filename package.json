@@ -29,7 +29,7 @@
     "graphql": "^14.5.8",
     "html-react-parser": "^0.10.0",
     "jarallax": "^1.12.1",
-    "next": "9.4.1",
+    "next": "9.5.0",
     "next-offline": "^5.0.2",
     "nextjs-progressbar": "^0.0.4",
     "node-fetch": "^2.6.0",

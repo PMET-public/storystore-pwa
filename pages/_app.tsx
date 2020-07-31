@@ -8,6 +8,7 @@ import { initializeApollo } from '~/lib/apollo/client'
 import { ThemeProvider } from 'styled-components'
 import { baseTheme } from '@storystore/ui/dist/theme'
 import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
+import Head from 'next/head'
 
 const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
     const app = useQuery(APP_QUERY)
@@ -15,43 +16,67 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
     const settings = app.data?.storyStore ?? {}
 
     return (
-        <StoryStoreProvider cartId={cartId} settings={settings}>
-            <ThemeProvider
-                theme={{
-                    ...baseTheme,
-                    colors: {
-                        ...generateColorTheme({
-                            surface: settings.colorDark ? '#222222' : '#ffffff',
-                            onSurface: settings.colorDark ? '#ffffff' : '#222222',
+        <React.Fragment>
+            <Head>
+                <noscript>Enable javascript to run this web app.</noscript>
+                <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
+                <meta name="theme-color" content="#222222" />
+                <link rel="shortcut icon" href="/static/favicon.ico" />
+                {/* iOS */}
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+                <meta name="apple-mobile-web-app-title" content="StoryStore PWA" />
+                <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
+                {/* Web App Manifest  */}
+                <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
 
-                            primary: settings.colorPrimary || baseTheme.colors.primary,
-                            onPrimary: settings.colorOnPrimary || baseTheme.colors.onPrimary,
+                {/* Google Analytics */}
+                <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="anonymous" />
+                <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="anonymous" />
 
-                            secondary: settings.colorSecondary || baseTheme.colors.secondary,
-                            onSecondary: settings.colorOnSecondary || baseTheme.colors.onSecondary,
+                {/* Adobe Fonts */}
+                <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
+            </Head>
+            <StoryStoreProvider cartId={cartId} settings={settings}>
+                <ThemeProvider
+                    theme={{
+                        ...baseTheme,
+                        colors: {
+                            ...generateColorTheme({
+                                surface: settings.colorDark ? '#222222' : '#ffffff',
+                                onSurface: settings.colorDark ? '#ffffff' : '#222222',
 
-                            accent: settings.colorAccent || baseTheme.colors.accent,
-                            onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
+                                primary: settings.colorPrimary || baseTheme.colors.primary,
+                                onPrimary: settings.colorOnPrimary || baseTheme.colors.onPrimary,
 
-                            error: '#ef5350',
-                            onError: '#ffffff',
+                                secondary: settings.colorSecondary || baseTheme.colors.secondary,
+                                onSecondary: settings.colorOnSecondary || baseTheme.colors.onSecondary,
 
-                            warning: '#f57c00',
-                            onWarning: '#ffffff',
+                                accent: settings.colorAccent || baseTheme.colors.accent,
+                                onAccent: settings.colorOnAccent || baseTheme.colors.onAccent,
 
-                            notice: '#0070f3',
-                            onNotice: '#ffffff',
+                                error: '#ef5350',
+                                onError: '#ffffff',
 
-                            success: '#008b8b',
-                            onSuccess: '#ffffff',
-                        }),
-                        graySurface: settings.colorDark ? '#333333' : '#f3f3f3',
-                    },
-                }}
-            >
-                <AppComponent {...app}>{children}</AppComponent>
-            </ThemeProvider>
-        </StoryStoreProvider>
+                                warning: '#f57c00',
+                                onWarning: '#ffffff',
+
+                                notice: '#0070f3',
+                                onNotice: '#ffffff',
+
+                                success: '#008b8b',
+                                onSuccess: '#ffffff',
+                            }),
+                            graySurface: settings.colorDark ? '#333333' : '#f3f3f3',
+                        },
+                    }}
+                >
+                    <AppComponent {...app}>{children}</AppComponent>
+                </ThemeProvider>
+            </StoryStoreProvider>
+        </React.Fragment>
     )
 }
 

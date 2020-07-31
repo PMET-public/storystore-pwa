@@ -13,15 +13,12 @@ const Home: NextPage<{ homePageId: string }> = ({ homePageId }) => {
         variables: { id: homePageId ?? settings?.homePageId },
     })
 
+    console.log(home.loading, home.data)
+
     return <HomeTemplate {...home} />
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
-        // Vercel Edge Caching
-        res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
-    }
-
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     const apolloClient = initializeApollo(null, req.headers.cookie)
 
     // SSR Queries

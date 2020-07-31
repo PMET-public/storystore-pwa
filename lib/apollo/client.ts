@@ -21,7 +21,7 @@ if (!process.browser) {
  * This can be used when there is no internet connection or when the user has
  * explicitly set an app to offline mode.
  */
-export const offlineLink = new QueueLink()
+export const offlineLink: any = new QueueLink()
 
 if (process.browser) {
     window.addEventListener('offline', () => offlineLink.close())
@@ -78,7 +78,7 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
             }
         }),
         retryLink,
-        // TODO: offlineLink,
+        offlineLink,
         httpLink,
     ])
 

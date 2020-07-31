@@ -18,32 +18,52 @@ module.exports = withOffline({
         swDest: 'static/service-worker.js',
     },
 
-    experimental: {
-        async redirects() {
-            return [
-                {
-                    source: `/basic-auth`,
-                    destination: '/',
-                    permanent: false,
-                },
-            ]
-        },
-        async rewrites() {
-            return [
-                {
-                    source: `/service-worker.js`,
-                    destination: '/_next/static/service-worker.js',
-                },
-                /**
-                 * URlResolver
-                 */
-                {
-                    source: '/:pathname*',
-                    destination: '/_url-resolver',
-                },
-            ]
-        },
+    async redirects() {
+        return [
+            {
+                source: `/basic-auth`,
+                destination: '/',
+                permanent: false,
+            },
+        ]
     },
+
+    async rewrites() {
+        return [
+            {
+                source: `/service-worker.js`,
+                destination: '/_next/static/service-worker.js',
+            },
+            /**
+             * URlResolver
+             */
+            {
+                source: '/:pathname*',
+                destination: '/_url-resolver',
+            },
+        ]
+    },
+
+    async headers() {
+        const headers = [
+            { key: 'x-powered-powered-by', value: 'Magento & StoryStore' },
+            { key: 'x-powered-cloud', value: process.env.CLOUD_MODE ? 'true' : 'false' },
+        ]
+
+        if (!process.env.CLOUD_MODE) {
+            headers.push({ key: 'Cache-Control', value: 's-maxage=1, stale-while-revalidate' })
+        }
+
+        return [
+            { source: '/', headers },
+            { source: '/search', headers },
+            { source: '/cart', headers },
+            { source: '/settings', headers },
+            { source: '/offline', headers },
+            { source: '/:pathname*', headers },
+        ]
+    },
+
     webpack: config => {
         /**
          * SVG Inline
