@@ -1,5 +1,5 @@
 import React from 'react'
-import { NextPage, GetServerSideProps } from 'next'
+import { NextPage } from 'next'
 import SearchTemplate from '~/components/Search'
 import { initializeApollo } from '~/lib/apollo/client'
 import { APP_QUERY } from '~/components/App'
@@ -16,12 +16,15 @@ const Search: NextPage = () => {
         variables: {
             search: query,
         },
+        fetchPolicy: 'cache-first',
     })
 
     return <SearchTemplate {...products} query={query} />
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+Search.getInitialProps = async ({ req, query }) => {
+    if (!req) return {} // csr
+
     const apolloClient = initializeApollo(null, req.headers.cookie)
 
     // SSR Queries
@@ -30,9 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     await apolloClient.query({ query: PRODUCTS_QUERY, variables: { search: query.query ?? '' } }) // Preload App Data
 
     return {
-        props: {
-            initialState: apolloClient.cache.extract(),
-        },
+        initialState: apolloClient.cache.extract(),
     }
 }
 

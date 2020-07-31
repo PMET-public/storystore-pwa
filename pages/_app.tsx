@@ -11,7 +11,7 @@ import { generateColorTheme } from '@storystore/ui/dist/theme/colors'
 import Head from 'next/head'
 
 const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
-    const app = useQuery(APP_QUERY)
+    const app = useQuery(APP_QUERY, { fetchPolicy: 'cache-first' })
 
     const settings = app.data?.storyStore ?? {}
 

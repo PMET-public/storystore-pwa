@@ -8,7 +8,7 @@ export type Settings = {
     googleMapsApiKey?: string
 
     // Content
-    homePageId?: string
+    homePage?: string
     footerBlockId?: string
 
     // Colors

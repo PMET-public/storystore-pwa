@@ -1,36 +1,32 @@
 import React from 'react'
-import { NextPage, GetServerSideProps } from 'next'
-import { useStoryStore } from '~/lib/storystore'
+import { NextPage } from 'next'
 import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
 import { APP_QUERY } from '~/components/App'
 import { initializeApollo } from '~/lib/apollo/client'
 import { useQuery } from '@apollo/client'
+import { useStoryStore } from '~/lib/storystore'
 
-const Home: NextPage<{ homePageId: string }> = ({ homePageId }) => {
+const Home: NextPage = () => {
     const { settings } = useStoryStore()
 
-    const home = useQuery(HOME_PAGE_QUERY, {
-        variables: { id: homePageId ?? settings?.homePageId },
-    })
+    const home = useQuery(HOME_PAGE_QUERY, { variables: { id: settings?.homePage }, skip: !settings?.homePage, fetchPolicy: 'cache-first' })
 
     return <HomeTemplate {...home} />
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-    const apolloClient = initializeApollo(null, req.headers.cookie)
+Home.getInitialProps = async ({ req }) => {
+    if (!req) return {} // csr
 
-    // SSR Queries
+    const apolloClient = initializeApollo(null, req?.headers.cookie)
+
     const app = await apolloClient.query({ query: APP_QUERY }) // Preload App Data
 
-    const homePageId = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+    const { homePage = app.data?.storeConfig.homePage } = app.data?.storyStore
 
-    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePageId } })
+    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage } })
 
     return {
-        props: {
-            homePageId,
-            initialState: apolloClient.cache.extract(),
-        },
+        initialState: apolloClient.cache.extract(),
     }
 }
 
