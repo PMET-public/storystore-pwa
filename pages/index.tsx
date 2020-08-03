@@ -19,11 +19,11 @@ Home.getInitialProps = async ({ req }) => {
 
     const apolloClient = initializeApollo(null, req?.headers.cookie)
 
-    const app = await apolloClient.query({ query: APP_QUERY }) // Preload App Data
+    const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
 
-    const { homePage = app.data?.storeConfig.homePage } = app.data?.storyStore
+    const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
 
-    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage } })
+    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
 
     return {
         initialState: apolloClient.cache.extract(),

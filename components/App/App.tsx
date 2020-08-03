@@ -128,6 +128,9 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
             if (process.env.GOOGLE_ANALYTICS) {
                 ReactGA.pageview(url)
             }
+
+            /** Close Mobile Nav if active */
+            setShowMenu(false)
         },
         [workbox]
     )
@@ -177,6 +180,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
         {
             variables: { footerBlockId: settings?.footerBlockId },
             skip: !settings?.footerBlockId,
+            errorPolicy: 'all',
         }
     )
 
@@ -337,6 +341,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
             <MobileMenuNav
                 active={showMenu}
                 onClose={handleToggleMenu}
+                closeOnTouchOutside
                 categories={{
                     title: 'Shop by Category',
                     items: categories[0]?.children?.map(({ id, text, href: _href, mode, image }: any) => {
@@ -366,7 +371,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                         disabled: true,
                     },
                 ]}
-                style={{ position: 'absolute', zIndex: 10, right: 0, top: '1rem' }}
+                style={{ position: 'fixed', zIndex: 10, right: 0, top: '1rem' }}
                 className="breakpoint-medium-hidden"
             />
         </React.Fragment>

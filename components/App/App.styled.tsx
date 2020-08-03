@@ -92,11 +92,11 @@ export const OfflineToast = styled.div`
 
 export const HamburgerButton = styled.button`
     position: relative;
-    color: ${props => props.theme.colors.primary};
+    color: ${props => props.theme.colors.accent};
     line-height: 0;
     padding: 0.6rem;
     transition: background-color 250ms ease-in;
-    background-color: ${props => props.theme.colors.primary10};
+    background-color: ${props => props.theme.colors.accent10};
     border-radius: 0.7rem;
     z-index: 5;
 
@@ -106,6 +106,6 @@ export const HamburgerButton = styled.button`
     }
 
     &:hover {
-        background-color: ${props => props.theme.colors.primary15};
+        background-color: ${props => props.theme.colors.accent15};
     }
 `
