@@ -71,7 +71,7 @@ export const Search: FunctionComponent<QueryResult & { query: string }> = ({ que
                     </TopBarFilterToggleButton>
                 </TopBar>
 
-                <Products {...products} loading={false} />
+                <Products {...products} />
             </Root>
 
             {query && data?.products.count === 0 && (
