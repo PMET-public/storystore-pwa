@@ -46,7 +46,7 @@ module.exports = withOffline({
 
     async headers() {
         const headers = [
-            { key: 'x-powered-powered-by', value: 'Magento & StoryStore' },
+            { key: 'x-powered-by', value: 'Magento Commerce + StoryStore' },
             { key: 'x-powered-cloud', value: process.env.CLOUD_MODE ? 'true' : 'false' },
         ]
 

@@ -4,6 +4,7 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
 import possibleTypes from '~/lib/apollo/possibleTypes.json'
+import { stripIgnoredCharacters } from 'graphql'
 
 let apolloClient: ApolloClient<any>
 
@@ -38,6 +39,34 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', magentoUrl).href,
         credentials: 'include',
         headers,
+
+        // Warning: useGETForQueries risks exceeding URL length limits. These limits
+        // in practice are typically set at or behind where TLS terminates. For Magento
+        // Cloud and Fastly, 8kb is the maximum by default
+        // https://docs.fastly.com/en/guides/resource-limits#request-and-response-limits
+        useGETForQueries: true,
+
+        fetch: (uri, options) => {
+            let url = uri.toString()
+
+            if (options?.method === 'GET') {
+                const _url = new URL(url)
+
+                // Read from URL implicitly decodes the querystring
+                const query = _url.searchParams.get('query')
+
+                if (!query) return uri
+
+                const strippedQuery = stripIgnoredCharacters(query)
+
+                // URLSearchParams.set will use application/x-www-form-urlencoded encoding
+                _url.searchParams.set('query', strippedQuery)
+
+                url = _url.toString()
+            }
+
+            return fetch(url, options) as any
+        },
     })
 
     const retryLink = new RetryLink({
