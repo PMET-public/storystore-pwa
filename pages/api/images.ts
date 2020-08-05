@@ -1,69 +1,42 @@
 import { COOKIE } from '~/lib/cookies'
 import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
-import https, { RequestOptions } from 'https'
-import http from 'http'
+import { createProxyMiddleware } from 'http-proxy-middleware'
+import { runApiMiddleware } from '~/lib/runApiMiddleware'
 
-const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =>
-    new Promise(resolve => {
-        const imageURL = request.query.url.toString()
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+}
 
-        let settings = {
-            magentoUrl: process.env.MAGENTO_URL,
+const proxyImages = async (req: NextApiRequest, res: NextApiResponse) => {
+    const imageURL = req.query.url.toString()
+
+    let settings = {
+        magentoUrl: process.env.MAGENTO_URL,
+    }
+
+    /**
+     * Override Settings (StoryStore)
+     */
+    if (Boolean(process.env.CLOUD_MODE)) {
+        settings = {
+            ...settings,
+            ...JSON.parse(req.cookies[COOKIE.settings] || '{}'),
         }
+    }
 
-        if (Boolean(process.env.CLOUD_MODE)) {
-            settings = {
-                ...settings,
-                ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
-            }
-        }
+    const query = req.url?.split('?')[1]
 
-        const query = request.url?.split('?')[1]
+    const url = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
 
-        const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
+    if (!url.href) {
+        res.statusCode = 422
+        res.send(null)
+    }
 
-        const options: RequestOptions = {
-            headers: {
-                ...request.headers,
-                host: magentoUrl.host,
-            },
-        }
-
-        const httpx = magentoUrl.protocol === 'https:' ? https : http
-
-        const proxy = httpx
-            .request(magentoUrl, options, res => {
-                // Set Cache Headers – for Now.sh Edge
-                if (Boolean(!process.env.CLOUD_MODE)) {
-                    res.headers['Cache-Control'] = 's-maxage=1, stale-while-revalidate'
-                }
-
-                response.writeHead(res.statusCode as number, res.headers)
-
-                res.pipe(response, {
-                    end: true,
-                })
-            })
-            .on('error', error => {
-                if (error) {
-                    // @ts-ignore
-                    if (error.code === 'ENOTFOUND') {
-                        response.status(404)
-                    } else {
-                        response.status(500)
-                        console.error(error.message)
-                    }
-
-                    response.end()
-                }
-            })
-
-        request
-            .pipe(proxy, {
-                end: true,
-            })
-            .on('response', resolve)
-    })
+    await runApiMiddleware(req, res, createProxyMiddleware({ target: url.href, changeOrigin: true, logLevel: 'error' }))
+}
 
 export default proxyImages
