@@ -17,6 +17,8 @@ const proxyImages = async (req: NextApiRequest, res: NextApiResponse) => {
         magentoUrl: process.env.MAGENTO_URL,
     }
 
+    let auth
+
     /**
      * Override Settings (StoryStore)
      */
@@ -36,7 +38,11 @@ const proxyImages = async (req: NextApiRequest, res: NextApiResponse) => {
         res.send(null)
     }
 
-    await runApiMiddleware(req, res, createProxyMiddleware({ target: url.href, changeOrigin: true, logLevel: 'error' }))
+    if (url.username && url.password) {
+        auth = `${url.username}:${url.password}`
+    }
+
+    await runApiMiddleware(req, res, createProxyMiddleware({ target: url.href, changeOrigin: true, auth, logLevel: 'error' }))
 }
 
 export default proxyImages

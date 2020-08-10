@@ -60,6 +60,7 @@ module.exports = withOffline({
             { source: '/cart', headers },
             { source: '/settings', headers },
             { source: '/offline', headers },
+            { source: '/checkout', headers },
             { source: '/:pathname*', headers },
         ]
     },
