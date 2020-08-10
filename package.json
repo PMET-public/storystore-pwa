@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.0.2",
-    "@storystore/ui": "1.2.0-beta4",
+    "@storystore/ui": "1.2.0-beta5",
     "@types/semver": "^7.2.0",
     "apollo-link-queue": "^2.2.0",
     "body-parser": "^1.19.0",
