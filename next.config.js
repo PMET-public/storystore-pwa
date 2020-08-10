@@ -55,6 +55,8 @@ module.exports = withOffline({
         }
 
         return [
+            { source: '/api/graphql', headers },
+            { source: '/api/images', headers },
             { source: '/', headers },
             { source: '/search', headers },
             { source: '/cart', headers },
