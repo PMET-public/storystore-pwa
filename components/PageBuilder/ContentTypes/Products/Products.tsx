@@ -26,7 +26,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
     if (appearance === 'carousel') {
         return (
             <ProductCarousel
-                loadingMore={loading && !data?.products?.items}
+                loading={loading && !data?.products?.items}
                 items={data?.products?.items?.map(({ id, title, urlKey, image, price, options }: any) => ({
                     _id: id,
                     title: {
@@ -64,7 +64,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
     if (appearance === 'grid') {
         return (
             <ProductList
-                loadingMore={loading && !data?.products?.items}
+                loading={loading && !data?.products?.items}
                 items={data?.products?.items?.map(({ title, urlKey, image, options, price }: any) => ({
                     title: {
                         text: title,
