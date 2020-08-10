@@ -22,7 +22,11 @@ const Search: NextPage = () => {
     return <SearchTemplate {...products} query={query} />
 }
 
-Search.getInitialProps = async ({ req, query }) => {
+Search.getInitialProps = async ({ req, res, query }) => {
+    if (!Boolean(process.env.CLOUD_MODE)) {
+        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    }
+
     if (!req) return {} // csr
 
     const apolloClient = initializeApollo(null, req.headers.cookie)

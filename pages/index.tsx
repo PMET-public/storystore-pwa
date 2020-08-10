@@ -14,7 +14,11 @@ const Home: NextPage = () => {
     return <HomeTemplate {...home} />
 }
 
-Home.getInitialProps = async ({ req }) => {
+Home.getInitialProps = async ({ req, res }) => {
+    if (!Boolean(process.env.CLOUD_MODE)) {
+        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    }
+
     if (!req) return {} // csr
 
     const apolloClient = initializeApollo(null, req?.headers.cookie)

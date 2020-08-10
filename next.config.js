@@ -44,29 +44,6 @@ module.exports = withOffline({
         ]
     },
 
-    async headers() {
-        const headers = [
-            { key: 'x-powered-by', value: 'Magento Commerce + StoryStore' },
-            { key: 'x-powered-cloud', value: process.env.CLOUD_MODE ? 'true' : 'false' },
-        ]
-
-        if (!process.env.CLOUD_MODE) {
-            headers.push({ key: 'Cache-Control', value: 's-maxage=1, stale-while-revalidate' })
-        }
-
-        return [
-            { source: '/api/graphql', headers },
-            { source: '/api/images', headers },
-            { source: '/', headers },
-            { source: '/search', headers },
-            { source: '/cart', headers },
-            { source: '/settings', headers },
-            { source: '/offline', headers },
-            { source: '/checkout', headers },
-            { source: '/:pathname*', headers },
-        ]
-    },
-
     webpack: config => {
         /**
          * SVG Inline

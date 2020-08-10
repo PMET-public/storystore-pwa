@@ -28,7 +28,6 @@
     "google-map-react": "^1.1.6",
     "graphql": "^14.5.8",
     "html-react-parser": "^0.10.0",
-    "http-proxy-middleware": "^1.0.5",
     "jarallax": "^1.12.1",
     "next": "9.5.0",
     "next-offline": "^5.0.2",

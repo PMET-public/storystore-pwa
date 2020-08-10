@@ -78,6 +78,10 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
 }
 
 UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
+    if (!Boolean(process.env.CLOUD_MODE)) {
+        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+    }
+
     const apolloClient = initializeApollo(null, req?.headers.cookie)
 
     const pathname = asPath?.split('?')[0]
