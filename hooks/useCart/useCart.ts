@@ -13,6 +13,7 @@ import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
 import SET_SHIPPING_METHOD_MUTATION from './graphql/setShippingMethod.graphql'
 import SET_PAYMENT_METHOD_MUTATION from './graphql/setPaymentMethod.graphql'
 import PLACE_ORDER_MUTATION from './graphql/placeOrder.graphql'
+import { CART_QUERY } from '~/components/Cart'
 
 type UseCart = {
     cartId?: string
@@ -24,7 +25,9 @@ export const useCart = (options: UseCart = {}) => {
     /**
      * Handle Creating a New Cart
      */
-    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION)
+    const [createCart, creatingCart] = useMutation(CREATE_CART_MUTATION, {
+        refetchQueries: ({ data }) => [{ query: CART_QUERY, variables: { cartId: data.cartId } }],
+    })
 
     const handleCreateCart = useCallback(async () => {
         const {
