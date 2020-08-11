@@ -1,14 +1,15 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
-import ProductList from '@storystore/ui/dist/components/ProductList'
 import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
 import Link from '~/components/Link'
 import { resolveImage } from '~/lib/resolveImage'
 import { useQuery } from '@apollo/client'
 import { PRODUCTS_QUERY } from '.'
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
+const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
+
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'

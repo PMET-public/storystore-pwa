@@ -1,8 +1,8 @@
 import React from 'react'
-import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
+import { Component } from '@storystore/ui/dist/lib'
 
-const SlickSlider = dynamic(() => import('@storystore/ui/dist/components/SlickSlider'))
+const SlickSlider = dynamic(() => import('@storystore/ui/dist/components/SlickSlider'), { ssr: false })
 
 export type SliderProps = {}
 
