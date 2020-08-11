@@ -23,7 +23,7 @@ const Search: NextPage = () => {
 }
 
 Search.getInitialProps = async ({ req, res, query }) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
+    if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }
 

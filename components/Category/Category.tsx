@@ -19,7 +19,7 @@ import { PageSkeleton } from '~/components/Page/Page.skeleton'
 
 const Error = dynamic(() => import('../Error'))
 
-const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
+const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 const TitleSkeleton = ({ ...props }) => {
     return (

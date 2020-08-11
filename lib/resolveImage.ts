@@ -1,3 +1,8 @@
+if (!process.browser) {
+    const { URL } = require('url')
+    global.URL = URL
+}
+
 // function canUseWebP() {
 //     var elem = document.createElement('canvas')
 

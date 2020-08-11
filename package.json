@@ -17,6 +17,11 @@
     "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix",
     "prettier": "prettier --check --write ."
   },
+  "browser": {
+    "child_process": false,
+    "net": false,
+    "tls": false
+  },
   "dependencies": {
     "@apollo/client": "^3.0.2",
     "@storystore/ui": "1.2.0-beta5",
@@ -29,6 +34,7 @@
     "graphql": "^14.5.8",
     "html-react-parser": "^0.10.0",
     "jarallax": "^1.12.1",
+    "jsdom": "^16.4.0",
     "next": "9.5.0",
     "next-offline": "^5.0.2",
     "nextjs-progressbar": "^0.0.4",
@@ -53,6 +59,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.0",
     "@types/google-map-react": "^1.1.5",
+    "@types/jsdom": "^16.2.3",
     "@types/node": "^13.1.4",
     "@types/node-fetch": "^2.5.0",
     "@types/react": "^16.9.11",

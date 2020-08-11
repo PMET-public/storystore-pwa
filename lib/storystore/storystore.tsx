@@ -122,7 +122,7 @@ export const StoryStoreProvider: FunctionComponent<{ cartId: string; settings?: 
 }
 
 export const getSettings = (cookie?: string) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
+    if (Boolean(process.env.CLOUD_MODE) === false) {
         return {}
     }
 

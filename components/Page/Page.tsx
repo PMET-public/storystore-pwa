@@ -8,7 +8,7 @@ import { QueryResult } from '@apollo/client'
 const Head = dynamic(() => import('~/components/Head'))
 const Link = dynamic(() => import('~/components/Link'))
 const Error = dynamic(() => import('~/components/Error'))
-const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
 
 export const Page: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()

@@ -15,7 +15,7 @@ const Home: NextPage = () => {
 }
 
 Home.getInitialProps = async ({ req, res }) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
+    if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }
 

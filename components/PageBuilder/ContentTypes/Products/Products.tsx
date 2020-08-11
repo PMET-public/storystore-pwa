@@ -8,7 +8,7 @@ import { resolveImage } from '~/lib/resolveImage'
 import { useQuery } from '@apollo/client'
 import { PRODUCTS_QUERY } from '.'
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'

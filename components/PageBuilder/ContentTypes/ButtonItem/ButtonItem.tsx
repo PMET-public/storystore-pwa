@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useLayoutEffect } from 'react'
+import React, { useRef, useContext, useEffect } from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import { Root } from './ButtonItem.styled'
 
@@ -18,7 +18,7 @@ export const ButtonItem: Component<ButtonItemProps> = ({ link, type, button, col
 
     const rootElem = useRef<HTMLDivElement>(null)
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // @ts-ignore
         const width = rootElem.current?.children[0].offsetWidth || 0
         if (sameWidth && width > maxWidth) setMaxWidth(width)

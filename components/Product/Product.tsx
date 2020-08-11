@@ -36,7 +36,7 @@ const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct').then(
 // @ts-ignore
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct').then(m => m.ConfigurableProduct))
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
+const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'))
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 

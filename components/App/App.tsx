@@ -33,8 +33,8 @@ import { CART_QUERY } from '~/components/Cart'
 import { useCart } from '~/hooks/useCart/useCart'
 
 const Error = dynamic(() => import('~/components/Error'))
-const PageBuilder = dynamic(() => import('~/components/PageBuilder'), { ssr: false })
-const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'), { ssr: false })
+const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
+const Footer = dynamic(() => import('@storystore/ui/dist/components/Footer'))
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
