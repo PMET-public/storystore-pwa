@@ -115,13 +115,6 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         possibleTypes,
 
         typePolicies: {
-            Query: {
-                fields: {
-                    cart: {
-                        keyArgs: () => 'AppCart',
-                    },
-                },
-            },
             Cart: {
                 keyFields: () => 'AppCart',
                 fields: {
