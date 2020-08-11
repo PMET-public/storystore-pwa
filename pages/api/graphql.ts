@@ -39,6 +39,11 @@ const proxyGraphQl = async (request: NextApiRequest, response: NextApiResponse) 
 
         const proxy = httpx
             .request(magentoUrl, options, res => {
+                // Set Cache Headers – for Now.sh Edge
+                if (Boolean(process.env.CLOUD_MODE) === false) {
+                    res.headers['cache-control'] = 's-maxage=1, stale-while-revalidate'
+                }
+
                 response.writeHead(res.statusCode as number, res.headers)
 
                 res.pipe(response, {
