@@ -8,6 +8,7 @@ import { APP_QUERY } from '~/components/App'
 import PageComponent, { PAGE_QUERY } from '~/components/Page'
 import CategoryComponent, { CATEGORY_QUERY } from '~/components/Category'
 import ProductComponent, { PRODUCT_QUERY } from '~/components/Product'
+import { PRODUCTS_QUERY } from '~/components/Products'
 
 export enum CONTENT_TYPE {
     CMS_PAGE = 'CMS_PAGE',
@@ -137,7 +138,11 @@ UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
                 await apolloClient.query({ query: PAGE_QUERY, variables: { id } })
                 break
             case CONTENT_TYPE.CATEGORY:
-                await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
+                const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
+
+                if (/PRODUCTS/.test(data.categoryList[0].mode)) {
+                    await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id } } } })
+                }
                 break
             case CONTENT_TYPE.PRODUCT:
                 await apolloClient.query({ query: PRODUCT_QUERY, variables: { urlKey } })

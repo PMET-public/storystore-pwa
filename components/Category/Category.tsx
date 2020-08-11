@@ -16,10 +16,9 @@ import Icon from '@storystore/ui/dist/components/Icon'
 import Sidebar from '@storystore/ui/dist/components/Sidebar'
 import { Filters, FilterVariables, FilterSelected } from '~/components/Filters'
 import { PageSkeleton } from '~/components/Page/Page.skeleton'
+import PageBuilder from '~/components/PageBuilder'
 
 const Error = dynamic(() => import('../Error'))
-
-const PageBuilder = dynamic(() => import('../PageBuilder'))
 
 const TitleSkeleton = ({ ...props }) => {
     return (
@@ -44,7 +43,7 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const products = useQuery(PRODUCTS_QUERY, {
         variables: { filters: { category_id: { eq: page?.id }, ...filters.variables } },
-        skip: !page,
+        skip: !page || !/PRODUCTS/.test(mode),
     })
 
     const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
@@ -64,12 +63,10 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
             <Root>
                 {/* PageBuilder Content */}
-                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PAGE') && (
-                    <React.Fragment>{mode === 'PAGE' && loading && page ? <PageSkeleton /> : <PageBuilder html={page.block?.content || page.description} />}</React.Fragment>
-                )}
+                {/PAGE/.test(mode) && <React.Fragment>{mode === 'PAGE' && loading && page ? <PageSkeleton /> : <PageBuilder html={page.block?.content || page.description} />}</React.Fragment>}
 
                 {/* Product List */}
-                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PRODUCTS') && (
+                {/PRODUCTS/.test(mode) && (
                     <React.Fragment>
                         <TopBar sticky>
                             <HeadingWrapper>
