@@ -34,6 +34,9 @@ jobs:
           else
             docker build . --file Dockerfile
           fi
+      - name: keep alive to debug
+        if: ${{ failure() }}
+        uses: PMET-public/action-tmate@master
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
