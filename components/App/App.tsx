@@ -31,6 +31,7 @@ import CloseSVG from 'remixicon/icons/System/close-line.svg'
 import { baseTheme, UIBase } from '@storystore/ui/dist/theme'
 import { CART_QUERY } from '~/components/Cart'
 import { useCart } from '~/hooks/useCart/useCart'
+import FOOTER_QUERY from './graphql/Footer.graphql'
 
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
@@ -166,23 +167,11 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
     /**
      * Footer Block
      */
-    const footer = useQuery(
-        gql`
-            query AppFooterQuery($footerBlockId: String!) {
-                cmsBlocks(identifiers: [$footerBlockId]) {
-                    items {
-                        id: identifier
-                        html: content
-                    }
-                }
-            }
-        `,
-        {
-            variables: { footerBlockId: settings?.footerBlockId },
-            skip: !settings?.footerBlockId,
-            errorPolicy: 'all',
-        }
-    )
+    const footer = useQuery(FOOTER_QUERY, {
+        variables: { footerBlockId: settings?.footerBlockId },
+        skip: !settings?.footerBlockId,
+        errorPolicy: 'all',
+    })
 
     if (online && error) {
         const networkError = error?.networkError as ServerError
