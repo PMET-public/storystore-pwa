@@ -1,9 +1,13 @@
+import { browser } from 'process'
+
 if (!process.browser) {
     const { URL } = require('url')
     global.URL = URL
 }
 
 function canUseWebP() {
+    if (process.browser) return false
+
     const elem = document.createElement('canvas')
 
     if (!!(elem.getContext && elem.getContext('2d'))) {
