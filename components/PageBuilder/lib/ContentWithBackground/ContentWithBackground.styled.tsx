@@ -32,7 +32,7 @@ export const BgImage = styled.div<{ $loaded?: boolean }>`
     background-size: cover;
     background-color: ${props => props.theme.colors.onSurface5};
     /** Transition */
-    transition: opacity 205ms ease-out;
+    transition: opacity 100ms ease-out;
     opacity: ${props => (props.$loaded ? '1' : '0')};
 `
 
