@@ -4,7 +4,7 @@ if (!process.browser) {
 }
 
 function canUseWebP() {
-    if (process.browser) return false
+    if (!process.browser) return false
 
     const elem = document.createElement('canvas')
 
