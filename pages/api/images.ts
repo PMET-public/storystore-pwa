@@ -3,67 +3,68 @@ import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 import https, { RequestOptions } from 'https'
 import http from 'http'
+import sharp from 'sharp'
 
-const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =>
-    new Promise(resolve => {
-        const imageURL = request.query.url.toString()
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+}
 
-        let settings = {
-            magentoUrl: process.env.MAGENTO_URL,
+const images = (request: NextApiRequest, response: NextApiResponse) => {
+    const imageURL = request.query.url.toString()
+
+    let settings = {
+        magentoUrl: process.env.MAGENTO_URL,
+    }
+
+    if (Boolean(process.env.CLOUD_MODE)) {
+        settings = {
+            ...settings,
+            ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
         }
+    }
 
-        if (Boolean(process.env.CLOUD_MODE)) {
-            settings = {
-                ...settings,
-                ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
-            }
-        }
+    const query = request.url?.split('?')[1]
 
-        const query = request.url?.split('?')[1]
+    const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
 
-        const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
+    const options: RequestOptions = {
+        headers: {
+            ...request.headers,
+            host: magentoUrl.host,
+        },
+    }
 
-        const options: RequestOptions = {
-            headers: {
-                ...request.headers,
-                host: magentoUrl.host,
-            },
-        }
+    const httpx = magentoUrl.protocol === 'https:' ? https : http
 
-        const httpx = magentoUrl.protocol === 'https:' ? https : http
+    const proxy = httpx.request(magentoUrl, options, res => {
+        /** Image Optimization */
 
-        const proxy = httpx
-            .request(magentoUrl, options, res => {
-                // Set Cache Headers – for Now.sh Edge
-                if (Boolean(process.env.CLOUD_MODE) === false) {
-                    res.headers['cache-control'] = 's-maxage=1, stale-while-revalidate'
-                }
+        const _width = Number(magentoUrl.searchParams.get('w')) || undefined
+        const width = _width && (_width > 3000 ? 3000 : _width)
 
-                response.writeHead(res.statusCode as number, res.headers)
+        const _height = Number(magentoUrl.searchParams.get('h')) || undefined
+        const height = _height && (_height > 3000 ? 3000 : _height)
 
-                res.pipe(response, {
-                    end: true,
-                })
-            })
-            .on('error', error => {
-                if (error) {
-                    // @ts-ignore
-                    if (error.code === 'ENOTFOUND') {
-                        response.status(404)
-                    } else {
-                        response.status(500)
-                        console.error(error.message)
-                    }
+        const webp = magentoUrl.searchParams.get('webp') || false
 
-                    response.end()
-                }
-            })
+        // Resize Image
+        const resizer = sharp().resize(width, height)
 
-        request
-            .pipe(proxy, {
-                end: true,
-            })
-            .on('response', resolve)
+        // Deliver as webP
+        if (webp) resizer.webp()
+
+        response.status(res.statusCode ?? 500)
+        response.setHeader('cache-control', res.headers['cache-control'] ?? 'no-cache')
+        response.setHeader('content-type', webp ? 'image/webp' : (res.headers['content-type'] as string))
+
+        res.pipe(resizer).pipe(response)
     })
 
-export default proxyImages
+    return new Promise(resolve => {
+        request.pipe(proxy).on('response', resolve)
+    })
+}
+
+export default images

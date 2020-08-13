@@ -345,9 +345,9 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                             },
                             image: image && {
                                 alt: text,
-                                src: resolveImage(image, { width: 200, height: 200 }),
-                                width: '100px',
-                                height: '100px',
+                                src: resolveImage(image, { width: 80, height: 80 }),
+                                width: '40px',
+                                height: '40px',
                             },
                             href: '/' + href,
                             text,
