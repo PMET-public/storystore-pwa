@@ -1,5 +1,3 @@
-import { browser } from 'process'
-
 if (!process.browser) {
     const { URL } = require('url')
     global.URL = URL
