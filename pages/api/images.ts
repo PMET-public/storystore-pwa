@@ -56,7 +56,7 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
         if (webp) resizer.webp()
 
         response.status(res.statusCode ?? 500)
-        response.setHeader('cache-control', res.headers['cache-control'] ?? 'no-cache')
+        response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
         response.setHeader('content-type', webp ? 'image/webp' : (res.headers['content-type'] as string))
 
         res.pipe(resizer).pipe(response)
