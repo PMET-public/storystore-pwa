@@ -56,16 +56,16 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
             const _height = Number(magentoUrl.searchParams.get('h')) || undefined
             const height = _height && (_height > 3000 ? 3000 : _height)
 
-            const webp = /image\/webp/.test(request.headers.accept ?? '')
-
             // Resize Image
             const resizer = sharp().resize(width, height)
 
             // Deliver as webP
-            if (webp) {
-                resizer.webp()
-                response.setHeader('content-type', 'image/webp')
-            }
+            // const webp = /image\/webp/.test(request.headers.accept ?? '')
+
+            // if (webp) {
+            //     resizer.webp()
+            //     response.setHeader('content-type', 'image/webp')
+            // }
 
             res.pipe(resizer).pipe(response)
 
