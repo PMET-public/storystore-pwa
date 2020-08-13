@@ -18,6 +18,8 @@ on:
 
 env:
   IMAGE_NAME: image
+  TMATE_AUTHORIZED_KEYS_URL: ${{ secrets.TMATE_AUTHORIZED_KEYS_URL }}
+  SLACK_WEBHOOK_URL_FOR_TMATE_FROM_GITHUB_WORKFLOW: ${{ secrets.SLACK_WEBHOOK_URL_FOR_TMATE_FROM_GITHUB_WORKFLOW }}
 
 jobs:
   # Run tests.
@@ -34,6 +36,37 @@ jobs:
           else
             docker build . --file Dockerfile
           fi
+      - name: keep alive to debug
+        if: ${{ failure() }}
+        uses: PMET-public/action-tmate@master
+
+  lhci:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+            node-version: 10.x
+      - name: npm install, build
+        run: |
+            npm install
+            npm run build
+        env:
+            MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
+            CLOUD_MODE: true
+      - name: run Lighthouse CI
+        run: |
+            docker run -d -e PROXY_PASS -p 80:80 -p 443:443 pmetpublic/nginx-with-pagespeed:develop
+            npm install -g @lhci/cli@0.4.x
+            lhci autorun
+        env:
+            MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
+            CLOUD_MODE: true
+            LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+            # use typical linux docker ip (until host.docker.internal is supported)
+            PROXY_PASS: http://172.17.0.1:3000
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
