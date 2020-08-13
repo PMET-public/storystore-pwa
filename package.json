@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.0.2",
-    "@storystore/ui": "^1.2.0",
+    "@storystore/ui": "^1.2.1",
     "@types/semver": "^7.2.0",
     "@types/sharp": "^0.25.1",
     "apollo-link-queue": "^2.2.0",

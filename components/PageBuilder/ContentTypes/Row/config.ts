@@ -12,11 +12,14 @@ const props = (elem: HTMLElement) => {
 
     const fullScreen = elem.classList.contains('full-screen')
 
+    const loadEagerly = elem.classList.contains('load-eagerly')
+
     const enableParallax = elem.dataset.enableParallax === '1'
 
     const parallaxSpeed = parseFloat(elem.dataset.parallaxSpeed || '1')
 
     const background: ContentWithBackgroundProps = {
+        loadEagerly,
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
         video:
             elem.dataset.backgroundType === 'video'

@@ -19,7 +19,7 @@ export const Root = styled.div<{ $backgroundColor?: string; $fullScreen?: string
         `}
 `
 
-export const BgImage = styled.div<{ $src: string; $loaded?: boolean }>`    
+export const BgImage = styled.div<{ $loaded?: boolean }>`
     position: absolute;
     width: 100%;
     height: 100%;
@@ -27,7 +27,6 @@ export const BgImage = styled.div<{ $src: string; $loaded?: boolean }>`
     top: 0;
     z-index: 0;
 
-    background-image: url('${props => props.$src}');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

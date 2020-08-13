@@ -9,7 +9,10 @@ const props = (elem: HTMLElement) => {
 
     const { appearance, backgroundImages } = elem.dataset
 
+    const loadEagerly = elem.classList.contains('load-eagerly')
+
     const background: ContentWithBackgroundProps = {
+        loadEagerly,
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
     }
 

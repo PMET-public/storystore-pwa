@@ -17,9 +17,10 @@ export type ContentWithBackgroundProps = Props<{
     fullScreen?: boolean
     parallax?: ParallaxProps
     video?: BackgroundVideoProps
+    loadEagerly?: boolean
 }>
 
-export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, video, fullScreen, parallax, children, style, ...props }) => {
+export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, video, fullScreen, parallax, children, style, loadEagerly, ...props }) => {
     const backgroundRef = useRef<HTMLDivElement>(null)
 
     const backgroundElem = backgroundRef.current
@@ -78,16 +79,20 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
             ) : (
                 bgImage &&
                 (parallax ? (
-                    <BgImage ref={backgroundRef} $src={bgImage} $loaded style={styles.background} />
+                    <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bgImage}')` }} />
                 ) : (
                     <LazyImageFull src={bgImage}>
                         {({ imageState, ref }) => {
                             return imageState === ImageState.LoadSuccess ? (
-                                <BgImage $src={bgImage} $loaded style={styles.background} ref={backgroundRef} />
+                                <BgImage $loaded style={{ ...styles.background, backgroundImage: `url('${bgImage}')` }} ref={backgroundRef} />
                             ) : (
                                 <BgImage
-                                    $src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAFCAQAAADIpIVQAAAADklEQVR42mNkgAJGIhgAALQABsHyMOcAAAAASUVORK5CYII="
-                                    style={styles.background}
+                                    style={{
+                                        ...styles.background,
+                                        backgroundImage: loadEagerly
+                                            ? `url('${bgImage}')`
+                                            : `url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAFCAQAAADIpIVQAAAADklEQVR42mNkgAJGIhgAALQABsHyMOcAAAAASUVORK5CYII=')`,
+                                    }}
                                     ref={ref}
                                 />
                             )
