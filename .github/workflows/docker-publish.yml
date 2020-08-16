@@ -1,4 +1,4 @@
-name: build and publish to Docker Hub
+name: test if buildable, run lighthouse CI tests, and publish to Docker Hub
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
+    name: buildable and responds to web requests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,7 +42,7 @@ jobs:
         uses: PMET-public/action-tmate@master
 
   lhci:
-    name: Lighthouse
+    name: lighthouse ci tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
