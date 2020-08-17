@@ -46,7 +46,7 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         // https://docs.fastly.com/en/guides/resource-limits#request-and-response-limits
         useGETForQueries: true,
 
-        fetch: (uri, options) => {
+        fetch: (uri: string, options: RequestInit) => {
             let url = uri.toString()
 
             if (options?.method === 'GET') {
