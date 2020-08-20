@@ -17,7 +17,7 @@ const props = (elem: HTMLElement) => {
     const linkHref = linkElem?.getAttribute('href')
     const linkTarget = linkElem?.getAttribute('target')
 
-    const loadEagerly = elem.classList.contains('load-eagerly')
+    const loadEagerly = elem.classList.contains('loading-eager')
 
     /** Get Button */
     const link: LinkProps | undefined =

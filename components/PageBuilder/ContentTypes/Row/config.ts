@@ -12,7 +12,7 @@ const props = (elem: HTMLElement) => {
 
     const fullScreen = elem.classList.contains('full-screen')
 
-    const loadEagerly = elem.classList.contains('load-eagerly')
+    const loadEagerly = elem.classList.contains('loading-eager')
 
     const enableParallax = elem.dataset.enableParallax === '1'
 
