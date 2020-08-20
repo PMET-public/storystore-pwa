@@ -32,8 +32,8 @@ export const BgImage = styled.div<{ $loaded?: boolean }>`
     background-size: cover;
     background-color: ${props => props.theme.colors.onSurface5};
     /** Transition */
-    transition: opacity 200ms ease-out, blue 300ms ease-out;
-    filter: blur(${props => (props.$loaded ? '0' : '10px')});
+    transition: opacity 200ms ease-out, filter 200ms ease-out;
+    filter: blur(${props => (props.$loaded ? '0' : '5px')});
     opacity: ${props => (props.$loaded ? '1' : '0')};
     will-change: filter;
     transform: translateZ(0);
