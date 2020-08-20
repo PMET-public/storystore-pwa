@@ -40,12 +40,17 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
 
     const proxy = httpx.request(magentoUrl, options, res => {
         response.status(res.statusCode ?? 500)
+
+        if ((res.statusCode || 0) >= 400 || !res.headers['content-type']) {
+            return res.pipe(response)
+        }
+
         response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
-        response.setHeader('content-type', res.headers['content-type'] as string)
-        response.setHeader('date', res.headers['date'] as string)
-        response.setHeader('expires', res.headers['expires'] as string)
-        response.setHeader('last-modified', res.headers['last-modified'] as string)
-        response.setHeader('strict-transport-security', res.headers['last-modified'] as string)
+        if (res.headers['content-type']) response.setHeader('content-type', res.headers['content-type'])
+        if (res.headers['date']) response.setHeader('date', res.headers['date'])
+        if (res.headers['expires']) response.setHeader('expires', res.headers['expires'])
+        if (res.headers['last-modified']) response.setHeader('last-modified', res.headers['last-modified'])
+        if (res.headers['last-modified']) response.setHeader('strict-transport-security', res.headers['last-modified'])
 
         if (Boolean(process.env.PROCESS_IMAGES)) {
             /** Process Images */
@@ -57,19 +62,16 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
             const height = _height && (_height > 3000 ? 3000 : _height)
 
             // Resize Image
-            const resizer = sharp().resize(width, height)
+            const resizer = sharp()
 
+            if (width) resizer.resize(width, height)
             // Deliver as webP
-            // const webp = /image\/webp/.test(request.headers.accept ?? '')
+            if (magentoUrl.searchParams.get('type') === 'webp') {
+                resizer.webp()
+                response.setHeader('content-type', 'image/webp')
+            }
 
-            // if (webp) {
-            //     resizer.webp()
-            //     response.setHeader('content-type', 'image/webp')
-            // }
-
-            res.pipe(resizer).pipe(response)
-
-            return
+            return res.pipe(resizer).pipe(response)
         }
 
         res.pipe(response)
