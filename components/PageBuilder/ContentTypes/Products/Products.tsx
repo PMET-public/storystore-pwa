@@ -41,10 +41,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
-                        src: {
-                            desktop: resolveImage(image.src, { width: 1260 }),
-                            mobile: resolveImage(image.src, { width: 960 }),
-                        },
+                        src: resolveImage(image.src, { width: 960 }),
                     },
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
@@ -78,10 +75,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
-                        src: {
-                            desktop: resolveImage(image.src, { width: 1260 }),
-                            mobile: resolveImage(image.src, { width: 960 }),
-                        },
+                        src: resolveImage(image.src, { width: 960 }),
                     },
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,

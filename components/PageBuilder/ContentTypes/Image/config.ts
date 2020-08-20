@@ -19,10 +19,9 @@ const props = (elem: HTMLElement) => {
     const mobileSrc = imageElement[1].getAttribute('src') || ''
 
     const image: ImageProps & { style: {} } = {
-        src: {
-            desktop: resolveImage(desktopSrc),
-            mobile: mobileSrc !== desktopSrc ? resolveImage(mobileSrc) : undefined,
-        },
+        src: mobileSrc !== desktopSrc ? resolveImage(mobileSrc) : resolveImage(desktopSrc),
+        srcSet: `${resolveImage(mobileSrc)} 992w, ${resolveImage(desktopSrc)} 1920w`,
+        sizes: '(max-width: 991px) 100%, (min-width: 992px) 1920px',
         alt: imageElement[0].getAttribute('alt') || undefined,
         title: imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),

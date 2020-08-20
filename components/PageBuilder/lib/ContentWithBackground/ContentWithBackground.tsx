@@ -3,7 +3,6 @@ import { Component, Props } from '@storystore/ui/dist/lib'
 import { Root, BgImage, Content } from './ContentWithBackground.styled'
 import { LazyImageFull, ImageState } from 'react-lazy-images'
 import { BackgroundVideoProps } from './BackgroundVideo'
-import { useImage, ImgSrc } from '@storystore/ui/dist/hooks/useImage'
 import dynamic from 'next/dynamic'
 
 const BackgroundVideo = dynamic(() => import('./BackgroundVideo'), { ssr: false })
@@ -13,7 +12,10 @@ export type ParallaxProps = {
 }
 
 export type ContentWithBackgroundProps = Props<{
-    backgroundImages?: ImgSrc
+    backgroundImages?: {
+        desktop: string
+        mobile?: string
+    }
     fullScreen?: boolean
     parallax?: ParallaxProps
     video?: BackgroundVideoProps
@@ -27,8 +29,13 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
 
     const backgroundElem = backgroundRef.current
 
-    // Background IMage
-    const bgImage = useImage(backgroundImages)
+    // Background Images
+    const bg =
+        typeof backgroundImages === 'string'
+            ? {
+                  desktop: backgroundImages,
+              }
+            : backgroundImages
 
     // Styles
     const styles: { [key: string]: any } = useMemo(() => {
@@ -79,17 +86,34 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
             {video ? (
                 <BackgroundVideo {...video} parallaxSpeed={parallax?.speed ?? 1} />
             ) : (
-                bgImage &&
+                bg?.desktop &&
                 (parallax ? (
-                    <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bgImage}')` }} />
+                    <>
+                        {bg.mobile && <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.mobile}')` }} className="breakpoint-medium-hidden" />}
+                        <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.desktop}')` }} className="breakpoint-smallOnly-hidden" />
+                    </>
                 ) : (
-                    <LazyImageFull src={bgImage}>
-                        {({ imageState, ref }) => {
-                            const loaded = imageState === ImageState.LoadSuccess
+                    <>
+                        {bg.mobile && (
+                            <div className="breakpoint-medium-hidden">
+                                <LazyImageFull src={bg.mobile} loadEagerly={loadEagerly}>
+                                    {({ imageState, ref }) => {
+                                        const loaded = imageState === ImageState.LoadSuccess
+                                        return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.mobile : placeholder}')` }} />
+                                    }}
+                                </LazyImageFull>
+                            </div>
+                        )}
 
-                            return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bgImage : placeholder}')` }} />
-                        }}
-                    </LazyImageFull>
+                        <div className="breakpoint-smallOnly-hidden">
+                            <LazyImageFull src={bg.desktop} loadEagerly={loadEagerly}>
+                                {({ imageState, ref }) => {
+                                    const loaded = imageState === ImageState.LoadSuccess
+                                    return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.desktop : placeholder}')` }} />
+                                }}
+                            </LazyImageFull>
+                        </div>
+                    </>
                 ))
             )}
             <Content>{children}</Content>

@@ -82,10 +82,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
             ?.filter((x: any) => x.type === 'ProductImage')
             .map(({ label, url }: any) => ({
                 alt: label || product?.title,
-                src: {
-                    desktop: resolveImage(url, { width: 1260 }),
-                    mobile: resolveImage(url, { width: 960 }),
-                },
+                src: resolveImage(url, { width: 960 }),
+                srcSet: `${resolveImage(url, { width: 960 })} 992w, ${resolveImage(url, { width: 1260 })} 1920w`,
+                sizes: '(max-width: 991px) 100%, (min-width: 992px) 1920px',
             }))
             .sort((a: any, b: any) => a.position - b.position)
     }, [product])
@@ -239,10 +238,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: {
-                                        desktop: resolveImage(image.src, { width: 1260 }),
-                                        mobile: resolveImage(image.src, { width: 960 }),
-                                    },
+                                    src: resolveImage(image.src, { width: 1260 }),
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
@@ -276,10 +272,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: {
-                                        desktop: resolveImage(image.src, { width: 1260 }),
-                                        mobile: resolveImage(image.src, { width: 960 }),
-                                    },
+                                    src: resolveImage(image.src, { width: 1260 }),
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
