@@ -4,7 +4,7 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
 import possibleTypes from '~/lib/apollo/possibleTypes.json'
-import { stripIgnoredCharacters } from 'graphql'
+// import { stripIgnoredCharacters } from 'graphql'
 
 let apolloClient: ApolloClient<any>
 
