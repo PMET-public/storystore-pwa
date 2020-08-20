@@ -70,12 +70,9 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: {
-                                        desktop: resolveImage(image.src, { width: 1260 }),
-                                        mobile: resolveImage(image.src, { width: 960 }),
-                                    },
-                                    width: 1274,
-                                    height: 1580,
+                                    src: resolveImage(image.src, { width: 960 }),
+                                    width: 960,
+                                    height: 1191,
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
