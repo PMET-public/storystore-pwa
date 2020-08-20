@@ -33,7 +33,9 @@ export default class extends Document<any> {
     render() {
         return (
             <Html lang="en">
-                <Head />
+                <Head>
+                    <link rel="stylesheet" href="/static/fonts.css" />
+                </Head>
 
                 <body>
                     <Main />

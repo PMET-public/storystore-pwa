@@ -12,7 +12,6 @@ import useNetworkStatus from '~/hooks/useNetworkStatus'
 import useValueUpdated from '~/hooks/useValueUpdated'
 import { useQuery, ServerError, QueryResult } from '@apollo/client'
 import { ToastsStyles } from './ToastsStyles'
-import { FontStyles } from '~/components/App/FontStyles'
 import NextNprogress from 'nextjs-progressbar'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
@@ -193,7 +192,6 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
         <React.Fragment>
             <NextNprogress color={settings?.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
             <UIBase />
-            <FontStyles />
             <ToastsStyles />
 
             {/* Head Metadata */}
