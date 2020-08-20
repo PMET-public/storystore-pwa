@@ -20,6 +20,8 @@ export type ContentWithBackgroundProps = Props<{
     loadEagerly?: boolean
 }>
 
+const placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAFCAQAAADIpIVQAAAADklEQVR42mNkgAJGIhgAALQABsHyMOcAAAAASUVORK5CYII='
+
 export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ backgroundImages, video, fullScreen, parallax, children, style, loadEagerly, ...props }) => {
     const backgroundRef = useRef<HTMLDivElement>(null)
 
@@ -83,19 +85,9 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
                 ) : (
                     <LazyImageFull src={bgImage}>
                         {({ imageState, ref }) => {
-                            return imageState === ImageState.LoadSuccess ? (
-                                <BgImage $loaded style={{ ...styles.background, backgroundImage: `url('${bgImage}')` }} ref={backgroundRef} />
-                            ) : (
-                                <BgImage
-                                    style={{
-                                        ...styles.background,
-                                        backgroundImage: loadEagerly
-                                            ? `url('${bgImage}')`
-                                            : `url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAFCAQAAADIpIVQAAAADklEQVR42mNkgAJGIhgAALQABsHyMOcAAAAASUVORK5CYII=')`,
-                                    }}
-                                    ref={ref}
-                                />
-                            )
+                            const loaded = imageState === ImageState.LoadSuccess
+
+                            return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bgImage : placeholder}')` }} />
                         }}
                     </LazyImageFull>
                 ))
