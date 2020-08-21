@@ -44,7 +44,7 @@ export const Images = styled.div`
 `
 
 export const Image = styled(ImageComponent)`
-    max-width: 100%;
+    width: 100%;
     height: auto;
 `
 
