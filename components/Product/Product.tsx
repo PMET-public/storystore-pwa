@@ -82,9 +82,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
             ?.filter((x: any) => x.type === 'ProductImage')
             .map(({ label, url }: any) => ({
                 alt: label || product?.title,
-                src: resolveImage(url, { width: 960 }),
-                srcSet: `${resolveImage(url, { width: 960 })} 992w, ${resolveImage(url, { width: 1260 })} 1920w`,
-                sizes: '(max-width: 991px) 100%, (min-width: 992px) 1920px',
+                src: resolveImage(url, { width: 1260 }),
             }))
             .sort((a: any, b: any) => a.position - b.position)
     }, [product])
@@ -116,7 +114,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={1260} height={1563} vignette />
+                                        <Image {...image} width={1260} height={1563} vignette />
                                     </CarouselItem>
                                 ))
                             ) : (
@@ -131,7 +129,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={960} height={1191} vignette />
+                                        <Image {...image} width={960} height={1191} vignette />
                                     </CarouselItem>
                                 ))
                             ) : (
