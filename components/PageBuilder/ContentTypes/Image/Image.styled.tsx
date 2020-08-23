@@ -1,6 +1,13 @@
 import styled from 'styled-components'
 
-export const Root = styled.div``
+export const Root = styled.div`
+    & img,
+    & object,
+    & video {
+        max-height: 100%;
+        max-width: 100%;
+    }
+`
 
 export const Caption = styled.div`
     padding: 1rem;

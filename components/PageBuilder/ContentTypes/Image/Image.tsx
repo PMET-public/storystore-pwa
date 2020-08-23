@@ -14,10 +14,8 @@ export type ImageProps = {
 export const Image: Component<ImageProps> = ({ caption, link, image, ...props }) => {
     return (
         <Root as={link ? (p: any) => <Link {...link} {...p} /> : 'div'} {...props}>
-            <figure>
-                <ImageComponent {...image} />
-                {caption && <Caption as="figcaption">{caption}</Caption>}
-            </figure>
+            <ImageComponent {...image} />
+            {caption && <Caption as="figcaption">{caption}</Caption>}
         </Root>
     )
 }

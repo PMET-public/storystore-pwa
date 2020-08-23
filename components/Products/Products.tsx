@@ -60,6 +60,7 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                         items={items
                             ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
                             .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
+                                lazy: index > 0,
                                 _id: `${id}--${index}`,
                                 as: Link,
                                 href: `/${urlKey + productUrlSuffix}`,
@@ -70,7 +71,10 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: resolveImage(image.src, { width: 960 }),
+                                    sources: [
+                                        <source media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
+                                        <source media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                                    ],
                                     width: 960,
                                     height: 1191,
                                 },

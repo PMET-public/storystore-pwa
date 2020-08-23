@@ -1,12 +1,12 @@
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 
-import { LinkProps } from '../../../../components/Link'
+import { LinkProps } from '../../../Link'
 import { ImageProps } from '@storystore/ui/dist/components/Image'
 import { LinkType, resolveLink } from '../../../../lib/resolveLink'
 import { resolveImage } from '../../../../lib/resolveImage'
 
-const component = dynamic(() => import('./'))
+const component = dynamic(() => import('.'))
 
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
@@ -19,11 +19,14 @@ const props = (elem: HTMLElement) => {
     const mobileSrc = imageElement[1].getAttribute('src') || ''
 
     const image: ImageProps & { style: {} } = {
-        src: mobileSrc !== desktopSrc ? resolveImage(mobileSrc) : resolveImage(desktopSrc),
-        srcSet: `${resolveImage(mobileSrc)} 992w, ${resolveImage(desktopSrc)} 1920w`,
-        sizes: '(max-width: 991px) 100%, (min-width: 992px) 1920px',
+        src: resolveImage(desktopSrc),
         alt: imageElement[0].getAttribute('alt') || imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),
+    }
+
+    if (mobileSrc) {
+        image.src = ''
+        image.sources = [<source media="(max-width: 599px)" srcSet={resolveImage(mobileSrc)} />, <source media="(min-width: 600px)" srcSet={resolveImage(desktopSrc)} />]
     }
 
     const linkType = linkElem.getAttribute('data-link-type') as LinkType
