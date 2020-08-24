@@ -1,7 +1,7 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
-import  { ProductCarouselProps } from '~/components/ProductCarousel'
+import { ProductCarouselProps } from '~/components/ProductCarousel'
 import Link from '~/components/Link'
 import { resolveImage } from '~/lib/resolveImage'
 import { useQuery } from '@apollo/client'
@@ -75,9 +75,10 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
+                        src: resolveImage(image.src, { width: 960 }),
                         sources: [
-                            <source media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
-                            <source media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                            <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
+                            <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
                         ],
                         width: 960,
                         height: 1191,

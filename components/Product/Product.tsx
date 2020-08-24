@@ -82,7 +82,11 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
             ?.filter((x: any) => x.type === 'ProductImage')
             .map(({ label, url }: any) => ({
                 alt: label || product?.title,
-                sources: [<source media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960 })} />, <source media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260 })} />],
+                src: resolveImage(url, { width: 960 }),
+                sources: [
+                    <source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960 })} />,
+                    <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260 })} />,
+                ],
             }))
             .sort((a: any, b: any) => a.position - b.position)
     }, [product])
@@ -200,7 +204,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                 variants={product.variants.reduce((accumVariants: any[], current: any) => {
                                                     return [
                                                         ...accumVariants,
-                                                        current.attributes.reduce((accumAttributes: {}, currentAttribute: any) => {
+                                                        current.attributes.reduce((accumAttributes: any, currentAttribute: any) => {
                                                             const { code, value } = currentAttribute
                                                             return { ...accumAttributes, [code]: value }
                                                         }, {}),

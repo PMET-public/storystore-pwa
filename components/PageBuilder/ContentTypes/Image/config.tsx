@@ -1,3 +1,4 @@
+import React from 'react'
 import dynamic from 'next/dynamic'
 import { getStyleAsObject } from '../../lib/getStyleAsObject'
 
@@ -18,15 +19,15 @@ const props = (elem: HTMLElement) => {
     const desktopSrc = imageElement[0].getAttribute('src') || ''
     const mobileSrc = imageElement[1].getAttribute('src') || ''
 
-    const image: ImageProps & { style: {} } = {
+    const image: ImageProps & { style: any } = {
         src: resolveImage(desktopSrc),
         alt: imageElement[0].getAttribute('alt') || imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),
     }
 
     if (mobileSrc) {
-        image.src = ''
-        image.sources = [<source media="(max-width: 599px)" srcSet={resolveImage(mobileSrc)} />, <source media="(min-width: 600px)" srcSet={resolveImage(desktopSrc)} />]
+        image.src = resolveImage(mobileSrc)
+        image.sources = [<source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(mobileSrc)} />, <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(desktopSrc)} />]
     }
 
     const linkType = linkElem.getAttribute('data-link-type') as LinkType
