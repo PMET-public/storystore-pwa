@@ -46,7 +46,6 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
         }
 
         response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
-        if (res.headers['content-type']) response.setHeader('content-type', res.headers['content-type'])
         if (res.headers['date']) response.setHeader('date', res.headers['date'])
         if (res.headers['expires']) response.setHeader('expires', res.headers['expires'])
         if (res.headers['last-modified']) response.setHeader('last-modified', res.headers['last-modified'])
@@ -64,11 +63,16 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
             // Resize Image
             const resizer = sharp()
 
-            if (width) resizer.resize(width, height)
+            if (width) resizer.resize({ width, height, withoutEnlargement: true })
+
             // Deliver as webP
             if (magentoUrl.searchParams.get('type') === 'webp') {
                 resizer.webp()
                 response.setHeader('content-type', 'image/webp')
+            } else {
+                const format = res.headers['content-type'].split('/')?.pop() ?? 'jpeg'
+                resizer.toFormat(format)
+                response.setHeader('content-type', `image/${format}`)
             }
 
             return res.pipe(resizer).pipe(response)
