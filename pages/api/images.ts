@@ -46,10 +46,6 @@ const images = (request: NextApiRequest, response: NextApiResponse) => {
         }
 
         response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
-        if (res.headers['date']) response.setHeader('date', res.headers['date'])
-        if (res.headers['expires']) response.setHeader('expires', res.headers['expires'])
-        if (res.headers['last-modified']) response.setHeader('last-modified', res.headers['last-modified'])
-        if (res.headers['last-modified']) response.setHeader('strict-transport-security', res.headers['last-modified'])
 
         if (Boolean(process.env.PROCESS_IMAGES)) {
             /** Process Images */
