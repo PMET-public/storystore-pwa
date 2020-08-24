@@ -1,7 +1,7 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
-import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
+import  { ProductCarouselProps } from '~/components/ProductCarousel'
 import Link from '~/components/Link'
 import { resolveImage } from '~/lib/resolveImage'
 import { useQuery } from '@apollo/client'
@@ -9,7 +9,7 @@ import { PRODUCTS_QUERY } from '.'
 
 const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
+const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
@@ -75,7 +75,12 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
-                        src: resolveImage(image.src, { width: 960 }),
+                        sources: [
+                            <source media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
+                            <source media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                        ],
+                        width: 960,
+                        height: 1191,
                     },
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
