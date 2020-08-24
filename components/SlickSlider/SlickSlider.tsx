@@ -17,7 +17,6 @@ export const SlickSlider: Component<SlickSliderProps> = ({ accessibility = true,
 
     const [dragging, setDragging] = useState(false)
 
-
     const handleBeforeChange = useCallback(
         (currentSlide: number, nextSlide: number) => {
             if (draggable) setDragging(true)

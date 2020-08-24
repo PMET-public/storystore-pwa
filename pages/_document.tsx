@@ -4,7 +4,13 @@ import { ServerStyleSheet } from 'styled-components'
 
 export default class extends Document<any> {
     static async getInitialProps(ctx: DocumentContext) {
+        /**
+         * WebP Support
+         */
+        global.__webp = /image\/webp/.test(ctx.req?.headers.accept ?? '')
+
         const sheet = new ServerStyleSheet()
+
         const originalRenderPage = ctx.renderPage
 
         try {
