@@ -65,9 +65,7 @@ const images = async (request: NextApiRequest, response: NextApiResponse) =>
                     response.setHeader('content-type', 'image/webp')
                 }
 
-                const buffer = await res.pipe(transform).toBuffer()
-
-                response.send(buffer)
+                return res.pipe(transform).pipe(response)
             }
 
             return res.pipe(response)
