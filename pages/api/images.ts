@@ -11,75 +11,78 @@ export const config = {
     },
 }
 
-const images = (request: NextApiRequest, response: NextApiResponse) => {
-    const imageURL = request.query.url.toString()
+const images = async (request: NextApiRequest, response: NextApiResponse) =>
+    new Promise(resolve => {
+        const imageURL = request.query.url.toString()
 
-    let settings = {
-        magentoUrl: process.env.MAGENTO_URL,
-    }
-
-    if (Boolean(process.env.CLOUD_MODE)) {
-        settings = {
-            ...settings,
-            ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
-        }
-    }
-
-    const query = request.url?.split('?')[1]
-
-    const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
-
-    const options: RequestOptions = {
-        headers: {
-            ...request.headers,
-            host: magentoUrl.host,
-        },
-    }
-
-    const httpx = magentoUrl.protocol === 'https:' ? https : http
-
-    const proxy = httpx.request(magentoUrl, options, res => {
-        response.status(res.statusCode ?? 500)
-
-        if ((res.statusCode || 0) >= 400 || !res.headers['content-type']) {
-            return res.pipe(response)
+        let settings = {
+            magentoUrl: process.env.MAGENTO_URL,
         }
 
-        response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
+        if (Boolean(process.env.CLOUD_MODE)) {
+            settings = {
+                ...settings,
+                ...JSON.parse(request.cookies[COOKIE.settings] || '{}'),
+            }
+        }
 
-        if (Boolean(process.env.PROCESS_IMAGES)) {
-            /** Process Images */
+        const query = request.url?.split('?')[1]
 
-            const _width = Number(magentoUrl.searchParams.get('w')) || undefined
-            const width = _width && (_width > 3000 ? 3000 : _width)
+        const magentoUrl = new URL(imageURL + (query ? `?${query}` : ''), settings.magentoUrl)
 
-            const _height = Number(magentoUrl.searchParams.get('h')) || undefined
-            const height = _height && (_height > 3000 ? 3000 : _height)
+        const options: RequestOptions = {
+            headers: {
+                ...request.headers,
+                host: magentoUrl.host,
+            },
+        }
 
-            // Resize Image
-            const resizer = sharp()
+        const httpx = magentoUrl.protocol === 'https:' ? https : http
 
-            if (width) resizer.resize({ width, height, withoutEnlargement: true })
+        const proxy = httpx.request(magentoUrl, options, res => {
+            response.status(res.statusCode ?? 500)
 
-            // Deliver as webP
-            if (magentoUrl.searchParams.get('type') === 'webp') {
-                resizer.webp()
-                response.setHeader('content-type', 'image/webp')
-            } else {
-                const format = res.headers['content-type'].split('/')?.pop() ?? 'jpeg'
-                resizer.toFormat(format)
-                response.setHeader('content-type', `image/${format}`)
+            if ((res.statusCode || 0) >= 400 || !res.headers['content-type']) {
+                return res.pipe(response)
             }
 
-            return res.pipe(resizer).pipe(response)
-        }
+            response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
 
-        res.pipe(response)
-    })
+            if (Boolean(process.env.PROCESS_IMAGES)) {
+                /** Process Images */
 
-    return new Promise(resolve => {
-        request.pipe(proxy).on('response', resolve)
+                const _width = Number(magentoUrl.searchParams.get('w')) || undefined
+                const width = _width && (_width > 3000 ? 3000 : _width)
+
+                const _height = Number(magentoUrl.searchParams.get('h')) || undefined
+                const height = _height && (_height > 3000 ? 3000 : _height)
+
+                // Resize Image
+                const resizer = sharp()
+
+                if (width) resizer.resize({ width, height, withoutEnlargement: true })
+
+                // Deliver as webP
+                if (magentoUrl.searchParams.get('type') === 'webp') {
+                    resizer.webp()
+                    response.setHeader('content-type', 'image/webp')
+                } else {
+                    const format = res.headers['content-type'].split('/')?.pop() ?? 'jpeg'
+                    resizer.toFormat(format)
+                    response.setHeader('content-type', `image/${format}`)
+                }
+
+                return res.pipe(resizer).pipe(response)
+            }
+
+            res.pipe(response)
+        })
+
+        request
+            .pipe(proxy, {
+                end: true,
+            })
+            .on('response', resolve)
     })
-}
 
 export default images
