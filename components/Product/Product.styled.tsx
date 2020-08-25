@@ -45,7 +45,8 @@ export const Images = styled.div`
 
 export const Image = styled(ImageComponent)`
     width: 100%;
-    height: auto;
+    max-height: 70vh;
+    object-fit: cover;
 `
 
 export const Carousel = styled(CarouselComponent)`
@@ -93,7 +94,7 @@ export const InfoWrapper = styled.div`
         color: ${props => props.theme.colors.onSurface};
         left: 50%;
         margin-left: -50vw;
-        margin-top: -2rem;
+        margin-top: -3rem;
         position: relative;
         width: 100vw;
         z-index: 1;
