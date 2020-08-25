@@ -4,7 +4,7 @@ if (!process.browser) {
 }
 
 function canUseWebP() {
-    var elem = document.createElement('canvas')
+    const elem = document.createElement('canvas')
 
     if (!!(elem.getContext && elem.getContext('2d'))) {
         // was able or not to get WebP representation

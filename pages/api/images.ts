@@ -54,7 +54,7 @@ const images = async (request: NextApiRequest, response: NextApiResponse) =>
                 const _height = Number(magentoUrl.searchParams.get('h')) || undefined
                 const height = _height && (_height > 3000 ? 3000 : _height)
 
-                const transform = sharp()
+                const transform = sharp().withMetadata()
 
                 /** Resize */
                 if (width) transform.resize({ width, height, withoutEnlargement: true })
