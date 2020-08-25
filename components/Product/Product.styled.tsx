@@ -45,8 +45,12 @@ export const Images = styled.div`
 
 export const Image = styled(ImageComponent)`
     width: 100%;
-    max-height: 70vh;
+    height: auto;
     object-fit: cover;
+
+    @media ${props => props.theme.breakpoints.smallOnly} {
+        max-height: 70vh;
+    }
 `
 
 export const Carousel = styled(CarouselComponent)`
