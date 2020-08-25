@@ -58,21 +58,21 @@ const images = async (request: NextApiRequest, response: NextApiResponse) =>
                 const height = _height && (_height > 3000 ? 3000 : _height)
 
                 // Resize Image
-                const resizer = sharp()
+                const transform = sharp()
 
-                if (width) resizer.resize({ width, height, withoutEnlargement: true })
+                if (width) transform.resize({ width, height, withoutEnlargement: true })
 
                 // Deliver as webP
                 if (magentoUrl.searchParams.get('type') === 'webp') {
-                    resizer.webp()
+                    transform.webp()
                     response.setHeader('content-type', 'image/webp')
                 } else {
                     const format = res.headers['content-type'].split('/')?.pop() ?? 'jpeg'
-                    resizer.toFormat(format)
+                    transform.toFormat(format)
                     response.setHeader('content-type', `image/${format}`)
                 }
 
-                return res.pipe(resizer).pipe(response)
+                return res.pipe(transform, { end: true }).pipe(response, { end: true })
             }
 
             res.pipe(response)
