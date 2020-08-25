@@ -71,11 +71,12 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: resolveImage(image.src, { width: 960 }),
-                                    sources: [
-                                        <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
-                                        <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
-                                    ],
+                                    src: resolveImage(image.src, { width: 1260 }),
+                                    // TODO: iOS Safari is breaking some images when loaded with <source>
+                                    // sources: [
+                                    //     <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
+                                    //     <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                                    // ],
                                     width: 960,
                                     height: 1191,
                                 },
