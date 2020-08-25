@@ -39,50 +39,43 @@ const images = async (request: NextApiRequest, response: NextApiResponse) =>
 
         const httpx = magentoUrl.protocol === 'https:' ? https : http
 
-        const proxy = httpx.request(magentoUrl, options, res => {
-            response.status(res.statusCode ?? 500)
-
+        const proxy = httpx.request(magentoUrl, options, async res => {
             if ((res.statusCode || 0) >= 400 || !res.headers['content-type']) {
                 return res.pipe(response)
             }
 
+            /** Vercel Edge Cache */
             response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
 
-            if (Boolean(process.env.PROCESS_IMAGES)) {
-                /** Process Images */
-
+            if (process.env.PROCESS_IMAGES === 'true') {
                 const _width = Number(magentoUrl.searchParams.get('w')) || undefined
                 const width = _width && (_width > 3000 ? 3000 : _width)
 
                 const _height = Number(magentoUrl.searchParams.get('h')) || undefined
                 const height = _height && (_height > 3000 ? 3000 : _height)
 
-                // Resize Image
                 const transform = sharp()
 
+                /** Resize */
                 if (width) transform.resize({ width, height, withoutEnlargement: true })
 
-                // Deliver as webP
+                /** WebP */
                 if (magentoUrl.searchParams.get('type') === 'webp') {
                     transform.webp()
                     response.setHeader('content-type', 'image/webp')
-                } else {
-                    const format = res.headers['content-type'].split('/')?.pop() ?? 'jpeg'
-                    transform.toFormat(format)
-                    response.setHeader('content-type', `image/${format}`)
                 }
 
-                return res.pipe(transform, { end: true }).pipe(response, { end: true })
+                const buffer = await res.pipe(transform).toBuffer()
+
+                response.send(buffer)
             }
 
-            res.pipe(response)
+            return res.pipe(response)
         })
 
-        request
-            .pipe(proxy, {
-                end: true,
-            })
-            .on('response', resolve)
+        request.on('end', resolve)
+
+        proxy.end()
     })
 
 export default images
