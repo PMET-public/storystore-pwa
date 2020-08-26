@@ -79,6 +79,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
 }
 
 UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
+    /** Set Vercel Edge Cache only on non-cloud mode */
     if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }

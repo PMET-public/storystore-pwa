@@ -22,7 +22,11 @@ const Search: NextPage = () => {
     return <SearchTemplate {...products} query={query} />
 }
 
+/**
+ * SSR
+ * */
 Search.getInitialProps = async ({ req, res, query }) => {
+    /** Set Vercel Edge Cache only on non-cloud mode */
     if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }

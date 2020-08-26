@@ -1,5 +1,5 @@
 import React from 'react'
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
 import { APP_QUERY } from '~/components/App'
 import { initializeApollo } from '~/lib/apollo/client'
@@ -14,23 +14,45 @@ const Home: NextPage = () => {
     return <HomeTemplate {...home} />
 }
 
-Home.getInitialProps = async ({ req, res }) => {
-    if (Boolean(process.env.CLOUD_MODE) === false) {
-        res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
-    }
+/**
+ * Static Pre-rendeing
+ */
+export const getStaticProps: GetStaticProps | undefined = Boolean(process.env.CLOUD_MODE)
+    ? undefined
+    : async () => {
+          const apolloClient = initializeApollo()
 
-    if (!req) return {} // csr
+          const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
 
-    const apolloClient = initializeApollo(null, req?.headers.cookie)
+          const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
 
-    const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
+          await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
 
-    const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+          return {
+              props: {
+                  initialState: apolloClient.cache.extract(),
+              },
+          }
+      }
 
-    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
+/**
+ * SSR: We need to run on runtime when using CLOUD MODE
+ */
+if (Boolean(process.env.CLOUD_MODE)) {
+    Home.getInitialProps = async ({ req }) => {
+        if (!req) return {} // csr
 
-    return {
-        initialState: apolloClient.cache.extract(),
+        const apolloClient = initializeApollo(null, req?.headers.cookie)
+
+        const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
+
+        const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+
+        await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
+
+        return {
+            initialState: apolloClient.cache.extract(),
+        }
     }
 }
 
