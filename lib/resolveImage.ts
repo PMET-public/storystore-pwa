@@ -3,19 +3,16 @@ if (!process.browser) {
     global.URL = URL
 }
 
-function canUseWebP() {
-    const elem = document.createElement('canvas')
+async function supportsWebp() {
+    if (typeof createImageBitmap === 'undefined') return false
 
-    if (!!(elem.getContext && elem.getContext('2d'))) {
-        // was able or not to get WebP representation
-        return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0
-    }
-
-    // very old browser like IE 8, canvas not supported
-    return false
+    const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA='
+    const blob = await fetch(webpData).then(r => r.blob())
+    return createImageBitmap(blob).then(
+        () => true,
+        () => false
+    )
 }
-
-global.__webp = global.__webp ?? (process.browser && canUseWebP())
 
 export const resolveImage = (url: string, options?: { width?: number; height?: number }) => {
     const { pathname } = new URL(url)
@@ -27,7 +24,13 @@ export const resolveImage = (url: string, options?: { width?: number; height?: n
 
         if (options?.height) query.push(`h=${options.height}`)
 
-        if (global.__webp) query.push(`type=webp`)
+        const webp =
+            global.__webp ??
+            (async () => {
+                await supportsWebp()
+            })()
+
+        if (webp) query.push(`type=webp`)
 
         return `/api/images?${query.join('&')}`
     } else {
