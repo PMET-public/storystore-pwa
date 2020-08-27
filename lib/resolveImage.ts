@@ -3,34 +3,23 @@ if (!process.browser) {
     global.URL = URL
 }
 
-async function supportsWebp() {
-    if (typeof createImageBitmap === 'undefined') return false
+export const resolveImage = (url: string, options?: { width?: number; height?: number; type?: string }) => {
+    if (!url) return undefined
 
-    const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA='
-    const blob = await fetch(webpData).then(r => r.blob())
-    return createImageBitmap(blob).then(
-        () => true,
-        () => false
-    )
-}
-
-export const resolveImage = (url: string, options?: { width?: number; height?: number }) => {
     const { pathname } = new URL(url)
 
     if (pathname) {
         const query = [`url=${pathname}`]
 
-        if (options?.width) query.push(`w=${options.width}`)
+        if (options) {
+            const { width, height, type } = options
 
-        if (options?.height) query.push(`h=${options.height}`)
+            if (width) query.push(`w=${width}`)
 
-        const webp =
-            global.__webp ??
-            (async () => {
-                await supportsWebp()
-            })()
+            if (height) query.push(`h=${height}`)
 
-        if (webp) query.push(`type=webp`)
+            if (type) query.push(`type=${type}`)
+        }
 
         return `/api/images?${query.join('&')}`
     } else {

@@ -8,8 +8,6 @@ export default class extends Document<any> {
 
         const originalRenderPage = ctx.renderPage
 
-        global.__webp = /image\/webp/.test(ctx.req?.headers.accept ?? '')
-
         try {
             ctx.renderPage = () => {
                 return originalRenderPage({
@@ -38,6 +36,32 @@ export default class extends Document<any> {
             <Html lang="en">
                 <Head>
                     <link rel="stylesheet" href="/static/fonts.css" />
+
+                    {/* WebP Detection */}
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
+
+                                function canUseWebP() {
+                                    if (typeof document === 'undefined') return false
+
+                                    var elem = document.createElement('canvas');
+
+                                    if (!!(elem.getContext && elem.getContext('2d'))) {
+                                        // was able or not to get WebP representation
+                                        return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0;
+                                    }
+
+                                    // very old browser like IE 8, canvas not supported
+                                    return false;
+                                }
+
+                                if (canUseWebP()) {
+                                    document.documentElement.classList.add('webp');
+                                }
+                            `,
+                        }}
+                    />
                 </Head>
 
                 <body>

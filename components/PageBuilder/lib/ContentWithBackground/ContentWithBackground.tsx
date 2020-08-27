@@ -4,6 +4,36 @@ import { Root, BgImage, Content } from './ContentWithBackground.styled'
 import { LazyImageFull, ImageState } from 'react-lazy-images'
 import { BackgroundVideoProps } from './BackgroundVideo'
 import dynamic from 'next/dynamic'
+import { resolveImage } from '~/lib/resolveImage'
+import { createGlobalStyle } from 'styled-components'
+
+const BackgroundStyles = createGlobalStyle`
+    html:not(.webp) {
+        & .BgImage-mobile.webp,
+        & .BgImage-desktop.webp {
+            display: none;
+        }
+    }
+
+    html.webp {
+        & .BgImage-mobile.original,
+        & .BgImage-desktop.original {
+            display: none;
+        }
+    }
+
+    .BgImage-mobile {
+        @media ${props => (props.theme as any).breakpoints.medium} {
+            display: none;
+        }
+    }
+
+    .BgImage-desktop {
+        @media ${props => (props.theme as any).breakpoints.smallOnly} {
+            display: none;
+        }
+    }
+`
 
 const BackgroundVideo = dynamic(() => import('./BackgroundVideo'), { ssr: false })
 
@@ -30,12 +60,16 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
     const backgroundElem = backgroundRef.current
 
     // Background Images
-    const bg =
-        typeof backgroundImages === 'string'
-            ? {
-                  desktop: backgroundImages,
-              }
-            : backgroundImages
+    const bg = useMemo(
+        () =>
+            backgroundImages && {
+                mobile: backgroundImages?.mobile && resolveImage(backgroundImages.mobile),
+                mobileWebP: backgroundImages?.mobile && resolveImage(backgroundImages.mobile, { type: 'webp' }),
+                desktop: resolveImage(backgroundImages.desktop),
+                desktopWebP: resolveImage(backgroundImages.desktop, { type: 'webp' }),
+            },
+        [backgroundImages]
+    )
 
     // Styles
     const styles: { [key: string]: any } = useMemo(() => {
@@ -81,31 +115,65 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
         }
     }, [backgroundElem, parallax, video, styles.background.backgroundSize, styles.background.backgroundPositionX, styles.background.backgroundRepeatX])
 
-    return (
-        <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor ?? 'transparent'} style={styles.wrapper} {...props}>
-            {video ? (
-                <BackgroundVideo {...video} parallaxSpeed={parallax?.speed ?? 1} />
-            ) : (
-                bg?.desktop &&
-                (parallax ? (
-                    <>
-                        {bg.mobile && <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.mobile}')` }} className="breakpoint-medium-hidden" />}
-                        <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.desktop}')` }} className="breakpoint-smallOnly-hidden" />
-                    </>
-                ) : (
-                    <>
-                        {bg.mobile && (
-                            <div className="breakpoint-medium-hidden">
-                                <LazyImageFull src={bg.mobile} loadEagerly={loadEagerly}>
-                                    {({ imageState, ref }) => {
-                                        const loaded = imageState === ImageState.LoadSuccess
-                                        return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.mobile : placeholder}')` }} />
-                                    }}
-                                </LazyImageFull>
-                            </div>
-                        )}
+    const renderMedia = useMemo(() => {
+        if (video) {
+            return <BackgroundVideo {...video} parallaxSpeed={parallax?.speed ?? 1} />
+        }
 
-                        <div className="breakpoint-smallOnly-hidden">
+        if (bg?.desktop) {
+            if (parallax) {
+                return (
+                    <>
+                        {/* Mobile (w/ Parallax) */}
+                        {bg.mobileWebP && <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.mobileWebP}')` }} className="BgImage-mobile webp" />}
+                        {bg.mobile && <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.mobile}')` }} className="BgImage-mobile original" />}
+
+                        {/* Desktop (w/ Parallax) */}
+                        <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.desktopWebP}')` }} className="BgImage-desktop webp" />
+                        <BgImage ref={backgroundRef} $loaded style={{ ...styles.background, backgroundImage: `url('${bg.desktop}')` }} className="BgImage-desktop original" />
+                    </>
+                )
+            }
+
+            return (
+                <>
+                    {/* Mobile */}
+                    {bg.mobileWebP && (
+                        <div className="BgImage-mobile webp">
+                            <LazyImageFull src={bg.mobileWebP} loadEagerly={loadEagerly}>
+                                {({ imageState, ref }) => {
+                                    const loaded = imageState === ImageState.LoadSuccess
+                                    return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.mobileWebP : placeholder}')` }} />
+                                }}
+                            </LazyImageFull>
+                        </div>
+                    )}
+
+                    {bg.mobile && (
+                        <div className="BgImage-mobile original">
+                            <LazyImageFull src={bg.mobile} loadEagerly={loadEagerly}>
+                                {({ imageState, ref }) => {
+                                    const loaded = imageState === ImageState.LoadSuccess
+                                    return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.mobile : placeholder}')` }} />
+                                }}
+                            </LazyImageFull>
+                        </div>
+                    )}
+
+                    {/* Desktop */}
+                    {bg.desktopWebP && (
+                        <div className="BgImage-desktop webp">
+                            <LazyImageFull src={bg.desktopWebP} loadEagerly={loadEagerly}>
+                                {({ imageState, ref }) => {
+                                    const loaded = imageState === ImageState.LoadSuccess
+                                    return <BgImage $loaded={loaded} ref={ref} style={{ ...styles.background, backgroundImage: `url('${loaded ? bg.desktopWebP : placeholder}')` }} />
+                                }}
+                            </LazyImageFull>
+                        </div>
+                    )}
+
+                    {bg.desktop && (
+                        <div className="BgImage-desktop original">
                             <LazyImageFull src={bg.desktop} loadEagerly={loadEagerly}>
                                 {({ imageState, ref }) => {
                                     const loaded = imageState === ImageState.LoadSuccess
@@ -113,10 +181,21 @@ export const ContentWithBackground: Component<ContentWithBackgroundProps> = ({ b
                                 }}
                             </LazyImageFull>
                         </div>
-                    </>
-                ))
-            )}
-            <Content>{children}</Content>
-        </Root>
+                    )}
+                </>
+            )
+        }
+
+        return null
+    }, [bg, loadEagerly, parallax, styles, video])
+
+    return (
+        <>
+            <BackgroundStyles />
+            <Root $fullScreen={fullScreen} $backgroundColor={styles.background.backgroundColor ?? 'transparent'} style={styles.wrapper} {...props}>
+                {renderMedia}
+                <Content>{children}</Content>
+            </Root>
+        </>
     )
 }

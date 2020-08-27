@@ -79,6 +79,10 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                             thumbnail: {
                                 alt: product.thumbnail.label,
                                 src: resolveImage(product.thumbnail.url, { width: 300 }),
+                                sources: [
+                                    <source key="webp" type="image/webp" srcSet={resolveImage(product.thumbnail.url, { width: 300, type: 'webp' })} />,
+                                    <source key="original" srcSet={resolveImage(product.thumbnail.url, { width: 300 })} />,
+                                ],
                             },
                             quantity: {
                                 value: quantity,

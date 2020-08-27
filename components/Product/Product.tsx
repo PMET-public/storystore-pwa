@@ -84,7 +84,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                 alt: label || product?.title,
                 src: resolveImage(url, { width: 960 }),
                 sources: [
+                    <source key="mobile-webp" type="image/webp" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960, type: 'webp' })} />,
                     <source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960 })} />,
+                    <source key="desktop-webp" type="image/webp" media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260, type: 'webp' })} />,
                     <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260 })} />,
                 ],
             }))
@@ -241,6 +243,10 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                 image: {
                                     alt: image.alt,
                                     src: resolveImage(image.src, { width: 1260 }),
+                                    sources: [
+                                        <source key="webp" type="image/webp" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
+                                        <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                                    ],
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
@@ -275,6 +281,10 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                 image: {
                                     alt: image.alt,
                                     src: resolveImage(image.src, { width: 1260 }),
+                                    sources: [
+                                        <source key="webp" type="image/webp" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
+                                        <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                                    ],
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,

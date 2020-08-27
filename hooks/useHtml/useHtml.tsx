@@ -25,7 +25,13 @@ const options: HTMLReactParserOptions = {
         }
 
         if (name === 'img' && attribs?.src) {
-            return <Image {...attribs} src={resolveImage(attribs.src)} />
+            return (
+                <Image
+                    {...attribs}
+                    src={resolveImage(attribs.src)}
+                    sources={[<source key="webp" type="image/webp" srcSet={resolveImage(attribs.src, { type: 'webp' })} />, <source key="original" srcSet={resolveImage(attribs.src)} />]}
+                />
+            )
         }
     },
 }

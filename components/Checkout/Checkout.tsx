@@ -169,6 +169,10 @@ export const Checkout: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             thumbnail: {
                                 alt: product.thumbnail.label,
                                 src: resolveImage(product.thumbnail.url, { width: 300 }),
+                                sources: [
+                                    <source key="webp" type="image/webp" srcSet={resolveImage(product.thumbnail.url, { width: 300, type: 'webp' })} />,
+                                    <source key="original" srcSet={resolveImage(product.thumbnail.url, { width: 300 })} />,
+                                ],
                                 vignette: false,
                             },
                             quantity: {

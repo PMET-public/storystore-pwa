@@ -73,7 +73,9 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                     alt: image.alt,
                                     src: resolveImage(image.src, { width: 960 }),
                                     sources: [
+                                        <source key="mobile-webp" type="image/webp" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, type: 'webp' })} />,
                                         <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
+                                        <source key="desktop-webp" type="image/webp" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
                                         <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
                                     ],
                                     width: 960,

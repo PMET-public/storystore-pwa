@@ -344,8 +344,12 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                             image: image && {
                                 alt: text,
                                 src: resolveImage(image, { width: 80, height: 80 }),
-                                width: '40px',
-                                height: '40px',
+                                sources: [
+                                    <source key="webp" type="image/webp" srcSet={resolveImage(image, { width: 80, height: 80, type: 'webp' })} />,
+                                    <source key="original" srcSet={resolveImage(image, { width: 80, height: 80 })} />,
+                                ],
+                                width: 40,
+                                height: 40,
                             },
                             href: '/' + href,
                             text,

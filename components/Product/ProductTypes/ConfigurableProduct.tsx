@@ -105,9 +105,11 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                                         color: swatch?.color,
                                         image: swatch?.image && {
                                             alt: label || '',
-                                            src: resolveImage(swatch.image, {
-                                                width: 200,
-                                            }),
+                                            src: resolveImage(swatch.image, { width: 400 }),
+                                            sources: [
+                                                <source key="webp" type="image/webp" srcSet={resolveImage(swatch.image, { width: 400, type: 'webp' })} />,
+                                                <source key="original" srcSet={resolveImage(swatch.image, { width: 400 })} />,
+                                            ],
                                             width: 160,
                                             height: 198,
                                         },

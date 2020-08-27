@@ -21,13 +21,21 @@ const props = (elem: HTMLElement) => {
 
     const image: ImageProps & { style: any } = {
         src: resolveImage(desktopSrc),
+        sources: [
+            <source key="desktop-webp" type="image/webp" media="(min-width: 600px)" srcSet={resolveImage(desktopSrc, { type: 'webp' })} />,
+            <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(desktopSrc)} />,
+        ],
         alt: imageElement[0].getAttribute('alt') || imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),
     }
 
     if (mobileSrc) {
         image.src = resolveImage(mobileSrc)
-        image.sources = [<source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(mobileSrc)} />, <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(desktopSrc)} />]
+        image.sources = [
+            <source key="mobile-webp" type="image/webp" media="(max-width: 599px)" srcSet={resolveImage(mobileSrc, { type: 'webp' })} />,
+            <source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(mobileSrc)} />,
+            ...(image.sources as JSX.Element[]),
+        ]
     }
 
     const linkType = linkElem.getAttribute('data-link-type') as LinkType
