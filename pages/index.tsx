@@ -1,5 +1,5 @@
 import React from 'react'
-import { GetStaticProps, NextPage } from 'next'
+import { NextPage } from 'next'
 import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
 import { APP_QUERY } from '~/components/App'
 import { initializeApollo } from '~/lib/apollo/client'
@@ -14,45 +14,23 @@ const Home: NextPage = () => {
     return <HomeTemplate {...home} />
 }
 
-/**
- * Static Pre-rendeing
- */
-export const getStaticProps: GetStaticProps | undefined = Boolean(process.env.CLOUD_MODE)
-    ? undefined
-    : async () => {
-          const apolloClient = initializeApollo()
+Home.getInitialProps = async ({ req, res }) => {
+    if (Boolean(process.env.CLOUD_MODE) === false) {
+        res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
+    }
 
-          const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
+    if (!req) return {} // csr
 
-          const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+    const apolloClient = initializeApollo(null, req?.headers.cookie)
 
-          await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
+    const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
 
-          return {
-              props: {
-                  initialState: apolloClient.cache.extract(),
-              },
-          }
-      }
+    const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
 
-/**
- * SSR: We need to run on runtime when using CLOUD MODE
- */
-if (Boolean(process.env.CLOUD_MODE)) {
-    Home.getInitialProps = async ({ req }) => {
-        if (!req) return {} // csr
+    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
 
-        const apolloClient = initializeApollo(null, req?.headers.cookie)
-
-        const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
-
-        const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
-
-        await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
-
-        return {
-            initialState: apolloClient.cache.extract(),
-        }
+    return {
+        initialState: apolloClient.cache.extract(),
     }
 }
 
