@@ -28,7 +28,7 @@ const BackgroundStyles = createGlobalStyle`
         }
     }
 
-    .BgImage-desktop {
+    .BgImage-mobile ~ .BgImage-desktop {
         @media ${props => (props.theme as any).breakpoints.smallOnly} {
             display: none;
         }
