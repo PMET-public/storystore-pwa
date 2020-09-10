@@ -8,17 +8,20 @@ import Image from '@storystore/ui/dist/components/Image'
 
 const options: HTMLReactParserOptions = {
     replace: ({ name, attribs, children }) => {
-        if (name === 'a' && attribs?.href) {
-            const style = attribs.style?.split(';').reduce((obj: { [key: string]: string }, x: string) => {
+        /** Convert inline styles to object */
+        if (attribs?.style) {
+            attribs.style = attribs.style?.split(';').reduce((obj: { [key: string]: string }, x: string) => {
                 const [key, value] = x.split(':')
                 return key ? { [key]: value.trim(), ...obj } : obj
             }, {})
+        }
 
+        if (name === 'a' && attribs?.href) {
             const linkHref = attribs.href
             const linkType = attribs['data-link-type'] as LinkType
 
             return (
-                <Link {...resolveLink(linkHref, linkType)} {...attribs} style={style}>
+                <Link {...resolveLink(linkHref, linkType)} {...attribs}>
                     {children && domToReact(children, options)}
                 </Link>
             )
