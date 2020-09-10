@@ -26,20 +26,26 @@ export const ProductCarousel: Component<ProductCarouselProps> = ({
         <Root
             as={SlickSlider}
             dots={dots}
-            respondTo="min"
+            respondTo="slider"
             accessibility={accessibility}
             arrows={arrows}
             infinite={infinite}
             speed={speed}
             centerMode={centerMode}
             variableWidth={variableWidth}
-            slidesToShow={4}
+            slidesToShow={6}
             slidestoScroll={1}
             responsive={[
                 {
+                    breakpoint: 2599,
+                    settings: {
+                        slidesToShow: 5,
+                    },
+                },
+                {
                     breakpoint: 1599,
                     settings: {
-                        slidesToShow: 3,
+                        slidesToShow: 4,
                     },
                 },
                 {

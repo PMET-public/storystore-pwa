@@ -25,7 +25,7 @@ export const NavButton = styled.button`
     transform: translateY(-50%);
     opacity: 0.5;
     padding: 1rem;
-    z-index: 2;
+    z-index: 1;
     background: ${props => props.theme.colors.onPrimary};
     line-height: 0;
     transition: opacity 450ms ease;
@@ -162,7 +162,7 @@ export const SlickGlobalStyles = createGlobalStyle`
 
     .slick-next {
         right: 0;
-        transform: translateY(-50%) rotate(180deg);
+        transform: translateY(-50%) rotate(180deg) !important;
     }
 
     [dir='rtl'] .slick-next {
