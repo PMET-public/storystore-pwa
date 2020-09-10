@@ -6,19 +6,21 @@ import { resolveImage } from '~/lib/resolveImage'
 import Link from '~/components/Link'
 import Image from '@storystore/ui/dist/components/Image'
 
+const styleToObj = (style: string) =>
+    style.split(';').reduce((obj: { [key: string]: string }, x: string) => {
+        const [key, value] = x.split(':')
+        return key ? { [key]: value.trim(), ...obj } : obj
+    }, {})
+
 const options: HTMLReactParserOptions = {
     replace: ({ name, attribs, children }) => {
-        /** Convert inline styles to object */
-        if (attribs?.style) {
-            attribs.style = attribs.style?.split(';').reduce((obj: { [key: string]: string }, x: string) => {
-                const [key, value] = x.split(':')
-                return key ? { [key]: value.trim(), ...obj } : obj
-            }, {})
-        }
-
         if (name === 'a' && attribs?.href) {
             const linkHref = attribs.href
             const linkType = attribs['data-link-type'] as LinkType
+
+            if (attribs?.style) {
+                attribs.style = styleToObj(attribs.style)
+            }
 
             return (
                 <Link {...resolveLink(linkHref, linkType)} {...attribs}>
@@ -28,6 +30,10 @@ const options: HTMLReactParserOptions = {
         }
 
         if (name === 'img' && attribs?.src) {
+            if (attribs?.style) {
+                attribs.style = styleToObj(attribs.style)
+            }
+
             return (
                 <Image
                     {...attribs}
