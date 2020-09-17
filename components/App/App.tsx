@@ -341,16 +341,16 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                                 id,
                                 mode,
                             },
-                            image: image && {
-                                alt: text,
-                                src: resolveImage(image, { width: 80, height: 80 }),
-                                sources: [
-                                    <source key="webp" type="image/webp" srcSet={resolveImage(image, { width: 80, height: 80, type: 'webp' })} />,
-                                    <source key="original" srcSet={resolveImage(image, { width: 80, height: 80 })} />,
-                                ],
-                                width: 40,
-                                height: 40,
-                            },
+                            // image: image && {
+                            //     alt: text,
+                            //     src: resolveImage(image, { width: 80, height: 80 }),
+                            //     sources: [
+                            //         <source key="webp" type="image/webp" srcSet={resolveImage(image, { width: 80, height: 80, type: 'webp' })} />,
+                            //         <source key="original" srcSet={resolveImage(image, { width: 80, height: 80 })} />,
+                            //     ],
+                            //     width: 40,
+                            //     height: 40,
+                            // },
                             href: '/' + href,
                             text,
                         }
