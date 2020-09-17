@@ -2,7 +2,6 @@ import styled from 'styled-components'
 
 import CarouselComponent from '@storystore/ui/dist/components/Carousel'
 import ImageComponent from '@storystore/ui/dist/components/Image'
-import { Root as ImageRoot } from '@storystore/ui/dist/components/Image/Image.styled'
 
 import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcrumbs/Breadcrumbs.styled'
 
