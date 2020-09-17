@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import CarouselComponent from '@storystore/ui/dist/components/Carousel'
 import ImageComponent from '@storystore/ui/dist/components/Image'
+import { Root as ImageRoot } from '@storystore/ui/dist/components/Image/Image.styled'
 
 import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcrumbs/Breadcrumbs.styled'
 
@@ -45,8 +46,10 @@ export const Images = styled.div`
 
 export const Image = styled(ImageComponent)`
     width: 100%;
-    height: auto;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    filter: unset;
 
     @media ${props => props.theme.breakpoints.smallOnly} {
         max-height: 70vh;

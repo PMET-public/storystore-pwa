@@ -71,15 +71,15 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                 },
                                 image: {
                                     alt: image.alt,
-                                    src: resolveImage(image.src, { width: 960 }),
+                                    src: resolveImage(image.src, { width: 960, height: 960 }),
                                     sources: [
-                                        <source key="mobile-webp" type="image/webp" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, type: 'webp' })} />,
-                                        <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960 })} />,
-                                        <source key="desktop-webp" type="image/webp" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
-                                        <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260 })} />,
+                                        <source key="mobile-webp" type="image/webp" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960, type: 'webp' })} />,
+                                        <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960 })} />,
+                                        <source key="desktop-webp" type="image/webp" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, height: 1260, type: 'webp' })} />,
+                                        <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, height: 1260 })} />,
                                     ],
                                     width: 960,
-                                    height: 1191,
+                                    height: 960,
                                 },
                                 price: {
                                     label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
