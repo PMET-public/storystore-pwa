@@ -331,7 +331,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                 closeOnTouchOutside
                 categories={{
                     title: 'Shop by Category',
-                    items: categories[0]?.children?.map(({ id, text, href: _href, mode, image }: any) => {
+                    items: categories[0]?.children?.map(({ id, text, href: _href, mode }: any) => {
                         const href = _href + categoryUrlSuffix
 
                         return {
