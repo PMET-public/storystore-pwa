@@ -11,10 +11,10 @@ export const Root = styled.div`
     & h5,
     & h6 {
         &:not(:first-child) {
-            margin-top: 1.8rem;
+            margin-top: 1.5rem;
         }
         &:not(:last-child) {
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
     }
 
@@ -67,8 +67,6 @@ export const Root = styled.div`
             margin-bottom: 1rem;
         }
     }
-
-  
 
     & ol,
     & ul {
