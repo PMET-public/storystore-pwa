@@ -7,6 +7,7 @@ import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
+import ADD_VIRTUAL_PRODUCTS_TO_CART_MUTATION from './graphql/addVirtualProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
@@ -236,6 +237,41 @@ export const useCart = (options: UseCart = {}) => {
     )
 
     /**
+     * Handle Add To Virtual Product
+     */
+    const [addVirtualProductsToCart, addingVirtualProductsToCart] = useMutation(ADD_VIRTUAL_PRODUCTS_TO_CART_MUTATION, {
+        update(client, { data: { addToCart } }) {
+            const { cart } = addToCart
+
+            client.writeQuery({
+                query: gql`
+                    query CartAddSimpleProducts {
+                        cart
+                    }
+                `,
+                data: {
+                    cart,
+                },
+            })
+        },
+    })
+
+    const handleAddVirtualProductToCart = useCallback(
+        async (variables: { sku: string; quantity: number }) => {
+            const { sku, quantity } = variables
+            const { data } = await addVirtualProductsToCart({
+                variables: {
+                    cartId,
+                    sku,
+                    quantity,
+                },
+            })
+            return data
+        },
+        [cartId, addVirtualProductsToCart]
+    )
+
+    /**
      * Create Braintree Token
      */
     const [createBraintreeToken, creatingBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION)
@@ -372,6 +408,8 @@ export const useCart = (options: UseCart = {}) => {
         addingSimpleProductsToCart,
         addConfigurableProductToCart: handleAddConfigurableProductToCart,
         addingConfigurableProductToCart,
+        addVirtualProductToCart: handleAddVirtualProductToCart,
+        addingVirtualProductsToCart,
         createBraintreeToken: handleCreateBraintreeToken,
         creatingBraintreeToken,
         setContactInfo: handleSetContactInfo,

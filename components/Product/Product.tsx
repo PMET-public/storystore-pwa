@@ -34,6 +34,9 @@ import PageBuilder from '~/components/PageBuilder'
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct').then(m => m.SimpleProduct))
 
 // @ts-ignore
+const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct').then(m => m.VirtualProduct))
+
+// @ts-ignore
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct').then(m => m.ConfigurableProduct))
 
 const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
@@ -104,7 +107,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     }
 
     // Pending support of other Product Types
-    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct') {
+    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct' && product.type !== 'VirtualProduct') {
         return <ErrorComponent type="500">Product type: {product.type} not supported.</ErrorComponent>
     }
 
@@ -191,6 +194,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
+
+                                        {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
+
                                         {product.type === 'ConfigurableProduct' && (
                                             <ConfigurableProduct
                                                 sku={product.sku}
