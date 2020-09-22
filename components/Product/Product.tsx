@@ -107,6 +107,8 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
         return <ErrorComponent type="500">Product type: {product.type} not supported.</ErrorComponent>
     }
 
+    const showPrice = product?.type !== 'GroupedProduct'
+
     return (
         <ProductContext.Provider value={{ setSelectedVariantIndex }}>
             {product && <Head title={product.metaTitle || product.title} description={product.metaDescription} keywords={product.metaKeywords} />}
@@ -177,12 +179,14 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                             <Title>{product.title}</Title>
 
-                                            <Price
-                                                label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
-                                                regular={product.price.minimum.regular.value}
-                                                special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
-                                                currency={product.price.minimum.regular.currency}
-                                            />
+                                            {showPrice && (
+                                                <Price
+                                                    label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
+                                                    regular={product.price.minimum.regular.value}
+                                                    special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
+                                                    currency={product.price.minimum.regular.currency}
+                                                />
+                                            )}
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
 
@@ -201,6 +205,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                         alt: group.product.thumbnail.label,
                                                     },
                                                     price: group.product.price,
+                                                    stock: group.product.stock,
                                                 }))}
                                                 inStock={product.stock === 'IN_STOCK'}
                                             />

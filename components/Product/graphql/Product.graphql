@@ -50,6 +50,7 @@ query ProductQuery($urlKey: String!) {
                             url
                             label
                         }
+                        stock: stock_status
                         ...price
                     }
                 }
