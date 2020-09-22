@@ -26,7 +26,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
 
     const handleAddToCart = useCallback(
         async ({ items }) => {
-            if (!cartId || !inStock || addingSimpleProductsToCart.loading) return
+            if (!cartId || addingSimpleProductsToCart.loading) return
 
             await addSimpleProductToCart(items.filter((item: any) => item.data.quantity > 0))
 
@@ -34,7 +34,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
 
             window.scrollTo(0, 0)
         },
-        [cartId, inStock, addingSimpleProductsToCart.loading, addSimpleProductToCart, history]
+        [cartId, addingSimpleProductsToCart.loading, addSimpleProductToCart, history]
     )
 
     return (
