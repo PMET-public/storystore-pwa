@@ -60,7 +60,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
                         <Quantity
                             name={`items[${key}].data.quantity`}
                             defaultValue={stock === 'IN_STOCK' ? 1 : 0}
-                            disabled={stock === 'IN_STOCK'}
+                            disabled={stock !== 'IN_STOCK'}
                             addLabel="Add"
                             removeLabel="Remove"
                             minValue={0}
