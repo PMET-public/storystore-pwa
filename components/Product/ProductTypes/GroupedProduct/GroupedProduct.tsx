@@ -43,7 +43,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
                 <Item key={key}>
                     <Title>{name}</Title>
 
-                    <Input type="hidden" name={`items[${key}].data.sku`} value={sku} />
+                    <Input type="hidden" name={`items[${key}].data.sku`} value={sku} rules={{ required: true }} />
 
                     <PriceContainer>
                         <Price
