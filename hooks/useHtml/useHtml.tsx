@@ -19,7 +19,7 @@ const options: HTMLReactParserOptions = {
             const linkType = attribs['data-link-type'] as LinkType
 
             if (attribs?.style) {
-                attribs.style = styleToObj(attribs.style)
+                attribs.style = styleToObj(attribs.style) as any
             }
 
             return (
