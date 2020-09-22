@@ -31,7 +31,7 @@ const options: HTMLReactParserOptions = {
 
         if (name === 'img' && attribs?.src) {
             if (attribs?.style) {
-                attribs.style = styleToObj(attribs.style)
+                attribs.style = styleToObj(attribs.style) as any
             }
 
             return (
