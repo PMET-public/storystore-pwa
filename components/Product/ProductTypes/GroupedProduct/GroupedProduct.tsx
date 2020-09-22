@@ -5,14 +5,12 @@ import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
-import Image, { ImageProps } from '@storystore/ui/dist/components/Image'
 import Price from '@storystore/ui/dist/components/Price'
 
 export type GroupedProductProps = {
     items: Array<{
         sku: string
         name: string
-        thumbnail: ImageProps
         price: any
         stock?: string
     }>
@@ -41,10 +39,8 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
 
     return (
         <Root as={Form} onSubmit={handleAddToCart}>
-            {items?.map(({ sku, name, thumbnail, price, stock }, key) => (
+            {items?.map(({ sku, name, price, stock }, key) => (
                 <Item key={key}>
-                    <Image width="60" height="60" vignette {...thumbnail} />
-
                     <Title>{name}</Title>
 
                     <Input type="hidden" name={`items[${key}].data.sku`} value={sku} />

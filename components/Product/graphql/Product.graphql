@@ -46,10 +46,6 @@ query ProductQuery($urlKey: String!) {
                         id
                         name
                         sku
-                        thumbnail {
-                            url
-                            label
-                        }
                         stock: stock_status
                         ...price
                     }

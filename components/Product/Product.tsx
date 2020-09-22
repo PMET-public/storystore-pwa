@@ -200,10 +200,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                 items={product.group?.map((group: any) => ({
                                                     sku: group.product.sku,
                                                     name: group.product.name,
-                                                    thumbnail: {
-                                                        src: resolveImage(group.product.thumbnail.url, { width: 200, height: 200 }),
-                                                        alt: group.product.thumbnail.label,
-                                                    },
                                                     price: group.product.price,
                                                     stock: group.product.stock,
                                                 }))}

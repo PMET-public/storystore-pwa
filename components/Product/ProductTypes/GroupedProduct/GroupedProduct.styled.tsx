@@ -17,10 +17,6 @@ export const Item = styled.div`
     }
 `
 
-export const Image = styled.div`
-    display: inline-block;
-`
-
 export const Title = styled.div`
     font-family: ${props => props.theme.typography.heading.family};
     font-weight: ${props => props.theme.typography.heading.weight.semi};
