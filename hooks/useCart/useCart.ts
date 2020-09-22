@@ -222,13 +222,11 @@ export const useCart = (options: UseCart = {}) => {
     })
 
     const handleAddSimpleProductToCart = useCallback(
-        async (variables: { sku: string; quantity: number }) => {
-            const { sku, quantity } = variables
+        async (items: Array<{ data: { sku: string; quantity: number } }>) => {
             const { data } = await addSimpleProductsToCart({
                 variables: {
                     cartId,
-                    sku,
-                    quantity,
+                    items,
                 },
             })
             return data

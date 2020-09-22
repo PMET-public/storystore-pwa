@@ -40,6 +40,21 @@ query ProductQuery($urlKey: String!) {
                 html
             }
 
+            ... on GroupedProduct {
+                group: items {
+                    product {
+                        id
+                        name
+                        sku
+                        thumbnail {
+                            url
+                            label
+                        }
+                        ...price
+                    }
+                }
+            }
+
             ... on ConfigurableProduct {
                 options: configurable_options {
                     id

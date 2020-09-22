@@ -30,14 +30,10 @@ import Price from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 
-// @ts-ignore
-const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct').then(m => m.SimpleProduct))
-
-// @ts-ignore
-const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct').then(m => m.VirtualProduct))
-
-// @ts-ignore
-const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct').then(m => m.ConfigurableProduct))
+const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
+const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
+const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct'))
+const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
 
 const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
 
@@ -107,7 +103,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     }
 
     // Pending support of other Product Types
-    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct' && product.type !== 'VirtualProduct') {
+    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct' && product.type !== 'VirtualProduct' && product.type !== 'GroupedProduct') {
         return <ErrorComponent type="500">Product type: {product.type} not supported.</ErrorComponent>
     }
 
@@ -194,6 +190,21 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
+
+                                        {product.type === 'GroupedProduct' && (
+                                            <GroupedProduct
+                                                items={product.group?.map((group: any) => ({
+                                                    sku: group.product.sku,
+                                                    name: group.product.name,
+                                                    thumbnail: {
+                                                        src: resolveImage(group.product.thumbnail.url, { width: 200, height: 200 }),
+                                                        alt: group.product.thumbnail.label,
+                                                    },
+                                                    price: group.product.price,
+                                                }))}
+                                                inStock={product.stock === 'IN_STOCK'}
+                                            />
+                                        )}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
 

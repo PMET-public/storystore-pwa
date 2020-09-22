@@ -36,6 +36,7 @@ export const ProductList = styled.div`
                 'options options options';
             grid-template-rows: repeat(3, max-content);
             grid-template-columns: 1fr auto auto;
+            align-items: center;
         }
     }
 
