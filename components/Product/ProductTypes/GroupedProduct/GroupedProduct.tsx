@@ -12,6 +12,7 @@ export type GroupedProductProps = {
         sku: string
         name: string
         price: any
+        quantity: number
         stock?: string
     }>
     inStock?: boolean
@@ -39,7 +40,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
 
     return (
         <Root as={Form} onSubmit={handleAddToCart}>
-            {items?.map(({ sku, name, price, stock }, key) => (
+            {items?.map(({ sku, name, price, stock, quantity }, key) => (
                 <Item key={key}>
                     <Title>{name}</Title>
 
@@ -55,7 +56,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
 
                         <Quantity
                             name={`items[${key}].data.quantity`}
-                            defaultValue={stock === 'IN_STOCK' ? 1 : 0}
+                            defaultValue={stock === 'IN_STOCK' ? quantity : 0}
                             disabled={stock !== 'IN_STOCK'}
                             addLabel="Add"
                             removeLabel="Remove"

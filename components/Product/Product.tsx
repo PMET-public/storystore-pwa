@@ -194,6 +194,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {product.type === 'GroupedProduct' && (
                                             <GroupedProduct
                                                 items={product.group?.map((group: any) => ({
+                                                    quantity: group.quantity,
                                                     sku: group.product.sku,
                                                     name: group.product.name,
                                                     price: group.product.price,

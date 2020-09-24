@@ -42,6 +42,7 @@ query ProductQuery($urlKey: String!) {
 
             ... on GroupedProduct {
                 group: items {
+                    quantity: qty
                     product {
                         id
                         name
