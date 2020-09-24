@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback, useState, useRef, useContext } from 'react'
-import Form, { TextSwatchesProps, TextSwatches, Select } from '@storystore/ui/dist/components/Form'
+import Form, { TextSwatchesProps, TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
@@ -125,10 +125,13 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                                 {type === 'TextSwatchData' && <TextSwatches {...swatches} />}
                                 {type === 'ImageSwatchData' && <ThumbSwatches {...swatches} />}
                                 {type === 'ColorSwatchData' && <ColorSwatches {...swatches} />}
-                                {type === undefined && <Select {...swatches} />}
+                                {type === undefined && <Select {...swatches} blankDefault />}
                             </fieldset>
                         )
                     })}
+
+                <Quantity name="quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
+
                 <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingConfigurableProductToCart.loading} />
             </Form>
         </div>

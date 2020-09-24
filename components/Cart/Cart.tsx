@@ -64,46 +64,53 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                     <Breadcrumbs prefix="#" items={[{ text: 'Shopping Bag', as: Link, href: '/cart' }]} />
                     <CartList
                         loading={loading && !totalQuantity}
-                        items={items.map(({ id, quantity, price, product, options }: any, index: number) => ({
-                            _id: id || index,
-                            title: {
-                                as: Link,
-                                urlResolver: {
-                                    type: 'PRODUCT',
-                                    urlKey: product.urlKey,
+                        items={items.map(({ id, quantity, price, product, options }: any, index: number) => {
+                            if (product.type === 'DownloadableProduct') {
+                                options = [{ label: 'Delivery', value: 'Download' }]
+                            }
+
+                            return {
+                                _id: id || index,
+                                title: {
+                                    as: Link,
+                                    urlResolver: {
+                                        type: 'PRODUCT',
+                                        urlKey: product.urlKey,
+                                    },
+                                    href: `/${product.urlKey}${productUrlSuffix}`,
+                                    text: product.name,
                                 },
-                                href: `/${product.urlKey}${productUrlSuffix}`,
-                                text: product.name,
-                            },
-                            sku: `SKU. ${product.sku}`,
-                            thumbnail: {
-                                alt: product.thumbnail.label,
-                                src: resolveImage(product.thumbnail.url, { width: 300, height: 300 }),
-                                width: 300,
-                                height: 300,
-                                sources: [
-                                    <source key="webp" type="image/webp" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300, type: 'webp' })} />,
-                                    <source key="original" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300 })} />,
-                                ],
-                            },
-                            quantity: {
-                                defaultValue: quantity,
-                                addLabel: `Add another ${product.name} from shopping bag`,
-                                substractLabel: `Remove one ${product.name} from shopping bag`,
-                                removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => updateCartItem({ productId: id, quantity }),
-                                onRemove: () => removeCartItem({ productId: id }),
-                            },
-                            price: {
-                                currency: price.amount.currency,
-                                regular: price.amount.value,
-                            },
-                            options: options?.map(({ id, label, value }: any) => ({
-                                _id: id,
-                                label,
-                                value,
-                            })),
-                        }))}
+                                sku: `SKU. ${product.sku}`,
+                                thumbnail: {
+                                    alt: product.thumbnail.label,
+                                    src: resolveImage(product.thumbnail.url, { width: 300, height: 300 }),
+                                    width: 300,
+                                    height: 300,
+                                    sources: [
+                                        <source key="webp" type="image/webp" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300, type: 'webp' })} />,
+                                        <source key="original" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300 })} />,
+                                    ],
+                                },
+                                quantity: {
+                                    defaultValue: quantity,
+                                    addLabel: `Add another ${product.name} from shopping bag`,
+                                    substractLabel: `Remove one ${product.name} from shopping bag`,
+                                    removeLabel: `Remove all ${product.name} from shopping bag`,
+                                    fixed: product.type === 'DownloadableProduct',
+                                    onUpdate: (quantity: number) => updateCartItem({ productId: id, quantity }),
+                                    onRemove: () => removeCartItem({ productId: id }),
+                                },
+                                price: {
+                                    currency: price.amount.currency,
+                                    regular: price.amount.value,
+                                },
+                                options: options?.map(({ id, label, value }: any) => ({
+                                    _id: id,
+                                    label,
+                                    value,
+                                })),
+                            }
+                        })}
                     />
                 </ProductList>
 

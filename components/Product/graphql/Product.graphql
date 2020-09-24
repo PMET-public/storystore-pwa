@@ -52,6 +52,14 @@ query ProductQuery($urlKey: String!) {
                 }
             }
 
+            ... on DownloadableProduct {
+                downloads: downloadable_product_links {
+                    id
+                    order: sort_order
+                    title
+                }
+            }
+
             ... on ConfigurableProduct {
                 options: configurable_options {
                     id

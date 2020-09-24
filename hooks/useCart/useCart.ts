@@ -8,6 +8,7 @@ import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_VIRTUAL_PRODUCTS_TO_CART_MUTATION from './graphql/addVirtualProductsToCart.graphql'
+import ADD_DOWNLOADABLE_PRODUCTS_TO_CART_MUTATION from './graphql/addDownloadableProductsToCart.graphql'
 import ADD_CONFIGURABLE_PRODUCTS_TO_MUTATION from './graphql/addConfigurableProductsToCart.graphql'
 import CREATE_BRAINTREE_TOKEN_MUTATION from './graphql/createBraintreeClientToken.graphql'
 import SET_CONTACT_INFO_MUTATION from './graphql/setContactInfo.graphql'
@@ -270,6 +271,39 @@ export const useCart = (options: UseCart = {}) => {
     )
 
     /**
+     * Handle Add To Downloadable Product
+     */
+    const [addDownloadableProductsToCart, addingDownloadableProductToCart] = useMutation(ADD_DOWNLOADABLE_PRODUCTS_TO_CART_MUTATION, {
+        update(client, { data: { addToCart } }) {
+            const { cart } = addToCart
+
+            client.writeQuery({
+                query: gql`
+                    query CartAddSimpleProducts {
+                        cart
+                    }
+                `,
+                data: {
+                    cart,
+                },
+            })
+        },
+    })
+
+    const handleAddDownloadableProductToCart = useCallback(
+        async (items: Array<{ data: { sku: string; quantity: number } }>) => {
+            const { data } = await addDownloadableProductsToCart({
+                variables: {
+                    cartId,
+                    items,
+                },
+            })
+            return data
+        },
+        [cartId, addDownloadableProductsToCart]
+    )
+
+    /**
      * Create Braintree Token
      */
     const [createBraintreeToken, creatingBraintreeToken] = useMutation(CREATE_BRAINTREE_TOKEN_MUTATION)
@@ -408,6 +442,8 @@ export const useCart = (options: UseCart = {}) => {
         addingConfigurableProductToCart,
         addVirtualProductToCart: handleAddVirtualProductToCart,
         addingVirtualProductsToCart,
+        addDownloadableProductToCart: handleAddDownloadableProductToCart,
+        addingDownloadableProductToCart,
         createBraintreeToken: handleCreateBraintreeToken,
         creatingBraintreeToken,
         setContactInfo: handleSetContactInfo,

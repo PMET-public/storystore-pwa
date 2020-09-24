@@ -24,9 +24,10 @@ export const ShippingMethod: FunctionComponent<ShippingMethodProps> = ({ edit, o
 
     const handleSetShippingMethod = useCallback(
         async formData => {
-            const { methodCode, carrierCode } = JSON.parse(formData.shippingMethod)
-
-            await api.setShippingMethod({ methodCode, carrierCode })
+            if (formData.shippingMethod) {
+                const { methodCode, carrierCode } = JSON.parse(formData.shippingMethod)
+                await api.setShippingMethod({ methodCode, carrierCode })
+            }
 
             if (onSave) onSave()
         },

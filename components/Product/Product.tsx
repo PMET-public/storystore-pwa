@@ -33,6 +33,7 @@ import PageBuilder from '~/components/PageBuilder'
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
 const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct'))
+const DownloadableProduct = dynamic(() => import('./ProductTypes/DownloadableProduct'))
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
 
 const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
@@ -100,11 +101,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                 We&apos;re sorry, we coudn&apos;t find the product.
             </ErrorComponent>
         )
-    }
-
-    // Pending support of other Product Types
-    if (product?.type && product.type !== 'ConfigurableProduct' && product.type !== 'SimpleProduct' && product.type !== 'VirtualProduct' && product.type !== 'GroupedProduct') {
-        return <ErrorComponent type="500">Product type: {product.type} not supported.</ErrorComponent>
     }
 
     const showPrice = product?.type !== 'GroupedProduct'
@@ -206,6 +202,8 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                 inStock={product.stock === 'IN_STOCK'}
                                             />
                                         )}
+
+                                        {product.type === 'DownloadableProduct' && <DownloadableProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} downloads={product.downloads} />}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
 

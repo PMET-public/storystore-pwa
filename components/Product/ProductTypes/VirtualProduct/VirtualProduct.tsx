@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback } from 'react'
-import Form from '@storystore/ui/dist/components/Form'
+import Form, { Quantity } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
@@ -32,6 +32,8 @@ export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, in
 
     return (
         <Form onSubmit={handleAddToCart}>
+            <Quantity name="quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
+
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingVirtualProductsToCart.loading} />
         </Form>
     )

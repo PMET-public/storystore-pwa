@@ -178,7 +178,7 @@ export const Checkout: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                 vignette: false,
                             },
                             quantity: {
-                                value: quantity,
+                                fixedValue: quantity,
                             },
                             price: {
                                 currency: price.amount.currency,
