@@ -71,6 +71,7 @@ export const CartSummaryWrapper = styled.div`
         position: sticky;
         bottom: 0;
         padding: 4rem 0;
+        z-index: 1;
     }
 
     ${ButtonRoot} {
