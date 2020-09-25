@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useCallback, useState, useRef, useContext } from 'react'
+import { Root } from './ConfigurableProduct.styled'
 import Form, { TextSwatchesProps, TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
@@ -47,7 +48,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
     const handleOnChange = useCallback(
         (values: { options: { [key: string]: string } }) => {
             const { options } = values
-
+            debugger
             setSelectedOptions(options)
 
             const variantIndex = variants.findIndex((variant: any) => {
@@ -82,7 +83,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     return (
         <div ref={formRef}>
-            <Form onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
+            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
                 {options
                     .map(({ id, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
@@ -122,10 +123,10 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                     .map(({ _id, type, swatches }: any, index: number) => {
                         return (
                             <fieldset key={_id || index}>
-                                {type === 'TextSwatchData' && <TextSwatches {...swatches} />}
-                                {type === 'ImageSwatchData' && <ThumbSwatches {...swatches} />}
-                                {type === 'ColorSwatchData' && <ColorSwatches {...swatches} />}
-                                {type === undefined && <Select {...swatches} blankDefault />}
+                                {type === 'TextSwatchData' && <TextSwatches hideError {...swatches} />}
+                                {type === 'ImageSwatchData' && <ThumbSwatches hideError {...swatches} />}
+                                {type === 'ColorSwatchData' && <ColorSwatches hideError {...swatches} />}
+                                {type === undefined && <Select hideError blankDefault={`Choose an option...`} {...swatches} />}
                             </fieldset>
                         )
                     })}
@@ -133,7 +134,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 <Quantity name="quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
 
                 <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingConfigurableProductToCart.loading} />
-            </Form>
+            </Root>
         </div>
     )
 }

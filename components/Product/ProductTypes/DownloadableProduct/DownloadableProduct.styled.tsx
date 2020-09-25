@@ -1,6 +1,12 @@
 import styled from 'styled-components'
 import FileIconSVG from 'remixicon/icons/Document/file-line.svg'
 
+export const Root = styled.div`
+    display: grid;
+    grid-auto-rows: max-content;
+    grid-gap: 3rem;
+`
+
 export const Downloads = styled.ul`
     h3 {
         font-weight: ${props => props.theme.typography.body.weight.semi};

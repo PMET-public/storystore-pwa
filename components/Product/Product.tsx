@@ -35,6 +35,7 @@ const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
 const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct'))
 const DownloadableProduct = dynamic(() => import('./ProductTypes/DownloadableProduct'))
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
+const GiftCard = dynamic(() => import('./ProductTypes/GiftCard'))
 
 const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
 
@@ -207,6 +208,8 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {product.type === 'DownloadableProduct' && <DownloadableProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} downloads={product.downloads} />}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
+
+                                        {product.type === 'GiftCard' && <GiftCard sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
 
                                         {product.type === 'ConfigurableProduct' && (
                                             <ConfigurableProduct

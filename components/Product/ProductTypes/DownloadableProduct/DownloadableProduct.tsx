@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback } from 'react'
-import { Downloads, DownloadIcon } from './DownloadableProduct.styled'
+import { Root, Downloads, DownloadIcon } from './DownloadableProduct.styled'
 import Form, { Input } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
@@ -33,7 +33,7 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
     )
 
     return (
-        <Form onSubmit={handleAddToCart}>
+        <Root as={Form} onSubmit={handleAddToCart}>
             <Input name="items[0].data.sku" type="hidden" value={sku} rules={{ required: true }} />
 
             <Input name="items[0].data.quantity" type="hidden" value={1} rules={{ required: true }} />
@@ -50,6 +50,6 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
                 </Downloads>
             )}
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingDownloadableProductToCart.loading} />
-        </Form>
+        </Root>
     )
 }
