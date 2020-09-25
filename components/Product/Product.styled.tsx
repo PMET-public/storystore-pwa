@@ -105,6 +105,11 @@ export const InfoWrapper = styled.div`
         width: 100vw;
         z-index: 1;
 
+        @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
+            background-color: ${props => props.theme.colors.surface90};
+            backdrop-filter: blur(10px);
+        }
+
         /**
         Needed to fix this Safari bug
         https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/

@@ -62,8 +62,10 @@ export const Main = styled.main`
 `
 
 export const FooterContainer = styled(ContainerWrapper)`
+    background-color: ${props => props.theme.colors.surface};
     grid-area: footer;
     box-shadow: inset 0 0.1rem 0 rgba(0, 0, 0, 0.09), inset 0 0.2rem 0 rgba(255, 255, 255, 0.09);
+    z-index: 1;
 `
 
 export const Copyright = styled.div`

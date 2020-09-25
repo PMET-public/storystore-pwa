@@ -1,2 +1,2 @@
-export * from './GirfCard'
-export { GifCard as default } from './GirfCard'
+export * from './GiftCard'
+export { GiftCard as default } from './GiftCard'
