@@ -118,7 +118,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={960} height={960} />
+                                        <Image {...image} lazy={index > 0} width={960} height={960} originalWidthAndHeight />
                                     </CarouselItem>
                                 ))
                             ) : (
@@ -133,7 +133,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             {gallery ? (
                                 gallery.map((image: any, index: number) => (
                                     <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={1260} height={1260} />
+                                        <Image {...image} lazy={index > 0} width={1260} height={1260} originalWidthAndHeight />
                                     </CarouselItem>
                                 ))
                             ) : (
