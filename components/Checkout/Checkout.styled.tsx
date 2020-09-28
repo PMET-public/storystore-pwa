@@ -71,6 +71,7 @@ export const CartSummaryWrapper = styled.div`
             background-color: inherit;
             position: sticky;
             bottom: 0;
+            z-index: 1;
         }
     }
 `
