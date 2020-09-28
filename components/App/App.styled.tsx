@@ -37,14 +37,13 @@ export const HeaderContainer = styled(ContainerWrapper)`
 
     /** Translucent Bar */
     color: ${props => props.theme.colors.onSurface};
-    background-color: ${props => props.theme.colors.primary95};
+    background-color: ${props => props.theme.colors.surface95};
 
-    /* Removing as it seems to be causing re-rendering issues */
-    /* @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-        will-change: background-color;
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
         background-color: ${props => props.theme.colors.surface80};
         backdrop-filter: blur(10px);
-    } */
+        transform: translateZ(0);
+    }
 
     ${HeaderUtilities} {
         /* Hide Search and Cart on Mobile */
@@ -84,14 +83,13 @@ export const TabBarContainer = styled(ContainerWrapper)`
     z-index: 2;
     height: 6rem;
     color: ${props => props.theme.colors.onSurface};
-    background-color: ${props => props.theme.colors.primary90};
+    background-color: ${props => props.theme.colors.surface95};
 
-    /* Removing as it seems to be causing re-rendering issues */
-    /* @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-        will-change: background-color;
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
         background-color: ${props => props.theme.colors.surface80};
         backdrop-filter: blur(10px);
-    } */
+        transform: translateZ(0);
+    }
 
     @media ${props => props.theme.breakpoints.medium} {
         display: none;
