@@ -126,7 +126,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                                 {type === 'TextSwatchData' && <TextSwatches hideError {...swatches} />}
                                 {type === 'ImageSwatchData' && <ThumbSwatches hideError {...swatches} />}
                                 {type === 'ColorSwatchData' && <ColorSwatches hideError {...swatches} />}
-                                {type === undefined && <Select hideError blankDefault={`Choose an option...`} {...swatches} />}
+                                {type === undefined && <Select hideError blankDefault={`Select an option...`} {...swatches} />}
                             </fieldset>
                         )
                     })}
