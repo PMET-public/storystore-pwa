@@ -214,12 +214,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
-
                                         {shortDescription && <ShortDescription>{shortDescription}</ShortDescription>}
-
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
-
                                         {product.type === 'GroupedProduct' && (
                                             <GroupedProduct
                                                 items={product.group?.map((group: any) => ({
@@ -232,16 +229,12 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                 inStock={product.stock === 'IN_STOCK'}
                                             />
                                         )}
-
                                         {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
-
                                         {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
-
                                         {product.type === 'GiftCard' && <GiftCard sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
-
                                         {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
 
-                                        {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                                        {/* {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />} */}
                                     </React.Fragment>
                                 )}
                             </Info>
