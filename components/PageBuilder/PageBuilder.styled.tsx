@@ -73,6 +73,9 @@ export const Root = styled.div`
         list-style-position: outside;
         margin-block-start: 0.2em;
         padding-inline-start: 2.6rem;
+        display: grid;
+        grid-gap: 0.65rem;
+        grid-auto-rows: max-content;
     }
 
     & ul {

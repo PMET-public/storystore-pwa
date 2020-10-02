@@ -19,11 +19,27 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
             id
             title: name
             urlKey: url_key
+
             ...price
 
             image {
                 alt: label
                 src: url
+            }
+
+            ... on DownloadableProduct {
+                downloads: downloadable_product_links {
+                    id
+                    price
+                }
+            }
+
+            ... on GroupedProduct {
+                group: items {
+                    product {
+                        id
+                    }
+                }
             }
 
             ... on ConfigurableProduct {

@@ -59,7 +59,7 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                         loadingMore={loading || fetchingMore}
                         items={items
                             ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                            .map(({ id, image, price, title, urlKey, options }: any, index: number) => ({
+                            .map(({ id, image, price, title, urlKey, options, group, downloads }: any, index: number) => ({
                                 lazy: index > 0,
                                 _id: `${id}--${index}`,
                                 as: Link,
@@ -82,8 +82,8 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                                     height: 960,
                                 },
                                 price: {
-                                    label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                    regular: price.minimum.regular.value,
+                                    label: price.maximum.regular.value > price.minimum.regular.value || group?.length > 1 || downloads?.length > 1 ? 'Starting at' : undefined,
+                                    regular: downloads?.length > 1 ? Math.min(...downloads.map((x: any) => x.price)) : price.minimum.regular.value,
                                     special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
                                     currency: price.minimum.regular.currency,
                                 },

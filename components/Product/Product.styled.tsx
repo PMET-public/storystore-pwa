@@ -7,7 +7,7 @@ import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcru
 
 export const Root = styled.div`
     display: grid;
-    grid-gap: 4rem;
+    /* grid-gap: 4rem; */
     grid-auto-rows: max-content;
 `
 
@@ -27,7 +27,8 @@ export const Wrapper = styled.div`
         display: grid;
         grid-auto-rows: max-content;
         grid-gap: 2rem;
-        grid-template-columns: 1.25fr 1fr;
+        grid-template-columns: 1.5fr 1fr;
+        max-width: 260rem;
     }
 `
 
@@ -46,7 +47,7 @@ export const Images = styled.div`
 export const Image = styled(ImageComponent)`
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     filter: unset;
 
@@ -76,7 +77,7 @@ export const GalleryGrid = styled.div`
     grid-auto-flow: row;
     grid-gap: 0.5rem;
     grid-template-columns: 1fr 1fr;
-    max-width: 120rem;
+    /* max-width: 120rem; */
     overflow: unset;
 
     & ${CarouselItem} {
@@ -104,17 +105,12 @@ export const InfoWrapper = styled.div`
         position: relative;
         width: 100vw;
         z-index: 1;
-
-        @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-            background-color: ${props => props.theme.colors.surface90};
-            backdrop-filter: blur(10px);
-        }
-
-        /**
-        Needed to fix this Safari bug
-        https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
-    */
         -webkit-transform: translate3d(0, 0, 0);
+
+        @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(40px)) {
+            background-color: ${props => props.theme.colors.surface80};
+            backdrop-filter: blur(40px);
+        }
     }
 `
 
@@ -127,7 +123,7 @@ export const InfoInnerWrapper = styled.div`
         padding: 4rem 2rem 4rem;
         position: sticky;
         top: 8rem;
-        min-height: calc(100vh - 8rem);
+        min-height: calc(100vh - 20rem);
     }
 `
 
@@ -135,7 +131,7 @@ export const Info = styled.div`
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 3rem;
-    padding: 2rem ${props => props.theme.layout.margin};
+    padding: 2rem ${props => props.theme.layout.margin} 4rem;
     width: 100%;
 `
 
@@ -169,10 +165,17 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
+
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(40px)) {
+        -webkit-transform: translate3d(0, 0, 0);
+        background-color: ${props => props.theme.colors.surface80};
+        backdrop-filter: blur(40px);
+    }
 `
 
 export const CarouselWrapper = styled.div`
-    padding-bottom: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
     ${Title} {
         margin: 0 2rem 2rem;
     }

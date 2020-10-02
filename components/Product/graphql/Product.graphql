@@ -58,6 +58,13 @@ query ProductQuery($urlKey: String!) {
                     id
                     order: sort_order
                     title
+                    price
+                }
+
+                samples: downloadable_product_samples {
+                    order: sort_order
+                    url: sample_url
+                    title
                 }
             }
 

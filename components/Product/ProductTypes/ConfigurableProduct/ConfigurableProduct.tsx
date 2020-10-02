@@ -9,10 +9,12 @@ import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/component
 import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
 import { ProductContext } from '~/components/Product'
+import { ProductGallery } from '../../Product'
+import { PriceProps } from '@storystore/ui/dist/components/Price'
 
 export type ConfigurableProductProps = {
     sku: string
-    variantSku: string
+    stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
     options: Array<{
         id: string | number
         label: string
@@ -26,13 +28,15 @@ export type ConfigurableProductProps = {
         }>
     }>
     variants: Array<{
-        code: string
-        value: number
+        product: {
+            variantSku: string
+            gallery: ProductGallery[]
+            price: PriceProps
+        }
     }>
-    inStock?: boolean
 }
 
-export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, variantSku, options, variants, inStock = true }) => {
+export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, stock = 'IN_STOCK', options, variants }) => {
     const { cartId } = useStoryStore()
 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })
@@ -43,23 +47,60 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
-    const { setSelectedVariantIndex } = useContext(ProductContext)
+    const [variantSku, setVariantSku] = useState(sku)
+
+    const inStock = stock === 'IN_STOCK'
+
+    const { product: selectedProduct, updateProduct } = useContext(ProductContext)
+
+    const variantsIndexes = variants.reduce((accumVariants: any[], current: any) => {
+        return [
+            ...accumVariants,
+            current.attributes.reduce((accumAttributes: any, currentAttribute: any) => {
+                const { code, value } = currentAttribute
+                return { ...accumAttributes, [code]: value }
+            }, {}),
+        ]
+    }, [])
 
     const handleOnChange = useCallback(
         (values: { options: { [key: string]: string } }) => {
             const { options } = values
-            debugger
+
             setSelectedOptions(options)
 
-            const variantIndex = variants.findIndex((variant: any) => {
+            // Find combination of options selected in Variants
+            const variantIndex = variantsIndexes.findIndex((variant: any) => {
                 return Object.entries(options)
                     .filter(([_, value]) => value !== '')
                     .reduce((prev, [code, value]) => prev && variant[code] === Number(value), true)
             })
 
-            setSelectedVariantIndex(variantIndex)
+            // If Variant is found...
+            if (variantIndex > -1) {
+                // ...get product variant's product data...
+                const _variant = variants[variantIndex].product
+
+                // ...get image gallery...
+                let gallery = [..._variant.gallery]
+
+                // ...if the gallery only has one image, then only swap the first one so we can still see other angles shots, etc...
+                if (_variant.gallery.length === 1 && selectedProduct?.gallery) {
+                    gallery = [..._variant.gallery, ...[...selectedProduct.gallery].splice(1)]
+                }
+
+                // ...variant's price...
+                const price = _variant.price
+
+                setVariantSku(_variant.variantSku)
+
+                updateProduct({
+                    price,
+                    gallery,
+                })
+            }
         },
-        [variants, setSelectedVariantIndex]
+        [selectedProduct, updateProduct, variants, variantsIndexes]
     )
 
     const handleOnErrors = useCallback(() => {

@@ -8,6 +8,8 @@ export const Root = styled.div`
     background-color: ${props => props.theme.colors.surface};
     color: ${props => props.theme.colors.onSurface};
     width: 100%;
+    max-width: 3000px;
+    margin: 0 auto;
     /* overflow-x: hidden; */
 
     grid-auto-columns: minmax(0, 1fr);
@@ -37,13 +39,7 @@ export const HeaderContainer = styled(ContainerWrapper)`
 
     /** Translucent Bar */
     color: ${props => props.theme.colors.onSurface};
-    background-color: ${props => props.theme.colors.surface95};
-
-    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-        background-color: ${props => props.theme.colors.surface80};
-        backdrop-filter: blur(10px);
-        transform: translateZ(0);
-    }
+    background-color: ${props => props.theme.colors.surface};
 
     ${HeaderUtilities} {
         /* Hide Search and Cart on Mobile */

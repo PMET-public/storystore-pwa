@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, createContext, useState } from 'react'
+import React, { FunctionComponent, useMemo, createContext, useReducer, Reducer } from 'react'
 import dynamic from 'next/dynamic'
 import {
     Root,
@@ -26,9 +26,10 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
 import { ProductImageSkeleton } from './ProductImage.skeleton'
-import Price from '@storystore/ui/dist/components/Price'
+import Price, { PriceProps } from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
+import useHtml from '~/hooks/useHtml'
 
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
@@ -41,62 +42,129 @@ const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
+export type ProductGallery = Array<{
+    label: string
+    url: string
+}>
+
+type State = {
+    price: PriceProps | null
+    gallery: ProductGallery
+}
+
+type Action =
+    | {
+          type: 'setPrice'
+          payload: PriceProps | null
+      }
+    | {
+          type: 'setGallery'
+          payload: ProductGallery
+      }
+
 export const ProductContext = createContext<{
-    selectedVariant?: number
-    setSelectedVariantIndex: (value: number) => any
+    setGallery: (data: ProductGallery) => any
+    setPrice: (data: PriceProps | null) => any
 }>({
-    setSelectedVariantIndex: _ => {},
+    setGallery: _ => {},
+    setPrice: _ => {},
 })
 
-export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
-    const online = useNetworkStatus()
+const reducer: Reducer<State, Action> = (state, action) => {
+    switch (action.type) {
+        case 'setPrice':
+            return { ...state, price: action.payload }
 
-    const [selectedVariantIndex, setSelectedVariantIndex] = useState(-1)
+        case 'setGallery':
+            return { ...state, gallery: action.payload }
 
-    const product = useMemo(() => {
-        let _product = data?.product?.items[0]
+        default:
+            throw `Reducer action not valid.`
+    }
+}
 
-        if (selectedVariantIndex > -1) {
-            const _variant = data?.product?.items[0].variants[selectedVariantIndex].product
-            let gallery = [..._variant.gallery]
-
-            if (_variant.gallery.length === 1) {
-                gallery = [...gallery, ...[..._product.gallery].splice(1)]
-            }
-
-            _product = {
-                ..._product,
-                ..._variant,
-                gallery,
-            }
-        }
-
-        return _product
-    }, [data, selectedVariantIndex])
-
-    const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
-
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
+const ProductGallery: FunctionComponent<{ items: ProductGallery }> = ({ items }) => {
     const gallery = useMemo(() => {
-        return product?.gallery
+        return items
             ?.filter((x: any) => x.type === 'ProductImage')
             .map(({ label, url }: any) => ({
-                alt: label || product?.title,
+                alt: label ?? '',
                 src: resolveImage(url, { width: 960 }),
                 sources: [
-                    <source key="mobile-webp" type="image/webp" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960, type: 'webp' })} />,
-                    <source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960 })} />,
+                    <source key="mobile-webp" type="image/webp" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960, height: 960, type: 'webp' })} />,
+                    <source key="mobile" media="(max-width: 599px)" srcSet={resolveImage(url, { width: 960, height: 960 })} />,
                     <source key="desktop-webp" type="image/webp" media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260, type: 'webp' })} />,
                     <source key="desktop" media="(min-width: 600px)" srcSet={resolveImage(url, { width: 1260 })} />,
                 ],
             }))
             .sort((a: any, b: any) => a.position - b.position)
-    }, [product])
+    }, [items])
+
+    return (
+        <Images>
+            {/* Mobile Gallery Carousel */}
+            <Carousel gap={1} padding={3} show={1} snap hideScrollBar>
+                {gallery ? (
+                    gallery.map((image: any, index: number) => (
+                        <CarouselItem key={index}>
+                            <Image {...image} lazy={index > 0} width={960} height={960} />
+                        </CarouselItem>
+                    ))
+                ) : (
+                    <CarouselItem>
+                        <ProductImageSkeleton />
+                    </CarouselItem>
+                )}
+            </Carousel>
+
+            {/* Tablet and Desktop Gallery Grid */}
+            <GalleryGrid>
+                {gallery ? (
+                    gallery.map((image: any, index: number) => (
+                        <CarouselItem key={index}>
+                            <Image {...image} lazy={index > 0} width={1260} height={1260} originalWidthAndHeight />
+                        </CarouselItem>
+                    ))
+                ) : (
+                    <>
+                        <CarouselItem>
+                            <ProductImageSkeleton />
+                        </CarouselItem>
+                    </>
+                )}
+            </GalleryGrid>
+        </Images>
+    )
+}
+
+export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
+    const online = useNetworkStatus()
+
+    const product = data?.product?.items[0]
+
+    const layout: 'FULL_WIDTH' | 'COLUMN' = 'FULL_WIDTH'
+
+    const shortDescription = useHtml(product?.shortDescription.html)
+
+    const [{ price, gallery }, dispatch] = useReducer(reducer, {
+        price: product?.price && {
+            label: product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined,
+            regular: product.price.minimum.regular.value,
+            special: product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff,
+            currency: product.price.minimum.regular.currency,
+        },
+
+        gallery: product?.gallery,
+    })
+
+    const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
+
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
     if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
     if (!loading && !product) {
+        debugger
         return (
             <ErrorComponent type="404" button={{ text: 'Search', as: Link, href: '/search' }}>
                 We&apos;re sorry, we coudn&apos;t find the product.
@@ -104,47 +172,13 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
         )
     }
 
-    const showPrice = product?.type !== 'GroupedProduct'
-
     return (
-        <ProductContext.Provider value={{ setSelectedVariantIndex }}>
+        <ProductContext.Provider value={{ setGallery: payload => dispatch({ type: 'setGallery', payload }), setPrice: payload => dispatch({ type: 'setPrice', payload }) }}>
             {product && <Head title={product.metaTitle || product.title} description={product.metaDescription} keywords={product.metaKeywords} />}
 
             <Root>
                 <Wrapper>
-                    <Images>
-                        {/* Mobile Gallery Carousel */}
-                        <Carousel gap={1} padding={3} show={1} snap hideScrollBar>
-                            {gallery ? (
-                                gallery.map((image: any, index: number) => (
-                                    <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={960} height={960} originalWidthAndHeight />
-                                    </CarouselItem>
-                                ))
-                            ) : (
-                                <CarouselItem>
-                                    <ProductImageSkeleton />
-                                </CarouselItem>
-                            )}
-                        </Carousel>
-
-                        {/* Tablet and Desktop Gallery Grid */}
-                        <GalleryGrid>
-                            {gallery ? (
-                                gallery.map((image: any, index: number) => (
-                                    <CarouselItem key={index}>
-                                        <Image {...image} lazy={index > 0} width={1260} height={1260} originalWidthAndHeight />
-                                    </CarouselItem>
-                                ))
-                            ) : (
-                                <>
-                                    <CarouselItem>
-                                        <ProductImageSkeleton />
-                                    </CarouselItem>
-                                </>
-                            )}
-                        </GalleryGrid>
-                    </Images>
+                    <ProductGallery items={gallery ?? product?.gallery} />
 
                     <InfoWrapper>
                         <InfoInnerWrapper>
@@ -176,18 +210,12 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                             <Title>{product.title}</Title>
 
-                                            {showPrice && (
-                                                <Price
-                                                    label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
-                                                    regular={product.price.minimum.regular.value}
-                                                    special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
-                                                    currency={product.price.minimum.regular.currency}
-                                                />
-                                            )}
+                                            {price && <Price {...price} />}
+
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
 
-                                        {product.shortDescription?.html && <ShortDescription dangerouslySetInnerHTML={{ __html: product.shortDescription.html }} />}
+                                        {shortDescription && <ShortDescription>{shortDescription}</ShortDescription>}
 
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
@@ -205,37 +233,23 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                             />
                                         )}
 
-                                        {product.type === 'DownloadableProduct' && <DownloadableProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} downloads={product.downloads} />}
+                                        {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
 
                                         {product.type === 'GiftCard' && <GiftCard sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
 
-                                        {product.type === 'ConfigurableProduct' && (
-                                            <ConfigurableProduct
-                                                sku={product.sku}
-                                                variantSku={product.variantSku}
-                                                inStock={product.stock === 'IN_STOCK'}
-                                                options={product.options}
-                                                variants={product.variants.reduce((accumVariants: any[], current: any) => {
-                                                    return [
-                                                        ...accumVariants,
-                                                        current.attributes.reduce((accumAttributes: any, currentAttribute: any) => {
-                                                            const { code, value } = currentAttribute
-                                                            return { ...accumAttributes, [code]: value }
-                                                        }, {}),
-                                                    ]
-                                                }, [])}
-                                            />
-                                        )}
+                                        {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
 
-                                        {product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                                        {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
                                     </React.Fragment>
                                 )}
                             </Info>
                         </InfoInnerWrapper>
                     </InfoWrapper>
                 </Wrapper>
+
+                {layout === 'FULL_WIDTH' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
                 {/* Related Products */}
                 {product?.related?.length > 0 && (
