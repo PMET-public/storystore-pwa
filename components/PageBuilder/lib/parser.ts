@@ -43,6 +43,11 @@ const getComponentData = (type: string, node?: HTMLElement) => {
     /** Dataset comes in first child element if the Component Appearance is "contained" */
     const currentNode = appearance === 'contained' ? (node.childNodes[0] as HTMLElement) : node
 
+    /** Hidden Content-Type */
+    if (node.style.display === 'none') {
+        currentNode.style.display = 'none'
+    }
+
     const config = (configs as any)[name]
 
     if (!config) return null

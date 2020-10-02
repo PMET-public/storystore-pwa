@@ -70,12 +70,13 @@ export const Root = styled.div`
 
     & ol,
     & ul {
-        list-style-position: inside;
+        list-style-position: outside;
         margin-block-start: 0.2em;
+        padding-inline-start: 2.6rem;
     }
 
     & ul {
-        list-style-type: dist;
+        list-style-type: disc;
         list-style-position: inside;
     }
 

@@ -88,6 +88,15 @@ export const StickyButtonWrapper = styled.div`
     display: grid;
     padding: 1.6rem ${props => props.theme.layout.margin};
     position: sticky;
+    z-index: 1;
+
+    @media ${props => props.theme.breakpoints.untilLarge} {
+        @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
+            background-color: ${props => props.theme.colors.surface50};
+            backdrop-filter: blur(20px);
+            transform: translateZ(0);
+        }
+    }
 
     @media ${props => props.theme.breakpoints.medium} {
         bottom: 0;

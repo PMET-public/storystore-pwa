@@ -39,9 +39,9 @@ export const HeaderContainer = styled(ContainerWrapper)`
     color: ${props => props.theme.colors.onSurface};
     background-color: ${props => props.theme.colors.surface95};
 
-    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-        background-color: ${props => props.theme.colors.surface80};
-        backdrop-filter: blur(10px);
+    @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
+        background-color: ${props => props.theme.colors.surface70};
+        backdrop-filter: blur(20px);
         transform: translateZ(0);
     }
 
@@ -77,6 +77,8 @@ export const Copyright = styled.div`
 `
 
 export const TabBarContainer = styled(ContainerWrapper)`
+    display: flex;
+    align-items: center;
     grid-area: tabBar;
     position: sticky;
     bottom: 0;
@@ -85,14 +87,18 @@ export const TabBarContainer = styled(ContainerWrapper)`
     color: ${props => props.theme.colors.onSurface};
     background-color: ${props => props.theme.colors.surface95};
 
-    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
-        background-color: ${props => props.theme.colors.surface80};
-        backdrop-filter: blur(10px);
+    @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
+        background-color: ${props => props.theme.colors.surface70};
+        backdrop-filter: blur(20px);
         transform: translateZ(0);
     }
 
     @media ${props => props.theme.breakpoints.medium} {
         display: none;
+    }
+
+    @media ${props => props.theme.breakpoints.large} {
+        height: 8rem;
     }
 `
 
