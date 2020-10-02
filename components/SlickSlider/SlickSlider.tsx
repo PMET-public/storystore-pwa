@@ -51,7 +51,6 @@ export const SlickSlider: Component<SlickSliderProps> = ({ accessibility = true,
                 <Root
                     $draggable={draggable}
                     as={Slick}
-                    respondTo="min"
                     draggable={draggable}
                     fade={fade}
                     accesibility={accessibility}

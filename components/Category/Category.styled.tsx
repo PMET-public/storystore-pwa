@@ -45,3 +45,8 @@ export const TopBarFilterToggleButton = styled.button`
     padding: 0.6rem;
     font-size: 2.4rem;
 `
+
+export const ProductsWrapper = styled.div`
+    margin-bottom: 6rem;
+    background: red;
+`

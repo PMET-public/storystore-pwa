@@ -118,6 +118,7 @@ export const SlickGlobalStyles = createGlobalStyle`
         float: left;
         height: 100%;
         min-height: 1px;
+        padding: 0 0.2rem !important;
     }
 
     [dir='rtl'] .slick-slide {

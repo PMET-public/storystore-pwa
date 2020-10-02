@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { Root, HeadingWrapper, Heading, Title, TopBarFilterToggleButton } from './Category.styled'
+import { Root, HeadingWrapper, Heading, Title, TopBarFilterToggleButton, ProductsWrapper } from './Category.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
@@ -116,7 +116,9 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                             </TopBarFilterToggleButton>
                         </TopBar>
 
-                        <Products {...products} loading={loading || products.loading} />
+                        <ProductsWrapper>
+                            <Products {...products} loading={loading || products.loading} />
+                        </ProductsWrapper>
 
                         <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
                             {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
