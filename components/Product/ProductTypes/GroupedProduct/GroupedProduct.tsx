@@ -8,22 +8,31 @@ import { useRouter } from 'next/router'
 import Price from '@storystore/ui/dist/components/Price'
 
 export type GroupedProductProps = {
-    items: Array<{
-        sku: string
-        name: string
-        price: any
-        quantity: number
-        stock?: string
+    group: Array<{
+        product: {
+            sku: string
+            name: string
+            price: any
+            quantity: number
+            stock?: string
+        }
     }>
-    inStock?: boolean
 }
 
-export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, inStock = true }) => {
+export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }) => {
     const { cartId } = useStoryStore()
 
     const { addSimpleProductToCart, addingSimpleProductsToCart } = useCart({ cartId })
 
     const history = useRouter()
+
+    const items = group?.map(({ product }) => ({
+        quantity: product.quantity,
+        sku: product.sku,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+    }))
 
     const handleAddToCart = useCallback(
         async ({ items }) => {
@@ -68,7 +77,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ items, 
                     </PriceContainer>
                 </Item>
             ))}
-            <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingSimpleProductsToCart.loading} />
+            <Button type="submit" as="button" text="Add to Cart" loading={addingSimpleProductsToCart.loading} />
         </Root>
     )
 }

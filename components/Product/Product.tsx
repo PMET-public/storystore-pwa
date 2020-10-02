@@ -26,7 +26,7 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
 import { ProductImageSkeleton } from './ProductImage.skeleton'
-import Price, { PriceProps } from '@storystore/ui/dist/components/Price'
+import Price from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 import useHtml from '~/hooks/useHtml'
@@ -47,15 +47,37 @@ export type ProductGallery = Array<{
     url: string
 }>
 
+export type Price = {
+    minimum: {
+        discount: {
+            amountOff: number
+        }
+        regular: {
+            value: number
+            currency: string
+        }
+        final: {
+            value: number
+            currency: string
+        }
+    }
+    maximum: {
+        regular: {
+            value: number
+            currency: string
+        }
+    }
+}
+
 type State = {
-    price: PriceProps | null
+    price: Price | null
     gallery: ProductGallery
 }
 
 type Action =
     | {
           type: 'setPrice'
-          payload: PriceProps | null
+          payload: Price | null
       }
     | {
           type: 'setGallery'
@@ -64,7 +86,7 @@ type Action =
 
 export const ProductContext = createContext<{
     setGallery: (data: ProductGallery) => any
-    setPrice: (data: PriceProps | null) => any
+    setPrice: (data: Price | null) => any
 }>({
     setGallery: _ => {},
     setPrice: _ => {},
@@ -146,16 +168,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const shortDescription = useHtml(product?.shortDescription.html)
 
-    const [{ price, gallery }, dispatch] = useReducer(reducer, {
-        price: product?.price && {
-            label: product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined,
-            regular: product.price.minimum.regular.value,
-            special: product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff,
-            currency: product.price.minimum.regular.currency,
-        },
-
-        gallery: product?.gallery,
-    })
+    const [{ price, gallery }, dispatch] = useReducer(reducer, { price: product?.price, gallery: product?.gallery })
 
     const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
 
@@ -210,29 +223,31 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                             <Title>{product.title}</Title>
 
-                                            {price && <Price {...price} />}
+                                            {price && (
+                                                <Price
+                                                    label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
+                                                    regular={product.price.minimum.regular.value}
+                                                    special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
+                                                    currency={product.price.minimum.regular.currency}
+                                                />
+                                            )}
 
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
                                         {shortDescription && <ShortDescription>{shortDescription}</ShortDescription>}
+
                                         {/* Product Type Form */}
-                                        {product.type === 'SimpleProduct' && <SimpleProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
-                                        {product.type === 'GroupedProduct' && (
-                                            <GroupedProduct
-                                                items={product.group?.map((group: any) => ({
-                                                    quantity: group.quantity,
-                                                    sku: group.product.sku,
-                                                    name: group.product.name,
-                                                    price: group.product.price,
-                                                    stock: group.product.stock,
-                                                }))}
-                                                inStock={product.stock === 'IN_STOCK'}
-                                            />
-                                        )}
+                                        {product.type === 'SimpleProduct' && <SimpleProduct {...product} />}
+
+                                        {product.type === 'GroupedProduct' && <GroupedProduct {...product} />}
+
                                         {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
-                                        {product.type === 'VirtualProduct' && <VirtualProduct sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
-                                        {product.type === 'GiftCard' && <GiftCard sku={product.sku} inStock={product.stock === 'IN_STOCK'} />}
+
                                         {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
+
+                                        {product.type === 'VirtualProduct' && <VirtualProduct {...product} />}
+
+                                        {product.type === 'GiftCard' && <GiftCard {...product} />}
 
                                         {/* {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />} */}
                                     </React.Fragment>

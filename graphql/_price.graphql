@@ -16,6 +16,7 @@ fragment price on ProductInterface {
         maximum: maximum_price {
             regular: regular_price {
                 value
+                currency
             }
         }
     }

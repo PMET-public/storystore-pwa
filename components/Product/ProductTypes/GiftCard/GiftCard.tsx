@@ -8,7 +8,7 @@ import Form from '@storystore/ui/dist/components/Form' // Quantity // Input,
 
 export type GiftCardProps = {
     sku: string
-    inStock?: boolean
+    stock?: 'IN_STORE' | 'OUT_OF_STOCK'
 }
 
 export const GiftCard: FunctionComponent<GiftCardProps> = (

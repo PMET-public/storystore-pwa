@@ -1,4 +1,8 @@
-import React, { FunctionComponent, useCallback, useContext, useMemo } from 'react'
+import React, {
+    FunctionComponent,
+    useCallback,
+    // useContext
+} from 'react'
 import { Root, Downloads, DownloadIcon, DownloadLabel } from './DownloadableProduct.styled'
 import Form, { Input, Checkbox } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
@@ -7,7 +11,7 @@ import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Price from '@storystore/ui/dist/components/Price'
-import { ProductContext } from '../../Product'
+// import { ProductContext } from '../../Product'
 
 export type DownloadableProductProps = {
     sku: string
@@ -21,30 +25,30 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
 
     const { addDownloadableProductToCart, addingDownloadableProductToCart } = useCart({ cartId })
 
-    const { setPrice } = useContext(ProductContext)
+    // const { setPrice } = useContext(ProductContext)
 
-    const handleValues = useCallback(
-        (values: any) => {
-            if (downloads) {
-                if (values?.downloads?.length > 0) {
-                    setPrice({
-                        regular: values.downloads.reduce((total: number, _downloadId: string) => {
-                            const downloadId = Number(_downloadId)
-                            const price = downloads.find(x => x.id === downloadId)?.price || 0
-                            return total + price
-                        }, 0),
-                    })
-                } else {
-                    setPrice({
-                        label: 'Starting at',
-                        regular: Math.min(...[...downloads.map(d => d.price)]),
-                    })
-                }
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [downloads]
-    )
+    // const handleValues = useCallback(
+    //     (values: any) => {
+    //         if (downloads) {
+    //             if (values?.downloads?.length > 0) {
+    //                 setPrice({
+    //                     regular: values.downloads.reduce((total: number, _downloadId: string) => {
+    //                         const downloadId = Number(_downloadId)
+    //                         const price = downloads.find(x => x.id === downloadId)?.price || 0
+    //                         return total + price
+    //                     }, 0),
+    //                 })
+    //             } else {
+    //                 setPrice({
+    //                     label: 'Starting at',
+    //                     regular: Math.min(...[...downloads.map(d => d.price)]),
+    //                 })
+    //             }
+    //         }
+    //     },
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    //     [downloads]
+    // )
 
     const history = useRouter()
 
@@ -74,7 +78,11 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
     )
 
     return (
-        <Root as={Form} onValues={handleValues} onSubmit={handleAddToCart}>
+        <Root
+            as={Form}
+            //  onValues={handleValues}
+            onSubmit={handleAddToCart}
+        >
             <Input name="sku" type="hidden" value={sku} rules={{ required: true }} />
 
             <Input name="quantity" type="hidden" value={1} rules={{ required: true }} />

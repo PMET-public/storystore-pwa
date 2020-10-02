@@ -8,15 +8,17 @@ import { useRouter } from 'next/router'
 
 export type SimpleProductProps = {
     sku: string
-    inStock?: boolean
+    stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
 }
 
-export const SimpleProduct: FunctionComponent<SimpleProductProps> = ({ sku, inStock = true }) => {
+export const SimpleProduct: FunctionComponent<SimpleProductProps> = ({ sku, stock = 'IN_STOCK' }) => {
     const { cartId } = useStoryStore()
 
     const { addSimpleProductToCart, addingSimpleProductsToCart } = useCart({ cartId })
 
     const history = useRouter()
+
+    const inStock = stock !== 'IN_STOCK'
 
     const handleAddToCart = useCallback(
         async ({ items }) => {

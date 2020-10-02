@@ -9,8 +9,7 @@ import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/component
 import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
 import { ProductContext } from '~/components/Product'
-import { ProductGallery } from '../../Product'
-import { PriceProps } from '@storystore/ui/dist/components/Price'
+import { Price, ProductGallery } from '../../Product'
 
 export type ConfigurableProductProps = {
     sku: string
@@ -30,13 +29,14 @@ export type ConfigurableProductProps = {
     variants: Array<{
         product: {
             variantSku: string
-            gallery: ProductGallery[]
-            price: PriceProps
+            gallery: ProductGallery
+            price: Price
         }
     }>
+    gallery: ProductGallery
 }
 
-export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, stock = 'IN_STOCK', options, variants }) => {
+export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, stock = 'IN_STOCK', options, gallery, variants }) => {
     const { cartId } = useStoryStore()
 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })
@@ -51,7 +51,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const inStock = stock === 'IN_STOCK'
 
-    const { product: selectedProduct, updateProduct } = useContext(ProductContext)
+    const { setGallery, setPrice } = useContext(ProductContext)
 
     const variantsIndexes = variants.reduce((accumVariants: any[], current: any) => {
         return [
@@ -82,25 +82,24 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 const _variant = variants[variantIndex].product
 
                 // ...get image gallery...
-                let gallery = [..._variant.gallery]
+                let variantGallery = [..._variant.gallery]
 
                 // ...if the gallery only has one image, then only swap the first one so we can still see other angles shots, etc...
-                if (_variant.gallery.length === 1 && selectedProduct?.gallery) {
-                    gallery = [..._variant.gallery, ...[...selectedProduct.gallery].splice(1)]
+                if (_variant.gallery.length === 1 && gallery.length > 1) {
+                    variantGallery = [...variantGallery, ...[...gallery].splice(1)]
                 }
+
+                setGallery(variantGallery)
 
                 // ...variant's price...
                 const price = _variant.price
 
                 setVariantSku(_variant.variantSku)
 
-                updateProduct({
-                    price,
-                    gallery,
-                })
+                setPrice(price)
             }
         },
-        [selectedProduct, updateProduct, variants, variantsIndexes]
+        [gallery, setGallery, setPrice, variants, variantsIndexes]
     )
 
     const handleOnErrors = useCallback(() => {

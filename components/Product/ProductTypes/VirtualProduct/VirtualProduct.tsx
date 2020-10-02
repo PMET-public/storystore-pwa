@@ -8,15 +8,17 @@ import { useRouter } from 'next/router'
 
 export type VirtualProductProps = {
     sku: string
-    inStock?: boolean
+    stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
 }
 
-export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, inStock = true }) => {
+export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, stock = 'IN_STOCK' }) => {
     const { cartId } = useStoryStore()
 
     const { addVirtualProductToCart, addingVirtualProductsToCart } = useCart({ cartId })
 
     const history = useRouter()
+
+    const inStock = stock !== 'IN_STOCK'
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
