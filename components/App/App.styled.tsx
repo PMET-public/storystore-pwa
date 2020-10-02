@@ -28,7 +28,7 @@ export const Root = styled.div`
 `
 
 export const HeaderContainer = styled(ContainerWrapper)`
-    height: 6rem;
+    /* height: 6rem; */
     grid-area: header;
     box-shadow: inset 0 -0.1rem 0 rgba(0, 0, 0, 0.09), inset 0 -0.2rem 0 rgba(255, 255, 255, 0.09);
     position: sticky;
@@ -39,9 +39,9 @@ export const HeaderContainer = styled(ContainerWrapper)`
     color: ${props => props.theme.colors.onSurface};
     background-color: ${props => props.theme.colors.surface95};
 
-    @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
-        background-color: ${props => props.theme.colors.surface70};
-        backdrop-filter: blur(20px);
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
+        background-color: ${props => props.theme.colors.surface80};
+        backdrop-filter: blur(10px);
         transform: translateZ(0);
     }
 
@@ -87,18 +87,14 @@ export const TabBarContainer = styled(ContainerWrapper)`
     color: ${props => props.theme.colors.onSurface};
     background-color: ${props => props.theme.colors.surface95};
 
-    @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
-        background-color: ${props => props.theme.colors.surface70};
-        backdrop-filter: blur(20px);
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
+        background-color: ${props => props.theme.colors.surface80};
+        backdrop-filter: blur(10px);
         transform: translateZ(0);
     }
 
     @media ${props => props.theme.breakpoints.medium} {
         display: none;
-    }
-
-    @media ${props => props.theme.breakpoints.large} {
-        height: 8rem;
     }
 `
 
