@@ -122,7 +122,7 @@ export const InfoInnerWrapper = styled.div`
         padding: 4rem 2rem 4rem;
         position: sticky;
         top: 8rem;
-        min-height: calc(100vh - 20rem);
+        min-height: calc(100vh - 30rem);
     }
 `
 
@@ -169,14 +169,5 @@ export const Description = styled.div`
         -webkit-transform: translate3d(0, 0, 0);
         background-color: ${props => props.theme.colors.surface80};
         backdrop-filter: blur(40px);
-    }
-`
-
-export const CarouselWrapper = styled.div`
-    padding: 4rem 0;
-
-    max-width: 100%;
-    ${Title} {
-        margin: 0 2rem 2rem;
     }
 `

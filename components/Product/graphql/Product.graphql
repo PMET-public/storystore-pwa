@@ -5,13 +5,12 @@ query ProductQuery($urlKey: String!) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
-        productUrlSuffix: product_url_suffix
     }
 
     product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
-
+            urlKey: url_key
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
@@ -121,59 +120,83 @@ query ProductQuery($urlKey: String!) {
                 }
             }
 
-            # Related Products
-            related: related_products {
-                # No Fragment Support :(
-                id
-                title: name
-                urlKey: url_key
-
-                image {
-                    alt: label
-                    src: url
-                }
-
-                ...price
-
-                ... on ConfigurableProduct {
-                    options: configurable_options {
-                        id
-                        items: values {
-                            id: value_index
-                            label
-                            swatch: swatch_data {
-                                value
-                                __typename
-                            }
+            # Product Customization
+            ... on CustomizableProductInterface {
+                customizations: options {
+                    id: option_id
+                    required
+                    order: sort_order
+                    title
+                    ... on CustomizableAreaOption {
+                        textarea: value {
+                            maxCharacters: max_characters
+                            price
+                            priceType: price_type
+                            sku
                         }
                     }
-                }
-            }
-
-            upsell: upsell_products {
-                # No Fragment Support :(
-                id
-                title: name
-                urlKey: url_key
-
-                image {
-                    alt: label
-                    src: url
-                }
-
-                ...price
-
-                ... on ConfigurableProduct {
-                    options: configurable_options {
-                        id
-                        items: values {
-                            id: value_index
-                            label
-                            swatch: swatch_data {
-                                value
-                                __typename
-                            }
+                    ... on CustomizableDateOption {
+                        date: value {
+                            price
+                            priceType: price_type
+                            sku
                         }
+                    }
+                    ... on CustomizableFileOption {
+                        file: value {
+                            extension: file_extension
+                            maxWidth: image_size_x
+                            maxHeight: image_size_y
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableFieldOption {
+                        input: value {
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableRadioOption {
+                        radio: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableCheckboxOption {
+                        checkbox: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableDropDownOption {
+                        dropdown: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableMultipleOption {
+                        multiple: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableOptionInterface {
+                        option: option_id
                     }
                 }
             }

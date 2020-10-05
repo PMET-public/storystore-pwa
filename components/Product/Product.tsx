@@ -1,23 +1,6 @@
 import React, { createContext, FunctionComponent, useCallback, useContext, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import {
-    Root,
-    Wrapper,
-    Images,
-    Image,
-    Carousel,
-    CarouselItem,
-    GalleryGrid,
-    InfoWrapper,
-    InfoInnerWrapper,
-    Info,
-    Header,
-    Title,
-    Sku,
-    ShortDescription,
-    Description,
-    CarouselWrapper,
-} from './Product.styled'
+import { Root, Wrapper, Images, Image, Carousel, CarouselItem, GalleryGrid, InfoWrapper, InfoInnerWrapper, Info, Header, Title, Sku, ShortDescription, Description } from './Product.styled'
 
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { resolveImage } from '~/lib/resolveImage'
@@ -30,6 +13,7 @@ import Price, { PriceProps } from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 import useHtml from '~/hooks/useHtml'
+import { OtherProducts } from './OtherProducts'
 
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
@@ -38,44 +22,12 @@ const DownloadableProduct = dynamic(() => import('./ProductTypes/DownloadablePro
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
 const GiftCard = dynamic(() => import('./ProductTypes/GiftCard'))
 
-const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
-
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
 export type ProductGallery = Array<{
     label: string
     url: string
 }>
-
-const ProductCarouselOptions = {
-    slidesToShow: 5,
-    responsive: [
-        {
-            breakpoint: 2599,
-            settings: {
-                slidesToShow: 4,
-            },
-        },
-        {
-            breakpoint: 1599,
-            settings: {
-                slidesToShow: 3,
-            },
-        },
-        {
-            breakpoint: 991,
-            settings: {
-                slidesToShow: 2,
-            },
-        },
-        {
-            breakpoint: 599,
-            settings: {
-                slidesToShow: 1,
-            },
-        },
-    ],
-}
 
 const ProductGallery: FunctionComponent<{ items: ProductGallery }> = ({ items }) => {
     const gallery = useMemo(() => {
@@ -172,8 +124,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
     if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
     if (!loading && !product) {
@@ -254,74 +204,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                 {layout === 'FULL_WIDTH' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
-                {/* Related Products */}
-                {product?.related?.length > 0 && (
-                    <CarouselWrapper>
-                        <Title>Related Products</Title>
-                        <ProductCarousel
-                            loading={loading && !product?.related}
-                            items={product.related.map(({ id, title, urlKey, image, price, options }: any) => ({
-                                _id: id,
-                                title: {
-                                    text: title,
-                                },
-                                as: Link,
-                                href: `/${urlKey}${productUrlSuffix}`,
-                                urlResolver: {
-                                    type: 'PRODUCT',
-                                    urlKey,
-                                },
-                                image: {
-                                    alt: image.alt,
-                                    src: resolveImage(image.src, { width: 1260 }),
-                                    sources: [
-                                        <source key="webp" type="image/webp" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
-                                        <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
-                                    ],
-                                },
-                                price: priceDataToProps(price),
-                                colors: options
-                                    ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
-                                    ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
-                            }))}
-                            {...ProductCarouselOptions}
-                        />
-                    </CarouselWrapper>
-                )}
-
-                {/* Upsell Products */}
-                {product?.upsell?.length > 0 && (
-                    <CarouselWrapper>
-                        <Title>You may also like</Title>
-                        <ProductCarousel
-                            loading={loading && !product?.upsell}
-                            items={product.upsell.map(({ title, urlKey, image, price, options }: any) => ({
-                                title: {
-                                    text: title,
-                                },
-                                as: Link,
-                                href: `/${urlKey}${productUrlSuffix}`,
-                                urlResolver: {
-                                    type: 'PRODUCT',
-                                    urlKey,
-                                },
-                                image: {
-                                    alt: image.alt,
-                                    src: resolveImage(image.src, { width: 1260 }),
-                                    sources: [
-                                        <source key="webp" type="image/webp" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
-                                        <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
-                                    ],
-                                },
-                                price: priceDataToProps(price),
-                                colors: options
-                                    ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
-                                    ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
-                            }))}
-                            {...ProductCarouselOptions}
-                        />
-                    </CarouselWrapper>
-                )}
+                {product?.urlKey && <OtherProducts urlKey={product.urlKey} />}
             </Root>
         </ProductContext.Provider>
     )
