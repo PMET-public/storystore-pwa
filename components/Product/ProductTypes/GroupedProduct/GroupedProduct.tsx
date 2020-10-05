@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react'
+import React, { FunctionComponent, useCallback, useMemo } from 'react'
 import { Root, Item, Title, PriceContainer } from './GroupedProduct.styled'
 import Form, { Input, Quantity } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
@@ -6,6 +6,7 @@ import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Price from '@storystore/ui/dist/components/Price'
+import { useProductLayout } from '../../Product'
 
 export type GroupedProductProps = {
     group: Array<{
@@ -21,6 +22,13 @@ export type GroupedProductProps = {
 
 export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }) => {
     const { cartId } = useStoryStore()
+
+    const { setPrice } = useProductLayout()
+
+    /**
+     * Remove Price
+     */
+    useMemo(() => setPrice(null), [setPrice])
 
     const { addSimpleProductToCart, addingSimpleProductsToCart } = useCart({ cartId })
 
@@ -66,7 +74,7 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
                         <Quantity
                             name={`items[${key}].data.quantity`}
                             defaultValue={stock === 'IN_STOCK' ? quantity : 0}
-                            disabled={stock !== 'IN_STOCK'}
+                            disabled={stock === 'IN_STOCK'}
                             addLabel="Add"
                             removeLabel="Remove"
                             minValue={0}

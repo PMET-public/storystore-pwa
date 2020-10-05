@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useRef, useContext } from 'react'
+import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
 import { Root } from './ConfigurableProduct.styled'
 import Form, { TextSwatchesProps, TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
@@ -8,8 +8,7 @@ import Button from '@storystore/ui/dist/components/Button'
 import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/components/Form/ColorSwatches'
 import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
-import { ProductContext } from '~/components/Product'
-import { Price, ProductGallery } from '../../Product'
+import { ProductGallery, useProductLayout, priceDataToProps } from '../../Product'
 
 export type ConfigurableProductProps = {
     sku: string
@@ -30,7 +29,7 @@ export type ConfigurableProductProps = {
         product: {
             variantSku: string
             gallery: ProductGallery
-            price: Price
+            price: any
         }
     }>
     gallery: ProductGallery
@@ -51,7 +50,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const inStock = stock === 'IN_STOCK'
 
-    const { setGallery, setPrice } = useContext(ProductContext)
+    const { setGallery, setPrice } = useProductLayout()
 
     const variantsIndexes = variants.reduce((accumVariants: any[], current: any) => {
         return [
@@ -92,7 +91,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 setGallery(variantGallery)
 
                 // ...variant's price...
-                const price = _variant.price
+                const price = priceDataToProps(_variant.price)
 
                 setVariantSku(_variant.variantSku)
 

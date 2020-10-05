@@ -182,7 +182,7 @@ export const SlickGlobalStyles = createGlobalStyle`
         display: block;
         width: 100%;
         padding: 0;
-        margin: 0;
+        margin: 1rem 0 0;
         list-style: none;
         text-align: center;
     }

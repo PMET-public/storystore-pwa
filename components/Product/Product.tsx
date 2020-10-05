@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, createContext, useReducer, Reducer } from 'react'
+import React, { createContext, FunctionComponent, useCallback, useContext, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import {
     Root,
@@ -26,7 +26,7 @@ import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
 import { ProductImageSkeleton } from './ProductImage.skeleton'
-import Price from '@storystore/ui/dist/components/Price'
+import Price, { PriceProps } from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 import useHtml from '~/hooks/useHtml'
@@ -47,62 +47,34 @@ export type ProductGallery = Array<{
     url: string
 }>
 
-export type Price = {
-    minimum: {
-        discount: {
-            amountOff: number
-        }
-        regular: {
-            value: number
-            currency: string
-        }
-        final: {
-            value: number
-            currency: string
-        }
-    }
-    maximum: {
-        regular: {
-            value: number
-            currency: string
-        }
-    }
-}
-
-type State = {
-    price: Price | null
-    gallery: ProductGallery
-}
-
-type Action =
-    | {
-          type: 'setPrice'
-          payload: Price | null
-      }
-    | {
-          type: 'setGallery'
-          payload: ProductGallery
-      }
-
-export const ProductContext = createContext<{
-    setGallery: (data: ProductGallery) => any
-    setPrice: (data: Price | null) => any
-}>({
-    setGallery: _ => {},
-    setPrice: _ => {},
-})
-
-const reducer: Reducer<State, Action> = (state, action) => {
-    switch (action.type) {
-        case 'setPrice':
-            return { ...state, price: action.payload }
-
-        case 'setGallery':
-            return { ...state, gallery: action.payload }
-
-        default:
-            throw `Reducer action not valid.`
-    }
+const ProductCarouselOptions = {
+    slidesToShow: 5,
+    responsive: [
+        {
+            breakpoint: 2599,
+            settings: {
+                slidesToShow: 4,
+            },
+        },
+        {
+            breakpoint: 1599,
+            settings: {
+                slidesToShow: 3,
+            },
+        },
+        {
+            breakpoint: 991,
+            settings: {
+                slidesToShow: 2,
+            },
+        },
+        {
+            breakpoint: 599,
+            settings: {
+                slidesToShow: 1,
+            },
+        },
+    ],
 }
 
 const ProductGallery: FunctionComponent<{ items: ProductGallery }> = ({ items }) => {
@@ -159,6 +131,24 @@ const ProductGallery: FunctionComponent<{ items: ProductGallery }> = ({ items })
     )
 }
 
+export const priceDataToProps = (data: any) => {
+    if (!data) return undefined
+
+    return {
+        label: data.maximum.regular.value > data.minimum.regular.value ? 'Starting at' : undefined,
+        regular: data.minimum.regular.value,
+        special: data.minimum.discount.amountOff && data.minimum.final.value - data.minimum.discount.amountOff,
+        currency: data.minimum.regular.currency,
+    }
+}
+
+export const useProductLayout = () => useContext(ProductContext)
+
+const ProductContext = createContext({
+    setGallery: (_: ProductGallery) => {},
+    setPrice: (_: PriceProps) => {},
+})
+
 export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
@@ -168,7 +158,17 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const shortDescription = useHtml(product?.shortDescription.html)
 
-    const [{ price, gallery }, dispatch] = useReducer(reducer, { price: product?.price, gallery: product?.gallery })
+    const [gallery = product?.gallery, setGallery] = useState<ProductGallery>()
+
+    const handleUpdateGallery = useCallback((value: ProductGallery) => {
+        setGallery(value)
+    }, [])
+
+    const [price = priceDataToProps(product?.price), setPrice] = useState<PriceProps>()
+
+    const handleUpdatePrice = useCallback((value: PriceProps) => {
+        setPrice(value)
+    }, [])
 
     const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
 
@@ -186,12 +186,12 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     }
 
     return (
-        <ProductContext.Provider value={{ setGallery: payload => dispatch({ type: 'setGallery', payload }), setPrice: payload => dispatch({ type: 'setPrice', payload }) }}>
+        <ProductContext.Provider value={{ setPrice: handleUpdatePrice, setGallery: handleUpdateGallery }}>
             {product && <Head title={product.metaTitle || product.title} description={product.metaDescription} keywords={product.metaKeywords} />}
 
             <Root>
                 <Wrapper>
-                    <ProductGallery items={gallery ?? product?.gallery} />
+                    <ProductGallery items={gallery} />
 
                     <InfoWrapper>
                         <InfoInnerWrapper>
@@ -223,30 +223,25 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                             <Title>{product.title}</Title>
 
-                                            {price && (
-                                                <Price
-                                                    label={product.price.maximum.regular.value > product.price.minimum.regular.value ? 'Starting at' : undefined}
-                                                    regular={product.price.minimum.regular.value}
-                                                    special={product.price.minimum.discount.amountOff && product.price.minimum.final.value - product.price.minimum.discount.amountOff}
-                                                    currency={product.price.minimum.regular.currency}
-                                                />
-                                            )}
+                                            {price && <Price {...price} />}
 
                                             {product.sku && <Sku>SKU. {product.sku}</Sku>}
                                         </Header>
+
                                         {shortDescription && <ShortDescription>{shortDescription}</ShortDescription>}
 
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct {...product} />}
 
-                                        {product.type === 'GroupedProduct' && <GroupedProduct {...product} />}
-
-                                        {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
-
                                         {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
+
+                                        {product.type === 'GroupedProduct' && <GroupedProduct {...product} />}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct {...product} />}
 
+                                        {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
+
+                                        {/* TODO: ... */}
                                         {product.type === 'GiftCard' && <GiftCard {...product} />}
 
                                         {/* {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />} */}
@@ -284,16 +279,12 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
                                     ],
                                 },
-                                price: {
-                                    label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                    regular: price.minimum.regular.value,
-                                    special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
-                                    currency: price.minimum.regular.currency,
-                                },
+                                price: priceDataToProps(price),
                                 colors: options
                                     ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
                                     ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                             }))}
+                            {...ProductCarouselOptions}
                         />
                     </CarouselWrapper>
                 )}
@@ -322,16 +313,12 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         <source key="original" srcSet={resolveImage(image.src, { width: 1260 })} />,
                                     ],
                                 },
-                                price: {
-                                    label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
-                                    regular: price.minimum.regular.value,
-                                    special: price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff,
-                                    currency: price.minimum.regular.currency,
-                                },
+                                price: priceDataToProps(price),
                                 colors: options
                                     ?.find(({ items }: any) => !!items.find(({ swatch }: any) => swatch.__typename === 'ColorSwatchData'))
                                     ?.items.map(({ label, swatch }: any) => ({ label, value: swatch.value })),
                             }))}
+                            {...ProductCarouselOptions}
                         />
                     </CarouselWrapper>
                 )}

@@ -18,7 +18,7 @@ export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, st
 
     const history = useRouter()
 
-    const inStock = stock !== 'IN_STOCK'
+    const inStock = stock === 'IN_STOCK'
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {

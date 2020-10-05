@@ -5,6 +5,7 @@ query ProductQuery($urlKey: String!) {
     store: storeConfig {
         id
         categoryUrlSuffix: category_url_suffix
+        productUrlSuffix: product_url_suffix
     }
 
     product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
@@ -54,11 +55,14 @@ query ProductQuery($urlKey: String!) {
             }
 
             ... on DownloadableProduct {
+                linksTitle: links_title
+
                 downloads: downloadable_product_links {
                     id
                     order: sort_order
                     title
                     price
+                    sampleUrl: sample_url
                 }
 
                 samples: downloadable_product_samples {

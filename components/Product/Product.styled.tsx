@@ -2,7 +2,6 @@ import styled from 'styled-components'
 
 import CarouselComponent from '@storystore/ui/dist/components/Carousel'
 import ImageComponent from '@storystore/ui/dist/components/Image'
-
 import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcrumbs/Breadcrumbs.styled'
 
 export const Root = styled.div`
@@ -174,8 +173,9 @@ export const Description = styled.div`
 `
 
 export const CarouselWrapper = styled.div`
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding: 4rem 0;
+
+    max-width: 100%;
     ${Title} {
         margin: 0 2rem 2rem;
     }

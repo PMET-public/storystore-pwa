@@ -18,7 +18,7 @@ export const SimpleProduct: FunctionComponent<SimpleProductProps> = ({ sku, stoc
 
     const history = useRouter()
 
-    const inStock = stock !== 'IN_STOCK'
+    const inStock = stock === 'IN_STOCK'
 
     const handleAddToCart = useCallback(
         async ({ items }) => {

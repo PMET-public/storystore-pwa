@@ -1,8 +1,4 @@
-import React, {
-    FunctionComponent,
-    useCallback,
-    // useContext
-} from 'react'
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import { Root, Downloads, DownloadIcon, DownloadLabel } from './DownloadableProduct.styled'
 import Form, { Input, Checkbox } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
@@ -11,44 +7,45 @@ import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Price from '@storystore/ui/dist/components/Price'
-// import { ProductContext } from '../../Product'
+import { useProductLayout } from '../../Product'
 
 export type DownloadableProductProps = {
     sku: string
-    downloads?: Array<{ id: number; order: number; title: string; price: number }>
+    downloads?: Array<{ id: number; order: number; title: string; price: number; sampleUrl?: string }>
     samples?: Array<{ order: number; title: string; url: string }>
     stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
+    price: any
+    linksTitle?: string
 }
 
-export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = ({ sku, downloads = [], samples, stock = 'IN_STOCK' }) => {
+export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = ({ linksTitle = 'Downloads', price, sku, downloads = [], samples = [], stock = 'IN_STOCK' }) => {
     const { cartId } = useStoryStore()
 
     const { addDownloadableProductToCart, addingDownloadableProductToCart } = useCart({ cartId })
 
-    // const { setPrice } = useContext(ProductContext)
+    const { setPrice } = useProductLayout()
 
-    // const handleValues = useCallback(
-    //     (values: any) => {
-    //         if (downloads) {
-    //             if (values?.downloads?.length > 0) {
-    //                 setPrice({
-    //                     regular: values.downloads.reduce((total: number, _downloadId: string) => {
-    //                         const downloadId = Number(_downloadId)
-    //                         const price = downloads.find(x => x.id === downloadId)?.price || 0
-    //                         return total + price
-    //                     }, 0),
-    //                 })
-    //             } else {
-    //                 setPrice({
-    //                     label: 'Starting at',
-    //                     regular: Math.min(...[...downloads.map(d => d.price)]),
-    //                 })
-    //             }
-    //         }
-    //     },
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    //     [downloads]
-    // )
+    const [selectedDownloads, setSelectedDownloads] = useState([...downloads])
+
+    // Set Prices –
+    useEffect(() => {
+        if (downloads.length > 1) {
+            const currency = price?.minimum.regular.currency
+
+            if (selectedDownloads?.length > 0) {
+                setPrice({
+                    regular: selectedDownloads.reduce((total, { price }) => total + price, 0),
+                    currency,
+                })
+            } else {
+                setPrice({
+                    label: 'Starting at',
+                    regular: Math.min(...[...downloads.map(d => d.price)]),
+                    currency,
+                })
+            }
+        }
+    }, [selectedDownloads, downloads, price?.minimum.regular.currency, setPrice])
 
     const history = useRouter()
 
@@ -77,19 +74,24 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
         [addDownloadableProductToCart, inStock, addingDownloadableProductToCart, history, cartId]
     )
 
+    const handleOnValues = useCallback(
+        (values: any) => {
+            const _selectedDownloads = values.downloads.map((id: string) => downloads.find((download: any) => download.id === Number(id)))
+            setSelectedDownloads(_selectedDownloads)
+        },
+        [downloads]
+    )
+
     return (
-        <Root
-            as={Form}
-            //  onValues={handleValues}
-            onSubmit={handleAddToCart}
-        >
+        <Root as={Form} onValues={handleOnValues} onSubmit={handleAddToCart}>
             <Input name="sku" type="hidden" value={sku} rules={{ required: true }} />
 
             <Input name="quantity" type="hidden" value={1} rules={{ required: true }} />
 
-            {samples && (
+            {samples.length > 1 && (
                 <Downloads as="ul">
                     <h3>Samples</h3>
+
                     {samples.map((sample, key) => (
                         <li key={key}>
                             <DownloadIcon />
@@ -105,7 +107,7 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
             {downloads.length > 1 ? (
                 <Downloads>
                     <Checkbox
-                        label="Downloads"
+                        label={linksTitle}
                         name="downloads"
                         items={downloads.map(download => ({
                             label: (
@@ -113,6 +115,12 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
                                     {download.title}
                                     <span>+</span>
                                     <Price regular={download.price} />
+
+                                    {download.sampleUrl && (
+                                        <Link href={download.sampleUrl} target="_blank">
+                                            (Preview)
+                                        </Link>
+                                    )}
                                 </DownloadLabel>
                             ),
                             value: download.id.toString(),
@@ -122,7 +130,14 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
                     />
                 </Downloads>
             ) : (
-                <Input name="downloads[0]" type="hidden" value={downloads[0].id} rules={{ required: true }} />
+                <React.Fragment>
+                    {samples.length === 0 && downloads[0].sampleUrl && (
+                        <Link href={downloads[0].sampleUrl} target="_blank">
+                            <DownloadIcon /> Sample
+                        </Link>
+                    )}
+                    <Input name="downloads[0]" type="hidden" value={downloads[0].id} rules={{ required: true }} />
+                </React.Fragment>
             )}
 
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingDownloadableProductToCart.loading} />
