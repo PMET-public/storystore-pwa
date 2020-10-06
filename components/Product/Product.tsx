@@ -106,7 +106,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const product = data?.product?.items[0]
 
-    const layout: 'FULL_WIDTH' | 'COLUMN' = 'FULL_WIDTH'
 
     const shortDescription = useHtml(product?.shortDescription.html)
 
