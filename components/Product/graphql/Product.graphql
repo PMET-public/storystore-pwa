@@ -7,11 +7,10 @@ query ProductQuery($urlKey: String!) {
         categoryUrlSuffix: category_url_suffix
     }
 
-    products: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
+    products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
             urlKey: url_key
-            # layout: page_layout
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
@@ -36,6 +35,8 @@ query ProductQuery($urlKey: String!) {
             shortDescription: short_description {
                 html
             }
+
+            descriptionContainer: options_container
 
             description: description {
                 html

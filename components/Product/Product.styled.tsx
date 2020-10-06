@@ -46,12 +46,15 @@ export const Images = styled.div`
 export const Image = styled(ImageComponent)`
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
+    max-height: 70vh;
+
     filter: unset;
 
     @media ${props => props.theme.breakpoints.smallOnly} {
         max-height: 70vh;
+        object-fit: cover;
     }
 `
 
@@ -158,10 +161,4 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
-
-    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(40px)) {
-        -webkit-transform: translate3d(0, 0, 0);
-        background-color: ${props => props.theme.colors.surface80};
-        backdrop-filter: blur(40px);
-    }
 `

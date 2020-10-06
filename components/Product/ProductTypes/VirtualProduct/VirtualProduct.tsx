@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useCallback } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import { Root } from './VirtualProduct.styled'
-import Form, { Quantity } from '@storystore/ui/dist/components/Form'
+import Form, { Quantity, Error } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
@@ -18,17 +18,23 @@ export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, st
 
     const history = useRouter()
 
+    const [error, setError] = useState<string | null>(null)
+
     const inStock = stock === 'IN_STOCK'
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
             if (!cartId || !inStock || addingVirtualProductsToCart.loading) return
 
-            await addVirtualProductToCart({ sku, quantity })
+            try {
+                await addVirtualProductToCart({ sku, quantity })
 
-            await history.push('/cart')
+                await history.push('/cart')
 
-            window.scrollTo(0, 0)
+                window.scrollTo(0, 0)
+            } catch (e) {
+                setError(e.message)
+            }
         },
         [sku, addVirtualProductToCart, inStock, addingVirtualProductsToCart, history, cartId]
     )
@@ -38,6 +44,8 @@ export const VirtualProduct: FunctionComponent<VirtualProductProps> = ({ sku, st
             <Quantity name="quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
 
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingVirtualProductsToCart.loading} />
+
+            {error && <Error>{error}</Error>}
         </Root>
     )
 }
