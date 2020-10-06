@@ -46,7 +46,11 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
         async ({ items }) => {
             if (!cartId || addingSimpleProductsToCart.loading) return
 
-            await addSimpleProductToCart(items.filter((item: any) => item.data.quantity > 0))
+            const values = items.filter((item: any) => item.data.quantity > 0)
+
+            if (values.length === 0) return
+
+            await addSimpleProductToCart(values)
 
             await history.push('/cart')
 
@@ -57,34 +61,38 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
 
     return (
         <Root as={Form} onSubmit={handleAddToCart}>
-            {items?.map(({ sku, name, price, stock, quantity }, key) => (
-                <Item key={key}>
-                    <Title>{name}</Title>
+            {items?.map(({ sku, name, price, stock, quantity }, key) => {
+                const inStock = stock === 'IN_STOCK'
 
-                    <Input type="hidden" name={`items[${key}].data.sku`} value={sku} rules={{ required: true }} />
+                return (
+                    <Item key={key}>
+                        <Title>{name}</Title>
 
-                    <PriceContainer>
-                        <Price
-                            label={price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined}
-                            regular={price.minimum.regular.value}
-                            special={price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff}
-                            currency={price.minimum.regular.currency}
-                        />
+                        <Input type="hidden" name={`items[${key}].data.sku`} value={sku} rules={{ required: true }} />
 
-                        <Quantity
-                            name={`items[${key}].data.quantity`}
-                            defaultValue={stock === 'IN_STOCK' ? quantity : 0}
-                            disabled={stock === 'IN_STOCK'}
-                            addLabel="Add"
-                            removeLabel="Remove"
-                            minValue={0}
-                            min={0}
-                            rules={{ required: true }}
-                            hideError
-                        />
-                    </PriceContainer>
-                </Item>
-            ))}
+                        <PriceContainer>
+                            <Price
+                                label={price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined}
+                                regular={price.minimum.regular.value}
+                                special={price.minimum.discount.amountOff && price.minimum.final.value - price.minimum.discount.amountOff}
+                                currency={price.minimum.regular.currency}
+                            />
+
+                            <Quantity
+                                name={`items[${key}].data.quantity`}
+                                defaultValue={inStock ? quantity : 0}
+                                disabled={!inStock}
+                                addLabel="Add"
+                                removeLabel="Remove"
+                                minValue={0}
+                                min={0}
+                                rules={{ required: true }}
+                                hideError
+                            />
+                        </PriceContainer>
+                    </Item>
+                )
+            })}
             <Button type="submit" as="button" text="Add to Cart" loading={addingSimpleProductsToCart.loading} />
         </Root>
     )
