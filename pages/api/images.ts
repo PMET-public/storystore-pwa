@@ -3,8 +3,15 @@ import { URL } from 'url'
 import { NextApiRequest, NextApiResponse } from 'next'
 import https, { RequestOptions } from 'https'
 import http from 'http'
+import sharp from 'sharp'
 
-const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =>
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+}
+
+const images = async (request: NextApiRequest, response: NextApiResponse) =>
     new Promise(resolve => {
         const imageURL = request.query.url.toString()
 
@@ -32,38 +39,41 @@ const proxyImages = async (request: NextApiRequest, response: NextApiResponse) =
 
         const httpx = magentoUrl.protocol === 'https:' ? https : http
 
-        const proxy = httpx
-            .request(magentoUrl, options, res => {
-                // Set Cache Headers – for Now.sh Edge
-                if (Boolean(!process.env.CLOUD_MODE)) {
-                    res.headers['Cache-Control'] = 's-maxage=1, stale-while-revalidate'
+        const proxy = httpx.request(magentoUrl, options, async res => {
+            if ((res.statusCode || 0) >= 400 || !res.headers['content-type']) {
+                return res.pipe(response)
+            }
+
+            /** Vercel Edge Cache */
+            response.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
+
+            if (process.env.PROCESS_IMAGES === 'true') {
+                const _width = Number(magentoUrl.searchParams.get('w')) || undefined
+                const width = _width && (_width > 3000 ? 3000 : _width)
+
+                const _height = Number(magentoUrl.searchParams.get('h')) || undefined
+                const height = _height && (_height > 3000 ? 3000 : _height)
+
+                const transform = sharp().withMetadata()
+
+                /** Resize */
+                if (width) transform.resize({ width, height, withoutEnlargement: true })
+
+                /** WebP */
+                if (magentoUrl.searchParams.get('type') === 'webp') {
+                    transform.webp()
+                    response.setHeader('content-type', 'image/webp')
                 }
 
-                response.writeHead(res.statusCode as number, res.headers)
+                return res.pipe(transform).pipe(response)
+            }
 
-                res.pipe(response, {
-                    end: true,
-                })
-            })
-            .on('error', error => {
-                if (error) {
-                    // @ts-ignore
-                    if (error.code === 'ENOTFOUND') {
-                        response.status(404)
-                    } else {
-                        response.status(500)
-                        console.error(error.message)
-                    }
+            return res.pipe(response)
+        })
 
-                    response.end()
-                }
-            })
+        request.on('end', resolve)
 
-        request
-            .pipe(proxy, {
-                end: true,
-            })
-            .on('response', resolve)
+        proxy.end()
     })
 
-export default proxyImages
+export default images

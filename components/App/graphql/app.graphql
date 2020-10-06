@@ -1,7 +1,0 @@
-#import "~/graphql/_store.graphql"
-#import "~/graphql/_categoryList.graphql"
-
-query AppShellQuery {
-    ...store
-    ...categoryList
-}

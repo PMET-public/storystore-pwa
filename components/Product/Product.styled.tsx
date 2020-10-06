@@ -2,12 +2,11 @@ import styled from 'styled-components'
 
 import CarouselComponent from '@storystore/ui/dist/components/Carousel'
 import ImageComponent from '@storystore/ui/dist/components/Image'
-
 import { Root as BreadcrumbsRoot } from '@storystore/ui/dist/components/Breadcrumbs/Breadcrumbs.styled'
 
 export const Root = styled.div`
     display: grid;
-    grid-gap: 4rem;
+    /* grid-gap: 4rem; */
     grid-auto-rows: max-content;
 `
 
@@ -27,7 +26,8 @@ export const Wrapper = styled.div`
         display: grid;
         grid-auto-rows: max-content;
         grid-gap: 2rem;
-        grid-template-columns: 1.25fr 1fr;
+        grid-template-columns: 1.5fr 1fr;
+        max-width: 260rem;
     }
 `
 
@@ -44,8 +44,15 @@ export const Images = styled.div`
 `
 
 export const Image = styled(ImageComponent)`
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: unset;
+
+    @media ${props => props.theme.breakpoints.smallOnly} {
+        max-height: 70vh;
+    }
 `
 
 export const Carousel = styled(CarouselComponent)`
@@ -69,7 +76,7 @@ export const GalleryGrid = styled.div`
     grid-auto-flow: row;
     grid-gap: 0.5rem;
     grid-template-columns: 1fr 1fr;
-    max-width: 120rem;
+    /* max-width: 120rem; */
     overflow: unset;
 
     & ${CarouselItem} {
@@ -93,16 +100,10 @@ export const InfoWrapper = styled.div`
         color: ${props => props.theme.colors.onSurface};
         left: 50%;
         margin-left: -50vw;
-        margin-top: -2rem;
+        margin-top: -3rem;
         position: relative;
         width: 100vw;
         z-index: 1;
-
-        /**
-        Needed to fix this Safari bug
-        https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
-    */
-        -webkit-transform: translate3d(0, 0, 0);
     }
 `
 
@@ -115,20 +116,15 @@ export const InfoInnerWrapper = styled.div`
         padding: 4rem 2rem 4rem;
         position: sticky;
         top: 8rem;
-        min-height: calc(100vh - 8rem);
+        min-height: calc(100vh - 30rem);
     }
-`
-
-export const InfoOptions = styled.div`
-    display: grid;
-    grid-gap: 3rem;
 `
 
 export const Info = styled.div`
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 3rem;
-    padding: 2rem ${props => props.theme.layout.margin};
+    padding: 2rem ${props => props.theme.layout.margin} 4rem;
     width: 100%;
 `
 
@@ -142,11 +138,6 @@ export const Header = styled.header`
     }
 `
 
-export const Field = styled.div`
-    display: grid;
-    grid-gap: 1.4rem;
-`
-
 export const Title = styled.h2`
     font-family: ${props => props.theme.typography.heading.family};
     font-weight: ${props => props.theme.typography.heading.weight.semi};
@@ -158,11 +149,6 @@ export const Sku = styled.span`
     color: ${props => props.theme.colors.onSurface75};
 `
 
-export const Buttons = styled.div`
-    display: grid;
-    grid-gap: 1rem;
-`
-
 export const ShortDescription = styled.div`
     font-size: 1.4rem;
     line-height: 1.3;
@@ -172,11 +158,4 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
-`
-
-export const CarouselWrapper = styled.div`
-    padding-bottom: 2rem;
-    ${Title} {
-        margin: 0 2rem 2rem;
-    }
 `

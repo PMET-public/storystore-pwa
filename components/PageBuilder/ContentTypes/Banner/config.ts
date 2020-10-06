@@ -17,6 +17,8 @@ const props = (elem: HTMLElement) => {
     const linkHref = linkElem?.getAttribute('href')
     const linkTarget = linkElem?.getAttribute('target')
 
+    const loadEagerly = elem.classList.contains('loading-eager')
+
     /** Get Button */
     const link: LinkProps | undefined =
         linkElem?.nodeName === 'A' && linkHref
@@ -33,6 +35,7 @@ const props = (elem: HTMLElement) => {
 
     const background: ContentWithBackgroundProps = {
         ...wrapperElem.dataset,
+        loadEagerly,
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
         video:
             wrapperElem.dataset.backgroundType === 'video'

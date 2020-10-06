@@ -6,7 +6,6 @@ export const Root = styled.div<ContentWithBackgroundProps & { $selfAlignment: st
     background-attachment: scroll !important;
     height: unset;
 
-
     @media ${props => props.theme.breakpoints.untilMedium} {
         ${props => props.$hero && `order: -1;`} /* Show as first */
         background-attachment: scroll !important;
@@ -16,7 +15,7 @@ export const Root = styled.div<ContentWithBackgroundProps & { $selfAlignment: st
         &[style] {
             margin-left: 0 !important;
             margin-right: 0 !important;
-            margin-bottom: 0 !important;
+            /* margin-bottom: 0 !important; */
         }
 
         /* &[style]:not(:first-child) {

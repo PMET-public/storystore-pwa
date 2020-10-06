@@ -4,6 +4,7 @@ import { DetailsWrapper as CartListDetailsWrapper } from '@storystore/ui/dist/co
 import { Root as ButtonRoot } from '@storystore/ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div`
+    background-color: ${props => props.theme.colors.graySurface};
     display: grid;
     grid-template-rows: 1fr auto auto;
     grid-row-gap: 2rem;
@@ -17,14 +18,17 @@ export const Root = styled.div`
 `
 
 export const ProductList = styled.div`
-    background-color: ${props => props.theme.colors.onSurface5};
+    background-color: ${props => props.theme.colors.surface};
     padding: 0 ${props => props.theme.layout.margin};
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 4rem;
     padding-top: 2rem;
+    padding-bottom: 4rem;
 
     @media ${props => props.theme.breakpoints.medium} {
+        padding-bottom: 0;
+
         ${CartListDetailsWrapper} {
             grid-template:
                 'title price quantity'
@@ -32,6 +36,7 @@ export const ProductList = styled.div`
                 'options options options';
             grid-template-rows: repeat(3, max-content);
             grid-template-columns: 1fr auto auto;
+            align-items: center;
         }
     }
 
@@ -44,10 +49,9 @@ export const SummaryWrapper = styled.div`
     display: grid;
     grid-gap: 2rem;
     grid-auto-rows: max-content;
-    background-color: ${props => props.theme.colors.surface};
 
     @media ${props => props.theme.breakpoints.untilMedium} {
-        padding: 0 ${props => props.theme.layout.margin};
+        padding: 2rem ${props => props.theme.layout.margin};
     }
 
     @media ${props => props.theme.breakpoints.large} {
@@ -67,6 +71,7 @@ export const CartSummaryWrapper = styled.div`
         position: sticky;
         bottom: 0;
         padding: 4rem 0;
+        z-index: 1;
     }
 
     ${ButtonRoot} {
@@ -77,12 +82,21 @@ export const CartSummaryWrapper = styled.div`
 `
 
 export const StickyButtonWrapper = styled.div`
-    background-color: ${props => props.theme.colors.surface};
+    background-color: ${props => props.theme.colors.graySurface};
     border-top: 0.1rem solid ${props => props.theme.colors.onSurface10};
     bottom: 5.2rem; /* Include Tab  */
     display: grid;
     padding: 1.6rem ${props => props.theme.layout.margin};
     position: sticky;
+    z-index: 1;
+
+    @media ${props => props.theme.breakpoints.untilLarge} {
+        @supports (backdrop-filter: blur(20px)) or (--webkit-backdrop-filter: blur(20px)) {
+            background-color: ${props => props.theme.colors.surface50};
+            backdrop-filter: blur(20px);
+            transform: translateZ(0);
+        }
+    }
 
     @media ${props => props.theme.breakpoints.medium} {
         bottom: 0;

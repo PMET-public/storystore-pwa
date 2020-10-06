@@ -1,7 +1,7 @@
 #import "~/graphql/_CartContent.graphql"
 
 fragment cart on Query {
-    cart(cart_id: $cartId) @connection(key: "appCart") {
+    cart(cart_id: $cartId) {
         ...CartContent
     }
 }

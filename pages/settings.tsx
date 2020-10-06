@@ -1,28 +1,29 @@
-import React from 'react'
-import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
-import { withStoryStore } from '~/lib/storystore'
-
-import App from '~/components/App'
-import SettingsTemplate from '~/components/Settings'
+import React, { FunctionComponent } from 'react'
+import { NextPage, GetStaticProps } from 'next'
+import SettingsTemplate, { SETTINGS_QUERY } from '~/components/Settings'
 import Error from '@storystore/ui/dist/components/Error'
+import { useQuery } from '@apollo/client'
 
-type SettingsProps = {
-    defaultMagentoUrl: string
+const Form: FunctionComponent = () => {
+    const settings = useQuery(SETTINGS_QUERY)
+
+    return <SettingsTemplate {...settings} />
 }
 
-const Settings: NextPage<SettingsProps> = () => {
+const Settings: NextPage<{ enabled?: boolean }> = ({ enabled }) => {
+    if (enabled) return <Form />
+
     return (
-        <App>
-            {Boolean(process.env.CLOUD_MODE) ? (
-                <SettingsTemplate />
-            ) : (
-                <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
-                    Disabled
-                </Error>
-            )}
-        </App>
+        <Error type="401" button={{ text: 'Go home', onClick: () => (window.location.href = '/') }} fullScreen>
+            Disabled
+        </Error>
     )
 }
 
-export default withApollo(withStoryStore(Settings))
+export const getStaticProps: GetStaticProps = async () => {
+    return {
+        props: { enabled: !!process.env.CLOUD_MODE },
+    }
+}
+
+export default Settings

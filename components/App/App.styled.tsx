@@ -8,6 +8,8 @@ export const Root = styled.div`
     background-color: ${props => props.theme.colors.surface};
     color: ${props => props.theme.colors.onSurface};
     width: 100%;
+    max-width: 3000px;
+    margin: 0 auto;
     /* overflow-x: hidden; */
 
     grid-auto-columns: minmax(0, 1fr);
@@ -28,14 +30,16 @@ export const Root = styled.div`
 `
 
 export const HeaderContainer = styled(ContainerWrapper)`
-    height: 6rem;
+    /* height: 6rem; */
     grid-area: header;
-    background-color: ${props => props.theme.colors.surface};
     box-shadow: inset 0 -0.1rem 0 rgba(0, 0, 0, 0.09), inset 0 -0.2rem 0 rgba(255, 255, 255, 0.09);
-    color: ${props => props.theme.colors.onSurface};
     position: sticky;
     top: 0;
     z-index: 2;
+
+    /** Translucent Bar */
+    color: ${props => props.theme.colors.onSurface};
+    background-color: ${props => props.theme.colors.surface};
 
     ${HeaderUtilities} {
         /* Hide Search and Cart on Mobile */
@@ -55,8 +59,10 @@ export const Main = styled.main`
 `
 
 export const FooterContainer = styled(ContainerWrapper)`
+    background-color: ${props => props.theme.colors.surface};
     grid-area: footer;
     box-shadow: inset 0 0.1rem 0 rgba(0, 0, 0, 0.09), inset 0 0.2rem 0 rgba(255, 255, 255, 0.09);
+    z-index: 1;
 `
 
 export const Copyright = styled.div`
@@ -67,12 +73,21 @@ export const Copyright = styled.div`
 `
 
 export const TabBarContainer = styled(ContainerWrapper)`
+    display: flex;
+    align-items: center;
     grid-area: tabBar;
-    background-color: ${props => props.theme.colors.surface};
     position: sticky;
     bottom: 0;
     z-index: 2;
     height: 6rem;
+    color: ${props => props.theme.colors.onSurface};
+    background-color: ${props => props.theme.colors.surface95};
+
+    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(10px)) {
+        background-color: ${props => props.theme.colors.surface80};
+        backdrop-filter: blur(10px);
+        transform: translateZ(0);
+    }
 
     @media ${props => props.theme.breakpoints.medium} {
         display: none;
@@ -87,5 +102,25 @@ export const OfflineToast = styled.div`
     & svg {
         fill: currentColor;
         width: 2rem;
+    }
+`
+
+export const HamburgerButton = styled.button`
+    position: relative;
+    color: ${props => props.theme.colors.accent};
+    line-height: 0;
+    padding: 0.6rem;
+    transition: background-color 250ms ease-in;
+    background-color: ${props => props.theme.colors.accent10};
+    border-radius: 0.7rem;
+    z-index: 5;
+
+    & > svg {
+        fill: currentColor;
+        width: 2rem;
+    }
+
+    &:hover {
+        background-color: ${props => props.theme.colors.accent15};
     }
 `

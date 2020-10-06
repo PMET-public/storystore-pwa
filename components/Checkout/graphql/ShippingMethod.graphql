@@ -1,0 +1,13 @@
+#import "~/graphql/_CartContent.graphql"
+#import "~/graphql/_ShippingMethods.graphql"
+#import "~/graphql/_SelectedPaymentMethod.graphql"
+
+query CheckoutShippingMethodQuery($cartId: String!) {
+    cart(cart_id: $cartId) {
+        ...CartContent
+
+        ...SelectedPaymentMethod
+
+        ...ShippingMethods
+    }
+}

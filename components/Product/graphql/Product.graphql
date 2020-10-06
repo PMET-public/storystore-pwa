@@ -1,0 +1,207 @@
+#import "~/graphql/_price.graphql"
+#import "~/graphql/_Gallery.graphql"
+
+query ProductQuery($urlKey: String!) {
+    store: storeConfig {
+        id
+        categoryUrlSuffix: category_url_suffix
+    }
+
+    products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
+        items {
+            id
+            urlKey: url_key
+            metaDescription: meta_description
+            metaKeywords: meta_keyword
+            metaTitle: meta_title
+            sku
+            stock: stock_status
+            type: __typename
+            title: name
+
+            categories {
+                id
+                text: name
+                href: url_path
+                mode: display_mode
+            }
+
+            ...price
+
+            gallery: media_gallery {
+                ...Gallery
+            }
+
+            shortDescription: short_description {
+                html
+            }
+
+            descriptionContainer: options_container
+
+            description: description {
+                html
+            }
+
+            ... on GroupedProduct {
+                group: items {
+                    quantity: qty
+                    product {
+                        id
+                        name
+                        sku
+                        stock: stock_status
+                        ...price
+                    }
+                }
+            }
+
+            ... on DownloadableProduct {
+                linksTitle: links_title
+
+                downloads: downloadable_product_links {
+                    id
+                    order: sort_order
+                    title
+                    price
+                    sampleUrl: sample_url
+                }
+
+                samples: downloadable_product_samples {
+                    order: sort_order
+                    url: sample_url
+                    title
+                }
+            }
+
+            ... on ConfigurableProduct {
+                options: configurable_options {
+                    id
+                    label
+                    position
+                    # required
+                    code: attribute_code
+                    items: values {
+                        id: value_index
+                        label
+                        value: value_index
+                        swatch: swatch_data {
+                            __typename
+                            value
+
+                            ... on TextSwatchData {
+                                text: value
+                            }
+
+                            ... on ColorSwatchData {
+                                color: value
+                            }
+
+                            ... on ImageSwatchData {
+                                image: thumbnail
+                            }
+                        }
+                    }
+                }
+                variants {
+                    attributes {
+                        id: value_index
+                        code
+                        value: value_index
+                    }
+                    product {
+                        id
+                        variantSku: sku
+                        stock: stock_status
+
+                        ...price
+
+                        gallery: media_gallery {
+                            ...Gallery
+                        }
+                    }
+                }
+            }
+
+            # Product Customization
+            ... on CustomizableProductInterface {
+                customizations: options {
+                    id: option_id
+                    required
+                    order: sort_order
+                    title
+                    ... on CustomizableAreaOption {
+                        textarea: value {
+                            maxCharacters: max_characters
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableDateOption {
+                        date: value {
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableFileOption {
+                        file: value {
+                            extension: file_extension
+                            maxWidth: image_size_x
+                            maxHeight: image_size_y
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableFieldOption {
+                        input: value {
+                            price
+                            priceType: price_type
+                            sku
+                        }
+                    }
+                    ... on CustomizableRadioOption {
+                        radio: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableCheckboxOption {
+                        checkbox: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableDropDownOption {
+                        dropdown: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableMultipleOption {
+                        multiple: value {
+                            id: option_type_id
+                            title
+                            order: sort_order
+                            price
+                            priceType: price_type
+                        }
+                    }
+                    ... on CustomizableOptionInterface {
+                        option: option_id
+                    }
+                }
+            }
+        }
+    }
+}

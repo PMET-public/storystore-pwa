@@ -1,4 +1,4 @@
-name: build and publish to Docker Hub
+name: test if buildable, run lighthouse CI tests, and publish to Docker Hub
 
 on:
   push:
@@ -18,22 +18,51 @@ on:
 
 env:
   IMAGE_NAME: image
+  TMATE_AUTHORIZED_KEYS_URL: ${{ secrets.TMATE_AUTHORIZED_KEYS_URL }}
+  SLACK_WEBHOOK_URL_FOR_TMATE_FROM_GITHUB_WORKFLOW: ${{ secrets.SLACK_WEBHOOK_URL_FOR_TMATE_FROM_GITHUB_WORKFLOW }}
 
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
+    name: buildable and responds to web requests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
         run: |
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
+          docker-compose --file docker-compose.test.yml run sut
+      - name: keep alive to debug
+        if: ${{ failure() }}
+        uses: PMET-public/action-tmate@master
+
+  lhci:
+    name: lighthouse ci tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: npm install, build
+        run: |
+          npm install
+          npm run build
+        env:
+          MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
+          CLOUD_MODE: true
+      - name: run Lighthouse CI
+        run: |
+          docker run -d -e PROXY_PASS -p 80:80 -p 443:443 pmetpublic/nginx-with-pagespeed:develop
+          npm install -g @lhci/cli@0.4.x
+          lhci autorun
+        env:
+          MAGENTO_URL: ${{ secrets.MAGENTO_BACKEND }}
+          CLOUD_MODE: true
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          # use typical linux docker ip (until host.docker.internal is supported)
+          PROXY_PASS: http://172.17.0.1:3000
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -61,18 +90,13 @@ jobs:
           IMAGE_REPO=$(echo $IMAGE_REPO | sed 's/^docker-//')
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ORG/$IMAGE_REPO | tr '[A-Z]' '[a-z]')
-
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
-
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION

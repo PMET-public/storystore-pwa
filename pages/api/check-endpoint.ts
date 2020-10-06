@@ -1,9 +1,9 @@
 import { magentoDependency } from '~/package.json'
 import { NextApiRequest, NextApiResponse } from 'next'
-import createApolloClient from '~/lib/apollo/client'
-import gql from 'graphql-tag'
+import { initializeApollo } from '~/lib/apollo/client'
 import semver from 'semver'
 import { URL } from 'url'
+import { gql } from '@apollo/client'
 
 export const config = {
     api: {
@@ -66,18 +66,19 @@ export const CheckEndpointApi = async (req: NextApiRequest, res: NextApiResponse
     }
 
     try {
-        const apolloClient = createApolloClient(url)
+        const apolloClient = initializeApollo(null, req.headers.cookie, url)
 
         const { data } = await apolloClient.query({
             query: gql`
                 query GetMagentoVersion {
                     storeConfig {
-                        id
+                        id: base_url
                         version: storystore_pwa_magento_version
                     }
                 }
             `,
             errorPolicy: 'ignore',
+            fetchPolicy: 'network-only',
         })
 
         // Get version of Magento Instance
