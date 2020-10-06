@@ -194,7 +194,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {/* TODO: ... */}
                                         {product.type === 'GiftCard' && <GiftCard {...product} />}
 
-                                        {/* {layout === 'COLUMN' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />} */}
+                                        {product.layout !== 'product-full-width' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
                                     </React.Fragment>
                                 )}
                             </Info>
@@ -202,7 +202,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                     </InfoWrapper>
                 </Wrapper>
 
-                {layout === 'FULL_WIDTH' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                {product?.layout === 'product-full-width' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
                 {product?.urlKey && <OtherProducts urlKey={product.urlKey} />}
             </Root>

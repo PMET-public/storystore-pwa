@@ -11,6 +11,7 @@ query ProductQuery($urlKey: String!) {
         items {
             id
             urlKey: url_key
+            layout: page_layout
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
