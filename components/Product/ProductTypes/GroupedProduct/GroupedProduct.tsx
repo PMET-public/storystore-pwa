@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useCallback, useMemo } from 'react'
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
 import { Root, Item, Title, PriceContainer } from './GroupedProduct.styled'
-import Form, { Input, Quantity } from '@storystore/ui/dist/components/Form'
+import Form, { Input, Quantity, Error } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
@@ -34,6 +34,8 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
 
     const history = useRouter()
 
+    const [error, setError] = useState<string | null>(null)
+
     const items = group?.map(({ product }) => ({
         quantity: product.quantity,
         sku: product.sku,
@@ -46,15 +48,21 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
         async ({ items }) => {
             if (!cartId || addingSimpleProductsToCart.loading) return
 
-            const values = items.filter((item: any) => item.data.quantity > 0)
+            try {
+                setError(null)
 
-            if (values.length === 0) return
+                const values = items.filter((item: any) => item.data.quantity > 0)
 
-            await addSimpleProductToCart(values)
+                if (values.length === 0) return
 
-            await history.push('/cart')
+                await addSimpleProductToCart(values)
 
-            window.scrollTo(0, 0)
+                await history.push('/cart')
+
+                window.scrollTo(0, 0)
+            } catch (e) {
+                setError(e.message)
+            }
         },
         [cartId, addingSimpleProductsToCart.loading, addSimpleProductToCart, history]
     )
@@ -94,6 +102,8 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
                 )
             })}
             <Button type="submit" as="button" text="Add to Cart" loading={addingSimpleProductsToCart.loading} />
+
+            {error && <Error>{error}</Error>}
         </Root>
     )
 }

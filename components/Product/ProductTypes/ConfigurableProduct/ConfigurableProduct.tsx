@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
 import { Root } from './ConfigurableProduct.styled'
-import Form, { TextSwatchesProps, TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
+import Form, { TextSwatchesProps, TextSwatches, Select, Quantity, Error } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
@@ -47,6 +47,8 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
     const [variantSku, setVariantSku] = useState(sku)
+
+    const [error, setError] = useState<string | null>(null)
 
     const inStock = stock === 'IN_STOCK'
 
@@ -111,11 +113,17 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
         async ({ quantity = 1 }) => {
             if (!cartId || !inStock || addingConfigurableProductToCart.loading) return
 
-            await addConfigurableProductToCart({ sku, variantSku, quantity })
+            try {
+                setError(null)
+                await addConfigurableProductToCart({ sku, variantSku, quantity })
 
-            await history.push('/cart')
+                await history.push('/cart')
 
-            window.scrollTo(0, 0)
+                window.scrollTo(0, 0)
+            } catch (e) {
+                console.log(e)
+                setError(e.message)
+            }
         },
         [sku, variantSku, addConfigurableProductToCart, inStock, addingConfigurableProductToCart, history, cartId]
     )
@@ -173,6 +181,8 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 <Quantity name="quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
 
                 <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingConfigurableProductToCart.loading} />
+
+                {error && <Error>{error}</Error>}
             </Root>
         </div>
     )

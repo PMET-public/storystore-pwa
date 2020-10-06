@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import { Root, Downloads, DownloadIcon, DownloadLabel } from './DownloadableProduct.styled'
-import Form, { Input, Checkbox } from '@storystore/ui/dist/components/Form'
+import Form, { Input, Checkbox, Error } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
@@ -26,6 +26,8 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
     const { setPrice } = useProductLayout()
 
     const [selectedDownloads, setSelectedDownloads] = useState([...downloads])
+
+    const [error, setError] = useState<string | null>(null)
 
     // Set Prices –
     useEffect(() => {
@@ -65,11 +67,17 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
 
             if (!cartId || !inStock || addingDownloadableProductToCart.loading) return
 
-            await addDownloadableProductToCart(items)
+            try {
+                setError(null)
 
-            await history.push('/cart')
+                await addDownloadableProductToCart(items)
 
-            window.scrollTo(0, 0)
+                await history.push('/cart')
+
+                window.scrollTo(0, 0)
+            } catch (e) {
+                setError(e.message)
+            }
         },
         [addDownloadableProductToCart, inStock, addingDownloadableProductToCart, history, cartId]
     )
@@ -141,6 +149,8 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
             )}
 
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={addingDownloadableProductToCart.loading} />
+
+            {error && <Error>{error}</Error>}
         </Root>
     )
 }
