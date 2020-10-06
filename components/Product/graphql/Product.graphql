@@ -7,18 +7,18 @@ query ProductQuery($urlKey: String!) {
         categoryUrlSuffix: category_url_suffix
     }
 
-    product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
+    products: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
             urlKey: url_key
-            layout: page_layout
+            # layout: page_layout
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
             sku
             stock: stock_status
-            type: __typename
             title: name
+            type: __typename
 
             categories {
                 id
@@ -69,55 +69,6 @@ query ProductQuery($urlKey: String!) {
                     order: sort_order
                     url: sample_url
                     title
-                }
-            }
-
-            ... on ConfigurableProduct {
-                options: configurable_options {
-                    id
-                    label
-                    position
-                    # required
-                    code: attribute_code
-                    items: values {
-                        id: value_index
-                        label
-                        value: value_index
-                        swatch: swatch_data {
-                            __typename
-                            value
-
-                            ... on TextSwatchData {
-                                text: value
-                            }
-
-                            ... on ColorSwatchData {
-                                color: value
-                            }
-
-                            ... on ImageSwatchData {
-                                image: thumbnail
-                            }
-                        }
-                    }
-                }
-                variants {
-                    attributes {
-                        id: value_index
-                        code
-                        value: value_index
-                    }
-                    product {
-                        id
-                        variantSku: sku
-                        stock: stock_status
-
-                        ...price
-
-                        gallery: media_gallery {
-                            ...Gallery
-                        }
-                    }
                 }
             }
 

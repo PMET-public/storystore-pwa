@@ -15,10 +15,11 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
 
         ...filters
 
-        items @connection(key: "items") {
+        items {
             id
             title: name
             urlKey: url_key
+            type: __typename
 
             ...price
 

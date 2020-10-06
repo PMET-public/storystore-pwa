@@ -43,6 +43,8 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const products = useQuery(PRODUCTS_QUERY, {
         variables: { filters: { category_id: { eq: page?.id }, ...filters.variables } },
+        fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
         skip: !page || !/PRODUCTS/.test(mode),
     })
 

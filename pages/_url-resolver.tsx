@@ -26,6 +26,7 @@ export type ResolverProps = {
 const Page: FunctionComponent<{ id: number }> = ({ id }) => {
     const page = useQuery(PAGE_QUERY, {
         variables: { id },
+        fetchPolicy: 'cache-and-network',
     })
 
     return <PageComponent {...page} />
@@ -34,6 +35,7 @@ const Page: FunctionComponent<{ id: number }> = ({ id }) => {
 const Category: FunctionComponent<{ id: number }> = ({ id }) => {
     const category = useQuery(CATEGORY_QUERY, {
         variables: { id: id.toString() },
+        fetchPolicy: 'cache-and-network',
     })
 
     return <CategoryComponent {...category} />
@@ -42,7 +44,11 @@ const Category: FunctionComponent<{ id: number }> = ({ id }) => {
 const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
     const product = useQuery(PRODUCT_QUERY, {
         variables: { urlKey },
+        fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
     })
+
+    console.log(product)
 
     return <ProductComponent {...product} />
 }

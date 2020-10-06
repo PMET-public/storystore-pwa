@@ -1,41 +1,29 @@
 import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
 import { Root } from './ConfigurableProduct.styled'
-import Form, { TextSwatchesProps, TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
+import Form, { TextSwatches, Select, Quantity } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Button from '@storystore/ui/dist/components/Button'
-import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/components/Form/ColorSwatches'
-import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
+import ColorSwatches from '@storystore/ui/dist/components/Form/ColorSwatches'
+import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
-import { ProductGallery, useProductLayout, priceDataToProps } from '../../Product'
+import { useProductLayout, priceDataToProps } from '../../Product'
+import { useQuery } from '@apollo/client'
+
+import CONFIGURABLE_PRODUCT_QUERY from '../../graphql/ConfigurableProduct.graphql'
 
 export type ConfigurableProductProps = {
-    sku: string
-    stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
-    options: Array<{
-        id: string | number
-        label: string
-        required: boolean
-        code: string
-        items: Array<{
-            id: string | number
-            label: string
-            value: string
-            swatch: TextSwatchesProps | ColorSwatchesProps | ThumbSwatchesProps
-        }>
-    }>
-    variants: Array<{
-        product: {
-            variantSku: string
-            gallery: ProductGallery
-            price: any
-        }
-    }>
-    gallery: ProductGallery
+    urlKey: string
 }
 
-export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, stock = 'IN_STOCK', options, gallery, variants }) => {
+export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ urlKey }) => {
+    const { loading, data } = useQuery(CONFIGURABLE_PRODUCT_QUERY, { variables: { urlKey } })
+
+    // TODO: SKELETON
+
+    const product = data?.product?.items[0]
+
     const { cartId } = useStoryStore()
 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })
@@ -46,13 +34,13 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
-    const [variantSku, setVariantSku] = useState(sku)
+    const [variantSku, setVariantSku] = useState(product?.sku)
 
-    const inStock = stock === 'IN_STOCK'
+    const inStock = (product?.stock ?? 'IN_STOCK') === 'IN_STOCK'
 
     const { setGallery, setPrice } = useProductLayout()
 
-    const variantsIndexes = variants.reduce((accumVariants: any[], current: any) => {
+    const variantsIndexes = product?.variants.reduce((accumVariants: any[], current: any) => {
         return [
             ...accumVariants,
             current.attributes.reduce((accumAttributes: any, currentAttribute: any) => {
@@ -78,14 +66,14 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
             // If Variant is found...
             if (variantIndex > -1) {
                 // ...get product variant's product data...
-                const _variant = variants[variantIndex].product
+                const _variant = product?.variants[variantIndex].product
 
                 // ...get image gallery...
                 let variantGallery = [..._variant.gallery]
 
                 // ...if the gallery only has one image, then only swap the first one so we can still see other angles shots, etc...
-                if (_variant.gallery.length === 1 && gallery.length > 1) {
-                    variantGallery = [...variantGallery, ...[...gallery].splice(1)]
+                if (_variant.gallery.length === 1 && product?.gallery.length > 1) {
+                    variantGallery = [...variantGallery, ...[...product.gallery].splice(1)]
                 }
 
                 setGallery(variantGallery)
@@ -95,10 +83,10 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
                 setVariantSku(_variant.variantSku)
 
-                setPrice(price)
+                if (price) setPrice(price)
             }
         },
-        [gallery, setGallery, setPrice, variants, variantsIndexes]
+        [product, setGallery, setPrice, variantsIndexes]
     )
 
     const handleOnErrors = useCallback(() => {
@@ -109,21 +97,21 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
-            if (!cartId || !inStock || addingConfigurableProductToCart.loading) return
+            if (!product || !cartId || !inStock || addingConfigurableProductToCart.loading) return
 
-            await addConfigurableProductToCart({ sku, variantSku, quantity })
+            await addConfigurableProductToCart({ sku: product.sku, variantSku, quantity })
 
             await history.push('/cart')
 
             window.scrollTo(0, 0)
         },
-        [sku, variantSku, addConfigurableProductToCart, inStock, addingConfigurableProductToCart, history, cartId]
+        [cartId, inStock, addingConfigurableProductToCart.loading, addConfigurableProductToCart, product, variantSku, history]
     )
 
     return (
         <div ref={formRef}>
             <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
-                {options
+                {product?.options
                     .map(({ id, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
                             return code === x.code || x.value.toString() === selectedOptions[code]
