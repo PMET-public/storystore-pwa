@@ -14,6 +14,7 @@ import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 import useHtml from '~/hooks/useHtml'
 import { OtherProducts } from './OtherProducts'
+import { isPageBuilderHtml } from '../PageBuilder/lib/utils'
 
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
@@ -132,6 +133,8 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
         )
     }
 
+    const isDescriptionPageBuilder = product?.description?.html ? isPageBuilderHtml(product.description.html) : false
+
     return (
         <ProductContext.Provider value={{ setPrice: handleUpdatePrice, setGallery: handleUpdateGallery }}>
             {product && <Head title={product.metaTitle || product.title} description={product.metaDescription} keywords={product.metaKeywords} />}
@@ -191,7 +194,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {/* TODO: ... */}
                                         {product.type === 'GiftCard' && <GiftCard {...product} />}
 
-                                        {product.descriptionContainer === 'container1' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                                        {(product.descriptionContainer === 'container1' || !isDescriptionPageBuilder) && product?.description?.html && (
+                                            <Description as={PageBuilder} html={product.description.html} />
+                                        )}
                                     </React.Fragment>
                                 )}
                             </Info>
@@ -199,7 +204,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                     </InfoWrapper>
                 </Wrapper>
 
-                {product?.descriptionContainer === 'container2' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                {product?.descriptionContainer === 'container2' && isDescriptionPageBuilder && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
                 {product?.urlKey && <OtherProducts urlKey={product.urlKey} />}
             </Root>

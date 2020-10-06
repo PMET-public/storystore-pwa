@@ -46,12 +46,15 @@ export const Images = styled.div`
 export const Image = styled(ImageComponent)`
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
+    max-height: 70vh;
+
     filter: unset;
 
     @media ${props => props.theme.breakpoints.smallOnly} {
         max-height: 70vh;
+        object-fit: cover;
     }
 `
 
