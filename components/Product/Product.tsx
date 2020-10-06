@@ -125,7 +125,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
     if (!loading && !product) {
-        debugger
         return (
             <ErrorComponent type="404" button={{ text: 'Search', as: Link, href: '/search' }}>
                 We&apos;re sorry, we coudn&apos;t find the product.
@@ -192,7 +191,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {/* TODO: ... */}
                                         {product.type === 'GiftCard' && <GiftCard {...product} />}
 
-                                        {product.layout !== 'product-full-width' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                                        {product.descriptionContainer === 'container1' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
                                     </React.Fragment>
                                 )}
                             </Info>
@@ -200,7 +199,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                     </InfoWrapper>
                 </Wrapper>
 
-                {product?.layout === 'product-full-width' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
+                {product?.descriptionContainer === 'container2' && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
                 {product?.urlKey && <OtherProducts urlKey={product.urlKey} />}
             </Root>
