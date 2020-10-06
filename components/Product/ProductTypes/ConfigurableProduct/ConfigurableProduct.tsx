@@ -95,7 +95,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
                 setVariantSku(_variant.variantSku)
 
-                setPrice(price)
+                if (price) setPrice(price)
             }
         },
         [gallery, setGallery, setPrice, variants, variantsIndexes]

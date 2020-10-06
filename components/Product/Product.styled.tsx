@@ -104,12 +104,6 @@ export const InfoWrapper = styled.div`
         position: relative;
         width: 100vw;
         z-index: 1;
-        -webkit-transform: translate3d(0, 0, 0);
-
-        @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(40px)) {
-            background-color: ${props => props.theme.colors.surface80};
-            backdrop-filter: blur(40px);
-        }
     }
 `
 
@@ -164,10 +158,4 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
-
-    @supports (backdrop-filter: blur(10px)) or (--webkit-backdrop-filter: blur(40px)) {
-        -webkit-transform: translate3d(0, 0, 0);
-        background-color: ${props => props.theme.colors.surface80};
-        backdrop-filter: blur(40px);
-    }
 `

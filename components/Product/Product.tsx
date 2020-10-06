@@ -98,14 +98,13 @@ export const useProductLayout = () => useContext(ProductContext)
 
 const ProductContext = createContext({
     setGallery: (_: ProductGallery) => {},
-    setPrice: (_: PriceProps) => {},
+    setPrice: (_: PriceProps | null) => {},
 })
 
 export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const online = useNetworkStatus()
 
-    const product = data?.product?.items[0]
-
+    const product = data?.products?.items[0]
 
     const shortDescription = useHtml(product?.shortDescription.html)
 
@@ -115,9 +114,9 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
         setGallery(value)
     }, [])
 
-    const [price = priceDataToProps(product?.price), setPrice] = useState<PriceProps>()
+    const [price = priceDataToProps(product?.price), setPrice] = useState<PriceProps | null>()
 
-    const handleUpdatePrice = useCallback((value: PriceProps) => {
+    const handleUpdatePrice = useCallback((value: PriceProps | null) => {
         setPrice(value)
     }, [])
 
