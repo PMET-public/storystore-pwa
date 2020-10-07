@@ -1,0 +1,53 @@
+query AppQuery {
+    storeConfig {
+        id
+        baseMediaUrl: base_media_url
+        categoryUrlSuffix: category_url_suffix
+        copyright
+        homePage: cms_home_page
+        logoAlt: logo_alt
+        logoSrc: header_logo_src
+        metaDescription: default_description
+        metaKeywords: default_keywords
+        metaTitle: default_title
+        metaTitlePrefix: title_prefix
+        metaTitleSuffix: title_suffix
+    }
+
+    # StoryStore Data
+    storyStore: storeConfig {
+        id
+
+        # Config
+        baseUrl: base_url
+        version: storystore_pwa_magento_version
+        googleMapsApiKey: storystore_pwa_google_maps_api_key
+
+        # Content
+        homePage: storystore_pwa_home_page
+        footerBlockId: storystore_pwa_footer_block
+
+        # Colors
+        colorDark: storystore_pwa_dark_mode
+
+        colorAccent: storystore_pwa_accent_surface
+        colorOnAccent: storystore_pwa_accent_content
+
+        colorPrimary: storystore_pwa_primary_surface
+        colorOnPrimary: storystore_pwa_primary_content
+
+        colorSecondary: storystore_pwa_secondary_surface
+        colorOnSecondary: storystore_pwa_secondary_content
+    }
+
+    categories: categoryList {
+        id
+        children {
+            id
+            text: name
+            href: url_path
+            image
+            mode: display_mode
+        }
+    }
+}

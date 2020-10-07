@@ -1,0 +1,11 @@
+fragment countries on Query {
+    countries {
+        id
+        code: id
+        name: full_name_locale
+        regions: available_regions {
+            code
+            name
+        }
+    }
+}

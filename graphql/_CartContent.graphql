@@ -19,6 +19,7 @@ fragment CartContent on Cart {
             sku
             name
             urlKey: url_key
+            type: __typename
             thumbnail {
                 label
                 url
@@ -30,6 +31,13 @@ fragment CartContent on Cart {
                 id
                 label: option_label
                 value: value_label
+            }
+        }
+
+        ... on DownloadableCartItem {
+            downloads: links {
+                id: sort_order
+                label: title
             }
         }
     }

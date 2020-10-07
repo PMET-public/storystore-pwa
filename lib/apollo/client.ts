@@ -1,31 +1,72 @@
-import { HttpLink } from 'apollo-link-http'
-import { ApolloLink } from 'apollo-link'
-import { ApolloClient } from 'apollo-client'
-import { InMemoryCache, defaultDataIdFromObject, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
-import { RetryLink } from 'apollo-link-retry'
-import { onError } from 'apollo-link-error'
+import { getSettings } from '~/lib/storystore'
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client'
+import { RetryLink } from '@apollo/client/link/retry'
+import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
-import { defaults, typeDefs, resolvers } from './resolvers'
-import { QueryHookOptions } from '@apollo/react-hooks'
-import introspectionQueryResultData from '~/lib/apollo/fragmentTypes.json'
+import possibleTypes from '~/lib/apollo/possibleTypes.json'
+// import { stripIgnoredCharacters } from 'graphql'
 
-let apolloClient: any
+let apolloClient: ApolloClient<any>
 
-// Polyfill Server
+/**
+ * Polyfill Global Variables in Server
+ */
 if (!process.browser) {
     global.fetch = require('node-fetch')
     global.URL = require('url').URL
 }
 
-export const offlineLink = new QueueLink()
+/**
+ * apollo-link-queue (https://github.com/helfer/apollo-link-queue)
+ * An Apollo Link that acts as a gate and queues requests when the gate is closed.
+ * This can be used when there is no internet connection or when the user has
+ * explicitly set an app to offline mode.
+ */
+export const offlineLink: any = new QueueLink()
 
-function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
+if (process.browser) {
+    window.addEventListener('offline', () => offlineLink.close())
+    window.addEventListener('online', () => offlineLink.open())
+}
+
+/**
+ * Create Apollo Client
+ */
+function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: string) {
     const headers = cookie ? { cookie } : undefined
 
     const httpLink = new HttpLink({
         uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', magentoUrl).href,
         credentials: 'include',
         headers,
+
+        // Warning: useGETForQueries risks exceeding URL length limits. These limits
+        // in practice are typically set at or behind where TLS terminates. For Magento
+        // Cloud and Fastly, 8kb is the maximum by default
+        // https://docs.fastly.com/en/guides/resource-limits#request-and-response-limits
+        // useGETForQueries: true,
+
+        // fetch: (uri: string, options: RequestInit) => {
+        //     let url = uri.toString()
+
+        //     if (options?.method === 'GET') {
+        //         const _url = new URL(url)
+
+        //         // Read from URL implicitly decodes the querystring
+        //         const query = _url.searchParams.get('query')
+
+        //         if (!query) return uri
+
+        //         const strippedQuery = stripIgnoredCharacters(query)
+
+        //         // URLSearchParams.set will use application/x-www-form-urlencoded encoding
+        //         _url.searchParams.set('query', strippedQuery)
+
+        //         url = _url.toString()
+        //     }
+
+        //     return fetch(url, options) as any
+        // },
     })
 
     const retryLink = new RetryLink({
@@ -36,7 +77,7 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
         },
         attempts: {
             max: 3,
-            retryIf: error => {
+            retryIf: (error: Error) => {
                 if (process.browser) {
                     return !!error ? navigator.onLine : false
                 }
@@ -70,61 +111,80 @@ function create(magentoUrl?: string, initialState: any = {}, cookie?: string) {
         httpLink,
     ])
 
-    // Get GraphQL Schema
-    const fragmentMatcher = new IntrospectionFragmentMatcher({
-        introspectionQueryResultData,
-    })
-
     const cache = new InMemoryCache({
-        fragmentMatcher,
+        possibleTypes,
 
-        // https://github.com/apollographql/react-apollo/issues/2387
-        dataIdFromObject: (object: any) => {
-            switch (object.__typename) {
-                case 'Cart':
-                    return 'appCart' // we only need one Cart
-                case 'SelectedConfigurableOption':
-                    // Fixes cache
-                    return object.id ? `${object.id}:${object.value}` : defaultDataIdFromObject(object)
-
-                default:
-                    return defaultDataIdFromObject(object)
-            }
+        typePolicies: {
+            Cart: {
+                keyFields: () => 'AppCart',
+                fields: {
+                    applied_coupons: {
+                        merge(_, incoming) {
+                            return incoming ? [...incoming] : null
+                        },
+                    },
+                    applied_gift_cards: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    available_payment_methods: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    items: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                    prices: {
+                        merge(existing = {}, incoming) {
+                            return { ...existing, ...incoming }
+                        },
+                    },
+                    shipping_addresses: {
+                        merge(_, incoming) {
+                            return [...incoming]
+                        },
+                    },
+                },
+            },
+            SelectedConfigurableOption: {
+                keyFields: ['id', 'value'],
+            },
+            Breadcrumb: {
+                keyFields: ['category_id'],
+            },
         },
-    }).restore(initialState)
-
-    cache.writeData({
-        data: { ...defaults },
     })
 
     const client = new ApolloClient({
         cache,
         connectToDevTools: process.browser,
         link,
-        resolvers,
         ssrMode: !process.browser,
-        typeDefs,
+        queryDeduplication: true,
     })
 
     return client
 }
 
-export default function createApolloClient(magentoUrl: string = process.env.MAGENTO_URL, initialState?: any, cookie?: string) {
-    // Make sure to create a new client for every server-side request so that data
-    // isn't shared between connections (which would be bad)
-    if (!process.browser) {
-        return create(magentoUrl, {}, cookie)
+export function initializeApollo(initialState = null, cookie?: string, overrideMagentoUrl?: string) {
+    // Override Magento URL w/ value from Cookie
+    const { magentoUrl = overrideMagentoUrl } = getSettings(cookie)
+
+    const _apolloClient = apolloClient ?? createApolloClient(magentoUrl, cookie)
+
+    // If your page has Next.js data fetching methods that use Apollo Client, the initial state
+    // gets hydrated here
+    if (initialState) {
+        _apolloClient.cache.restore(initialState)
     }
+    // For SSG and SSR always create a new Apollo Client
+    if (typeof window === 'undefined') return _apolloClient
+    // Create the Apollo Client once in the client
+    if (!apolloClient) apolloClient = _apolloClient
 
-    // Reuse client on the client-side
-    if (!apolloClient) {
-        apolloClient = create(magentoUrl, initialState, cookie)
-    }
-
-    return apolloClient
-}
-
-export const queryDefaultOptions: QueryHookOptions = {
-    errorPolicy: 'all',
-    notifyOnNetworkStatusChange: true,
+    return _apolloClient
 }

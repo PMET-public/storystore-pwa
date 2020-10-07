@@ -1,19 +1,20 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
-import { withStoryStore } from '~/lib/storystore'
-
-import App from '~/components/App'
-import CheckoutTemplate from '~/components/Checkout'
+import { useQuery } from '@apollo/client'
+import CheckoutTemplate, { CHECKOUT_QUERY } from '~/components/Checkout'
+import { useStoryStore } from '~/lib/storystore'
 
 type CheckoutProps = {}
 
 export const Checkout: NextPage<CheckoutProps> = ({}) => {
-    return (
-        <App>
-            <CheckoutTemplate />
-        </App>
-    )
+    const { cartId } = useStoryStore()
+
+    const checkout = useQuery(CHECKOUT_QUERY, {
+        variables: { cartId },
+        skip: !cartId,
+    })
+
+    return <CheckoutTemplate {...checkout} />
 }
 
-export default withApollo(withStoryStore(Checkout))
+export default Checkout

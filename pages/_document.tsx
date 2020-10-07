@@ -1,10 +1,11 @@
 import React from 'react'
-import Document, { Head, Main, NextScript, DocumentContext } from 'next/document'
+import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 
 export default class extends Document<any> {
     static async getInitialProps(ctx: DocumentContext) {
         const sheet = new ServerStyleSheet()
+
         const originalRenderPage = ctx.renderPage
 
         try {
@@ -32,35 +33,42 @@ export default class extends Document<any> {
 
     render() {
         return (
-            <html lang="en">
+            <Html lang="en">
                 <Head>
-                    <noscript>Enable javascript to run this web app.</noscript>
-                    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                    <meta charSet="utf-8" />
-                    <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
-                    <meta name="theme-color" content="#222222" />
-                    <link rel="shortcut icon" href="/static/favicon.ico" />
-                    {/* iOS */}
-                    <meta name="apple-mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-                    <meta name="apple-mobile-web-app-title" content="StoryStore PWA" />
-                    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
-                    {/* Web App Manifest  */}
-                    <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
+                    <link rel="stylesheet" href="/static/fonts.css" />
 
-                    {/* Google Analytics */}
-                    <link href="https://www.google-analytics.com" rel="preconnect" crossOrigin="anonymous" />
-                    <link href="https://stats.g.doubleclick.net" rel="preconnect" crossOrigin="anonymous" />
+                    {/* WebP Detection */}
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
 
-                    {/* Adobe Fonts */}
-                    <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
+                                function canUseWebP() {
+                                    if (typeof document === 'undefined') return false
+
+                                    var elem = document.createElement('canvas');
+
+                                    if (!!(elem.getContext && elem.getContext('2d'))) {
+                                        // was able or not to get WebP representation
+                                        return elem.toDataURL('image/webp').indexOf('data:image/webp') == 0;
+                                    }
+
+                                    // very old browser like IE 8, canvas not supported
+                                    return false;
+                                }
+
+                                if (canUseWebP()) {
+                                    document.documentElement.classList.add('webp');
+                                }
+                            `,
+                        }}
+                    />
                 </Head>
 
                 <body>
                     <Main />
                     <NextScript />
                 </body>
-            </html>
+            </Html>
         )
     }
 }

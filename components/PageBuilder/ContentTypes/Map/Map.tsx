@@ -2,7 +2,7 @@ import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import MapComponent from '@storystore/ui/dist/components/Map'
 
-import useStoryStore from '~/hooks/useStoryStore'
+import { useStoryStore } from '~/lib/storystore'
 
 type Location = {
     _id: number

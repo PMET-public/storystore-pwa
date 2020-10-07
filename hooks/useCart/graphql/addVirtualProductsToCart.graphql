@@ -1,0 +1,9 @@
+#import "~/graphql/_CartContent.graphql"
+
+mutation AddVirtualProducstToCart($cartId: String!, $quantity: Float!, $sku: String!) {
+    addToCart: addVirtualProductsToCart(input: { cart_id: $cartId, cart_items: [{ data: { quantity: $quantity, sku: $sku } }] }) {
+        cart {
+            ...CartContent
+        }
+    }
+}

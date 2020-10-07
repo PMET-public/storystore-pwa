@@ -11,10 +11,10 @@ export const Root = styled.div`
     & h5,
     & h6 {
         &:not(:first-child) {
-            margin-top: 1.8rem;
+            margin-top: 1.5rem;
         }
         &:not(:last-child) {
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
     }
 
@@ -68,16 +68,18 @@ export const Root = styled.div`
         }
     }
 
-  
-
     & ol,
     & ul {
-        list-style-position: inside;
+        list-style-position: outside;
         margin-block-start: 0.2em;
+        padding-inline-start: 2.6rem;
+        display: grid;
+        grid-gap: 0.65rem;
+        grid-auto-rows: max-content;
     }
 
     & ul {
-        list-style-type: dist;
+        list-style-type: disc;
         list-style-position: inside;
     }
 

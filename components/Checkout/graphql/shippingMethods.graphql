@@ -1,7 +1,0 @@
-#import "./_ShippingMethods.graphql"
-
-query ShippingMethodsQuery($cartId: String!) {
-    cart(cart_id: $cartId) @connection(key: "appCart") {
-        ...ShippingMethods
-    }
-}

@@ -2,11 +2,8 @@ import React, { FunctionComponent, useCallback } from 'react'
 import { resolveImage } from '~/lib/resolveImage'
 import dynamic from 'next/dynamic'
 import { Root, SummaryWrapper, CartSummaryWrapper, ProductList, StickyButtonWrapper } from './Cart.styled'
-
-import { useCart } from './useCart'
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
-
+import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Head from '~/components/Head'
@@ -16,17 +13,17 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
 import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
+import { QueryResult } from '@apollo/client'
+import { useCart } from '~/hooks/useCart/useCart'
 
 const Error = dynamic(() => import('../Error'))
 
-type CartProps = {}
-
-export const Cart: FunctionComponent<CartProps> = () => {
+export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) => {
     const { cartId } = useStoryStore()
 
     const history = useRouter()
 
-    const { queries, api } = useCart({ cartId })
+    const { updateCartItem, updatingCartItem, removeCartItem, removingCartItem, applyCoupon, applyingCoupon, removeCoupon, removingCoupon } = useCart({ cartId })
 
     const handleGoToCheckout = useCallback(async () => {
         await history.push('/checkout')
@@ -35,19 +32,17 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     const online = useNetworkStatus()
 
-    if (!online && !queries.cart.data) return <Error type="Offline" fullScreen />
+    if (!online && !data) return <Error type="Offline" fullScreen />
 
-    if (!queries.cart.loading && queries.cart.error) return <Error type="500" />
+    if (!loading && error) return <Error type="500" />
 
-    const { store, cart } = queries.cart.data || {}
+    const { items = [], appliedCoupons, totalQuantity, prices, shippingAddresses } = data?.cart || {}
 
-    const { items = [], appliedCoupons } = cart || {}
+    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
-    const productUrlSuffix = store?.productUrlSuffix ?? ''
+    if (loading && !data) return <ViewLoader />
 
-    if (!cart) return <ViewLoader />
-
-    if (!queries.cart.loading && cart.totalQuantity < 1) {
+    if ((!loading && totalQuantity < 1) || !data) {
         return (
             <React.Fragment>
                 <Head title="Shopping Bag" />
@@ -62,47 +57,60 @@ export const Cart: FunctionComponent<CartProps> = () => {
 
     return (
         <React.Fragment>
-            <Head title={`Shopping Bag ${cart?.totalQuantity ? `(${cart?.totalQuantity})` : ''}`} />
+            <Head title={`Shopping Bag ${totalQuantity ? `(${totalQuantity})` : ''}`} />
 
             <Root>
                 <ProductList>
                     <Breadcrumbs prefix="#" items={[{ text: 'Shopping Bag', as: Link, href: '/cart' }]} />
                     <CartList
-                        loading={queries.cart.loading && !cart?.totalQuantity}
-                        items={items.map(({ id, quantity, price, product, options }: any, index: number) => ({
-                            _id: id || index,
-                            title: {
-                                as: Link,
-                                urlResolver: {
-                                    type: 'PRODUCT',
-                                    urlKey: product.urlKey,
+                        loading={loading && !totalQuantity}
+                        items={items.map(({ id, quantity, price, product, options }: any, index: number) => {
+                            if (product.type === 'DownloadableProduct') {
+                                options = [{ label: 'Delivery', value: 'Download' }]
+                            }
+
+                            return {
+                                _id: id || index,
+                                title: {
+                                    as: Link,
+                                    urlResolver: {
+                                        type: 'PRODUCT',
+                                        urlKey: product.urlKey,
+                                    },
+                                    href: `/${product.urlKey}${productUrlSuffix}`,
+                                    text: product.name,
                                 },
-                                href: `/${product.urlKey}${productUrlSuffix}`,
-                                text: product.name,
-                            },
-                            sku: `SKU. ${product.sku}`,
-                            thumbnail: {
-                                alt: product.thumbnail.label,
-                                src: resolveImage(product.thumbnail.url, { width: 300 }),
-                            },
-                            quantity: {
-                                value: quantity,
-                                addLabel: `Add another ${product.name} from shopping bag`,
-                                substractLabel: `Remove one ${product.name} from shopping bag`,
-                                removeLabel: `Remove all ${product.name} from shopping bag`,
-                                onUpdate: (quantity: number) => api.updateCartItem({ cartId, productId: id, quantity }),
-                                onRemove: () => api.removeCartItem({ cartId, productId: id }),
-                            },
-                            price: {
-                                currency: price.amount.currency,
-                                regular: price.amount.value,
-                            },
-                            options: options?.map(({ id, label, value }: any) => ({
-                                _id: id,
-                                label,
-                                value,
-                            })),
-                        }))}
+                                sku: `SKU. ${product.sku}`,
+                                thumbnail: {
+                                    alt: product.thumbnail.label,
+                                    src: resolveImage(product.thumbnail.url, { width: 300, height: 300 }),
+                                    width: 300,
+                                    height: 300,
+                                    sources: [
+                                        <source key="webp" type="image/webp" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300, type: 'webp' })} />,
+                                        <source key="original" srcSet={resolveImage(product.thumbnail.url, { width: 300, height: 300 })} />,
+                                    ],
+                                },
+                                quantity: {
+                                    defaultValue: quantity,
+                                    addLabel: `Add another ${product.name} from shopping bag`,
+                                    substractLabel: `Remove one ${product.name} from shopping bag`,
+                                    removeLabel: `Remove all ${product.name} from shopping bag`,
+                                    fixed: product.type === 'DownloadableProduct',
+                                    onUpdate: (quantity: number) => updateCartItem({ productId: id, quantity }),
+                                    onRemove: () => removeCartItem({ productId: id }),
+                                },
+                                price: {
+                                    currency: price.amount.currency,
+                                    regular: price.amount.value,
+                                },
+                                options: options?.map(({ id, label, value }: any) => ({
+                                    _id: id,
+                                    label,
+                                    value,
+                                })),
+                            }
+                        })}
                     />
                 </ProductList>
 
@@ -120,21 +128,21 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                         field: {
                                             label: 'Coupon Code',
                                             name: 'couponCode',
-                                            error: api.applyingCoupon.error?.message || api.removingCoupon.error?.message,
+                                            error: applyingCoupon.error?.message || removingCoupon.error?.message,
                                             disabled: !!appliedCoupons,
-                                            defaultValue: appliedCoupons ? appliedCoupons[0].code : undefined,
+                                            defaultValue: appliedCoupons ? appliedCoupons[0]?.code : undefined,
                                         },
                                         submitButton: {
                                             text: appliedCoupons ? 'Remove' : 'Apply',
                                             type: appliedCoupons ? 'reset' : 'submit',
                                         },
-                                        submitting: api.applyingCoupon.loading || api.removingCoupon.loading,
+                                        submitting: applyingCoupon.loading || removingCoupon.loading,
                                         onReset: () => {
-                                            api.removeCoupon({ cartId })
+                                            removeCoupon()
                                         },
                                         onSubmit: (values: any) => {
                                             const { couponCode } = values
-                                            api.applyCoupon({ cartId, couponCode })
+                                            applyCoupon({ couponCode })
                                         },
                                     },
                                 ],
@@ -143,14 +151,14 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 // Sub-total
                                 {
                                     label: 'Subtotal',
-                                    price: cart?.prices?.subTotal && {
-                                        currency: cart.prices.subTotal.currency,
-                                        regular: cart.prices.subTotal.value,
+                                    price: prices?.subTotal && {
+                                        currency: prices.subTotal.currency,
+                                        regular: prices.subTotal.value,
                                     },
                                 },
 
                                 // Discounts
-                                ...(cart?.prices?.discounts?.map((discount: any) => ({
+                                ...(prices?.discounts?.map((discount: any) => ({
                                     label: discount.label,
                                     price: {
                                         currency: discount.amount.currency,
@@ -159,7 +167,7 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 })) || []),
 
                                 // Shipping
-                                ...(cart?.shippingAddresses
+                                ...(shippingAddresses
                                     ?.filter(({ selectedShippingMethod }: any) => !!selectedShippingMethod)
                                     .map(({ selectedShippingMethod }: any) => ({
                                         label: `${selectedShippingMethod.carrierTitle} (${selectedShippingMethod.methodTitle})`,
@@ -172,9 +180,9 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 // Taxes
                                 {
                                     label: 'Estimated Taxes',
-                                    price: cart?.prices?.taxes[0] && {
-                                        currency: cart.prices.taxes[0] && cart.prices.taxes[0].currency,
-                                        regular: cart.prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
+                                    price: prices?.taxes[0] && {
+                                        currency: prices.taxes[0] && prices.taxes[0].currency,
+                                        regular: prices.taxes.reduce((accum: number, tax: { value: number }) => accum + tax.value, 0),
                                     },
                                 },
 
@@ -182,31 +190,19 @@ export const Cart: FunctionComponent<CartProps> = () => {
                                 {
                                     appearance: 'bold',
                                     label: 'Total',
-                                    price: cart?.prices?.total && {
-                                        currency: cart.prices.total.currency,
-                                        regular: cart.prices.total.value,
+                                    price: prices?.total && {
+                                        currency: prices.total.currency,
+                                        regular: prices.total.value,
                                     },
                                 },
                             ]}
                         />
-                        <ButtonComponent
-                            linkTagAs="button"
-                            onClick={handleGoToCheckout}
-                            disabled={items.length === 0}
-                            text="Checkout"
-                            loading={api.updatingCartItem.loading || api.removingCartItem.loading}
-                        />
+                        <ButtonComponent linkTagAs="button" onClick={handleGoToCheckout} disabled={items.length === 0} text="Checkout" loading={updatingCartItem.loading || removingCartItem.loading} />
                     </CartSummaryWrapper>
                 </SummaryWrapper>
 
                 <StickyButtonWrapper>
-                    <ButtonComponent
-                        linkTagAs="button"
-                        onClick={handleGoToCheckout}
-                        disabled={items.length === 0}
-                        text="Checkout"
-                        loading={api.updatingCartItem.loading || api.removingCartItem.loading}
-                    />
+                    <ButtonComponent linkTagAs="button" onClick={handleGoToCheckout} disabled={items.length === 0} text="Checkout" loading={updatingCartItem.loading || removingCartItem.loading} />
                 </StickyButtonWrapper>
             </Root>
         </React.Fragment>

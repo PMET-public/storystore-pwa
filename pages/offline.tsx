@@ -1,14 +1,8 @@
 import React from 'react'
 import { NextPage } from 'next'
-
-import { withApollo } from '~/lib/apollo/withApollo'
-import { withStoryStore } from '~/lib/storystore'
-
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
 import { useRouter } from 'next/router'
 import useValueUpdated from '~/hooks/useValueUpdated'
-
-import App from '~/components/App'
 import Error from '~/components/Error'
 
 export type OfflineProps = {}
@@ -27,11 +21,7 @@ const Offline: NextPage<OfflineProps> = ({}) => {
         }
     }, online)
 
-    return (
-        <App>
-            <Error type="Offline" fullScreen />
-        </App>
-    )
+    return <Error type="Offline" fullScreen />
 }
 
-export default withApollo(withStoryStore(Offline))
+export default Offline

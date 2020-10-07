@@ -1,0 +1,10 @@
+#import "~/graphql/_cart.graphql"
+
+query CartQuery($cartId: String!) {
+    store: storeConfig {
+        id
+        productUrlSuffix: product_url_suffix
+    }
+
+    ...cart
+}

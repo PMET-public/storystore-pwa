@@ -1,0 +1,21 @@
+#import "~/graphql/_CartContent.graphql"
+#import "~/graphql/_Address.graphql"
+#import "~/graphql/_countries.graphql"
+
+query CheckoutContactIntoQuery($cartId: String!) {
+    ...countries
+
+    cart(cart_id: $cartId) {
+        ...CartContent
+
+        email
+
+        billingAddress: billing_address {
+            ...Address
+        }
+
+        shippingAddresses: shipping_addresses {
+            ...Address
+        }
+    }
+}

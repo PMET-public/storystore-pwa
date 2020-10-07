@@ -32,7 +32,7 @@ export const Banner: Component<BannerProps> = ({ appearance = 'poster', backgrou
                     <Overlay {...overlay}>
                         <ContentWrapper>
                             {content && <Content {...content}>{contentHtml}</Content>}
-                            {button && <Button as={ButtonComponent} {...button} />}
+                            {button && <Button as={ButtonComponent} $secondary={button.secondary} {...button} />}
                         </ContentWrapper>
                     </Overlay>
                 </Wrapper>

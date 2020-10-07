@@ -58,11 +58,7 @@ const proxyGraphQl = async (request: NextApiRequest, response: NextApiResponse) 
                 }
             })
 
-        request
-            .pipe(proxy, {
-                end: true,
-            })
-            .on('response', resolve)
+        request.pipe(proxy).on('response', resolve)
     })
 
 export default proxyGraphQl

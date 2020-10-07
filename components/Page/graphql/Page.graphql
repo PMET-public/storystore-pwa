@@ -1,0 +1,11 @@
+query PageQuery($id: Int!) {
+    page: cmsPage(id: $id) {
+        id: url_key
+        metaTitle: meta_title
+        metaDescription: meta_description
+        metaKeywords: meta_keywords
+        heading: content_heading
+        title
+        content
+    }
+}

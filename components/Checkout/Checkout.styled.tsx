@@ -7,6 +7,7 @@ import PendingIconSvg from 'remixicon/icons/System/checkbox-blank-circle-fill.sv
 import DoneIconSvg from 'remixicon/icons/Design/edit-circle-fill.svg'
 
 export const Root = styled.div`
+    background-color: ${props => props.theme.colors.graySurface};
     display: grid;
     grid-template-rows: 1fr auto;
     height: 100%;
@@ -20,7 +21,7 @@ export const Root = styled.div`
 `
 
 export const Wrapper = styled.div`
-    background-color: ${props => props.theme.colors.onSurface5};
+    background-color: ${props => props.theme.colors.surface};
     display: grid;
     grid-gap: 4rem;
     grid-auto-rows: max-content;
@@ -36,7 +37,7 @@ export const CartSummaryWrapper = styled.div`
     display: grid;
     grid-auto-rows: max-content;
     grid-template-areas: 'summary' 'list';
-    background-color: ${props => props.theme.colors.surface};
+    background-color: ${props => props.theme.colors.graySurface};
 
     ${CartListRoot} {
         grid-area: list;
@@ -70,6 +71,7 @@ export const CartSummaryWrapper = styled.div`
             background-color: inherit;
             position: sticky;
             bottom: 0;
+            z-index: 1;
         }
     }
 `

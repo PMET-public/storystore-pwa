@@ -18,32 +18,32 @@ module.exports = withOffline({
         swDest: 'static/service-worker.js',
     },
 
-    experimental: {
-        async redirects() {
-            return [
-                {
-                    source: `/basic-auth`,
-                    destination: '/',
-                    permanent: false,
-                },
-            ]
-        },
-        async rewrites() {
-            return [
-                {
-                    source: `/service-worker.js`,
-                    destination: '/_next/static/service-worker.js',
-                },
-                /**
-                 * URlResolver
-                 */
-                {
-                    source: '/:pathname*',
-                    destination: '/_url-resolver',
-                },
-            ]
-        },
+    async redirects() {
+        return [
+            {
+                source: `/basic-auth`,
+                destination: '/',
+                permanent: false,
+            },
+        ]
     },
+
+    async rewrites() {
+        return [
+            {
+                source: `/service-worker.js`,
+                destination: '/_next/static/service-worker.js',
+            },
+            /**
+             * URlResolver
+             */
+            {
+                source: '/:pathname*',
+                destination: '/_url-resolver',
+            },
+        ]
+    },
+
     webpack: config => {
         /**
          * SVG Inline

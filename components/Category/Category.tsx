@@ -1,26 +1,24 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-
-import { Root, TopBar, TopBarWrapper, Heading, Title, TopBarFilterButton, FiltersIcon } from './Category.styled'
-
-import { useCategory } from './useCategory'
+import { Root, HeadingWrapper, Heading, Title, TopBarFilterToggleButton, ProductsWrapper } from './Category.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
-
 import Link from '~/components/Link'
 import Head from '~/components/Head'
-import Products, { useProducts } from '~/components/Products'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import Pills from '@storystore/ui/dist/components/Pills'
 import { Skeleton } from '@storystore/ui/dist/components/Skeleton'
+import TopBar from '@storystore/ui/dist/components/TopBar'
+import FiltersIcon from 'remixicon/icons/System/list-settings-line.svg'
+import FiltersCloseIcon from 'remixicon/icons/System/list-settings-fill.svg'
+import { QueryResult, useQuery } from '@apollo/client'
+import Products, { PRODUCTS_QUERY } from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
+import Sidebar from '@storystore/ui/dist/components/Sidebar'
+import { Filters, FilterVariables, FilterSelected } from '~/components/Filters'
+import { PageSkeleton } from '~/components/Page/Page.skeleton'
+import PageBuilder from '~/components/PageBuilder'
 
 const Error = dynamic(() => import('../Error'))
-const PageBuilder = dynamic(() => import('../PageBuilder'), { ssr: false })
-
-type CategoryProps = {
-    id: number
-    mode?: 'PRODUCTS_AND_PAGE' | 'PRODUCTS' | 'PAGE' | string
-}
 
 const TitleSkeleton = ({ ...props }) => {
     return (
@@ -30,24 +28,33 @@ const TitleSkeleton = ({ ...props }) => {
     )
 }
 
-export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = 'PRODUCTS' }) => {
-    const category = useCategory({ id })
+export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
+    const [panelOpen, setPanelOpen] = useState(false)
 
-    const products = useProducts({ filters: { category_id: { eq: id.toString() } } })
+    const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
+
+    const categoryUrlSuffix = data?.storeConfig.categoryUrlSuffix
+
+    const page = data?.categoryList && data.categoryList[0]
+
+    const mode = page?.mode || 'PRODUCTS'
 
     const online = useNetworkStatus()
 
-    if (!online && !category.queries.category.data?.page) return <Error type="Offline" fullScreen />
+    const products = useQuery(PRODUCTS_QUERY, {
+        variables: { filters: { category_id: { eq: page?.id }, ...filters.variables } },
+        skip: !page || !/PRODUCTS/.test(mode),
+    })
 
-    if (!category.queries.category.loading && !category.queries.category.data?.page) {
+    const handleOnFiltersUpdate = useCallback(({ selected, variables }) => {
+        setFilters({ selected, variables })
+    }, [])
+
+    if (!online && !data?.categoryList) return <Error type="Offline" fullScreen />
+
+    if (!loading && !data?.categoryList) {
         return <Error type="404" button={{ text: 'Search', as: Link, href: '/search' }} />
     }
-
-    const page = category.queries.category.data?.page && category.queries.category.data.page[0]
-
-    const categoryUrlSuffix = category.queries.category.data?.store?.categoryUrlSuffix ?? ''
-
-    const mode = page?.mode || _mode
 
     return (
         <React.Fragment key={`category--${mode}--${page?.id}`}>
@@ -56,15 +63,33 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
 
             <Root>
                 {/* PageBuilder Content */}
-                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PAGE') && <PageBuilder html={page?.block?.content || page?.description} />}
+                {/PAGE/.test(mode) && <React.Fragment>{mode === 'PAGE' && loading && page ? <PageSkeleton /> : <PageBuilder html={page.block?.content || page.description} />}</React.Fragment>}
 
                 {/* Product List */}
-                {(mode === 'PRODUCTS_AND_PAGE' || mode === 'PRODUCTS') && (
+                {/PRODUCTS/.test(mode) && (
                     <React.Fragment>
-                        <TopBar>
-                            <TopBarWrapper $margin>
+                        <TopBar sticky>
+                            <HeadingWrapper>
                                 <Heading>
-                                    <Title>{!page?.title && category.queries.category.loading ? <TitleSkeleton /> : page.title}</Title>
+                                    <Title>{!page?.title && loading ? <TitleSkeleton /> : page.title}</Title>
+
+                                    {/* Sub-Categories */}
+                                    {page?.categories?.length > 0 && (
+                                        <Pills
+                                            items={page.categories.map(({ id, mode, text, count, href }: any) => ({
+                                                _id: id,
+                                                as: Link,
+                                                urlResolver: {
+                                                    type: 'CATEGORY',
+                                                    id,
+                                                    mode,
+                                                },
+                                                count,
+                                                text,
+                                                href: '/' + href + categoryUrlSuffix,
+                                            }))}
+                                        />
+                                    )}
 
                                     {/* Breadcrumbs */}
                                     {page?.categories?.length === 0 && page.breadcrumbs && (
@@ -83,59 +108,21 @@ export const Category: FunctionComponent<CategoryProps> = ({ id, mode: _mode = '
                                             }))}
                                         />
                                     )}
-
-                                    {/* Sub-Categories */}
-                                    {page?.categories && (
-                                        <Pills
-                                            items={page.categories.map(({ id, mode, text, count, href }: any) => ({
-                                                _id: id,
-                                                as: Link,
-                                                urlResolver: {
-                                                    type: 'CATEGORY',
-                                                    id,
-                                                    mode,
-                                                },
-                                                count,
-                                                text,
-                                                href: '/' + href + categoryUrlSuffix,
-                                            }))}
-                                        />
-                                    )}
                                 </Heading>
+                            </HeadingWrapper>
 
-                                {products.data?.filters && (
-                                    <TopBarFilterButton as="button" type="button" onClick={products.api.togglePanel}>
-                                        <span>
-                                            <Icon svg={FiltersIcon} aria-label="Filters" count={products.data?.filters.count} />
-                                        </span>
-                                    </TopBarFilterButton>
-                                )}
-                            </TopBarWrapper>
+                            <TopBarFilterToggleButton onClick={() => setPanelOpen(!panelOpen)}>
+                                <Icon svg={panelOpen ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={Object.keys(filters.selected).length > 0} />
+                            </TopBarFilterToggleButton>
                         </TopBar>
 
-                        <Products
-                            {...{
-                                ...products,
-                                data: {
-                                    ...products.data,
-                                    sorting:
-                                        /**
-                                         * Filter Sort By Options for those provided by the User on the Category level.
-                                         * GraphQL Query is returning empty if the user selects the default [] Use All
-                                         */
-                                        page?.availableSortBy.length > 0 && products.data
-                                            ? {
-                                                  ...products.data.sorting,
-                                                  default: page.defaultSortBy,
-                                                  defaultValues: { sortBy: page.defaultSortBy + ',DESC' },
-                                                  options: products.data.sorting?.options?.filter((x: any) => {
-                                                      return page.availableSortBy.findIndex((y: string) => y === x.value) > -1
-                                                  }),
-                                              }
-                                            : products.data?.sorting,
-                                },
-                            }}
-                        />
+                        <ProductsWrapper>
+                            <Products {...products} loading={loading || products.loading} />
+                        </ProductsWrapper>
+
+                        <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
+                            {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
+                        </Sidebar>
                     </React.Fragment>
                 )}
             </Root>

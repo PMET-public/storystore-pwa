@@ -1,15 +1,15 @@
 import React from 'react'
 import { Component } from '@storystore/ui/dist/lib'
 import dynamic from 'next/dynamic'
+import { ProductCarouselProps } from '~/components/ProductCarousel'
+import Link from '~/components/Link'
+import { resolveImage } from '~/lib/resolveImage'
+import { useQuery } from '@apollo/client'
+import { PRODUCTS_QUERY } from '.'
 
-import { useProducts } from './useProducts'
+const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
-import ProductList from '@storystore/ui/dist/components/ProductList'
-import { ProductCarouselProps } from '@storystore/ui/dist/components/ProductCarousel'
-import Link from '../../../Link'
-import { resolveImage } from '../../../../lib/resolveImage'
-
-const ProductCarousel = dynamic(() => import('@storystore/ui/dist/components/ProductCarousel'), { ssr: false })
+const ProductCarousel = dynamic(() => import('~/components/ProductCarousel'))
 
 export type ProductsProps = {
     appearance?: 'grid' | 'carousel'
@@ -18,14 +18,16 @@ export type ProductsProps = {
 }
 
 export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, slider, ...props }) => {
-    const { loading, data } = useProducts({ skus })
+    const { data, loading } = useQuery(PRODUCTS_QUERY, {
+        variables: { skus, pageSize: skus.length },
+    })
 
     const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
     if (appearance === 'carousel') {
         return (
             <ProductCarousel
-                loadingMore={loading && !data?.products?.items}
+                loading={loading && !data?.products?.items}
                 items={data?.products?.items?.map(({ id, title, urlKey, image, price, options }: any) => ({
                     _id: id,
                     title: {
@@ -39,10 +41,15 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
-                        src: {
-                            desktop: resolveImage(image.src, { width: 1260 }),
-                            mobile: resolveImage(image.src, { width: 960 }),
-                        },
+                        src: resolveImage(image.src, { width: 960, height: 960 }),
+                        sources: [
+                            <source key="mobile-webp" type="image/webp" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960, type: 'webp' })} />,
+                            <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960 })} />,
+                            <source key="desktop-webp" type="image/webp" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
+                            <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, height: 1260 })} />,
+                        ],
+                        width: 960,
+                        height: 960,
                     },
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,
@@ -63,7 +70,7 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
     if (appearance === 'grid') {
         return (
             <ProductList
-                loadingMore={loading && !data?.products?.items}
+                loading={loading && !data?.products?.items}
                 items={data?.products?.items?.map(({ title, urlKey, image, options, price }: any) => ({
                     title: {
                         text: title,
@@ -76,10 +83,15 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
                     },
                     image: {
                         alt: image.alt,
-                        src: {
-                            desktop: resolveImage(image.src, { width: 1260 }),
-                            mobile: resolveImage(image.src, { width: 960 }),
-                        },
+                        src: resolveImage(image.src, { width: 960, height: 960 }),
+                        sources: [
+                            <source key="mobile-webp" type="image/webp" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960, type: 'webp' })} />,
+                            <source key="mobile" media="(max-width: 991px)" srcSet={resolveImage(image.src, { width: 960, height: 960 })} />,
+                            <source key="desktop-webp" type="image/webp" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, type: 'webp' })} />,
+                            <source key="desktop" media="(min-width: 992px)" srcSet={resolveImage(image.src, { width: 1260, height: 1260 })} />,
+                        ],
+                        width: 960,
+                        height: 960,
                     },
                     price: {
                         label: price.maximum.regular.value > price.minimum.regular.value ? 'Starting at' : undefined,

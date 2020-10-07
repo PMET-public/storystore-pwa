@@ -1,28 +1,37 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { withApollo } from '~/lib/apollo/withApollo'
-import { withStoryStore } from '~/lib/storystore'
+import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
+import { APP_QUERY } from '~/components/App'
+import { initializeApollo } from '~/lib/apollo/client'
+import { useQuery } from '@apollo/client'
+import { useStoryStore } from '~/lib/storystore'
 
-import App from '~/components/App'
-import HomeTemplate from '../components/Home'
+const Home: NextPage = () => {
+    const { settings } = useStoryStore()
 
-type HomeProps = {}
+    const home = useQuery(HOME_PAGE_QUERY, { variables: { id: settings?.homePage }, skip: !settings?.homePage, fetchPolicy: 'cache-first' })
 
-const Home: NextPage<HomeProps> = ({}) => {
-    return (
-        <App>
-            <HomeTemplate />
-        </App>
-    )
+    return <HomeTemplate {...home} />
 }
 
-// Enable next.js ssr
-Home.getInitialProps = async ({ res }) => {
-    if (!Boolean(process.env.CLOUD_MODE)) {
-        res?.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate')
+Home.getInitialProps = async ({ req, res }) => {
+    if (Boolean(process.env.CLOUD_MODE) === false) {
+        res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }
 
-    return {}
+    if (!req) return {} // csr
+
+    const apolloClient = initializeApollo(null, req?.headers.cookie)
+
+    const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
+
+    const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+
+    await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
+
+    return {
+        initialState: apolloClient.cache.extract(),
+    }
 }
 
-export default withApollo(withStoryStore(Home))
+export default Home

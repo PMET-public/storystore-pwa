@@ -1,7 +1,0 @@
-#import "./_ContactInfo.graphql"
-
-query ContactInfoQuery($cartId: String!) {
-    cart(cart_id: $cartId) @connection(key: "appCart") {
-        ...ContactInfo
-    }
-}

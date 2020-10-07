@@ -1,14 +1,12 @@
 import React, { FunctionComponent, useState, useCallback, useRef, useEffect } from 'react'
 import { Root, Wrapper, Buttons, Title, Details, Label, Value, RootErrors, ErrorItem, ErrorItemContent, ErrorItemIcon } from './Settings.styled'
 import { version } from '~/package.json'
-
-import { useStoryStore } from '~/hooks/useStoryStore/useStoryStore'
-import { useSettings } from './useSettings'
-
-import Form, { Input, FormContext } from '@storystore/ui/dist/components/Form'
+import { useStoryStore } from '~/lib/storystore'
+import Form, { Input } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
 import Loader from '@storystore/ui/dist/components/Loader'
+import { QueryResult } from '@apollo/client'
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
@@ -20,18 +18,16 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-type SettingsProps = {}
-
-export const Settings: FunctionComponent<SettingsProps> = () => {
+export const Settings: FunctionComponent<QueryResult> = ({ data, loading: _loading }) => {
     const { settings, setMagentoUrl, reset } = useStoryStore()
 
     const [saving, setSaving] = useState(false)
 
-    const { data, loading: _loading } = useSettings()
-
     const loading = saving || _loading
 
-    const formRef = useRef<FormContext>()
+    const formRef = useRef<HTMLFormElement>()
+
+    const magentoVersion = loading ? <Loader style={{ display: 'inline-grid', fontSize: '1.2rem' }} /> : settings?.version ?? '–'
 
     const [notices, setNotices] = useState<{ [key: string]: any } | undefined>()
 
@@ -47,7 +43,7 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
 
             if (data?.errors) {
                 data.errors.forEach(error => {
-                    formRef.current?.setError(error.key, error.level, error.message)
+                    formRef.current?.setError(error.key, { type: error.level, message: error.message })
                 })
 
                 if (data.errors.find(e => e.level === 'error')) {
@@ -73,7 +69,9 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
             if (payload.magentoUrl) {
                 try {
                     const res = await handleCheckEndpoint(payload.magentoUrl)
+
                     if (res?.magentoUrl) setMagentoUrl(res.magentoUrl)
+
                     toast.success('👍 Saved!')
                 } catch (error) {
                     toast.error('💩 There was an issue. Try again.')
@@ -110,7 +108,7 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
 
                 <Details>
                     <Label>Magento Version</Label>
-                    <Value>{settings.version || 'n/a'}</Value>
+                    <Value>{magentoVersion}</Value>
                 </Details>
 
                 <Form
@@ -124,6 +122,7 @@ export const Settings: FunctionComponent<SettingsProps> = () => {
                 >
                     <Input
                         name="magentoUrl"
+                        loading={loading && !data?.config.baseUrl}
                         disabled={loading}
                         label="Magento URL"
                         style={{ textOverflow: 'ellipsis' }}

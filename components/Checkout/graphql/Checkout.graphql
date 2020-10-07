@@ -1,0 +1,7 @@
+#import "~/graphql/_CartContent.graphql"
+
+query CheckoutQuery($cartId: String!) {
+    cart(cart_id: $cartId) {
+        ...CartContent
+    }
+}
