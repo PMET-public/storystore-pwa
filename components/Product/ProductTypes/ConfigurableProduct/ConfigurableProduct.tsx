@@ -1,29 +1,42 @@
 import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
 import { Root } from './ConfigurableProduct.styled'
-import Form, { TextSwatches, Select, Quantity, Error } from '@storystore/ui/dist/components/Form'
+import Form, { TextSwatches, Select, Quantity, Error, TextSwatchesProps } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Button from '@storystore/ui/dist/components/Button'
-import ColorSwatches from '@storystore/ui/dist/components/Form/ColorSwatches'
-import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
+import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/components/Form/ColorSwatches'
+import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
-import { useProductLayout, priceDataToProps } from '../../Product'
-import { useQuery } from '@apollo/client'
-
-import CONFIGURABLE_PRODUCT_QUERY from '../../graphql/ConfigurableProduct.graphql'
+import { useProductLayout, priceDataToProps, ProductGallery } from '../../Product'
 
 export type ConfigurableProductProps = {
+    sku: string
+    stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
+    options: Array<{
+        id: string | number
+        label: string
+        required: boolean
+        code: string
+        items: Array<{
+            id: string | number
+            label: string
+            value: string
+            swatch: TextSwatchesProps | ColorSwatchesProps | ThumbSwatchesProps
+        }>
+    }>
+    variants: Array<{
+        product: {
+            variantSku: string
+            gallery: ProductGallery
+            price: any
+        }
+    }>
+    gallery: ProductGallery
     urlKey: string
 }
 
-export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ urlKey }) => {
-    const { loading, data } = useQuery(CONFIGURABLE_PRODUCT_QUERY, { variables: { urlKey } })
-
-    // TODO: SKELETON
-
-    const product = data?.product?.items[0]
-
+export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = product => {
     const { cartId } = useStoryStore()
 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })

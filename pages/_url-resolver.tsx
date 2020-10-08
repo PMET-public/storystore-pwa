@@ -45,7 +45,6 @@ const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
     const product = useQuery(PRODUCT_QUERY, {
         variables: { urlKey },
         fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
     })
 
     return <ProductComponent {...product} />

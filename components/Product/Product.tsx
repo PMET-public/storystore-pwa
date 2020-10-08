@@ -183,7 +183,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                         {/* Product Type Form */}
                                         {product.type === 'SimpleProduct' && <SimpleProduct {...product} />}
 
-                                        {product.type === 'ConfigurableProduct' && <ConfigurableProduct urlKey={product.urlKey} />}
+                                        {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
 
                                         {product.type === 'GroupedProduct' && <GroupedProduct {...product} />}
 
