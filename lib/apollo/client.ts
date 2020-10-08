@@ -4,7 +4,7 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import QueueLink from 'apollo-link-queue'
 import possibleTypes from '~/lib/apollo/possibleTypes.json'
-// import { stripIgnoredCharacters } from 'graphql'
+import { stripIgnoredCharacters } from 'graphql'
 
 let apolloClient: ApolloClient<any>
 
@@ -44,29 +44,29 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         // in practice are typically set at or behind where TLS terminates. For Magento
         // Cloud and Fastly, 8kb is the maximum by default
         // https://docs.fastly.com/en/guides/resource-limits#request-and-response-limits
-        // useGETForQueries: true,
+        useGETForQueries: true,
 
-        // fetch: (uri: string, options: RequestInit) => {
-        //     let url = uri.toString()
+        fetch: (uri: string, options: RequestInit) => {
+            let url = uri.toString()
 
-        //     if (options?.method === 'GET') {
-        //         const _url = new URL(url)
+            if (options?.method === 'GET') {
+                const _url = new URL(url)
 
-        //         // Read from URL implicitly decodes the querystring
-        //         const query = _url.searchParams.get('query')
+                // Read from URL implicitly decodes the querystring
+                const query = _url.searchParams.get('query')
 
-        //         if (!query) return uri
+                if (!query) return uri
 
-        //         const strippedQuery = stripIgnoredCharacters(query)
+                const strippedQuery = stripIgnoredCharacters(query)
 
-        //         // URLSearchParams.set will use application/x-www-form-urlencoded encoding
-        //         _url.searchParams.set('query', strippedQuery)
+                // URLSearchParams.set will use application/x-www-form-urlencoded encoding
+                _url.searchParams.set('query', strippedQuery)
 
-        //         url = _url.toString()
-        //     }
+                url = _url.toString()
+            }
 
-        //     return fetch(url, options) as any
-        // },
+            return fetch(url, options) as any
+        },
     })
 
     const retryLink = new RetryLink({
