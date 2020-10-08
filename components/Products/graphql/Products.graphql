@@ -17,7 +17,7 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
         ...filters
 
         items {
-            id: url_key
+            id
             urlKey: url_key
             sku
             title: name

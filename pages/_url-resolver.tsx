@@ -48,8 +48,6 @@ const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
         returnPartialData: true,
     })
 
-    console.log(product)
-
     return <ProductComponent {...product} />
 }
 
