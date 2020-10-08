@@ -36,7 +36,7 @@
     "html-react-parser": "^0.13.0",
     "jarallax": "^1.12.1",
     "jsdom": "^16.4.0",
-    "next": "9.5.2",
+    "next": "9.5.4",
     "next-offline": "^5.0.2",
     "nextjs-progressbar": "^0.0.5",
     "node-fetch": "^2.6.0",
