@@ -107,7 +107,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const product = data?.products?.items[0]
 
-    const shortDescription = useHtml(product?.shortDescription.html)
+    const shortDescription = useHtml(product?.shortDescription?.html)
 
     const [gallery = product?.gallery, setGallery] = useState<ProductGallery>()
 

@@ -108,7 +108,6 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
                 window.scrollTo(0, 0)
             } catch (e) {
-                console.log(e)
                 setError(e.message)
             }
         },

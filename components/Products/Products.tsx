@@ -55,7 +55,6 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
             <Wrapper>
                 <ProductListWrapper $margin ref={productListRef}>
                     <ProductList
-                        loading={loading}
                         loadingMore={loading || fetchingMore}
                         items={items
                             ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
