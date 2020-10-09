@@ -1,3 +1,4 @@
+#import "~/graphql/_Product.graphql"
 #import "~/graphql/_pagination.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_filters.graphql"
@@ -19,29 +20,18 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
         items {
             id
             urlKey: url_key
-            sku
-            title: name
-            type: __typename
-
-            ...price
 
             image {
                 alt: label
                 src: url
             }
+            
+            ...Product
+
+            ...price
 
             gallery: media_gallery {
                 ...Gallery
-            }
-
-            shortDescription: short_description {
-                html
-            }
-
-            descriptionContainer: options_container
-
-            description: description {
-                html
             }
 
             ... on DownloadableProduct {

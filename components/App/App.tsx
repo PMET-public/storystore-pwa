@@ -221,7 +221,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                             title: storeConfig?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
-                            items: categories[0]?.children?.map(({ id, text, href: _href, mode }: any) => {
+                            items: categories[0]?.children?.map(({ id, title, href: _href, mode }: any) => {
                                 const href = _href + categoryUrlSuffix
 
                                 return {
@@ -233,7 +233,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                                         mode,
                                     },
                                     href: '/' + href,
-                                    text,
+                                    text: title,
                                 }
                             }),
                         }}

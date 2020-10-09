@@ -115,6 +115,66 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
         possibleTypes,
 
         typePolicies: {
+            /**
+             * Use the same Key for all Product Types to make it easier to access
+             */
+            SimpleProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            VirtualProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            DownloadableProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            GiftCardProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            BundleProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            GroupedProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+            ConfigurableProduct: {
+                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+            },
+
+            Query: {
+                fields: {
+                    categoryList(existing, { args, canRead, toReference }) {
+                        /**
+                         * Look for Category reference in Cache
+                         */
+
+                        if (args?.filters?.ids?.eq) {
+                            const reference = toReference({
+                                __typename: 'CategoryTree',
+                                id: args.filters.ids.eq,
+                            })
+
+                            return canRead(reference) ? [{ ...reference }] : [{ ...existing }]
+                        }
+
+                        return existing
+                    },
+                    products(existing, { args, canRead, toReference }) {
+                        /**
+                         * Look for Product reference in Cache
+                         */
+                        if (args?.filter?.url_key?.eq) {
+                            const reference = toReference({
+                                __typename: 'Product',
+                                id: args.filter.url_key.eq,
+                            })
+
+                            return canRead(reference) ? { ...existing, items: [{ ...reference }] } : { ...existing }
+                        }
+                        return { ...existing }
+                    },
+                },
+            },
+
             Cart: {
                 keyFields: () => 'AppCart',
                 fields: {

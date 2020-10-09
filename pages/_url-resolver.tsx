@@ -36,6 +36,7 @@ const Category: FunctionComponent<{ id: number }> = ({ id }) => {
     const category = useQuery(CATEGORY_QUERY, {
         variables: { id: id.toString() },
         fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
     })
 
     return <CategoryComponent {...category} />
@@ -45,6 +46,7 @@ const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
     const product = useQuery(PRODUCT_QUERY, {
         variables: { urlKey },
         fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
     })
 
     return <ProductComponent {...product} />
@@ -143,7 +145,7 @@ UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
             case CONTENT_TYPE.CATEGORY:
                 const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
 
-                if (/PRODUCTS/.test(data.categoryList[0].mode)) {
+                if (/PRODUCTS/.test(data?.categoryList[0]?.mode)) {
                     await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id } } } })
                 }
                 break

@@ -1,3 +1,4 @@
+#import "~/graphql/_Product.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_Gallery.graphql"
 
@@ -14,32 +15,13 @@ query ProductQuery($urlKey: String!) {
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
-            sku
-            stock: stock_status
-            title: name
-            type: __typename
 
-            categories {
-                id
-                text: name
-                href: url_path
-                mode: display_mode
-            }
+            ...Product
 
             ...price
 
             gallery: media_gallery {
                 ...Gallery
-            }
-
-            shortDescription: short_description {
-                html
-            }
-
-            descriptionContainer: options_container
-
-            description: description {
-                html
             }
 
             ... on GroupedProduct {

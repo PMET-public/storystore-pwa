@@ -44,10 +44,15 @@ query AppQuery {
         id
         children {
             id
-            text: name
+            title: name
             href: url_path
             image
             mode: display_mode
+            description: description
+            block: cms_block {
+                id: identifier
+                content
+            }
         }
     }
 }
