@@ -8,6 +8,7 @@ fragment Product on ProductInterface {
         id
         text: name
         href: url_path
+        urlSuffix: url_suffix
         mode: display_mode
     }
 
@@ -16,8 +17,6 @@ fragment Product on ProductInterface {
     }
 
     descriptionContainer: options_container
-
-    
 
     description: description {
         html

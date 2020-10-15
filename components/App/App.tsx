@@ -186,8 +186,6 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
 
     const { storeConfig, categories = [] } = data || {}
 
-    const categoryUrlSuffix = storeConfig?.categoryUrlSuffix ?? ''
-
     return (
         <React.Fragment>
             <NextNprogress color={settings?.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
@@ -221,8 +219,8 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                             title: storeConfig?.logoAlt || 'StoryStore PWA',
                         }}
                         menu={{
-                            items: categories[0]?.children?.map(({ id, title, href: _href, mode }: any) => {
-                                const href = _href + categoryUrlSuffix
+                            items: categories[0]?.children?.map(({ id, title, href: _href, mode, urlSuffix = '' }: any) => {
+                                const href = _href + urlSuffix
 
                                 return {
                                     active: isUrlActive('/' + href),
@@ -331,8 +329,8 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                 closeOnTouchOutside
                 categories={{
                     title: 'Shop by Category',
-                    items: categories[0]?.children?.map(({ id, text, href: _href, mode }: any) => {
-                        const href = _href + categoryUrlSuffix
+                    items: categories[0]?.children?.map(({ id, text, href: _href, mode, urlSuffix = '' }: any) => {
+                        const href = _href + urlSuffix
 
                         return {
                             as: Link,

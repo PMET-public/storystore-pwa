@@ -119,25 +119,25 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
              * Use the same Key for all Product Types to make it easier to access
              */
             SimpleProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             VirtualProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             DownloadableProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             GiftCardProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             BundleProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             GroupedProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
             ConfigurableProduct: {
-                keyFields: ({ urlKey }) => `Product:${urlKey}`,
+                keyFields: ({ id, urlKey }) => `Product:${urlKey || id}`,
             },
 
             Query: {

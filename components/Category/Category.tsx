@@ -33,8 +33,6 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
     const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
 
-    const categoryUrlSuffix = data?.storeConfig.categoryUrlSuffix
-
     const page = data?.categoryList && data.categoryList[0]
 
     const mode = page?.mode || 'PRODUCTS'
@@ -87,7 +85,7 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                 },
                                                 count,
                                                 text,
-                                                href: '/' + href + categoryUrlSuffix,
+                                                href: '/' + href + (page.urlSuffix ?? ''),
                                             }))}
                                         />
                                     )}
@@ -104,7 +102,7 @@ export const Category: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                     id,
                                                     mode,
                                                 },
-                                                href: '/' + href + categoryUrlSuffix,
+                                                href: '/' + href + (page.urlSuffix ?? ''),
                                                 text,
                                             }))}
                                         />

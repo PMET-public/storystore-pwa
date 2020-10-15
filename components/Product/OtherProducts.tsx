@@ -47,8 +47,6 @@ export const OtherProducts: FunctionComponent<OtherProductsProps> = ({ urlKey })
 
     const product = data?.product?.items[0]
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
     return (
         <React.Fragment>
             {/* Related Products */}
@@ -57,13 +55,13 @@ export const OtherProducts: FunctionComponent<OtherProductsProps> = ({ urlKey })
                     <Title>Related Products</Title>
                     <ProductCarousel
                         loading={loading && !product?.related}
-                        items={product.related.map(({ id, title, urlKey, image, price, options }: any) => ({
+                        items={product.related.map(({ id, title, image, price, options, urlKey, urlSuffix = '' }: any) => ({
                             _id: id,
                             title: {
                                 text: title,
                             },
                             as: Link,
-                            href: `/${urlKey}${productUrlSuffix}`,
+                            href: `/${urlKey}${urlSuffix}`,
                             urlResolver: {
                                 type: 'PRODUCT',
                                 urlKey,
@@ -92,12 +90,12 @@ export const OtherProducts: FunctionComponent<OtherProductsProps> = ({ urlKey })
                     <Title>You may also like</Title>
                     <ProductCarousel
                         loading={loading && !product?.upsell}
-                        items={product.upsell.map(({ title, urlKey, image, price, options }: any) => ({
+                        items={product.upsell.map(({ title, image, price, options, urlKey = '' }: any) => ({
                             title: {
                                 text: title,
                             },
                             as: Link,
-                            href: `/${urlKey}${productUrlSuffix}`,
+                            href: `/${urlKey}${urlKey}`,
                             urlResolver: {
                                 type: 'PRODUCT',
                                 urlKey,

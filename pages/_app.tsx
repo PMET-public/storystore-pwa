@@ -18,9 +18,6 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
     return (
         <React.Fragment>
             <Head>
-                <noscript>
-                    <div style={{ padding: '2rem', backgroundColor: baseTheme.colors.error, color: baseTheme.colors.onError }}>🤔 Enable javascript to run this web app.</div>
-                </noscript>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
@@ -41,6 +38,10 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                 {/* Adobe Fonts */}
                 <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
             </Head>
+
+            <noscript>
+                <div style={{ padding: '2rem', backgroundColor: baseTheme.colors.error, color: baseTheme.colors.onError }}>🤔 Enable javascript to run this web app.</div>
+            </noscript>
             <StoryStoreProvider cartId={cartId} settings={settings}>
                 <ThemeProvider
                     theme={{

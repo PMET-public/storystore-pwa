@@ -38,8 +38,6 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
 
     const { items = [], appliedCoupons, totalQuantity, prices, shippingAddresses } = data?.cart || {}
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
     if (loading && !data) return <ViewLoader />
 
     if ((!loading && totalQuantity < 1) || !data) {
@@ -77,7 +75,7 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                         type: 'PRODUCT',
                                         urlKey: product.urlKey,
                                     },
-                                    href: `/${product.urlKey}${productUrlSuffix}`,
+                                    href: `/${product.urlKey}${product.urlSuffix ?? ''}`,
                                     text: product.name,
                                 },
                                 sku: `SKU. ${product.sku}`,

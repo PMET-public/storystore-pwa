@@ -5,11 +5,6 @@
 #import "~/graphql/_Gallery.graphql"
 
 query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sort: ProductAttributeSortInput, $pageSize: Int = 12, $currentPage: Int = 1) {
-    store: storeConfig {
-        id
-        productUrlSuffix: product_url_suffix
-    }
-
     products(search: $search, filter: $filters, sort: $sort, pageSize: $pageSize, currentPage: $currentPage) @connection(key: "Products", filter: ["filter", "search"]) {
         count: total_count
 
@@ -20,12 +15,13 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
         items {
             id
             urlKey: url_key
+            urlSuffix: url_suffix
 
             image {
                 alt: label
                 src: url
             }
-            
+
             ...Product
 
             ...price

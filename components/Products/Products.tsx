@@ -11,8 +11,6 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
 
     const { pagination, items } = data?.products ?? {}
 
-    const productUrlSuffix = data?.store?.productUrlSuffix || ''
-
     /**
      * Infinite Scroll
      */
@@ -58,15 +56,14 @@ export const Products: FunctionComponent<QueryResult> = ({ data, loading, fetchM
                         loadingMore={loading || fetchingMore}
                         items={items
                             ?.filter((x: any) => x !== null) // patches results returning nulls. I'm looking at you Gift Cards
-                            .map(({ id, image, price, title, urlKey, options, group, downloads }: any, index: number) => ({
+                            .map(({ id, image, price, title, options, group, downloads, urlKey, urlSuffix = '' }: any, index: number) => ({
                                 lazy: index > 0,
                                 _id: `${id}--${index}`,
                                 as: Link,
-                                href: `/${urlKey + productUrlSuffix}`,
+                                href: urlKey + urlSuffix,
                                 urlResolver: {
                                     type: 'PRODUCT',
                                     id,
-                                    urlKey,
                                 },
                                 image: {
                                     alt: image.alt,

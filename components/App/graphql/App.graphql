@@ -2,7 +2,6 @@ query AppQuery {
     storeConfig {
         id
         baseMediaUrl: base_media_url
-        categoryUrlSuffix: category_url_suffix
         copyright
         homePage: cms_home_page
         logoAlt: logo_alt
@@ -46,6 +45,7 @@ query AppQuery {
             id
             title: name
             href: url_path
+            urlSuffix: url_suffix
             image
             mode: display_mode
             description: description

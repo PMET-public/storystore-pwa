@@ -121,8 +121,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
         setPrice(value)
     }, [])
 
-    const categoryUrlSuffix = data?.store?.categoryUrlSuffix ?? ''
-
     if (!online && !product) return <ErrorComponent type="Offline" fullScreen />
 
     if (!loading && !product) {
@@ -157,7 +155,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                     items={product.categories
                                                         .slice(0, 4) // limit to 3
                                                         .filter((x: any) => !!x.href)
-                                                        .map(({ id, mode, text, href }: any) => ({
+                                                        .map(({ id, mode, text, href, urlSuffix = '' }: any) => ({
                                                             _id: id,
                                                             as: Link,
                                                             urlResolver: {
@@ -165,7 +163,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
                                                                 id,
                                                                 mode,
                                                             },
-                                                            href: '/' + href + categoryUrlSuffix,
+                                                            href: '/' + href + urlSuffix,
                                                             text,
                                                         }))}
                                                 />

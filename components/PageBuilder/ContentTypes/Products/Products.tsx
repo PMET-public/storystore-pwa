@@ -22,19 +22,17 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         variables: { skus, pageSize: skus.length },
     })
 
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
-
     if (appearance === 'carousel') {
         return (
             <ProductCarousel
                 loading={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ id, title, urlKey, image, price, options }: any) => ({
+                items={data?.products?.items?.map(({ id, title, urlKey, urlSuffix = '', image, price, options }: any) => ({
                     _id: id,
                     title: {
                         text: title,
                     },
                     as: Link,
-                    href: `/${urlKey}${productUrlSuffix}`,
+                    href: `/${urlKey}${urlSuffix}`,
                     urlResolver: {
                         type: 'PRODUCT',
                         urlKey,
@@ -71,12 +69,12 @@ export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, 
         return (
             <ProductList
                 loading={loading && !data?.products?.items}
-                items={data?.products?.items?.map(({ title, urlKey, image, options, price }: any) => ({
+                items={data?.products?.items?.map(({ title, urlKey, urlSuffix = '', image, options, price }: any) => ({
                     title: {
                         text: title,
                     },
                     as: Link,
-                    href: `/${urlKey}${productUrlSuffix}`,
+                    href: `/${urlKey}${urlSuffix}`,
                     urlResolver: {
                         type: 'PRODUCT',
                         urlKey,

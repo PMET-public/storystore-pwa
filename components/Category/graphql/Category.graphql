@@ -1,12 +1,7 @@
 query CategoryQuery($id: String!) {
-    storeConfig {
-        id
-        categoryUrlSuffix: category_url_suffix
-    }
-
     categoryList(filters: { ids: { eq: $id } }) {
         id
-
+        urlSuffix: url_suffix
         title: name
         description: description
         block: cms_block {

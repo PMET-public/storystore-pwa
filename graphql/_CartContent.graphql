@@ -19,6 +19,7 @@ fragment CartContent on Cart {
             sku
             name
             urlKey: url_key
+            urlSuffix: url_suffix
             type: __typename
             thumbnail {
                 label
