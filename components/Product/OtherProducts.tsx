@@ -120,3 +120,5 @@ export const OtherProducts: FunctionComponent<OtherProductsProps> = ({ urlKey })
         </React.Fragment>
     )
 }
+
+export default OtherProducts

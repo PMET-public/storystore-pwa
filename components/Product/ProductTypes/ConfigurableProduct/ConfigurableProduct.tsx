@@ -1,42 +1,33 @@
 import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
 import { Root } from './ConfigurableProduct.styled'
-import Form, { TextSwatches, Select, Quantity, Error, TextSwatchesProps } from '@storystore/ui/dist/components/Form'
+import { useQuery } from '@apollo/client'
+import { CONFIGURABLE_PRODUCT_QUERY } from '.'
+import Form, { TextSwatches, Select, Quantity, Error } from '@storystore/ui/dist/components/Form'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Button from '@storystore/ui/dist/components/Button'
-import ColorSwatches, { ColorSwatchesProps } from '@storystore/ui/dist/components/Form/ColorSwatches'
-import ThumbSwatches, { ThumbSwatchesProps } from '@storystore/ui/dist/components/Form/ThumbSwatches'
+import ColorSwatches from '@storystore/ui/dist/components/Form/ColorSwatches'
+import ThumbSwatches from '@storystore/ui/dist/components/Form/ThumbSwatches'
 import { resolveImage } from '~/lib/resolveImage'
-import { useProductLayout, priceDataToProps, ProductGallery } from '../../Product'
+import { useProductLayout, priceDataToProps, ProductGallery } from '~/components/Product'
+import { ConfigurableProductSkeleton } from './ConfigurableProduct.skeleton'
 
 export type ConfigurableProductProps = {
     sku: string
     stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
-    options: Array<{
-        id: string | number
-        label: string
-        required: boolean
-        code: string
-        items: Array<{
-            id: string | number
-            label: string
-            value: string
-            swatch: TextSwatchesProps | ColorSwatchesProps | ThumbSwatchesProps
-        }>
-    }>
-    variants: Array<{
-        product: {
-            variantSku: string
-            gallery: ProductGallery
-            price: any
-        }
-    }>
-    gallery: ProductGallery
     urlKey: string
+    gallery: ProductGallery
 }
 
-export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = product => {
+export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = ({ sku, stock, gallery, urlKey }) => {
+    const { loading, data } = useQuery(CONFIGURABLE_PRODUCT_QUERY, {
+        variables: { filters: { url_key: { eq: urlKey } } },
+        fetchPolicy: 'cache-and-network',
+    })
+
+    const product = data?.products?.items[0]
+
     const { cartId } = useStoryStore()
 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })
@@ -47,15 +38,15 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
-    const [variantSku, setVariantSku] = useState(product?.sku)
+    const [variantSku, setVariantSku] = useState(sku)
 
-    const inStock = (product?.stock ?? 'IN_STOCK') === 'IN_STOCK'
+    const inStock = (stock ?? 'IN_STOCK') === 'IN_STOCK'
 
     const [error, setError] = useState<string | null>(null)
 
     const { setGallery, setPrice } = useProductLayout()
 
-    const variantsIndexes = product?.variants.reduce((accumVariants: any[], current: any) => {
+    const variantsIndexes = product?.variants?.reduce((accumVariants: any[], current: any) => {
         return [
             ...accumVariants,
             current.attributes.reduce((accumAttributes: any, currentAttribute: any) => {
@@ -81,14 +72,14 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
             // If Variant is found...
             if (variantIndex > -1) {
                 // ...get product variant's product data...
-                const _variant = product?.variants[variantIndex].product
+                const _variant = product.variants[variantIndex].product
 
                 // ...get image gallery...
                 let variantGallery = [..._variant.gallery]
 
                 // ...if the gallery only has one image, then only swap the first one so we can still see other angles shots, etc...
-                if (_variant.gallery.length === 1 && product?.gallery.length > 1) {
-                    variantGallery = [...variantGallery, ...[...product.gallery].splice(1)]
+                if (_variant.gallery.length === 1 && gallery.length > 1) {
+                    variantGallery = [...variantGallery, ...[...gallery].splice(1)]
                 }
 
                 setGallery(variantGallery)
@@ -101,7 +92,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 if (price) setPrice(price)
             }
         },
-        [product, setGallery, setPrice, variantsIndexes]
+        [gallery, product, setGallery, setPrice, variantsIndexes]
     )
 
     const handleOnErrors = useCallback(() => {
@@ -112,11 +103,11 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
-            if (!product || !cartId || !inStock || addingConfigurableProductToCart.loading) return
+            if (!cartId || !inStock || addingConfigurableProductToCart.loading) return
 
             try {
                 setError(null)
-                await addConfigurableProductToCart({ sku: product.sku, variantSku, quantity })
+                await addConfigurableProductToCart({ sku: sku, variantSku, quantity })
                 await history.push('/cart')
 
                 window.scrollTo(0, 0)
@@ -124,14 +115,21 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                 setError(e.message)
             }
         },
-        [cartId, inStock, addingConfigurableProductToCart.loading, addConfigurableProductToCart, product, variantSku, history]
+        [cartId, inStock, addingConfigurableProductToCart.loading, addConfigurableProductToCart, sku, variantSku, history]
     )
+
+    /**
+     * Skeleton Loader
+     */
+    if (loading && !product) return <ConfigurableProductSkeleton />
+
+    if (!product) return null
 
     return (
         <div ref={formRef}>
             <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
                 {product?.options
-                    .map(({ id, label, required = true, code, items }: any) => {
+                    ?.map(({ id, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
                             return code === x.code || x.value.toString() === selectedOptions[code]
                         })

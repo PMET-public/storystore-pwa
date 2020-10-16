@@ -8,32 +8,38 @@ import { useRouter } from 'next/router'
 import Link from '~/components/Link'
 import Price from '@storystore/ui/dist/components/Price'
 import { useProductLayout } from '../../Product'
-
+import { useQuery } from '@apollo/client'
+import { DOWNLOADABLE_PRODUCT_QUERY } from '.'
+import { DownloadableProducSkeleton } from './DownloadableProduct.skeleton'
 export type DownloadableProductProps = {
+    urlKey: string
     sku: string
-    downloads?: Array<{ id: number; order: number; title: string; price: number; sampleUrl?: string }>
-    samples?: Array<{ order: number; title: string; url: string }>
     stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
-    price: any
-    linksTitle?: string
 }
 
-export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = ({ linksTitle = 'Downloads', price, sku, downloads = [], samples = [], stock = 'IN_STOCK' }) => {
+export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = ({ sku, price, urlKey, stock = 'IN_STOCK' }) => {
+    const { loading, data } = useQuery(DOWNLOADABLE_PRODUCT_QUERY, {
+        variables: { filters: { url_key: { eq: urlKey } } },
+        fetchPolicy: 'cache-and-network',
+    })
+
+    const product = data?.products?.items[0]
+
+    const currency = price.minimum.regular.currency
+
     const { cartId } = useStoryStore()
 
     const { addDownloadableProductToCart, addingDownloadableProductToCart } = useCart({ cartId })
 
     const { setPrice } = useProductLayout()
 
-    const [selectedDownloads, setSelectedDownloads] = useState([...downloads])
+    const [selectedDownloads, setSelectedDownloads] = useState([...(product?.downloads || [])])
 
     const [error, setError] = useState<string | null>(null)
 
     // Set Prices –
     useEffect(() => {
-        if (downloads.length > 1) {
-            const currency = price?.minimum.regular.currency
-
+        if (product?.downloads.length > 1) {
             if (selectedDownloads?.length > 0) {
                 setPrice({
                     regular: selectedDownloads.reduce((total, { price }) => total + price, 0),
@@ -42,12 +48,12 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
             } else {
                 setPrice({
                     label: 'Starting at',
-                    regular: Math.min(...[...downloads.map(d => d.price)]),
+                    regular: Math.min(...[...product.downloads.map((d: any) => d.price)]),
                     currency,
                 })
             }
         }
-    }, [selectedDownloads, downloads, price?.minimum.regular.currency, setPrice])
+    }, [selectedDownloads, setPrice, product, currency])
 
     const history = useRouter()
 
@@ -84,11 +90,15 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
 
     const handleOnValues = useCallback(
         (values: any) => {
-            const _selectedDownloads = values.downloads.map((id: string) => downloads.find((download: any) => download.id === Number(id)))
+            const _selectedDownloads = values.downloads.map((id: string) => product?.downloads.find((download: any) => download.id === Number(id)))
             setSelectedDownloads(_selectedDownloads)
         },
-        [downloads]
+        [product]
     )
+
+    if (loading && !product) return <DownloadableProducSkeleton />
+
+    if (!product) return null
 
     return (
         <Root as={Form} onValues={handleOnValues} onSubmit={handleAddToCart}>
@@ -96,11 +106,11 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
 
             <Input name="quantity" type="hidden" value={1} rules={{ required: true }} />
 
-            {samples.length > 1 && (
+            {product.samples?.length > 1 && (
                 <Downloads as="ul">
                     <h3>Samples</h3>
 
-                    {samples.map((sample, key) => (
+                    {product.samples.map((sample: any, key: number) => (
                         <li key={key}>
                             <DownloadIcon />
                             <Link href={sample.url} target="_blank">
@@ -112,12 +122,12 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
             )}
 
             {/*  Select downloads you will like to add */}
-            {downloads.length > 1 ? (
+            {product.downloads?.length > 1 ? (
                 <Downloads>
                     <Checkbox
-                        label={linksTitle}
+                        label={product.linksTitle || 'Downloads'}
                         name="downloads"
-                        items={downloads.map(download => ({
+                        items={product.downloads.map((download: any) => ({
                             label: (
                                 <DownloadLabel>
                                     {download.title}
@@ -139,12 +149,12 @@ export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = 
                 </Downloads>
             ) : (
                 <React.Fragment>
-                    {samples.length === 0 && downloads[0].sampleUrl && (
-                        <Link href={downloads[0].sampleUrl} target="_blank">
+                    {product.samples.length === 0 && product.downloads[0].sampleUrl && (
+                        <Link href={product.downloads[0].sampleUrl} target="_blank">
                             <DownloadIcon /> Sample
                         </Link>
                     )}
-                    <Input name="downloads[0]" type="hidden" value={downloads[0].id} rules={{ required: true }} />
+                    <Input name="downloads[0]" type="hidden" value={product.downloads[0].id} rules={{ required: true }} />
                 </React.Fragment>
             )}
 

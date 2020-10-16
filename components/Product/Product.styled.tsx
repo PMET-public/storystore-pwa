@@ -48,13 +48,15 @@ export const Image = styled(ImageComponent)`
     height: 100%;
     object-fit: contain;
     object-position: center;
-    max-height: 70vh;
 
     filter: unset;
 
     @media ${props => props.theme.breakpoints.smallOnly} {
-        max-height: 70vh;
         object-fit: cover;
+    }
+
+    @media ${props => props.theme.breakpoints.medium} {
+        max-height: 140rem;
     }
 `
 

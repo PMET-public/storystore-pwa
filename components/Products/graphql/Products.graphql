@@ -30,6 +30,16 @@ query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sor
                 ...Gallery
             }
 
+            shortDescription: short_description {
+                html
+            }
+
+            description: description {
+                html
+            }
+
+            descriptionContainer: options_container
+
             ... on DownloadableProduct {
                 downloads: downloadable_product_links {
                     id

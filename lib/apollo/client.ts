@@ -210,9 +210,11 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
                     },
                 },
             },
+
             SelectedConfigurableOption: {
                 keyFields: ['id', 'value'],
             },
+
             Breadcrumb: {
                 keyFields: ['category_id'],
             },

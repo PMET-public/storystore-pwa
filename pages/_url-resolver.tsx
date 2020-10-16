@@ -32,6 +32,16 @@ const Page: FunctionComponent<{ id: number }> = ({ id }) => {
     return <PageComponent {...page} />
 }
 
+const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
+    const product = useQuery(PRODUCT_QUERY, {
+        variables: { filters: { url_key: { eq: urlKey } } },
+        fetchPolicy: 'cache-and-network',
+        returnPartialData: true,
+    })
+
+    return <ProductComponent {...product} />
+}
+
 const Category: FunctionComponent<{ id: number }> = ({ id }) => {
     const category = useQuery(CATEGORY_QUERY, {
         variables: { id: id.toString() },
@@ -40,16 +50,6 @@ const Category: FunctionComponent<{ id: number }> = ({ id }) => {
     })
 
     return <CategoryComponent {...category} />
-}
-
-const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
-    const product = useQuery(PRODUCT_QUERY, {
-        variables: { urlKey },
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
-    })
-
-    return <ProductComponent {...product} />
 }
 
 const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
@@ -68,7 +68,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                return <Product {...props} key={urlKey} urlKey={urlKey} />
+                return <Product key={urlKey} urlKey={urlKey} {...props} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
@@ -152,7 +152,7 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
                 }
                 break
             case CONTENT_TYPE.PRODUCT:
-                await apolloClient.query({ query: PRODUCT_QUERY, variables: { urlKey } })
+                await apolloClient.query({ query: PRODUCT_QUERY, variables: { filters: { url_key: { eq: urlKey } } } })
                 break
             default:
                 break

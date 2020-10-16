@@ -188,10 +188,6 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
 
     return (
         <React.Fragment>
-            <NextNprogress color={settings?.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
-            <UIBase />
-            <ToastsStyles />
-
             {/* Head Metadata */}
             {storeConfig && (
                 <Head
@@ -204,6 +200,11 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                     }}
                 />
             )}
+
+            <UIBase />
+            <ToastsStyles />
+
+            <NextNprogress color={settings?.colorAccent || baseTheme.colors.accent} startPosition={0.4} stopDelayMs={200} height={3} options={{ showSpinner: false, easing: 'ease' }} />
 
             <Root>
                 <HeaderContainer as="header" $margin>
@@ -329,7 +330,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                 closeOnTouchOutside
                 categories={{
                     title: 'Shop by Category',
-                    items: categories[0]?.children?.map(({ id, text, href: _href, mode, urlSuffix = '' }: any) => {
+                    items: categories[0]?.children?.map(({ id, title, href: _href, mode, urlSuffix = '' }: any) => {
                         const href = _href + urlSuffix
 
                         return {
@@ -350,7 +351,7 @@ export const App: FunctionComponent<QueryResult> = ({ loading, error, data, chil
                             //     height: 40,
                             // },
                             href: '/' + href,
-                            text,
+                            text: title,
                         }
                     }),
                 }}

@@ -5,7 +5,7 @@ import { ProductCarouselProps } from '~/components/ProductCarousel'
 import Link from '~/components/Link'
 import { resolveImage } from '~/lib/resolveImage'
 import { useQuery } from '@apollo/client'
-import { PRODUCTS_QUERY } from '.'
+import { PRODUCTS_QUERY } from '~/components/Products'
 
 const ProductList = dynamic(() => import('@storystore/ui/dist/components/ProductList'))
 
@@ -19,7 +19,7 @@ export type ProductsProps = {
 
 export const Products: Component<ProductsProps> = ({ appearance = 'grid', skus, slider, ...props }) => {
     const { data, loading } = useQuery(PRODUCTS_QUERY, {
-        variables: { skus, pageSize: skus.length },
+        variables: { filters: { sku: { in: skus } }, pageSize: skus.length },
     })
 
     if (appearance === 'carousel') {

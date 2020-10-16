@@ -1,10 +1,9 @@
 import React, { createContext, FunctionComponent, useCallback, useContext, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, Wrapper, Images, Image, Carousel, CarouselItem, GalleryGrid, InfoWrapper, InfoInnerWrapper, Info, Header, Title, Sku, ShortDescription, Description } from './Product.styled'
-
+import { QueryResult } from '@apollo/client'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { resolveImage } from '~/lib/resolveImage'
-import { QueryResult } from '@apollo/client'
 import Head from '~/components/Head'
 import Link from '~/components/Link'
 import { ProductDetailsSkeleton } from './ProductDetails.skeleton'
@@ -13,8 +12,7 @@ import Price, { PriceProps } from '@storystore/ui/dist/components/Price'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
 import PageBuilder from '~/components/PageBuilder'
 import useHtml from '~/hooks/useHtml'
-import { OtherProducts } from './OtherProducts'
-import { isPageBuilderHtml } from '../PageBuilder/lib/utils'
+import { isPageBuilderHtml } from '~/components/PageBuilder/lib/utils'
 
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
@@ -22,6 +20,7 @@ const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct'))
 const DownloadableProduct = dynamic(() => import('./ProductTypes/DownloadableProduct'))
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
 const GiftCard = dynamic(() => import('./ProductTypes/GiftCard'))
+const OtherProducts = dynamic(() => import('./OtherProducts'))
 
 const ErrorComponent = dynamic(() => import('~/components/Error'))
 
@@ -189,7 +188,6 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                                         {product.type === 'DownloadableProduct' && <DownloadableProduct {...product} />}
 
-                                        {/* TODO: ... */}
                                         {product.type === 'GiftCard' && <GiftCard {...product} />}
 
                                         {(product.descriptionContainer === 'container1' || !isDescriptionPageBuilder) && product?.description?.html && (
@@ -204,7 +202,7 @@ export const Product: FunctionComponent<QueryResult> = ({ loading, data }) => {
 
                 {product?.descriptionContainer === 'container2' && isDescriptionPageBuilder && product?.description?.html && <Description as={PageBuilder} html={product.description.html} />}
 
-                {product?.urlKey && <OtherProducts urlKey={product.urlKey} />}
+                {(product?.related || product?.related) && <OtherProducts urlKey={product.urlKey} />}
             </Root>
         </ProductContext.Provider>
     )

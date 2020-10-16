@@ -11,14 +11,4 @@ fragment Product on ProductInterface {
         urlSuffix: url_suffix
         mode: display_mode
     }
-
-    shortDescription: short_description {
-        html
-    }
-
-    descriptionContainer: options_container
-
-    description: description {
-        html
-    }
 }

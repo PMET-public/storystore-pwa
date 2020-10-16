@@ -1,0 +1,59 @@
+#import "~/graphql/_price.graphql"
+#import "~/graphql/_Gallery.graphql"
+
+query ConfigurableProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) @connection(key: "Products", filter: ["filter"]) {
+    products(filter: $filters, pageSize: $pageSize) {
+        items {
+            id
+            urlKey: url_key
+            ... on ConfigurableProduct {
+                options: configurable_options {
+                    id
+                    label
+                    position
+                    # required
+                    code: attribute_code
+                    items: values {
+                        id: value_index
+                        label
+                        value: value_index
+                        swatch: swatch_data {
+                            __typename
+                            value
+
+                            ... on TextSwatchData {
+                                text: value
+                            }
+
+                            ... on ColorSwatchData {
+                                color: value
+                            }
+
+                            ... on ImageSwatchData {
+                                image: thumbnail
+                            }
+                        }
+                    }
+                }
+                variants {
+                    attributes {
+                        id: value_index
+                        code
+                        value: value_index
+                    }
+                    product {
+                        id
+                        variantSku: sku
+                        stock: stock_status
+
+                        ...price
+
+                        gallery: media_gallery {
+                            ...Gallery
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

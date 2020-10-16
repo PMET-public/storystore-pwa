@@ -1,0 +1,23 @@
+#import "~/graphql/_price.graphql"
+
+query GroupedProduct($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) {
+    products(filter: $filters, pageSize: $pageSize) {
+        items {
+            id
+            urlKey: url_key
+
+            ... on GroupedProduct {
+                group: items {
+                    quantity: qty
+                    product {
+                        id
+                        name
+                        sku
+                        stock: stock_status
+                        ...price
+                    }
+                }
+            }
+        }
+    }
+}
