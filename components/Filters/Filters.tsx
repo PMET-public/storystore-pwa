@@ -1,9 +1,10 @@
 import React, { FunctionComponent, useMemo, useCallback, useState, useEffect } from 'react'
 import { Root } from './Filters.styled'
-import { useQuery, QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { FiltersGroupProps } from '@storystore/ui/dist/components/Filters'
 import FiltersComponent from '@storystore/ui/dist/components/Filters'
 import FILTERS_TYPES_QUERY from './graphql/filtersTypes.graphql'
+import Sidebar from '@storystore/ui/dist/components/Sidebar'
 
 const TYPES = {
     FilterEqualTypeInput: 'equal',
@@ -21,19 +22,22 @@ export type FilterVariables = {
 export type FilterSelected = { [key: string]: any[] }
 
 export type FiltersProps = {
+    open?: boolean
+    loading?: boolean
     defaultSelected?: FilterSelected
+    filters: any
     onUpdate?: (_: FilterVariables) => any
     onClose?: () => any
 }
 
-export const Filters: FunctionComponent<QueryResult & FiltersProps> = ({ data, loading, defaultSelected = {}, onUpdate }) => {
+export const Filters: FunctionComponent<FiltersProps> = ({ filters, loading, open = false, defaultSelected = {}, onUpdate, onClose = () => {} }) => {
     const [selectedFilters, setSelectedFilters] = useState<FilterSelected>(defaultSelected)
 
-    const [cachedData, setCachedData] = useState<any>(null)
+    const [cachedFilters, setCachedFilters] = useState<any>(null)
 
     useEffect(() => {
-        if (data) setCachedData(data)
-    }, [data])
+        if (filters) setCachedFilters(filters)
+    }, [filters])
 
     /**
      * Attribute Type is not part of the Filter Query. We need to query all types available first,
@@ -47,7 +51,7 @@ export const Filters: FunctionComponent<QueryResult & FiltersProps> = ({ data, l
     // Lets transform our groups
     const groups: FiltersGroupProps[] = useMemo(
         () => [
-            ...(cachedData?.products.filters.map((filter: any) => {
+            ...(cachedFilters?.map((filter: any) => {
                 /** Fix some Labels */
                 const items = filter.options.map((option: any) => {
                     let label = option.label
@@ -82,7 +86,7 @@ export const Filters: FunctionComponent<QueryResult & FiltersProps> = ({ data, l
                 }
             }) ?? []),
         ],
-        [cachedData, selectedFilters]
+        [cachedFilters, selectedFilters]
     )
 
     // Handle Updates on Filter
@@ -150,8 +154,19 @@ export const Filters: FunctionComponent<QueryResult & FiltersProps> = ({ data, l
     )
 
     return (
-        <Root>
-            <FiltersComponent loading={loading && !cachedData} title="Filters" disabled={loading} options={{ defaultValues: selectedFilters }} groups={groups} onValues={handleOnFilterUpdate} />
-        </Root>
+        <Sidebar position="right" onClose={onClose} button={{ text: 'Done', onClick: onClose }}>
+            {open && (
+                <Root>
+                    <FiltersComponent
+                        loading={loading && !cachedFilters}
+                        title="Filters"
+                        disabled={loading}
+                        options={{ defaultValues: selectedFilters }}
+                        groups={groups}
+                        onValues={handleOnFilterUpdate}
+                    />
+                </Root>
+            )}
+        </Sidebar>
     )
 }

@@ -1,8 +1,8 @@
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_Gallery.graphql"
 
-query ConfigurableProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) @connection(key: "Products", filter: ["filter"]) {
-    products(filter: $filters, pageSize: $pageSize) {
+query ConfigurableProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) {
+    products(filter: $filters, pageSize: $pageSize) @connection(key: "Products", filter: ["filter"]) {
         items {
             id
             urlKey: url_key

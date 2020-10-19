@@ -164,3 +164,15 @@ export const Description = styled.div`
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
 `
+
+export const OtherProducts = styled.div`
+    padding: 4rem 0;
+    max-width: 100%;
+
+    & > h2 {
+        font-family: ${props => props.theme.typography.heading.family};
+        font-weight: ${props => props.theme.typography.heading.weight.semi};
+        font-size: ${props => props.theme.typography.heading.size.secondary};
+        padding: 0 2rem 4rem;
+    }
+`

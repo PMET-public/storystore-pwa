@@ -11,15 +11,16 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import PlaceOrderForm from '@storystore/ui/dist/components/Checkout/PlaceOrderForm'
 import Breadcrumbs from '@storystore/ui/dist/components/Breadcrumbs'
-import { QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useCart } from '~/hooks/useCart/useCart'
 import { ContactInfo } from './ContactInfo'
 import { ShippingMethod } from './ShippingMethod'
 import { PaymentMethod } from './PaymentMethod'
+import { CHECKOUT_QUERY } from '.'
 
 const Error = dynamic(() => import('~/components/Error'))
 
-export const Checkout: FunctionComponent<QueryResult> = ({ loading, data }) => {
+export const Checkout: FunctionComponent = () => {
     const contactInfoElem = useRef<HTMLDivElement>(null)
     const shippingMethodElem = useRef<HTMLDivElement>(null)
     const paymentMethodElem = useRef<HTMLDivElement>(null)
@@ -28,6 +29,11 @@ export const Checkout: FunctionComponent<QueryResult> = ({ loading, data }) => {
     const history = useRouter()
 
     const { cartId, setCartId } = useStoryStore()
+
+    const { loading, data } = useQuery(CHECKOUT_QUERY, {
+        variables: { cartId },
+        skip: !cartId,
+    })
 
     const api = useCart({ cartId })
 

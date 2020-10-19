@@ -3,23 +3,20 @@ import { NextPage } from 'next'
 import HomeTemplate, { HOME_PAGE_QUERY } from '~/components/Home'
 import { APP_QUERY } from '~/components/App'
 import { initializeApollo } from '~/lib/apollo/client'
-import { useQuery } from '@apollo/client'
 import { useStoryStore } from '~/lib/storystore'
 
 const Home: NextPage = () => {
     const { settings } = useStoryStore()
 
-    const home = useQuery(HOME_PAGE_QUERY, { variables: { id: settings?.homePage }, skip: !settings?.homePage, fetchPolicy: 'cache-first' })
-
-    return <HomeTemplate {...home} />
+    return <HomeTemplate id={settings?.homePage} />
 }
 
 Home.getInitialProps = async ({ req, res }) => {
+    if (!req) return {} // csr
+
     if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }
-
-    if (!req) return {} // csr
 
     const apolloClient = initializeApollo(null, req?.headers.cookie)
 

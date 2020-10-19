@@ -13,13 +13,21 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
 import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
-import { QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useCart } from '~/hooks/useCart/useCart'
+import { CART_QUERY } from '.'
 
 const Error = dynamic(() => import('../Error'))
 
-export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) => {
+export const Cart: FunctionComponent = () => {
     const { cartId } = useStoryStore()
+
+    const { loading, error, data } = useQuery(CART_QUERY, {
+        variables: { cartId },
+        skip: !cartId,
+        fetchPolicy: 'cache-first',
+        ssr: false,
+    })
 
     const history = useRouter()
 

@@ -1,7 +1,7 @@
 import React, { useMemo, FunctionComponent } from 'react'
 import { AppProps } from 'next/app'
 import { ApolloProvider, useQuery } from '@apollo/client'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStore from '~/components/StoryStore'
 import AppComponent, { APP_QUERY } from '~/components/App'
 import { getCookie, COOKIE } from '~/lib/cookies'
 import { initializeApollo } from '~/lib/apollo/client'
@@ -42,7 +42,8 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
             <noscript>
                 <div style={{ padding: '2rem', backgroundColor: baseTheme.colors.error, color: baseTheme.colors.onError }}>🤔 Enable javascript to run this web app.</div>
             </noscript>
-            <StoryStoreProvider cartId={cartId} settings={settings}>
+
+            <StoryStore cartId={cartId} settings={settings}>
                 <ThemeProvider
                     theme={{
                         ...baseTheme,
@@ -78,7 +79,7 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                 >
                     <AppComponent {...app}>{children}</AppComponent>
                 </ThemeProvider>
-            </StoryStoreProvider>
+            </StoryStore>
         </React.Fragment>
     )
 }

@@ -1,13 +1,13 @@
-import React, { useMemo, FunctionComponent } from 'react'
+import React, { useMemo } from 'react'
 import { NextPage } from 'next'
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { initializeApollo } from '~/lib/apollo/client'
 import Link from '~/components/Link'
 import Error from '~/components/Error'
 import { APP_QUERY } from '~/components/App'
-import PageComponent, { PAGE_QUERY } from '~/components/Page'
-import CategoryComponent, { CATEGORY_QUERY } from '~/components/Category'
-import ProductComponent, { PRODUCT_QUERY } from '~/components/Product'
+import Page, { PAGE_QUERY } from '~/components/Page'
+import Category, { CATEGORY_QUERY } from '~/components/Category'
+import Product, { PRODUCT_QUERY } from '~/components/Product'
 import { PRODUCTS_QUERY } from '~/components/Products'
 
 export enum CONTENT_TYPE {
@@ -21,35 +21,6 @@ export type ResolverProps = {
     type: CONTENT_TYPE
     pathname: string
     [key: string]: any
-}
-
-const Page: FunctionComponent<{ id: number }> = ({ id }) => {
-    const page = useQuery(PAGE_QUERY, {
-        variables: { id },
-        fetchPolicy: 'cache-and-network',
-    })
-
-    return <PageComponent {...page} />
-}
-
-const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
-    const product = useQuery(PRODUCT_QUERY, {
-        variables: { filters: { url_key: { eq: urlKey } } },
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
-    })
-
-    return <ProductComponent {...product} />
-}
-
-const Category: FunctionComponent<{ id: number }> = ({ id }) => {
-    const category = useQuery(CATEGORY_QUERY, {
-        variables: { id: id.toString() },
-        fetchPolicy: 'cache-and-network',
-        returnPartialData: true,
-    })
-
-    return <CategoryComponent {...category} />
 }
 
 const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
@@ -145,10 +116,10 @@ UrlResolver.getInitialProps = async ({ req, res, query }) => {
                 await apolloClient.query({ query: PAGE_QUERY, variables: { id } })
                 break
             case CONTENT_TYPE.CATEGORY:
-                const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
+                const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id } })
 
                 if (/PRODUCTS/.test(data?.categoryList[0]?.mode)) {
-                    await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id } } } })
+                    await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id.toString() } } } })
                 }
                 break
             case CONTENT_TYPE.PRODUCT:

@@ -48,5 +48,4 @@ export const TopBarFilterToggleButton = styled.button`
 
 export const ProductsWrapper = styled.div`
     margin-bottom: 6rem;
-    background: red;
 `
