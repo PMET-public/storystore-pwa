@@ -15,6 +15,7 @@ export type DownloadableProductProps = {
     urlKey: string
     sku: string
     stock?: 'IN_STOCK' | 'OUT_OF_STOCK'
+    price: any
 }
 
 export const DownloadableProduct: FunctionComponent<DownloadableProductProps> = ({ sku, price, urlKey, stock = 'IN_STOCK' }) => {
