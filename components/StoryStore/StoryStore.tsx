@@ -1,5 +1,5 @@
-import React, { useContext, createContext, useReducer, FunctionComponent, Reducer } from 'react'
-import { COOKIE, setCookie, deleteCookie, getCookie, getCookieValueFromString } from '~/lib/cookies'
+import React, { createContext, useReducer, FunctionComponent, Reducer } from 'react'
+import { COOKIE, setCookie, deleteCookie } from '~/lib/cookies'
 import { useApolloClient } from '@apollo/client'
 
 export type Settings = {
@@ -60,10 +60,6 @@ export const StoryStoreContext = createContext<StoryStore>({
     reset: () => {},
 })
 
-export const useStoryStore = () => {
-    return useContext(StoryStoreContext)
-}
-
 const reducer: Reducer<ReducerState, ReducerActions> = (state, action) => {
     switch (action.type) {
         case 'setCartId':
@@ -119,16 +115,4 @@ export const StoryStoreProvider: FunctionComponent<{ cartId: string; settings?: 
             {children}
         </StoryStoreContext.Provider>
     )
-}
-
-export const getSettings = (cookie?: string) => {
-    if (Boolean(process.env.CLOUD_MODE) === false) {
-        return {}
-    }
-
-    const _overrides = process.browser ? getCookie(COOKIE.settings) : cookie && getCookieValueFromString(cookie, COOKIE.settings)
-
-    const overrides = JSON.parse(_overrides || '{}')
-
-    return { ...overrides }
 }

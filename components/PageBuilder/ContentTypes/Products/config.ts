@@ -27,8 +27,8 @@ const props = (elem: HTMLElement) => {
     const skus = [...(forms as any)].map(form => form.dataset.productSku)
 
     return {
+        ...slider,
         appearance,
-        slider,
         skus,
         style,
     }
