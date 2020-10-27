@@ -34,6 +34,7 @@ import { PRODUCT_QUERY } from '.'
 
 const SimpleProduct = dynamic(() => import('./ProductTypes/SimpleProduct'))
 const GroupedProduct = dynamic(() => import('./ProductTypes/GroupedProduct'))
+const BundleProduct = dynamic(() => import('./ProductTypes/BundleProduct'))
 const VirtualProduct = dynamic(() => import('./ProductTypes/VirtualProduct'))
 const DownloadableProduct = dynamic(() => import('./ProductTypes/DownloadableProduct'))
 const ConfigurableProduct = dynamic(() => import('./ProductTypes/ConfigurableProduct'))
@@ -211,6 +212,8 @@ export const Product: FunctionComponent<ProductProps> = ({ urlKey }) => {
                                         {product.type === 'ConfigurableProduct' && <ConfigurableProduct {...product} />}
 
                                         {product.type === 'GroupedProduct' && <GroupedProduct {...product} />}
+
+                                        {product.type === 'BundleProduct' && <BundleProduct {...product} />}
 
                                         {product.type === 'VirtualProduct' && <VirtualProduct {...product} />}
 

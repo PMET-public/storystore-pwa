@@ -1,0 +1,42 @@
+#import "~/graphql/_price.graphql"
+
+query BundleProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) {
+    products(filter: $filters, pageSize: $pageSize) @connection(key: "Products", filter: ["filter"]) {
+        items {
+            id
+            urlKey: url_key
+
+            ... on BundleProduct {
+                # dynamic_sku
+                # dynamic_price
+                # dynamic_weight
+                # price_view
+                # ship_bundle_items
+                items {
+                    id: option_id
+                    label: title
+                    required
+                    type
+                    position
+                    sku
+                    options {
+                        id
+                        quantity
+                        position
+                        isDefault: is_default
+                        priceType: price_type
+                        canChangeQuantity: can_change_quantity
+                        label
+                        product {
+                            id
+                            name
+                            sku
+                            type: __typename
+                            ...price
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
