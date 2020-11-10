@@ -22,7 +22,7 @@ Home.getInitialProps = async ({ req, res }) => {
 
     const app = await apolloClient.query({ query: APP_QUERY, errorPolicy: 'all' }) // Preload App Data
 
-    const homePage = app.data?.storyStore.homePage || app.data?.storeConfig.homePage
+    const homePage = app.data?.storyStore.homePage
 
     await apolloClient.query({ query: HOME_PAGE_QUERY, variables: { id: homePage }, errorPolicy: 'all' })
 
