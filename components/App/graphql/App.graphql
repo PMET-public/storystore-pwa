@@ -3,7 +3,6 @@ query AppQuery {
         id
         baseMediaUrl: base_media_url
         copyright
-        homePage: cms_home_page
         logoAlt: logo_alt
         logoSrc: header_logo_src
         metaDescription: default_description
@@ -23,7 +22,7 @@ query AppQuery {
         googleMapsApiKey: storystore_pwa_google_maps_api_key
 
         # Content
-        homePage: storystore_pwa_home_page
+        homePage: cms_home_page
         footerBlockId: storystore_pwa_footer_block
 
         # Colors
