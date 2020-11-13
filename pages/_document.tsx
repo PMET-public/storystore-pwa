@@ -2,7 +2,7 @@ import React from 'react'
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 
-export default class extends Document<any> {
+export default class extends Document {
     static async getInitialProps(ctx: DocumentContext) {
         const sheet = new ServerStyleSheet()
 

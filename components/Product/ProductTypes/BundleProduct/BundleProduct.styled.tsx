@@ -1,9 +1,36 @@
 import styled from 'styled-components'
 
+export const OptionLabel = styled.span`
+    display: grid;
+    grid-gap: 1rem;
+    /* grid-auto-flow: column; */
+    /* grid-auto-columns: max-content; */
+    grid-template-columns: 1fr auto;
+    align-items: center;
+`
+
+export const PriceWrapper = styled.span`
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    align-items: center;
+    grid-gap: 1rem;
+`
+
 export const Root = styled.div`
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 4rem;
+
+    & *:checked {
+        & ~ span > ${OptionLabel} > ${PriceWrapper} {
+            font-weight: 800;
+        }
+
+        & ~ label > ${OptionLabel} > ${PriceWrapper} {
+            font-weight: 800;
+        }
+    }
 `
 
 export const Configuration = styled.div`
@@ -24,20 +51,4 @@ export const Fieldset = styled.fieldset`
         padding-bottom: 3rem;
         border-bottom: 0.1rem solid ${props => props.theme.colors.onSurface5};
     }
-`
-
-export const OptionLabel = styled.span`
-    display: grid;
-    grid-gap: 1rem;
-    /* grid-auto-flow: column; */
-    /* grid-auto-columns: max-content; */
-    grid-template-columns: 1fr auto;
-    align-items: center;
-`
-
-export const PriceWrapper = styled.span`
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    font-weight: 600;
 `

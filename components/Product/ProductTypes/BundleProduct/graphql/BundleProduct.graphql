@@ -23,7 +23,7 @@ query BundleProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int 
                         id
                         quantity
                         position
-                        isDefault: is_default
+                        defaultChecked: is_default
                         priceType: price_type
                         canChangeQuantity: can_change_quantity
                         label
