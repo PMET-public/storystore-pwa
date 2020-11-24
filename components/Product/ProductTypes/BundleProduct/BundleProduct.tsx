@@ -3,12 +3,10 @@ import { BUNDLE_PRODUCT_QUERY } from '.'
 import { Root, Configuration, Fieldset, OptionLabel, PriceWrapper } from './BundleProduct.styled'
 import Form, { Input, Error, TextSwatches, Select, Checkbox, Quantity } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
-import Price from '@storystore/ui/dist/components/Price'
 import { useCart } from '~/hooks/useCart/useCart'
 import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
-import { priceDataToProps } from '../../Product'
 
 export type BundleProductProps = {
     sku: string
@@ -30,24 +28,30 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
 
     const [error, setError] = useState<string | null>(null)
 
-    const history = useRouter()
+    const [selections, setSelections] = useState<[{ hideQuantityField: boolean; quantity: number; canChangeQuantity: boolean; price: number }?]>([])
 
-    const [selections, setSelections] = useState<[] | [{ quantity: number; canChangeQuantity: boolean; price: any }]>([])
+    const total = selections.reduce((accum: number, selection: any) => (selection?.price ? selection.price.value * selection.quantity + accum : accum), 0)
+
+    const history = useRouter()
 
     const handleOnValues = useCallback(
         ({ items }) => {
-            const _selections = items[0].bundle_options.map((x: any, i: number) => {
-                const p = product.items[i].options.find((y: any) => y.product.id === Number(x.value))
-                return (
-                    p && {
-                        quantity: p.quantity,
-                        canChangeQuantity: p.canChangeQuantity,
-                        price: p.product.price,
-                    }
-                )
+            const options = items[0].bundle_options
+
+            const _selections = options.map((x: any, i: number) => {
+                const id = Number(x.value)
+
+                const productSelected = product.items[i].options.find((y: any) => y.product.id === id)
+                debugger
+                return {
+                    hideQuantityField: typeof x.value !== 'string',
+                    quantity: productSelected?.quantity,
+                    canChangeQuantity: productSelected?.canChangeQuantity,
+                    price: productSelected?.price.maximum.regular,
+                }
             })
 
-            console.log('handleOnValues', { items, product, _selections })
+            console.log('handleOnValues', { items, product }, _selections)
 
             setSelections(_selections)
         },
@@ -79,9 +83,8 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
     if (loading && !product) return <>⏲ Loading...</>
 
     return (
-        <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnValues}>
+        <Root as={Form} onSubmit={handleAddToCart} onInit={handleOnValues} onValues={handleOnValues}>
             <Input name="items[0].data.sku" type="hidden" value={sku} rules={{ required: true }} />
-
             <Configuration>
                 {product.items
                     ?.map(({ id, label, required, type, options }: any, index: number) => ({
@@ -91,7 +94,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                             label,
                             name: `items[0].bundle_options[${index}].value`,
                             rules: { required },
-                            items: options, //options.sort((a: any, b: any) => b.position - a.position),
+                            items: options,
                         },
                     }))
                     .sort((a: any, b: any) => b.position - a.position)
@@ -107,31 +110,29 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                             hideError
                                             blankDefault={`Select an option...`}
                                             {...swatches}
-                                            items={swatches.items.map(({ optionId: _id, defaultChecked, label, product }: any) => ({
-                                                _id,
-                                                defaultChecked,
-                                                label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
-                                                    style: 'currency',
-                                                    currency: product.price.minimum.regular.currency,
-                                                })}`,
-                                                value: product.id,
-                                            }))}
+                                            items={swatches.items
+                                                .map(({ optionId: _id, defaultChecked, label, product }: any) => ({
+                                                    _id,
+                                                    defaultChecked,
+                                                    label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
+                                                        style: 'currency',
+                                                        currency: product.price.minimum.regular.currency,
+                                                    })}`,
+                                                    value: product.id,
+                                                }))
+                                                .sort((a: any, b: any) => b.position - a.position)}
                                         />
 
-                                        {selections[index] && (
-                                            <PriceWrapper>
-                                                <Price {...priceDataToProps(selections[index]?.price)} />
-
-                                                <Quantity
-                                                    key={selections[index]?.canChangeQuantity ? 1 : 0}
-                                                    name={`items[0].bundle_options[${index}].quantity`}
-                                                    hideError
-                                                    rules={{ required: true }}
-                                                    disabled={!selections[index]?.canChangeQuantity}
-                                                    defaultValue={selections[index]?.quantity}
-                                                />
-                                            </PriceWrapper>
-                                        )}
+                                        <PriceWrapper $active={!!selections[index]}>
+                                            <Quantity
+                                                key={selections[index]?.canChangeQuantity ? 1 : 0}
+                                                name={`items[0].bundle_options[${index}].quantity`}
+                                                hideError
+                                                rules={{ required: true }}
+                                                disabled={!selections[index]?.canChangeQuantity}
+                                                defaultValue={selections[index]?.quantity}
+                                            />
+                                        </PriceWrapper>
                                     </React.Fragment>
                                 )}
 
@@ -148,7 +149,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                                 label: (
                                                     <OptionLabel>
                                                         {label}
-                                                        <PriceWrapper>
+                                                        <PriceWrapper $active>
                                                             +
                                                             {product.price.minimum.regular.value.toLocaleString('en-US', {
                                                                 style: 'currency',
@@ -161,20 +162,16 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                             }))}
                                         />
 
-                                        {selections[index] && (
-                                            <PriceWrapper>
-                                                <Price {...priceDataToProps(selections[index]?.price)} />
-
-                                                <Quantity
-                                                    key={selections[index]?.canChangeQuantity ? 1 : 0}
-                                                    name={`items[0].bundle_options[${index}].quantity`}
-                                                    hideError
-                                                    rules={{ required: true }}
-                                                    disabled={!selections[index]?.canChangeQuantity}
-                                                    defaultValue={selections[index]?.quantity}
-                                                />
-                                            </PriceWrapper>
-                                        )}
+                                        <PriceWrapper $active={!!selections[index]}>
+                                            <Quantity
+                                                key={selections[index]?.canChangeQuantity ? 1 : 0}
+                                                name={`items[0].bundle_options[${index}].quantity`}
+                                                hideError
+                                                rules={{ required: true }}
+                                                disabled={!selections[index]?.canChangeQuantity}
+                                                defaultValue={selections[index]?.quantity}
+                                            />
+                                        </PriceWrapper>
                                     </React.Fragment>
                                 )}
 
@@ -191,7 +188,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                                 label: (
                                                     <OptionLabel>
                                                         {quantity} × {label}
-                                                        <PriceWrapper>
+                                                        <PriceWrapper $active>
                                                             +
                                                             {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
                                                                 style: 'currency',
@@ -219,7 +216,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                             label: (
                                                 <OptionLabel>
                                                     {quantity} × {label}
-                                                    <PriceWrapper>
+                                                    <PriceWrapper $active>
                                                         +
                                                         {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
                                                             style: 'currency',
@@ -236,6 +233,8 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                         )
                     })}
             </Configuration>
+
+            {total}
 
             <Quantity name="items[0].data.quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
 

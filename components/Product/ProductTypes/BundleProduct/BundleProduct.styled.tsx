@@ -9,12 +9,13 @@ export const OptionLabel = styled.span`
     align-items: center;
 `
 
-export const PriceWrapper = styled.span`
+export const PriceWrapper = styled.span<{ $active?: boolean }>`
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
+    grid-template-columns: 1fr auto;
     align-items: center;
     grid-gap: 1rem;
+    opacity: ${props => (props.$active ? 1 : 0.5)};
+    transition: opacity 200ms ease;
 `
 
 export const Root = styled.div`
@@ -48,7 +49,6 @@ export const Fieldset = styled.fieldset`
     padding: 2rem;
 
     &:not(:last-of-type) {
-        padding-bottom: 3rem;
         border-bottom: 0.1rem solid ${props => props.theme.colors.onSurface5};
     }
 `
