@@ -2,7 +2,6 @@ fragment store on Query {
     storeConfig {
         id
         baseMediaUrl: base_media_url
-        categoryUrlSuffix: category_url_suffix
         copyright
         homePage: cms_home_page
         logoAlt: logo_alt

@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
 import { Root, Item, Title, PriceContainer } from './GroupedProduct.styled'
+import { GROUPED_PRODUCT_QUERY } from '.'
+import { GroupedProducSkeleton } from './GroupedProduct.skeleton'
 import Form, { Input, Quantity, Error } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { useCart } from '~/hooks/useCart/useCart'
@@ -7,20 +9,20 @@ import { useStoryStore } from '~/lib/storystore'
 import { useRouter } from 'next/router'
 import Price from '@storystore/ui/dist/components/Price'
 import { useProductLayout } from '../../Product'
+import { useQuery } from '@apollo/client'
 
 export type GroupedProductProps = {
-    group: Array<{
-        product: {
-            sku: string
-            name: string
-            price: any
-            quantity: number
-            stock?: string
-        }
-    }>
+    urlKey: string
 }
 
-export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }) => {
+export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ urlKey }) => {
+    const { loading, data } = useQuery(GROUPED_PRODUCT_QUERY, {
+        variables: { filters: { url_key: { eq: urlKey } } },
+        fetchPolicy: 'cache-and-network',
+    })
+
+    const product = data?.products?.items[0]
+
     const { cartId } = useStoryStore()
 
     const { setPrice } = useProductLayout()
@@ -36,12 +38,12 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
 
     const [error, setError] = useState<string | null>(null)
 
-    const items = group?.map(({ product }) => ({
-        quantity: product.quantity,
-        sku: product.sku,
-        name: product.name,
-        price: product.price,
-        stock: product.stock,
+    const items = product?.group?.map((group: any) => ({
+        quantity: group.product.quantity,
+        sku: group.product.sku,
+        name: group.product.name,
+        price: group.product.price,
+        stock: group.product.stock,
     }))
 
     const handleAddToCart = useCallback(
@@ -67,9 +69,15 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ group }
         [cartId, addingSimpleProductsToCart.loading, addSimpleProductToCart, history]
     )
 
+    console.log({ loading, data, product })
+
+    if (loading && !product) return <GroupedProducSkeleton />
+
+    if (!product) return null
+
     return (
         <Root as={Form} onSubmit={handleAddToCart}>
-            {items?.map(({ sku, name, price, stock, quantity }, key) => {
+            {items.map(({ sku, name, price, stock, quantity }: any, key: number) => {
                 const inStock = stock === 'IN_STOCK'
 
                 return (

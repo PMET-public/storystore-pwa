@@ -1,30 +1,19 @@
+#import "~/graphql/_Product.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_Gallery.graphql"
 
-query ProductQuery($urlKey: String!) {
-    store: storeConfig {
-        id
-        categoryUrlSuffix: category_url_suffix
-    }
-
-    products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
+query ProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) {
+    products(filter: $filters, pageSize: $pageSize) {
         items {
             id
             urlKey: url_key
+            urlSuffix: url_suffix
+
             metaDescription: meta_description
             metaKeywords: meta_keyword
             metaTitle: meta_title
-            sku
-            stock: stock_status
-            type: __typename
-            title: name
 
-            categories {
-                id
-                text: name
-                href: url_path
-                mode: display_mode
-            }
+            ...Product
 
             ...price
 
@@ -36,172 +25,103 @@ query ProductQuery($urlKey: String!) {
                 html
             }
 
-            descriptionContainer: options_container
-
             description: description {
                 html
             }
 
-            ... on GroupedProduct {
-                group: items {
-                    quantity: qty
-                    product {
-                        id
-                        name
-                        sku
-                        stock: stock_status
-                        ...price
-                    }
-                }
+            descriptionContainer: options_container
+
+            # Related / Upsell Products
+            related: related_products {
+                id
+                sku
             }
 
-            ... on DownloadableProduct {
-                linksTitle: links_title
-
-                downloads: downloadable_product_links {
-                    id
-                    order: sort_order
-                    title
-                    price
-                    sampleUrl: sample_url
-                }
-
-                samples: downloadable_product_samples {
-                    order: sort_order
-                    url: sample_url
-                    title
-                }
+            upsell: upsell_products {
+                id
+                sku
             }
 
-            ... on ConfigurableProduct {
-                options: configurable_options {
-                    id
-                    label
-                    position
-                    # required
-                    code: attribute_code
-                    items: values {
-                        id: value_index
-                        label
-                        value: value_index
-                        swatch: swatch_data {
-                            __typename
-                            value
-
-                            ... on TextSwatchData {
-                                text: value
-                            }
-
-                            ... on ColorSwatchData {
-                                color: value
-                            }
-
-                            ... on ImageSwatchData {
-                                image: thumbnail
-                            }
-                        }
-                    }
-                }
-                variants {
-                    attributes {
-                        id: value_index
-                        code
-                        value: value_index
-                    }
-                    product {
-                        id
-                        variantSku: sku
-                        stock: stock_status
-
-                        ...price
-
-                        gallery: media_gallery {
-                            ...Gallery
-                        }
-                    }
-                }
-            }
-
-            # Product Customization
-            ... on CustomizableProductInterface {
-                customizations: options {
-                    id: option_id
-                    required
-                    order: sort_order
-                    title
-                    ... on CustomizableAreaOption {
-                        textarea: value {
-                            maxCharacters: max_characters
-                            price
-                            priceType: price_type
-                            sku
-                        }
-                    }
-                    ... on CustomizableDateOption {
-                        date: value {
-                            price
-                            priceType: price_type
-                            sku
-                        }
-                    }
-                    ... on CustomizableFileOption {
-                        file: value {
-                            extension: file_extension
-                            maxWidth: image_size_x
-                            maxHeight: image_size_y
-                            price
-                            priceType: price_type
-                            sku
-                        }
-                    }
-                    ... on CustomizableFieldOption {
-                        input: value {
-                            price
-                            priceType: price_type
-                            sku
-                        }
-                    }
-                    ... on CustomizableRadioOption {
-                        radio: value {
-                            id: option_type_id
-                            title
-                            order: sort_order
-                            price
-                            priceType: price_type
-                        }
-                    }
-                    ... on CustomizableCheckboxOption {
-                        checkbox: value {
-                            id: option_type_id
-                            title
-                            order: sort_order
-                            price
-                            priceType: price_type
-                        }
-                    }
-                    ... on CustomizableDropDownOption {
-                        dropdown: value {
-                            id: option_type_id
-                            title
-                            order: sort_order
-                            price
-                            priceType: price_type
-                        }
-                    }
-                    ... on CustomizableMultipleOption {
-                        multiple: value {
-                            id: option_type_id
-                            title
-                            order: sort_order
-                            price
-                            priceType: price_type
-                        }
-                    }
-                    ... on CustomizableOptionInterface {
-                        option: option_id
-                    }
-                }
-            }
+            # # Product Customization
+            # ... on CustomizableProductInterface {
+            #     customizations: options {
+            #         id: option_id
+            #         required
+            #         order: sort_order
+            #         title
+            #         ... on CustomizableAreaOption {
+            #             textarea: value {
+            #                 maxCharacters: max_characters
+            #                 price
+            #                 priceType: price_type
+            #                 sku
+            #             }
+            #         }
+            #         ... on CustomizableDateOption {
+            #             date: value {
+            #                 price
+            #                 priceType: price_type
+            #                 sku
+            #             }
+            #         }
+            #         ... on CustomizableFileOption {
+            #             file: value {
+            #                 extension: file_extension
+            #                 maxWidth: image_size_x
+            #                 maxHeight: image_size_y
+            #                 price
+            #                 priceType: price_type
+            #                 sku
+            #             }
+            #         }
+            #         ... on CustomizableFieldOption {
+            #             input: value {
+            #                 price
+            #                 priceType: price_type
+            #                 sku
+            #             }
+            #         }
+            #         ... on CustomizableRadioOption {
+            #             radio: value {
+            #                 id: option_type_id
+            #                 title
+            #                 order: sort_order
+            #                 price
+            #                 priceType: price_type
+            #             }
+            #         }
+            #         ... on CustomizableCheckboxOption {
+            #             checkbox: value {
+            #                 id: option_type_id
+            #                 title
+            #                 order: sort_order
+            #                 price
+            #                 priceType: price_type
+            #             }
+            #         }
+            #         ... on CustomizableDropDownOption {
+            #             dropdown: value {
+            #                 id: option_type_id
+            #                 title
+            #                 order: sort_order
+            #                 price
+            #                 priceType: price_type
+            #             }
+            #         }
+            #         ... on CustomizableMultipleOption {
+            #             multiple: value {
+            #                 id: option_type_id
+            #                 title
+            #                 order: sort_order
+            #                 price
+            #                 priceType: price_type
+            #             }
+            #         }
+            #         ... on CustomizableOptionInterface {
+            #             option: option_id
+            #         }
+            #     }
+            # }
         }
     }
 }

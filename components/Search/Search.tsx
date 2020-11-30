@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useCallback, useState } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Root, NoResult } from './Search.styled'
 import { useNetworkStatus } from '~/hooks/useNetworkStatus'
@@ -6,57 +6,42 @@ import Head from '~/components/Head'
 import SearchBar from '@storystore/ui/dist/components/SearchBar'
 import Products from '~/components/Products'
 import Icon from '@storystore/ui/dist/components/Icon'
-import { QueryResult } from '@apollo/client'
 import TopBar from '@storystore/ui/dist/components/TopBar'
 import { TopBarFilterToggleButton } from '../Category/Category.styled'
 import FiltersIcon from 'remixicon/icons/System/list-settings-line.svg'
 import FiltersCloseIcon from 'remixicon/icons/System/list-settings-fill.svg'
-import Filters, { FilterSelected, FilterVariables } from '~/components/Filters'
-import Sidebar from '@storystore/ui/dist/components/Sidebar'
 import { setURLSearchParams } from '~/lib/urlSearchParams'
+
 const Error = dynamic(() => import('~/components/Error'))
 
-export const Search: FunctionComponent<QueryResult & { query: string }> = ({ query: _query = '', ...products }) => {
-    const { data, loading, refetch } = products
+export type SearchProps = {
+    query: string
+}
 
-    const [panelOpen, setPanelOpen] = useState(false)
-
+export const Search: FunctionComponent<SearchProps> = ({ query: _query = '' }) => {
     const [query, setQuery] = useState(_query)
 
-    const [filters, setFilters] = useState<{ selected: FilterSelected; variables: FilterVariables }>({ selected: {}, variables: {} })
+    const [toggleFilters, setToggleFilters] = useState(false)
+
+    const [hasFiltersSelected, setHasFiltersSelected] = useState(false)
+
+    const [loading, setLoading] = useState(false)
+
+    const [count, setCount] = useState(0)
 
     const online = useNetworkStatus()
 
-    const handleOnNewSearch = useCallback(
-        async (newQuery: string) => {
-            if (newQuery.length === 0 || newQuery.length > 2) {
-                setQuery(newQuery)
+    const handleOnNewSearch = useCallback(async (newQuery: string) => {
+        if (newQuery.length === 0 || newQuery.length > 2) {
+            setQuery(newQuery)
 
-                refetch({ search: newQuery })
+            setURLSearchParams({ query: newQuery })
 
-                setURLSearchParams({ query: newQuery })
+            window.scrollTo(0, 0)
+        }
+    }, [])
 
-                window.scrollTo(0, 0)
-            }
-        },
-        [refetch]
-    )
-
-    const handleOnFiltersUpdate = useCallback(
-        ({ selected, variables }) => {
-            refetch({ filters: variables })
-            setFilters({ selected, variables })
-        },
-        [refetch]
-    )
-
-    const productsCount = useMemo(() => {
-        if (!data) return
-        const { count = 0 } = data.products
-        return `${count > 999 ? '+999' : count} ${count === 0 || count > 1 ? 'results' : 'result'}`
-    }, [data])
-
-    if (!online && !data?.products.items) return <Error type="Offline" fullScreen />
+    if (!online) return <Error type="Offline" fullScreen />
 
     return (
         <React.Fragment>
@@ -64,17 +49,26 @@ export const Search: FunctionComponent<QueryResult & { query: string }> = ({ que
 
             <Root>
                 <TopBar sticky>
-                    <SearchBar loading={loading} label="Search" count={productsCount} value={query.toString()} onUpdate={handleOnNewSearch} />
+                    <SearchBar loading={loading} label="Search" count={`${count > 99 ? '99+' : count} results`} value={query} onUpdate={handleOnNewSearch} />
 
-                    <TopBarFilterToggleButton onClick={() => setPanelOpen(!panelOpen)}>
-                        <Icon svg={panelOpen ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={Object.keys(filters.selected).length > 0} />
+                    <TopBarFilterToggleButton onClick={() => setToggleFilters(!toggleFilters)}>
+                        <Icon svg={toggleFilters ? FiltersCloseIcon : FiltersIcon} aria-label="Filters" attention={hasFiltersSelected} />
                     </TopBarFilterToggleButton>
                 </TopBar>
 
-                <Products {...products} />
+                <Products
+                    search={query}
+                    openFilters={toggleFilters}
+                    onToggleFilters={state => setToggleFilters(state)}
+                    onUpdatedFilters={values => setHasFiltersSelected(!!values)}
+                    onResults={data => {
+                        if (data) setCount(data.count)
+                    }}
+                    onLoading={state => setLoading(state)}
+                />
             </Root>
 
-            {query && data?.products.count === 0 && (
+            {query && count === 0 && (
                 <NoResult $margin>
                     <Error type="404">
                         We couldn&apos;t find any results for &quot;{query}&quot;. <br />
@@ -82,10 +76,6 @@ export const Search: FunctionComponent<QueryResult & { query: string }> = ({ que
                     </Error>
                 </NoResult>
             )}
-
-            <Sidebar position="right" onClose={() => setPanelOpen(false)} button={{ text: 'Done', onClick: () => setPanelOpen(false) }}>
-                {panelOpen && <Filters {...products} defaultSelected={{ ...filters.selected }} onUpdate={handleOnFiltersUpdate} />}
-            </Sidebar>
         </React.Fragment>
     )
 }

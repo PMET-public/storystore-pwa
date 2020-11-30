@@ -2,7 +2,6 @@ query AppQuery {
     storeConfig {
         id
         baseMediaUrl: base_media_url
-        categoryUrlSuffix: category_url_suffix
         copyright
         logoAlt: logo_alt
         logoSrc: header_logo_src
@@ -43,10 +42,16 @@ query AppQuery {
         id
         children {
             id
-            text: name
+            title: name
             href: url_path
+            urlSuffix: url_suffix
             image
             mode: display_mode
+            description: description
+            block: cms_block {
+                id: identifier
+                content
+            }
         }
     }
 }

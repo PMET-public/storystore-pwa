@@ -1,13 +1,13 @@
-import React, { useMemo, FunctionComponent } from 'react'
+import React, { useMemo } from 'react'
 import { NextPage } from 'next'
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { initializeApollo } from '~/lib/apollo/client'
 import Link from '~/components/Link'
 import Error from '~/components/Error'
 import { APP_QUERY } from '~/components/App'
-import PageComponent, { PAGE_QUERY } from '~/components/Page'
-import CategoryComponent, { CATEGORY_QUERY } from '~/components/Category'
-import ProductComponent, { PRODUCT_QUERY } from '~/components/Product'
+import Page, { PAGE_QUERY } from '~/components/Page'
+import Category, { CATEGORY_QUERY } from '~/components/Category'
+import Product, { PRODUCT_QUERY } from '~/components/Product'
 import { PRODUCTS_QUERY } from '~/components/Products'
 
 export enum CONTENT_TYPE {
@@ -21,30 +21,6 @@ export type ResolverProps = {
     type: CONTENT_TYPE
     pathname: string
     [key: string]: any
-}
-
-const Page: FunctionComponent<{ id: number }> = ({ id }) => {
-    const page = useQuery(PAGE_QUERY, {
-        variables: { id },
-    })
-
-    return <PageComponent {...page} />
-}
-
-const Category: FunctionComponent<{ id: number }> = ({ id }) => {
-    const category = useQuery(CATEGORY_QUERY, {
-        variables: { id: id.toString() },
-    })
-
-    return <CategoryComponent {...category} />
-}
-
-const Product: FunctionComponent<{ urlKey: string }> = ({ urlKey }) => {
-    const product = useQuery(PRODUCT_QUERY, {
-        variables: { urlKey },
-    })
-
-    return <ProductComponent {...product} />
 }
 
 const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
@@ -63,7 +39,7 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
             case CONTENT_TYPE.CATEGORY:
                 return <Category {...props} key={props.id} id={props.id} />
             case CONTENT_TYPE.PRODUCT:
-                return <Product {...props} key={urlKey} urlKey={urlKey} />
+                return <Product key={urlKey} urlKey={urlKey} {...props} />
             case CONTENT_TYPE.NOT_FOUND:
                 return <Error type="404" button={{ text: 'Look around', as: Link, href: '/' }} />
             default:
@@ -78,16 +54,18 @@ const UrlResolver: NextPage<ResolverProps> = ({ type, urlKey, ...props }) => {
     return renderPage
 }
 
-UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
+UrlResolver.getInitialProps = async ({ req, res, query }) => {
     if (Boolean(process.env.CLOUD_MODE) === false) {
         res?.setHeader('cache-control', 's-maxage=1, stale-while-revalidate')
     }
 
     const apolloClient = initializeApollo(null, req?.headers.cookie)
 
-    const pathname = asPath?.split('?')[0]
+    const _pathname = query.pathname as Array<any>
 
-    const urlKey = pathname?.split('/').pop()?.split('.')?.shift() || ''
+    const pathname = _pathname.join('/')
+
+    const urlKey = _pathname[_pathname.length - 1].split('.')[0]
 
     if (query.type) {
         return {
@@ -138,14 +116,14 @@ UrlResolver.getInitialProps = async ({ req, res, query, asPath }) => {
                 await apolloClient.query({ query: PAGE_QUERY, variables: { id } })
                 break
             case CONTENT_TYPE.CATEGORY:
-                const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id.toString() } })
+                const { data } = await apolloClient.query({ query: CATEGORY_QUERY, variables: { id: id } })
 
-                if (/PRODUCTS/.test(data.categoryList[0].mode)) {
-                    await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id } } } })
+                if (/PRODUCTS/.test(data?.categoryList[0]?.mode)) {
+                    await apolloClient.query({ query: PRODUCTS_QUERY, variables: { filters: { category_id: { eq: id.toString() } } } })
                 }
                 break
             case CONTENT_TYPE.PRODUCT:
-                await apolloClient.query({ query: PRODUCT_QUERY, variables: { urlKey } })
+                await apolloClient.query({ query: PRODUCT_QUERY, variables: { filters: { url_key: { eq: urlKey } } } })
                 break
             default:
                 break
