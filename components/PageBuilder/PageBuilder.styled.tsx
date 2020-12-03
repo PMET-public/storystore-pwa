@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const Root = styled.div`
     width: 100%;
+
     line-height: 1.4;
 
     & h1,
@@ -58,7 +59,9 @@ export const Root = styled.div`
         font-size: 1.8rem;
         font-weight: ${props => props.theme.typography.heading.weight.bold};
     }
+`
 
+export const RichText = styled(Root)`
     & p {
         &:not(:first-child) {
             margin-top: 1rem;
@@ -108,7 +111,7 @@ export const Root = styled.div`
         margin: 1rem 0;
         border-spacing: 0;
         /* border-left: 0.1rem solid ${props => props.theme.colors.onSurface25};
-        border-top: 0.1rem solid ${props => props.theme.colors.onSurface25}; */
+    border-top: 0.1rem solid ${props => props.theme.colors.onSurface25}; */
     }
 
     & table td,
@@ -118,7 +121,7 @@ export const Root = styled.div`
         font-size: 1.6rem;
         line-height: 1.4;
         /* border-right: 0.1rem solid ${props => props.theme.colors.onSurface25};
-        border-bottom: 0.1rem solid ${props => props.theme.colors.onSurface25}; */
+    border-bottom: 0.1rem solid ${props => props.theme.colors.onSurface25}; */
     }
 
     & table th {
@@ -136,5 +139,3 @@ export const Root = styled.div`
         color: ${props => props.theme.colors.onSurface75};
     }
 `
-
-export const RichText = styled(Root)``
