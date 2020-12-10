@@ -14,6 +14,139 @@ export type BundleProductProps = {
     urlKey: string
 }
 
+const SelectOptions = ({ swatches, selected, index }: any) => {
+    const defaultValue = swatches.items.find((x: any) => !!x.defaultChecked)?.product.id
+
+    const items = swatches.items
+        .map(({ optionId: _id, label, product }: any) => ({
+            _id,
+            label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
+                style: 'currency',
+                currency: product.price.minimum.regular.currency,
+            })}`,
+            value: product.id,
+        }))
+        .sort((a: any, b: any) => b.position - a.position)
+
+    return (
+        <React.Fragment>
+            <Select hideError blankDefault={`Select an option...`} {...swatches} items={items} defaultValue={defaultValue} />
+
+            <PriceWrapper $active={!!selected}>
+                <Quantity
+                    key={selected?.id}
+                    name={`items[0].bundle_options[${index}].quantity`}
+                    rules={{ required: true }}
+                    disabled={!selected?.canChangeQuantity}
+                    defaultValue={selected?.quantity}
+                    hideError
+                />
+            </PriceWrapper>
+
+            {!selected?.canChangeQuantity && <Input name={`items[0].bundle_options[${index}].quantity`} type="hidden" value={selected?.quantity} />}
+        </React.Fragment>
+    )
+}
+
+const RadioOptions = ({ swatches, selected, index }: any) => {
+    const items = swatches.items.map(({ optionId: _id, defaultChecked, label, product }: any) => ({
+        _id,
+        defaultChecked,
+        label: (
+            <OptionLabel>
+                {label}
+                <PriceWrapper $active>
+                    +
+                    {product.price.minimum.regular.value.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: product.price.minimum.regular.currency,
+                    })}
+                </PriceWrapper>
+            </OptionLabel>
+        ),
+        value: product.id,
+    }))
+
+    return (
+        <React.Fragment>
+            <Checkbox hideError type="radio" {...swatches} items={items} />
+
+            <PriceWrapper $active={!!selected}>
+                <Quantity
+                    key={selected?.id}
+                    name={`items[0].bundle_options[${index}].quantity`}
+                    rules={{ required: true }}
+                    disabled={!selected?.canChangeQuantity}
+                    defaultValue={selected?.quantity}
+                    hideError
+                />
+
+                {!selected?.canChangeQuantity && <Input name={`items[0].bundle_options[${index}].quantity`} type="hidden" value={selected?.quantity} />}
+            </PriceWrapper>
+        </React.Fragment>
+    )
+}
+
+const MultiOptions = ({ swatches, index, selected = [] }: any) => {
+    const items = swatches.items.map(({ optionId: _id, defaultChecked, label, product, quantity }: any) => ({
+        _id,
+        defaultChecked,
+        label: (
+            <OptionLabel>
+                {quantity} × {label}
+                <PriceWrapper $active>
+                    +
+                    {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: product.price.minimum.regular.currency,
+                    })}
+                </PriceWrapper>
+            </OptionLabel>
+        ),
+        value: product.id,
+    }))
+
+    return (
+        <React.Fragment>
+            <TextSwatches hideError type="checkbox" {...swatches} items={items} />
+
+            {selected.map((s: any, sI: number) => (
+                <Input key={sI} name={`items[0].bundle_options[${index}].quantity[${sI}]`} type="hidden" value={s.quantity} />
+            ))}
+        </React.Fragment>
+    )
+}
+
+const CheckboxOptions = ({ swatches, index, selected = [] }: any) => {
+    const items = swatches.items.map(({ optionId: _id, defaultChecked, label, product, quantity }: any) => ({
+        _id,
+        defaultChecked,
+        label: (
+            <OptionLabel>
+                {quantity} × {label}
+                <PriceWrapper $active>
+                    +
+                    {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: product.price.minimum.regular.currency,
+                    })}
+                </PriceWrapper>
+            </OptionLabel>
+        ),
+        value: product.id,
+    }))
+
+    return (
+        <React.Fragment>
+            <Checkbox hideError {...swatches} items={items} />
+
+            {selected.map((s: any, sI: number) => (
+                <Input key={sI} name={`items[0].bundle_options[${index}].quantity[${sI}]`} type="hidden" value={s.quantity} />
+            ))}
+        </React.Fragment>
+    )
+}
+
 export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlKey, inStock = true }) => {
     const { loading, data } = useQuery(BUNDLE_PRODUCT_QUERY, {
         variables: { filters: { url_key: { eq: urlKey } } },
@@ -28,32 +161,34 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
 
     const [error, setError] = useState<string | null>(null)
 
-    const [selections, setSelections] = useState<[{ hideQuantityField: boolean; quantity: number; canChangeQuantity: boolean; price: number }?]>([])
+    // const [selections, setSelections] = useState<[{ id: string; hideQuantityField: boolean; quantity: number; canChangeQuantity: boolean; price: number }?]>([])
 
-    const total = selections.reduce((accum: number, selection: any) => (selection?.price ? selection.price.value * selection.quantity + accum : accum), 0)
+    const [selectedOptions, setSelectedOptions] = useState<{ [id: number]: any } | { [id: number]: any }[]>({})
+
+    // const [total, setTotal] = useState(0)
 
     const history = useRouter()
 
     const handleOnValues = useCallback(
         ({ items }) => {
-            const options = items[0].bundle_options
+            const _selectedOptions: any = {}
 
-            const _selections = options.map((x: any, i: number) => {
-                const id = Number(x.value)
+            items[0].bundle_options.forEach((option: any, optionIndex: number) => {
+                const id = Number(option.id)
+                const values = typeof option.value === 'string' ? [option.value] : option.value
 
-                const productSelected = product.items[i].options.find((y: any) => y.product.id === id)
-                debugger
-                return {
-                    hideQuantityField: typeof x.value !== 'string',
-                    quantity: productSelected?.quantity,
-                    canChangeQuantity: productSelected?.canChangeQuantity,
-                    price: productSelected?.price.maximum.regular,
+                if (typeof option.value === 'string') {
+                    const productId = Number(values)
+                    _selectedOptions[id] = product.items[optionIndex].options.find((y: any) => y.product.id === productId)
+                } else {
+                    values.forEach((value: string) => {
+                        const productId = Number(value)
+                        _selectedOptions[id] = [...(_selectedOptions[id] ?? []), product.items[optionIndex].options.find((y: any) => y.product.id === productId)]
+                    })
                 }
             })
 
-            console.log('handleOnValues', { items, product }, _selections)
-
-            setSelections(_selections)
+            setSelectedOptions(_selectedOptions)
         },
         [product]
     )
@@ -85,6 +220,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
     return (
         <Root as={Form} onSubmit={handleAddToCart} onInit={handleOnValues} onValues={handleOnValues}>
             <Input name="items[0].data.sku" type="hidden" value={sku} rules={{ required: true }} />
+
             <Configuration>
                 {product.items
                     ?.map(({ id, label, required, type, options }: any, index: number) => ({
@@ -104,137 +240,22 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                                 <Input name={`items[0].bundle_options[${index}].id`} type="hidden" value={_id} rules={{ required: true }} />
 
                                 {/* Select List Field */}
-                                {type === 'select' && (
-                                    <React.Fragment>
-                                        <Select
-                                            hideError
-                                            blankDefault={`Select an option...`}
-                                            {...swatches}
-                                            items={swatches.items
-                                                .map(({ optionId: _id, defaultChecked, label, product }: any) => ({
-                                                    _id,
-                                                    defaultChecked,
-                                                    label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
-                                                        style: 'currency',
-                                                        currency: product.price.minimum.regular.currency,
-                                                    })}`,
-                                                    value: product.id,
-                                                }))
-                                                .sort((a: any, b: any) => b.position - a.position)}
-                                        />
-
-                                        <PriceWrapper $active={!!selections[index]}>
-                                            <Quantity
-                                                key={selections[index]?.canChangeQuantity ? 1 : 0}
-                                                name={`items[0].bundle_options[${index}].quantity`}
-                                                hideError
-                                                rules={{ required: true }}
-                                                disabled={!selections[index]?.canChangeQuantity}
-                                                defaultValue={selections[index]?.quantity}
-                                            />
-                                        </PriceWrapper>
-                                    </React.Fragment>
-                                )}
+                                {type === 'select' && <SelectOptions index={index} swatches={swatches} selected={selectedOptions[_id]} />}
 
                                 {/* Radio Field */}
-                                {type === 'radio' && (
-                                    <React.Fragment>
-                                        <Checkbox
-                                            hideError
-                                            type="radio"
-                                            {...swatches}
-                                            items={swatches.items.map(({ optionId: _id, defaultChecked, label, product }: any) => ({
-                                                _id,
-                                                defaultChecked,
-                                                label: (
-                                                    <OptionLabel>
-                                                        {label}
-                                                        <PriceWrapper $active>
-                                                            +
-                                                            {product.price.minimum.regular.value.toLocaleString('en-US', {
-                                                                style: 'currency',
-                                                                currency: product.price.minimum.regular.currency,
-                                                            })}
-                                                        </PriceWrapper>
-                                                    </OptionLabel>
-                                                ),
-                                                value: product.id,
-                                            }))}
-                                        />
-
-                                        <PriceWrapper $active={!!selections[index]}>
-                                            <Quantity
-                                                key={selections[index]?.canChangeQuantity ? 1 : 0}
-                                                name={`items[0].bundle_options[${index}].quantity`}
-                                                hideError
-                                                rules={{ required: true }}
-                                                disabled={!selections[index]?.canChangeQuantity}
-                                                defaultValue={selections[index]?.quantity}
-                                            />
-                                        </PriceWrapper>
-                                    </React.Fragment>
-                                )}
+                                {type === 'radio' && <RadioOptions index={index} swatches={swatches} selected={selectedOptions[_id]} />}
 
                                 {/* Multi Select Field */}
-                                {type === 'multi' && (
-                                    <React.Fragment>
-                                        <TextSwatches
-                                            hideError
-                                            type="checkbox"
-                                            {...swatches}
-                                            items={swatches.items.map(({ optionId: _id, defaultChecked, label, product, quantity }: any) => ({
-                                                _id,
-                                                defaultChecked,
-                                                label: (
-                                                    <OptionLabel>
-                                                        {quantity} × {label}
-                                                        <PriceWrapper $active>
-                                                            +
-                                                            {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
-                                                                style: 'currency',
-                                                                currency: product.price.minimum.regular.currency,
-                                                            })}
-                                                        </PriceWrapper>
-                                                    </OptionLabel>
-                                                ),
-                                                value: product.id,
-                                            }))}
-                                        />
-
-                                        {/* <Input name={`items[0].bundle_options[${index}].quantity`} type="hidden" value={_id} rules={{ required: true }} /> */}
-                                    </React.Fragment>
-                                )}
+                                {type === 'multi' && <MultiOptions index={index} swatches={swatches} selected={selectedOptions[_id]} />}
 
                                 {/* Checkbox Field */}
-                                {type === 'checkbox' && (
-                                    <Checkbox
-                                        hideError
-                                        {...swatches}
-                                        items={swatches.items.map(({ optionId: _id, defaultChecked, label, product, quantity }: any) => ({
-                                            _id,
-                                            defaultChecked,
-                                            label: (
-                                                <OptionLabel>
-                                                    {quantity} × {label}
-                                                    <PriceWrapper $active>
-                                                        +
-                                                        {(product.price.minimum.regular.value * quantity).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: product.price.minimum.regular.currency,
-                                                        })}
-                                                    </PriceWrapper>
-                                                </OptionLabel>
-                                            ),
-                                            value: product.id,
-                                        }))}
-                                    />
-                                )}
+                                {type === 'checkbox' && <CheckboxOptions index={index} swatches={swatches} selected={selectedOptions[_id]} />}
                             </Fieldset>
                         )
                     })}
             </Configuration>
 
-            {total}
+            {'total'}
 
             <Quantity name="items[0].data.quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1 }} hideError />
 
