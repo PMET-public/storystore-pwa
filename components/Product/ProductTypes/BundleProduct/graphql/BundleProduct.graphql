@@ -12,6 +12,8 @@ query BundleProductQuery($filters: ProductAttributeFilterInput!, $pageSize: Int 
                 # dynamic_weight
                 # price_view
                 # ship_bundle_items
+                ...price
+
                 items {
                     id: option_id
                     label: title

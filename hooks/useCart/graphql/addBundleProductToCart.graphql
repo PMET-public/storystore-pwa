@@ -1,0 +1,9 @@
+#import "~/graphql/_CartContent.graphql"
+
+mutation addBundleProductsToCart($cartId: String!, $cart_items: [BundleProductCartItemInput]!) {
+    addToCart: addBundleProductsToCart(input: { cart_id: $cartId, cart_items: $cart_items }) {
+        cart {
+            ...CartContent
+        }
+    }
+}

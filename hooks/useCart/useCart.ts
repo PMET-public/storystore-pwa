@@ -6,6 +6,8 @@ import UPDATE_CART_ITEMS_MUTATION from './graphql/updateCartItems.graphql'
 import REMOVE_CART_ITEM_MUTATION from './graphql/removeCartItem.graphql'
 import APPLY_COUPON_MUTATION from './graphql/applyCoupon.graphql'
 import REMOVE_COUPON_MUTATION from './graphql/removeCoupon.graphql'
+import ADD_PRODUCTS_TO_CART from './graphql/addProductsToCart.graphql'
+import ADD_BUNDLE_PRODUCT_TO_CART from './graphql/addBundleProductToCart.graphql'
 import ADD_SIMPLE_PRODUCTS_TO_CART_MUTATION from './graphql/addSimpleProductsToCart.graphql'
 import ADD_VIRTUAL_PRODUCTS_TO_CART_MUTATION from './graphql/addVirtualProductsToCart.graphql'
 import ADD_DOWNLOADABLE_PRODUCTS_TO_CART_MUTATION from './graphql/addDownloadableProductsToCart.graphql'
@@ -165,6 +167,94 @@ export const useCart = (options: UseCart = {}) => {
             },
         })
     }, [cartId, removeCoupon])
+
+    /**
+     * Handle Add Product To Cart
+     */
+    const [addProductsToCart, addingProductsToCart] = useMutation(ADD_PRODUCTS_TO_CART, {
+        update(client, { data: { addToCart } }) {
+            const { cart } = addToCart
+
+            client.writeQuery({
+                query: gql`
+                    query CartAddConfigurableProducts {
+                        cart
+                    }
+                `,
+                data: {
+                    cart,
+                },
+            })
+        },
+    })
+
+    const handleAddProductsToCart = useCallback(
+        async (
+            items: Array<{
+                sku: string
+                quantity: number
+                parentSku?: string
+                entered_options?: { uid: string; value: string }
+                selected_options?: string[]
+            }>
+        ) => {
+            const { data } = await addProductsToCart({
+                variables: {
+                    cartId,
+                    items,
+                },
+            })
+            return data
+        },
+        [cartId, addProductsToCart]
+    )
+
+    /**
+     * Handle Add to Cart Bundle Product
+     * Note: It's not clear (https://devdocs.magento.com/guides/v2.4/graphql/mutations/add-products-to-cart.html)
+     * how to add Bundle Products using the new AddProductsToCart mutation.
+     */
+    const [addBundleProductsToCart, addingBundleProductsToCart] = useMutation(ADD_BUNDLE_PRODUCT_TO_CART, {
+        update(client, { data: { addToCart } }) {
+            const { cart } = addToCart
+
+            client.writeQuery({
+                query: gql`
+                    query CartAddConfigurableProducts {
+                        cart
+                    }
+                `,
+                data: {
+                    cart,
+                },
+            })
+        },
+    })
+
+    const handleAddBundleProductsToCart = useCallback(
+        async (variables: {
+            items: Array<{
+                data: {
+                    quantity: number
+                    sku: string
+                }
+                bundle_options: Array<{
+                    id: number
+                    quantity: number
+                    value: Array<string>
+                }>
+            }>
+        }) => {
+            const { data } = await addBundleProductsToCart({
+                variables: {
+                    cartId,
+                    ...variables,
+                },
+            })
+            return data
+        },
+        [cartId, addBundleProductsToCart]
+    )
 
     /**
      * Handle Add To Cart Configurable Product
@@ -436,6 +526,12 @@ export const useCart = (options: UseCart = {}) => {
         applyingCoupon,
         removeCoupon: handleRemoveCoupon,
         removingCoupon,
+        addProductsToCart: handleAddProductsToCart,
+        addingProductsToCart,
+        addBundleProductsToCart: handleAddBundleProductsToCart,
+        addingBundleProductsToCart,
+
+        /** TODO: Deprecate Below */
         addSimpleProductToCart: handleAddSimpleProductToCart,
         addingSimpleProductsToCart,
         addConfigurableProductToCart: handleAddConfigurableProductToCart,
