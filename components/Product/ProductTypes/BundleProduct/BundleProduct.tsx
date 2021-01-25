@@ -15,31 +15,27 @@ export type BundleProductProps = {
     urlKey: string
 }
 
-const SelectOptions = ({ swatches: _swatches, selected: _selected = [] }: any) => {
-    const [selected] = _selected
-
-    const { index, _id, ...swatches } = _swatches
+const SelectOptions = ({ swatches: _swatches, selected = [] }: any) => {
+    const { index, ...swatches } = _swatches
 
     const defaultValue = swatches.items.find((x: any) => !!x.defaultChecked)?.product.id
 
     const items = swatches.items
-        .map(({ id: _id, label, product }: any) => ({
+        .map(({ id: _id, label, product, quantity, canChangeQuantity }: any) => ({
             _id,
             label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
                 style: 'currency',
                 currency: product.price.minimum.regular.currency,
             })}`,
-            value: product.id,
+            value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity, canChangeQuantity }),
         }))
         .sort((a: any, b: any) => b.position - a.position)
 
     return (
         <React.Fragment>
-            <Input name={`selections[${index}].id`} type="hidden" value={_id} rules={{ required: true, valueAsNumber: true }} />
+            <Select {...swatches} hideError blankLabel={`Select an option...`} name={`selections[${index}]`} items={items} defaultValue={defaultValue} />
 
-            <Select {...swatches} hideError blankLabel={`Select an option...`} name={`selections[${index}].value`} items={items} defaultValue={defaultValue} />
-
-            <PriceWrapper $active={!!selected}>
+            {/* <PriceWrapper $active={!!selected}>
                 <Quantity
                     key={selected?.id}
                     name={`selections[${index}].quantity`}
@@ -48,17 +44,19 @@ const SelectOptions = ({ swatches: _swatches, selected: _selected = [] }: any) =
                     defaultValue={selected?.quantity}
                     hideError
                 />
-            </PriceWrapper>
+            </PriceWrapper> */}
         </React.Fragment>
     )
 }
 
-const RadioOptions = ({ swatches, selected: _selected = [] }: any) => {
-    const [selected] = _selected
+const RadioOptions = ({ swatches, selected: _selected }: any) => {
+    const [quantity, setQuantity] = useState<number>()
 
-    const { index, _id } = swatches
+    const selected = _selected[swatches.index]
 
-    const items = swatches.items.map(({ id: _id, defaultChecked, label, product }: any) => ({
+    const { index } = swatches
+
+    const items = swatches.items.map(({ id: _id, defaultChecked, label, product, quantity: defaultQuantity, canChangeQuantity }: any) => ({
         _id,
         defaultChecked,
         label: (
@@ -73,22 +71,28 @@ const RadioOptions = ({ swatches, selected: _selected = [] }: any) => {
                 </PriceWrapper>
             </OptionLabel>
         ),
-        value: product.id,
+        value: JSON.stringify({
+            id: _id,
+            value: product.id.toString(),
+            price: product.price.minimum.regular.value,
+            defaultQuantity,
+            quantity: canChangeQuantity ? quantity ?? defaultQuantity : defaultQuantity,
+            canChangeQuantity,
+        }),
     }))
 
     return (
         <React.Fragment>
-            <Input name={`selections[${index}].id`} type="hidden" value={_id} rules={{ required: true, valueAsNumber: true }} />
-
-            <Checkbox hideError type="radio" {...swatches} name={`selections[${index}].value`} items={items} />
+            <Checkbox hideError type="radio" {...swatches} name={`selections[${index}]`} items={items} />
 
             <PriceWrapper $active={!!selected}>
                 <Quantity
                     key={selected?.id}
-                    name={`selections[${index}].quantity`}
+                    name={`_[${index}].quantity`}
                     rules={{ required: true, valueAsNumber: true }}
                     readOnly={!selected?.canChangeQuantity}
-                    defaultValue={selected?.quantity}
+                    defaultValue={selected?.defaultQuantity}
+                    // onUpdate={setQuantity}
                     hideError
                 />
             </PriceWrapper>
@@ -114,7 +118,7 @@ const MultiOptions = ({ swatches }: any) => {
                 </PriceWrapper>
             </OptionLabel>
         ),
-        value: JSON.stringify({ id: _id, value: product.id.toString(), quantity }),
+        value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity }),
     }))
 
     return <TextSwatches hideError type="checkbox" {...swatches} name={`selections[${index}]`} items={items} />
@@ -138,7 +142,7 @@ const CheckboxOptions = ({ swatches }: any) => {
                 </PriceWrapper>
             </OptionLabel>
         ),
-        value: JSON.stringify({ id: _id, value: product.id.toString(), quantity }),
+        value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity }),
     }))
 
     return <Checkbox hideError {...swatches} name={`selections[${index}]`} items={items} />
@@ -158,35 +162,26 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
 
     const [error, setError] = useState<string | null>(null)
 
-    const [selectedOptions, setSelectedOptions] = useState<{ [id: number]: any } | { [id: number]: any }[]>({})
+    const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: any }[]>([])
 
     const [total, setTotal] = useState(0)
 
     const history = useRouter()
 
-    const handleOnValues = useCallback(
-        ({ selections = [] }) => {
-            console.log('handleOnValues', selections)
+    const handleOnValues = useCallback(({ selections = [] }) => {
+        console.log('handleOnValues', { selections })
+        const _selectedOptions = selections.reduce((result: any, item: any) => {
+            if (typeof item === 'string') return [...result, JSON.parse(item)]
+            else return [...result, ...item.map((x: string) => JSON.parse(x))]
+        }, [])
 
-            const _selectedOptions: any = {}
-            let _total = 0
+        const _total = _selectedOptions.reduce((total: number, { quantity = 0, price = 0 }) => (total += quantity * price), 0)
 
-            selections.forEach((option: any, optionIndex: number) => {
-                if (!option.value) return
+        setTotal(_total)
+        setSelectedOptions(_selectedOptions)
+    }, [])
 
-                const id = Number(option.id)
-                const productId = Number(option.value)
-                const _option = product.items[optionIndex].options.find((y: any) => y.product.id === productId)
-
-                _selectedOptions[id] = [...(_selectedOptions[id] ?? []), _option]
-                _total += _option.product.price.minimum.regular.value * _option.quantity
-            })
-
-            setTotal(_total)
-            setSelectedOptions(_selectedOptions)
-        },
-        [product]
-    )
+    console.log('🤑', selectedOptions)
 
     const handleAddToCart = useCallback(
         async ({ cart_items, selections = [] }) => {
@@ -239,10 +234,10 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                         return (
                             <Fieldset key={_id || index}>
                                 {/* Select List Field */}
-                                {type === 'select' && <SelectOptions swatches={swatches} selected={selectedOptions[_id]} />}
+                                {type === 'select' && <SelectOptions swatches={swatches} selected={selectedOptions} />}
 
                                 {/* Radio Field */}
-                                {type === 'radio' && <RadioOptions swatches={swatches} selected={selectedOptions[_id]} />}
+                                {type === 'radio' && <RadioOptions swatches={swatches} selected={selectedOptions} />}
 
                                 {/* Multi Select Field */}
                                 {type === 'multi' && <MultiOptions swatches={swatches} />}
