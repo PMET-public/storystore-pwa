@@ -15,19 +15,37 @@ export type BundleProductProps = {
     urlKey: string
 }
 
-const SelectOptions = ({ swatches: _swatches, selected = [] }: any) => {
-    const { index, ...swatches } = _swatches
+const SelectOptions = ({ swatches, selected: _selected }: any) => {
+    const { index } = swatches
 
-    const defaultValue = swatches.items.find((x: any) => !!x.defaultChecked)?.product.id
+    const selected = _selected[index]
+
+    const defaultChecked = swatches.items.find((x: any) => !!x.defaultChecked)
+
+    const defaultValue =
+        defaultChecked &&
+        JSON.stringify({
+            id: swatches._id,
+            value: [defaultChecked.id.toString()],
+            price: defaultChecked.product.price.minimum.regular.value,
+            defaultQuantity: defaultChecked.quantity,
+            canChangeQuantity: defaultChecked.canChangeQuantity,
+        })
 
     const items = swatches.items
-        .map(({ id: _id, label, product, quantity, canChangeQuantity }: any) => ({
-            _id,
+        .map(({ id, label, product, quantity: defaultQuantity, canChangeQuantity }: any) => ({
+            _id: id,
             label: `${label} +${product.price.minimum.regular.value.toLocaleString('en-US', {
                 style: 'currency',
                 currency: product.price.minimum.regular.currency,
             })}`,
-            value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity, canChangeQuantity }),
+            value: JSON.stringify({
+                id: swatches._id,
+                value: [id.toString()],
+                price: product.price.minimum.regular.value,
+                defaultQuantity,
+                canChangeQuantity,
+            }),
         }))
         .sort((a: any, b: any) => b.position - a.position)
 
@@ -35,29 +53,27 @@ const SelectOptions = ({ swatches: _swatches, selected = [] }: any) => {
         <React.Fragment>
             <Select {...swatches} hideError blankLabel={`Select an option...`} name={`selections[${index}]`} items={items} defaultValue={defaultValue} />
 
-            {/* <PriceWrapper $active={!!selected}>
+            <PriceWrapper $active={!!selected}>
                 <Quantity
                     key={selected?.id}
-                    name={`selections[${index}].quantity`}
+                    name={`quantities[${index}]`}
                     rules={{ required: true, valueAsNumber: true }}
                     readOnly={!selected?.canChangeQuantity}
-                    defaultValue={selected?.quantity}
+                    defaultValue={selected?.defaultQuantity}
                     hideError
                 />
-            </PriceWrapper> */}
+            </PriceWrapper>
         </React.Fragment>
     )
 }
 
 const RadioOptions = ({ swatches, selected: _selected }: any) => {
-    const [quantity, setQuantity] = useState<number>()
-
-    const selected = _selected[swatches.index]
-
     const { index } = swatches
 
-    const items = swatches.items.map(({ id: _id, defaultChecked, label, product, quantity: defaultQuantity, canChangeQuantity }: any) => ({
-        _id,
+    const selected = _selected[index]
+
+    const items = swatches.items.map(({ id, defaultChecked, label, product, quantity: defaultQuantity, canChangeQuantity }: any) => ({
+        _id: id,
         defaultChecked,
         label: (
             <OptionLabel>
@@ -72,11 +88,10 @@ const RadioOptions = ({ swatches, selected: _selected }: any) => {
             </OptionLabel>
         ),
         value: JSON.stringify({
-            id: _id,
-            value: product.id.toString(),
+            id: swatches._id,
+            value: [id.toString()],
             price: product.price.minimum.regular.value,
             defaultQuantity,
-            quantity: canChangeQuantity ? quantity ?? defaultQuantity : defaultQuantity,
             canChangeQuantity,
         }),
     }))
@@ -88,11 +103,10 @@ const RadioOptions = ({ swatches, selected: _selected }: any) => {
             <PriceWrapper $active={!!selected}>
                 <Quantity
                     key={selected?.id}
-                    name={`_[${index}].quantity`}
+                    name={`quantities[${index}]`}
                     rules={{ required: true, valueAsNumber: true }}
                     readOnly={!selected?.canChangeQuantity}
                     defaultValue={selected?.defaultQuantity}
-                    // onUpdate={setQuantity}
                     hideError
                 />
             </PriceWrapper>
@@ -103,8 +117,8 @@ const RadioOptions = ({ swatches, selected: _selected }: any) => {
 const MultiOptions = ({ swatches }: any) => {
     const { index } = swatches
 
-    const items = swatches.items.map(({ id: _id, defaultChecked, label, product, quantity }: any) => ({
-        _id,
+    const items = swatches.items.map(({ id, defaultChecked, label, product, quantity }: any) => ({
+        _id: id,
         defaultChecked,
         label: (
             <OptionLabel>
@@ -118,7 +132,7 @@ const MultiOptions = ({ swatches }: any) => {
                 </PriceWrapper>
             </OptionLabel>
         ),
-        value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity }),
+        value: JSON.stringify({ id: swatches._id, value: [id.toString()], price: product.price.minimum.regular.value, quantity }),
     }))
 
     return <TextSwatches hideError type="checkbox" {...swatches} name={`selections[${index}]`} items={items} />
@@ -127,8 +141,8 @@ const MultiOptions = ({ swatches }: any) => {
 const CheckboxOptions = ({ swatches }: any) => {
     const { index } = swatches
 
-    const items = swatches.items.map(({ id: _id, defaultChecked, label, product, quantity }: any) => ({
-        _id,
+    const items = swatches.items.map(({ id, defaultChecked, label, product, quantity }: any) => ({
+        _id: id,
         defaultChecked,
         label: (
             <OptionLabel>
@@ -142,7 +156,7 @@ const CheckboxOptions = ({ swatches }: any) => {
                 </PriceWrapper>
             </OptionLabel>
         ),
-        value: JSON.stringify({ id: _id, value: product.id.toString(), price: product.price.minimum.regular.value, quantity }),
+        value: JSON.stringify({ id: swatches._id, value: [id.toString()], price: product.price.minimum.regular.value, quantity }),
     }))
 
     return <Checkbox hideError {...swatches} name={`selections[${index}]`} items={items} />
@@ -158,7 +172,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
 
     const { cartId } = useStoryStore()
 
-    const { addProductsToCart, addingProductsToCart } = useCart({ cartId })
+    const { addBundleProductsToCart, addingBundleProductsToCart } = useCart({ cartId })
 
     const [error, setError] = useState<string | null>(null)
 
@@ -168,11 +182,15 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
 
     const history = useRouter()
 
-    const handleOnValues = useCallback(({ selections = [] }) => {
-        console.log('handleOnValues', { selections })
-        const _selectedOptions = selections.reduce((result: any, item: any) => {
-            if (typeof item === 'string') return [...result, JSON.parse(item)]
-            else return [...result, ...item.map((x: string) => JSON.parse(x))]
+    const handleOnValues = useCallback(({ selections = [], quantities = [] }) => {
+        const _selectedOptions = selections.reduce((result: any, item: any, index: number) => {
+            const quantity = quantities[index] // get dynamic quantity, if any
+
+            if (typeof item === 'string') {
+                return [...result, { quantity, ...JSON.parse(item) }]
+            } else {
+                return [...result, ...item.map((x: string) => ({ quantity, ...JSON.parse(x) }))]
+            }
         }, [])
 
         const _total = _selectedOptions.reduce((total: number, { quantity = 0, price = 0 }) => (total += quantity * price), 0)
@@ -181,24 +199,18 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
         setSelectedOptions(_selectedOptions)
     }, [])
 
-    console.log('🤑', selectedOptions)
-
     const handleAddToCart = useCallback(
-        async ({ cart_items, selections = [] }) => {
-            if (!cartId || !inStock || addingProductsToCart.loading) return
+        async ({ cart_items }) => {
+            if (!cartId || !inStock || addingBundleProductsToCart.loading) return
 
-            cart_items[0].bundle_options = selections.reduce((result: any, item: any) => {
-                if (item.id) return [...result, item]
-                else return [...result, ...item.map((x: string) => JSON.parse(x))]
-            }, [])
+            cart_items[0].bundle_options = selectedOptions.map(({ id, value, quantity }) => ({ id, value, quantity }))
 
             console.log('handleAddToCart', { cart_items })
-            return
 
             try {
                 setError(null)
 
-                await addProductsToCart(cart_items)
+                await addBundleProductsToCart(cart_items)
 
                 await history.push('/cart')
 
@@ -207,7 +219,7 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                 setError(e.message)
             }
         },
-        [addProductsToCart, inStock, addingProductsToCart, history, cartId]
+        [addBundleProductsToCart, inStock, addingBundleProductsToCart, history, cartId, selectedOptions]
     )
 
     if (loading && !product) return <>⏲ Loading...</>
@@ -248,13 +260,9 @@ export const BundleProduct: FunctionComponent<BundleProductProps> = ({ sku, urlK
                         )
                     })}
             </Configuration>
-
             <Price loading={loading} currency={product.price.minimum.regular.currency} regular={total} />
-
             <Quantity name="cart_items[0].data.quantity" defaultValue={1} minValue={1} addLabel="Add" removeLabel="Remove" rules={{ required: true, min: 1, valueAsNumber: true }} hideError />
-
             <Button type="submit" as="button" text={inStock ? 'Add to Cart' : 'Sold Out'} disabled={!inStock} loading={false} />
-
             {error && <Error>{error}</Error>}
         </Root>
     )

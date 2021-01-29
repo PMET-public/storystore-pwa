@@ -232,7 +232,7 @@ export const useCart = (options: UseCart = {}) => {
     })
 
     const handleAddBundleProductsToCart = useCallback(
-        async (variables: {
+        async (cart_items: {
             items: Array<{
                 data: {
                     quantity: number
@@ -248,7 +248,7 @@ export const useCart = (options: UseCart = {}) => {
             const { data } = await addBundleProductsToCart({
                 variables: {
                     cartId,
-                    ...variables,
+                    cart_items,
                 },
             })
             return data
