@@ -55,7 +55,7 @@ const SelectOptions = ({ swatches, selected: _selected }: any) => {
 
             <PriceWrapper $active={!!selected}>
                 <Quantity
-                    key={selected?.id}
+                    key={selected?.value[0]}
                     name={`quantities[${index}]`}
                     rules={{ required: true, valueAsNumber: true }}
                     readOnly={!selected?.canChangeQuantity}
@@ -102,7 +102,7 @@ const RadioOptions = ({ swatches, selected: _selected }: any) => {
 
             <PriceWrapper $active={!!selected}>
                 <Quantity
-                    key={selected?.id}
+                    key={selected?.value[0]}
                     name={`quantities[${index}]`}
                     rules={{ required: true, valueAsNumber: true }}
                     readOnly={!selected?.canChangeQuantity}
