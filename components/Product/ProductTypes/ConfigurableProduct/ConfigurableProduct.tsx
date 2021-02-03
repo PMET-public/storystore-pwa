@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import { Root } from './ConfigurableProduct.styled'
 import { useQuery } from '@apollo/client'
 import { CONFIGURABLE_PRODUCT_QUERY } from '.'
@@ -94,14 +94,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
         [gallery, product, setGallery, setPrice, variantsIndexes]
     )
 
-    const handleOnErrors = useCallback((_errors: { options: { [key: string]: { ref: any }} }) => {
-        const el = Object.entries(_errors.options)[0][1].ref
-        const offset = 120
-        const { top, bottom } = el.getBoundingClientRect()
-        const y = top + window.pageYOffset - offset
-
-        if ((bottom - offset) < 0 || (top + offset) > window.innerHeight) window.scrollTo({ top: y, behavior: 'smooth' })
-    }, [])
+    
 
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
@@ -129,7 +122,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     return (
         <div>
-            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
+            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
                 {product?.options
                     ?.map(({ id, label, required = true, code, items }: any) => {
                         const selected = items.find((x: any) => {
