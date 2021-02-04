@@ -34,7 +34,6 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
 
     const history = useRouter()
 
-
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
     const [variantSku, setVariantSku] = useState(sku)
@@ -94,8 +93,6 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
         [gallery, product, setGallery, setPrice, variantsIndexes]
     )
 
-    
-
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
             if (!cartId || !inStock || addingConfigurableProductToCart.loading) return
@@ -125,9 +122,12 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
             <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
                 {product?.options
                     ?.map(({ id, label, required = true, code, items }: any) => {
-                        const selected = items.find((x: any) => {
-                            return code === x.code || x.value.toString() === selectedOptions[code]
-                        })
+                        const selected =
+                            items.length === 1
+                                ? items[0]
+                                : items.find((x: any) => {
+                                      return code === x.code || x.value.toString() === selectedOptions[code]
+                                  })
 
                         return {
                             _id: id,
@@ -139,6 +139,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                                 items: items?.map(({ id, label, value, swatch }: any) => {
                                     return {
                                         _id: id,
+                                        defaultChecked: items.length === 1 || undefined,
                                         label,
                                         type: 'radio',
                                         value,
