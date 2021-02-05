@@ -43,3 +43,5 @@ jspm_packages
 # Environment Variables
 .env
 .now
+
+lib/apollo/possibleTypes.json
