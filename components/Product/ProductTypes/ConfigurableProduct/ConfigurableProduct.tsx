@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useState, useRef } from 'react'
+import React, { FunctionComponent, useCallback, useState } from 'react'
 import { Root } from './ConfigurableProduct.styled'
 import { useQuery } from '@apollo/client'
 import { CONFIGURABLE_PRODUCT_QUERY } from '.'
@@ -33,8 +33,6 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
     const { addConfigurableProductToCart, addingConfigurableProductToCart } = useCart({ cartId })
 
     const history = useRouter()
-
-    const formRef = useRef<HTMLDivElement>(null)
 
     const [selectedOptions, setSelectedOptions] = useState<{ [code: string]: string }>({})
 
@@ -95,12 +93,6 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
         [gallery, product, setGallery, setPrice, variantsIndexes]
     )
 
-    const handleOnErrors = useCallback(() => {
-        if (formRef.current && formRef.current.scrollTop > window.scrollY) {
-            formRef.current.scrollIntoView({ behavior: 'smooth' })
-        }
-    }, [formRef])
-
     const handleAddToCart = useCallback(
         async ({ quantity = 1 }) => {
             if (!cartId || !inStock || addingConfigurableProductToCart.loading) return
@@ -126,13 +118,16 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
     if (!product) return null
 
     return (
-        <div ref={formRef}>
-            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} onErrors={handleOnErrors} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
+        <div>
+            <Root as={Form} onSubmit={handleAddToCart} onValues={handleOnChange} options={{ criteriaMode: 'firstError', shouldFocusError: true }}>
                 {product?.options
                     ?.map(({ id, label, required = true, code, items }: any) => {
-                        const selected = items.find((x: any) => {
-                            return code === x.code || x.value.toString() === selectedOptions[code]
-                        })
+                        const selected =
+                            items.length === 1
+                                ? items[0]
+                                : items.find((x: any) => {
+                                      return code === x.code || x.value.toString() === selectedOptions[code]
+                                  })
 
                         return {
                             _id: id,
@@ -144,6 +139,7 @@ export const ConfigurableProduct: FunctionComponent<ConfigurableProductProps> = 
                                 items: items?.map(({ id, label, value, swatch }: any) => {
                                     return {
                                         _id: id,
+                                        defaultChecked: items.length === 1 || undefined,
                                         label,
                                         type: 'radio',
                                         value,
