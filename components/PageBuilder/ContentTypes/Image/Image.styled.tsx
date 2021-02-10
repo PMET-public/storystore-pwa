@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import Image from '@storystore/ui/dist/components/Image'
+import ImageRoot from '@storystore/ui/dist/components/Image/Image.styled'
 
 export const Root = styled.div`
     & img,
@@ -7,6 +8,11 @@ export const Root = styled.div`
     & video {
         max-height: 100%;
         max-width: 100%;
+        height: auto;
+    }
+
+    & ${ImageRoot} > div {
+        display: inline-block;
     }
 `
 
