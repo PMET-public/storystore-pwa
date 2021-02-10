@@ -3,18 +3,6 @@ import styled from 'styled-components'
 import { Root as ButtonRoot } from '@storystore/ui/dist/components/Button/Button.styled'
 
 export const Root = styled.div<{ $appearance?: string; $secondary?: boolean; $link?: boolean; $maxWidth?: number }>`
-    &:not(:last-child) {
-        ${props =>
-            props.$appearance === 'inline'
-                ? `
-                    margin-inline-end: 1rem;
-                    margin-bottom: 1rem;
-                `
-                : `
-                    margin-bottom: 1rem;
-                `}
-    }
-
     ${ButtonRoot} {
         background-color: ${props => (props.$secondary ? props.theme.colors.secondary : props.theme.colors.primary)};
         color: ${props => (props.$secondary ? props.theme.colors.onSecondary : props.theme.colors.onPrimary)};
