@@ -31,33 +31,45 @@ export const Root = styled.div`
     }
 
     & h1 {
-        font-size: 4rem;
         font-weight: ${props => props.theme.typography.heading.weight.bolder};
+        font-size: 2.6rem;
+        margin-top: 0rem;
+        margin-bottom: 2rem;
     }
 
     & h2 {
-        font-size: 3rem;
         font-weight: ${props => props.theme.typography.heading.weight.bolder};
+        font-size: 2.6rem;
+        margin-top: 2.5rem;
+        margin-bottom: 2rem;
     }
 
     & h3 {
-        font-size: 2.6rem;
         font-weight: ${props => props.theme.typography.heading.weight.bold};
+        font-size: 1.8rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
     }
 
     & h4 {
-        font-size: 2.4rem;
         font-weight: ${props => props.theme.typography.heading.weight.bold};
+        font-size: 1.4rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
     }
 
     & h5 {
-        font-size: 2rem;
         font-weight: ${props => props.theme.typography.heading.weight.bold};
+        font-size: 1.2rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
     }
 
     & h6 {
-        font-size: 1.8rem;
         font-weight: ${props => props.theme.typography.heading.weight.bold};
+        font-size: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
     }
 `
 
