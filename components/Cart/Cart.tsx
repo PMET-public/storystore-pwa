@@ -13,13 +13,21 @@ import CartList from '@storystore/ui/dist/components/CartList'
 import CartSummary from '@storystore/ui/dist/components/CartSummary'
 import EmptyCart from '@storystore/ui/dist/components/EmptyCart'
 import ViewLoader from '@storystore/ui/dist/components/ViewLoader'
-import { QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useCart } from '~/hooks/useCart/useCart'
+import { CART_QUERY } from '.'
 
 const Error = dynamic(() => import('../Error'))
 
-export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) => {
+export const Cart: FunctionComponent = () => {
     const { cartId } = useStoryStore()
+
+    const { loading, error, data } = useQuery(CART_QUERY, {
+        variables: { cartId },
+        skip: !cartId,
+        fetchPolicy: 'cache-first',
+        ssr: false,
+    })
 
     const history = useRouter()
 
@@ -37,8 +45,6 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
     if (!loading && error) return <Error type="500" />
 
     const { items = [], appliedCoupons, totalQuantity, prices, shippingAddresses } = data?.cart || {}
-
-    const productUrlSuffix = data?.store?.productUrlSuffix ?? ''
 
     if (loading && !data) return <ViewLoader />
 
@@ -77,7 +83,7 @@ export const Cart: FunctionComponent<QueryResult> = ({ loading, error, data }) =
                                         type: 'PRODUCT',
                                         urlKey: product.urlKey,
                                     },
-                                    href: `/${product.urlKey}${productUrlSuffix}`,
+                                    href: `/${product.urlKey}${product.urlSuffix ?? ''}`,
                                     text: product.name,
                                 },
                                 sku: `SKU. ${product.sku}`,

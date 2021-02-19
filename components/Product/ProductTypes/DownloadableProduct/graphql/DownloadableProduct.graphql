@@ -1,0 +1,26 @@
+query DownloadableProduct($filters: ProductAttributeFilterInput!, $pageSize: Int = 1) {
+    products(filter: $filters, pageSize: $pageSize) {
+        items {
+            id
+            urlKey: url_key
+
+            ... on DownloadableProduct {
+                linksTitle: links_title
+
+                downloads: downloadable_product_links {
+                    id
+                    order: sort_order
+                    title
+                    price
+                    sampleUrl: sample_url
+                }
+
+                samples: downloadable_product_samples {
+                    order: sort_order
+                    url: sample_url
+                    title
+                }
+            }
+        }
+    }
+}

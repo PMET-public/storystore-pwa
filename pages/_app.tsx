@@ -1,7 +1,7 @@
 import React, { useMemo, FunctionComponent } from 'react'
 import { AppProps } from 'next/app'
 import { ApolloProvider, useQuery } from '@apollo/client'
-import { StoryStoreProvider } from '~/lib/storystore'
+import StoryStore from '~/components/StoryStore'
 import AppComponent, { APP_QUERY } from '~/components/App'
 import { getCookie, COOKIE } from '~/lib/cookies'
 import { initializeApollo } from '~/lib/apollo/client'
@@ -18,9 +18,6 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
     return (
         <React.Fragment>
             <Head>
-                <noscript>
-                    <div style={{ padding: '2rem', backgroundColor: baseTheme.colors.error, color: baseTheme.colors.onError }}>🤔 Enable javascript to run this web app.</div>
-                </noscript>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, minimum-scale=1, viewport-fit=cover" />
@@ -41,7 +38,12 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                 {/* Adobe Fonts */}
                 <link href="https://use.typekit.net" rel="preconnect" crossOrigin="anonymous" />
             </Head>
-            <StoryStoreProvider cartId={cartId} settings={settings}>
+
+            <noscript>
+                <div style={{ padding: '2rem', backgroundColor: baseTheme.colors.error, color: baseTheme.colors.onError }}>🤔 Enable javascript to run this web app.</div>
+            </noscript>
+
+            <StoryStore cartId={cartId} settings={settings}>
                 <ThemeProvider
                     theme={{
                         ...baseTheme,
@@ -77,7 +79,7 @@ const App: FunctionComponent<{ cartId: string }> = ({ cartId, children }) => {
                 >
                     <AppComponent {...app}>{children}</AppComponent>
                 </ThemeProvider>
-            </StoryStoreProvider>
+            </StoryStore>
         </React.Fragment>
     )
 }

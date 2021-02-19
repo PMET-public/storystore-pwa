@@ -1,0 +1,14 @@
+fragment Product on ProductInterface {
+    sku
+    stock: stock_status
+    title: name
+    type: __typename
+
+    categories {
+        id
+        text: name
+        href: url_path
+        urlSuffix: url_suffix
+        mode: display_mode
+    }
+}

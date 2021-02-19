@@ -6,7 +6,8 @@ import Form, { Input } from '@storystore/ui/dist/components/Form'
 import Button from '@storystore/ui/dist/components/Button'
 import { Response } from '~/pages/api/check-endpoint'
 import Loader from '@storystore/ui/dist/components/Loader'
-import { QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
+import { SETTINGS_QUERY } from '.'
 
 const toast = process.browser ? require('react-toastify').toast : {}
 
@@ -18,8 +19,10 @@ const addCredentialsToMagentoUrls = (url: string) => {
     return $p ? url.replace(/(^https?:\/\/)/, ($1: string) => `${$1}admin:${$p}@`) : url
 }
 
-export const Settings: FunctionComponent<QueryResult> = ({ data, loading: _loading }) => {
+export const Settings: FunctionComponent = () => {
     const { settings, setMagentoUrl, reset } = useStoryStore()
+
+    const { data, loading: _loading } = useQuery(SETTINGS_QUERY)
 
     const [saving, setSaving] = useState(false)
 

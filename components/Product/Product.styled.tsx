@@ -48,22 +48,24 @@ export const Image = styled(ImageComponent)`
     height: 100%;
     object-fit: contain;
     object-position: center;
-    max-height: 70vh;
 
     filter: unset;
 
     @media ${props => props.theme.breakpoints.smallOnly} {
-        max-height: 70vh;
         object-fit: cover;
+    }
+
+    @media ${props => props.theme.breakpoints.medium} {
+        max-height: 140rem;
     }
 `
 
 export const Carousel = styled(CarouselComponent)`
+    padding: 0;
+
     @media ${props => props.theme.breakpoints.medium} {
         display: none !important;
     }
-
-    padding: 0;
 `
 
 export const CarouselItem = styled(Carousel.Item)`
@@ -161,4 +163,16 @@ export const Description = styled.div`
     font-size: 1.4rem;
     line-height: 1.6;
     color: ${props => props.theme.colors.onSurface90};
+`
+
+export const OtherProducts = styled.div`
+    padding: 4rem 0;
+    max-width: 100%;
+
+    & > h2 {
+        font-family: ${props => props.theme.typography.heading.family};
+        font-weight: ${props => props.theme.typography.heading.weight.semi};
+        font-size: ${props => props.theme.typography.heading.size.secondary};
+        padding: 0 2rem 4rem;
+    }
 `

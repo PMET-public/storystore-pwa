@@ -3,14 +3,20 @@ import dynamic from 'next/dynamic'
 import { Root, Heading } from './Page.styled'
 import useNetworkStatus from '~/hooks/useNetworkStatus'
 import { PageSkeleton } from './Page.skeleton'
-import { QueryResult } from '@apollo/client'
+import { useQuery } from '@apollo/client'
+import { PAGE_QUERY } from '.'
 
 const Head = dynamic(() => import('~/components/Head'))
 const Link = dynamic(() => import('~/components/Link'))
 const Error = dynamic(() => import('~/components/Error'))
 const PageBuilder = dynamic(() => import('~/components/PageBuilder'))
 
-export const Page: FunctionComponent<QueryResult> = ({ loading, data }) => {
+export type PageProps = {
+    id: number
+}
+
+export const Page: FunctionComponent<PageProps> = ({ id }) => {
+    const { loading, data } = useQuery(PAGE_QUERY, { variables: { id } })
     const online = useNetworkStatus()
 
     const { page } = data || {}

@@ -1,31 +1,44 @@
+#import "~/graphql/_Product.graphql"
 #import "~/graphql/_pagination.graphql"
 #import "~/graphql/_price.graphql"
 #import "~/graphql/_filters.graphql"
+#import "~/graphql/_Gallery.graphql"
 
 query ProductsQuery($search: String, $filters: ProductAttributeFilterInput, $sort: ProductAttributeSortInput, $pageSize: Int = 12, $currentPage: Int = 1) {
-    store: storeConfig {
-        id
-        productUrlSuffix: product_url_suffix
-    }
-
-    products(search: $search, filter: $filters, sort: $sort, pageSize: $pageSize, currentPage: $currentPage) {
+    products(search: $search, filter: $filters, sort: $sort, pageSize: $pageSize, currentPage: $currentPage) @connection(key: "Products", filter: ["filter", "search"]) {
         count: total_count
 
         ...pagination
 
         ...filters
 
-        items @connection(key: "items") {
+        items {
             id
-            title: name
             urlKey: url_key
-
-            ...price
+            urlSuffix: url_suffix
 
             image {
                 alt: label
                 src: url
             }
+
+            ...Product
+
+            ...price
+
+            gallery: media_gallery {
+                ...Gallery
+            }
+
+            shortDescription: short_description {
+                html
+            }
+
+            description: description {
+                html
+            }
+
+            descriptionContainer: options_container
 
             ... on DownloadableProduct {
                 downloads: downloadable_product_links {

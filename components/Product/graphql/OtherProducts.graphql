@@ -1,28 +1,58 @@
+#import "~/graphql/_Product.graphql"
+#import "~/graphql/_Gallery.graphql"
 #import "~/graphql/_price.graphql"
 
 query OtherProductsQuery($urlKey: String!) {
-    store: storeConfig {
-        id
-        productUrlSuffix: product_url_suffix
-    }
-
     product: products(filter: { url_key: { eq: $urlKey } }, pageSize: 1) {
         items {
             id
+            urlKey: url_key
 
             # Related Products
             related: related_products {
                 # No Fragment Support :(
                 id
-                title: name
                 urlKey: url_key
+                urlSuffix: url_suffix
 
                 image {
                     alt: label
                     src: url
                 }
 
+                ...Product
+
                 ...price
+
+                gallery: media_gallery {
+                    ...Gallery
+                }
+
+                shortDescription: short_description {
+                    html
+                }
+
+                description: description {
+                    html
+                }
+
+                descriptionContainer: options_container
+
+                #  For Pricing
+                ... on DownloadableProduct {
+                    downloads: downloadable_product_links {
+                        id
+                        price
+                    }
+                }
+
+                ... on GroupedProduct {
+                    group: items {
+                        product {
+                            id
+                        }
+                    }
+                }
 
                 ... on ConfigurableProduct {
                     options: configurable_options {
@@ -42,15 +72,47 @@ query OtherProductsQuery($urlKey: String!) {
             upsell: upsell_products {
                 # No Fragment Support :(
                 id
-                title: name
                 urlKey: url_key
+                urlSuffix: url_suffix
 
                 image {
                     alt: label
                     src: url
                 }
 
+                ...Product
+
                 ...price
+
+                gallery: media_gallery {
+                    ...Gallery
+                }
+
+                shortDescription: short_description {
+                    html
+                }
+
+                description: description {
+                    html
+                }
+
+                descriptionContainer: options_container
+
+                # For Pricing
+                ... on DownloadableProduct {
+                    downloads: downloadable_product_links {
+                        id
+                        price
+                    }
+                }
+
+                ... on GroupedProduct {
+                    group: items {
+                        product {
+                            id
+                        }
+                    }
+                }
 
                 ... on ConfigurableProduct {
                     options: configurable_options {
