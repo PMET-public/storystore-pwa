@@ -69,8 +69,6 @@ export const GroupedProduct: FunctionComponent<GroupedProductProps> = ({ urlKey 
         [cartId, addingSimpleProductsToCart.loading, addSimpleProductToCart, history]
     )
 
-    console.log({ loading, data, product })
-
     if (loading && !product) return <GroupedProducSkeleton />
 
     if (!product) return null
