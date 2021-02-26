@@ -1,8 +1,9 @@
 FROM node:10.20.1-slim AS stage1
 
-ENV MAGENTO_URL=https://venia.magento.com/graphql
+ENV MAGENTO_URL=http://pwa-cloud.storystore.dev/api/graphql
 ENV GOOGLE_ANALYTICS=UA-168656142-1
 ENV CLOUD_MODE=true
+ENV PROCESS_IMAGES=true
 
 RUN mkdir -p /pwa
 
@@ -20,9 +21,10 @@ RUN npm prune --production
 
 FROM node:10.20.1-slim
 
-ENV MAGENTO_URL=https://venia.magento.com/graphql
+ENV MAGENTO_URL=http://pwa-cloud.storystore.dev/api/graphql
 ENV CLOUD_MODE=true
 ENV GOOGLE_ANALYTICS=UA-168656142-1
+ENV PROCESS_IMAGES=true
 EXPOSE 3000
 
 COPY --from=stage1 /pwa /pwa
