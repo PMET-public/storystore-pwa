@@ -1,6 +1,6 @@
 FROM node:10.20.1-slim AS stage1
 
-ENV http://pwa-cloud.storystore.dev/api/graphql
+ENV MAGENTO_URL=http://pwa-cloud.storystore.dev/api/graphql
 ENV GOOGLE_ANALYTICS=UA-168656142-1
 ENV CLOUD_MODE=true
 ENV PROCESS_IMAGES=true
@@ -21,7 +21,7 @@ RUN npm prune --production
 
 FROM node:10.20.1-slim
 
-ENV http://pwa-cloud.storystore.dev/api/graphql
+ENV MAGENTO_URL=http://pwa-cloud.storystore.dev/api/graphql
 ENV CLOUD_MODE=true
 ENV GOOGLE_ANALYTICS=UA-168656142-1
 ENV PROCESS_IMAGES=true
