@@ -6,9 +6,10 @@ const component = dynamic(() => import('./'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const { appearance, sameWidth } = elem.dataset
+    const { appearance, sameWidth, pbStyle } = elem.dataset
 
     return {
+        'data-pb-style': pbStyle,
         appearance,
         sameWidth,
         style,

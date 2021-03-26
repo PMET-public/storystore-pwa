@@ -109,7 +109,11 @@ export const htmlToProps = (htmlStr: string) => {
 
     const stageContentType = getComponentData('root-container')
 
-    const result = walk(container.body, stageContentType)
+    const style = container.head.getElementsByTagName('style')[0]
+
+    const body = walk(container.body, stageContentType)
+
+    const result = { style, body }
 
     if (process.browser && process.env.NODE_ENV !== 'production') {
         console.group('🏗 PageBuilder')

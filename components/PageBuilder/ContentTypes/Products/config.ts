@@ -9,7 +9,7 @@ const props = (elem: HTMLElement) => {
 
     const forms = elem.querySelectorAll('[data-product-sku]')
 
-    const { appearance } = elem.dataset
+    const { appearance, pbStyle } = elem.dataset
 
     const slider: SlickSliderProps | undefined =
         appearance === 'carousel'
@@ -27,6 +27,7 @@ const props = (elem: HTMLElement) => {
     const skus = [...(forms as any)].map(form => form.dataset.productSku)
 
     return {
+        'data-pb-style': pbStyle,
         ...slider,
         appearance,
         skus,

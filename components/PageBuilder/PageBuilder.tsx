@@ -3,6 +3,7 @@ import { Root, RichText } from './PageBuilder.styled'
 import { Component } from '@storystore/ui/dist/lib'
 import { htmlToProps } from './lib/parser'
 import { isPageBuilderHtml } from './lib/utils'
+import Head from 'next/head'
 
 export type PageBuilderProps = {
     html: string
@@ -33,14 +34,21 @@ const PageBuilderFactory: Component<PageBuilderFactoryProps> = ({ component, ite
 export const PageBuilder: Component<PageBuilderProps> = ({ html, ...props }) => {
     const usePageBuilder = useMemo(() => isPageBuilderHtml(html), [html])
 
-    const items = useMemo(() => {
-        if (!html || !usePageBuilder) return
-        return htmlToProps(html).items
+    const { style, body } = useMemo(() => {
+        if (!html || !usePageBuilder) return { style: undefined, body: undefined }
+        return htmlToProps(html)
     }, [html, usePageBuilder])
 
     return (
-        <Root {...props}>
-            {usePageBuilder ? items?.map((contentType: any, index: number) => <PageBuilderFactory key={index} {...contentType} />) : <RichText dangerouslySetInnerHTML={{ __html: html }} />}
-        </Root>
+        <React.Fragment>
+            {style?.textContent && (
+                <Head>
+                    <style dangerouslySetInnerHTML={{ __html: style.textContent }} />
+                </Head>
+            )}
+            <Root {...props}>
+                {usePageBuilder ? body.items?.map((contentType: any, index: number) => <PageBuilderFactory key={index} {...contentType} />) : <RichText dangerouslySetInnerHTML={{ __html: html }} />}
+            </Root>
+        </React.Fragment>
     )
 }

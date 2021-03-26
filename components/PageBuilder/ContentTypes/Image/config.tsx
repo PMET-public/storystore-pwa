@@ -12,6 +12,8 @@ const component = dynamic(() => import('.'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
+    const { pbStyle } = elem.dataset
+
     const linkElem = elem.children[0]
 
     const imageElement = linkElem.nodeName === 'A' ? (linkElem.children as HTMLCollectionOf<HTMLElement>) : (elem.children as HTMLCollectionOf<HTMLElement>)
@@ -19,7 +21,7 @@ const props = (elem: HTMLElement) => {
     const desktopSrc = imageElement[0].getAttribute('src') || ''
     const mobileSrc = imageElement[1].getAttribute('src') || ''
 
-    const image: ImageProps & { style: any } = {
+    const image: ImageProps & { style: any; 'data-pb-style'?: string } = {
         src: resolveImage(desktopSrc),
         sources: [
             <source key="desktop-webp" type="image/webp" media="(min-width: 600px)" srcSet={resolveImage(desktopSrc, { type: 'webp' })} />,
@@ -27,6 +29,7 @@ const props = (elem: HTMLElement) => {
         ],
         alt: imageElement[0].getAttribute('alt') || imageElement[0].getAttribute('title') || undefined,
         style: getStyleAsObject(imageElement[0].style),
+        'data-pb-style': imageElement[0].dataset.pbStyle,
     }
 
     if (mobileSrc) {
@@ -54,6 +57,7 @@ const props = (elem: HTMLElement) => {
     const caption = captionElement ? captionElement.textContent : undefined
 
     return {
+        'data-pb-style': pbStyle,
         image,
         caption,
         link,
