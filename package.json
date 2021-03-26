@@ -4,7 +4,6 @@
   "magentoDependency": ">= 2.4.0",
   "author": "Carlos A. Cabrera @fnhipster",
   "repository": "https://github.com/pmet-public/storystore-pwa.git",
-  "license": "MIT",
   "main": "server.js",
   "engines": {
     "node": "10.x"
