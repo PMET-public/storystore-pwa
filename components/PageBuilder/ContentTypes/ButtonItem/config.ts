@@ -15,6 +15,8 @@ const props = (elem: HTMLElement) => {
 
     const style = getStyleAsObject(elem.style)
 
+    const pbStyle = elem.dataset.pbStyle
+
     const button: ButtonProps = {
         text: elem.textContent || '',
     }
@@ -32,6 +34,7 @@ const props = (elem: HTMLElement) => {
             : undefined
 
     return {
+        'data-pb-style': pbStyle,
         button,
         link,
         style,

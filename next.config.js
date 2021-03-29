@@ -35,8 +35,15 @@ module.exports = withOffline({
                 destination: '/_next/static/service-worker.js',
             },
             /**
-             * URlResolver
+             * Proxy GraphQL
              */
+            {
+                source: '/graphql',
+                destination: '/api/graphql',
+            },
+            /**
+             * URlResolver
+            */
             {
                 source: '/:pathname*',
                 destination: '/_url-resolver',

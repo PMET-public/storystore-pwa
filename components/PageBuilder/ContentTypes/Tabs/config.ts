@@ -6,7 +6,7 @@ const component = dynamic(() => import('./'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const { appearance, activeTab } = elem.dataset
+    const { appearance, activeTab, pbStyle } = elem.dataset
 
     const navigationEl = elem.childNodes[0]
     const tabItemsElems = navigationEl.childNodes
@@ -19,6 +19,7 @@ const props = (elem: HTMLElement) => {
     const minHeight = contentEl.style.minHeight
 
     return {
+        'data-pb-style': pbStyle,
         style,
         minHeight,
         appearance,

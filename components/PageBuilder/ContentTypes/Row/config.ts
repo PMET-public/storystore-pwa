@@ -8,7 +8,7 @@ import component from '.'
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const { appearance, backgroundImages } = elem.dataset
+    const { appearance, backgroundImages, pbStyle } = elem.dataset
 
     const fullScreen = elem.classList.contains('full-screen')
 
@@ -19,6 +19,8 @@ const props = (elem: HTMLElement) => {
     const parallaxSpeed = parseFloat(elem.dataset.parallaxSpeed || '1')
 
     const background: ContentWithBackgroundProps = {
+        'data-pb-style': pbStyle,
+        style,
         loadEagerly,
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
         video:
@@ -45,7 +47,6 @@ const props = (elem: HTMLElement) => {
         enableParallax,
         parallaxSpeed,
         background,
-        style,
     }
 }
 

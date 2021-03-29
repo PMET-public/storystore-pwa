@@ -20,6 +20,8 @@ type Location = {
 }
 
 const props = (elem: HTMLElement) => {
+    const { pbStyle } = elem.dataset
+
     const style = getStyleAsObject(elem.style)
 
     const locations = JSON.parse(elem.dataset.locations as string).map((location: Location) => {
@@ -56,6 +58,7 @@ const props = (elem: HTMLElement) => {
     const controls = elem.dataset.showControls === 'true'
 
     return {
+        'data-pb-style': pbStyle,
         locations,
         controls,
         style,

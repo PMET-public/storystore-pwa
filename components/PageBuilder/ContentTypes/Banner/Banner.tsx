@@ -22,13 +22,13 @@ export type BannerProps = {
     }>
 }
 
-export const Banner: Component<BannerProps> = ({ appearance = 'poster', background, button, content, link, overlay, showButton, showOverlay, style, ...props }) => {
+export const Banner: Component<BannerProps> = ({ appearance = 'poster', background, button, content, link, overlay, showButton, showOverlay, style, 'data-pb-style': pbStyle, ...props }) => {
     const contentHtml = useHtml(content?.html)
 
     return (
         <Root as={link ? (p: any) => <Link {...link} {...p} /> : 'div'} $showButton={showButton} $showOverlay={showOverlay} $overlayColor={overlay && overlay.overlayColor} {...props}>
             <Container {...background} as={ContentWithBackground}>
-                <Wrapper $appearance={appearance} style={style}>
+                <Wrapper $appearance={appearance} style={style} data-pb-style={pbStyle}>
                     <Overlay {...overlay}>
                         <ContentWrapper>
                             {content && <Content {...content}>{contentHtml}</Content>}
