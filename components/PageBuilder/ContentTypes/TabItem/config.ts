@@ -8,13 +8,18 @@ const component = dynamic(() => import('./'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    const { appearance, backgroundImages } = elem.dataset
+    const { appearance, backgroundImages, pbStyle } = elem.dataset
 
     const background: ContentWithBackgroundProps = {
         backgroundImages: backgroundImages ? getBackgroundImages(backgroundImages) : undefined,
     }
 
-    return { appearance, background, style }
+    return {
+        'data-pb-style': pbStyle,
+        appearance,
+        background,
+        style,
+    }
 }
 
 export default { component, props }

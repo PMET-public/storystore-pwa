@@ -8,7 +8,7 @@ import { ContentWithBackgroundProps } from '../../lib/ContentWithBackground'
 const component = dynamic(() => import('./'))
 
 const props = (elem: HTMLElement) => {
-    const { appearance, showButton, showOverlay } = elem.dataset
+    const { appearance, showButton, showOverlay, pbStyle } = elem.dataset
 
     const style = getStyleAsObject(elem.style)
 
@@ -48,6 +48,7 @@ const props = (elem: HTMLElement) => {
                   }
                 : undefined,
         style: getStyleAsObject(wrapperElem.style),
+        'data-pb-style': wrapperElem.dataset.pbStyle,
     }
 
     /** Get Button */
@@ -56,6 +57,7 @@ const props = (elem: HTMLElement) => {
         secondary: buttonElem.classList.contains('pagebuilder-button-secondary') ? true : false,
         text: buttonElem.textContent || '',
         style: getStyleAsObject(buttonElem.style),
+        'data-pb-style': buttonElem.dataset.pbStyle,
         outline: buttonElem.classList.contains('pagebuilder-button-link') ? true : false,
     }
 
@@ -65,6 +67,7 @@ const props = (elem: HTMLElement) => {
         ...contentElem.dataset,
         html: contentElem.innerHTML,
         style: getStyleAsObject(contentElem.style),
+        'data-pb-style': contentElem.dataset.pbStyle,
     }
 
     /** Get Overlay */
@@ -74,6 +77,7 @@ const props = (elem: HTMLElement) => {
     const overlay = overlayElem && {
         ...overlayElem.dataset,
         style: getStyleAsObject(overlayElem.style),
+        'data-pb-style': overlayElem.dataset.pbStyle,
     }
 
     if (videoOverlayElement?.dataset.videoOverlayColor) {
@@ -81,6 +85,7 @@ const props = (elem: HTMLElement) => {
     }
 
     return {
+        'data-pb-style': pbStyle,
         appearance,
         background,
         button,

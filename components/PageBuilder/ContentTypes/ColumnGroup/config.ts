@@ -5,7 +5,12 @@ import component from '.'
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
-    return { style }
+    const { pbStyle } = elem.dataset
+
+    return {
+        'data-pb-style': pbStyle,
+        style,
+    }
 }
 
 export default { component, props }

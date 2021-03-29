@@ -36,7 +36,7 @@ function createApolloClient(magentoUrl = process.env.MAGENTO_URL, cookie?: strin
     const headers = cookie ? { cookie } : undefined
 
     const httpLink = new HttpLink({
-        uri: process.browser ? new URL('/api/graphql', location.href).href : new URL('graphql', magentoUrl).href,
+        uri: process.browser ? new URL('/graphql', location.href).href : new URL('graphql', magentoUrl).href,
         credentials: 'include',
         headers,
 

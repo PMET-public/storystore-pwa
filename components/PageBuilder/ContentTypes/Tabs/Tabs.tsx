@@ -9,11 +9,11 @@ export type TabsProps = {
     minHeight: string
 }
 
-export const Tabs: Component<TabsProps> = ({ tabsAlignment, tabItems, activeTab, children, minHeight }) => {
+export const Tabs: Component<TabsProps> = ({ tabsAlignment, tabItems, activeTab, children, minHeight, ...props }) => {
     const selected = Number(activeTab)
 
     return (
-        <TabsWrapper defaultIndex={selected}>
+        <TabsWrapper defaultIndex={selected} {...props}>
             <TabList align={tabsAlignment}>
                 {tabItems.map((label: string, index: number) => (
                     <Tab key={index}>{label}</Tab>

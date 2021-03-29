@@ -10,14 +10,14 @@ export type RowProps = {
     parallaxSpeed?: number
 }
 
-export const Row: Component<RowProps> = ({ appearance = 'contained', background, children, enableParallax, parallaxSpeed = 1, style, ...props }) => {
+export const Row: Component<RowProps> = ({ appearance = 'contained', background, children, enableParallax, parallaxSpeed = 1, ...props }) => {
     const contained = appearance === 'contained' || appearance === 'full-width'
 
     const fullScreen = appearance === 'full-screen'
 
     return (
         <Root $contained={appearance === 'contained'} {...props}>
-            <ContentWithBackground parallax={(enableParallax && { speed: parallaxSpeed }) || undefined} fullScreen={fullScreen} {...background} style={style}>
+            <ContentWithBackground parallax={(enableParallax && { speed: parallaxSpeed }) || undefined} fullScreen={fullScreen} {...background}>
                 <Wrapper $contained={contained} $margin={contained}>
                     {children}
                 </Wrapper>

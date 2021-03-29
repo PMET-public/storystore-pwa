@@ -7,6 +7,8 @@ const component = dynamic(() => import('./'))
 const props = (elem: HTMLElement) => {
     const style = getStyleAsObject(elem.style)
 
+    const { pbStyle } = elem.dataset
+
     const slider: SlickSliderProps = {
         arrows: elem.dataset.showArrows === 'true',
         autoplay: elem.dataset.autoplay === 'true',
@@ -23,6 +25,7 @@ const props = (elem: HTMLElement) => {
     }
 
     return {
+        'data-pb-style': pbStyle,
         ...slider,
         style,
     }

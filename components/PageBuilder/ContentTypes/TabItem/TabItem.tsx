@@ -7,9 +7,9 @@ export type TabItemProps = {
     background: ContentWithBackgroundProps
 }
 
-export const TabItem: Component<TabItemProps> = ({ background, children, style }) => {
+export const TabItem: Component<TabItemProps> = ({ background, children, ...props }) => {
     return (
-        <ContentWithBackground {...background} style={style}>
+        <ContentWithBackground {...background} {...props}>
             {children}
         </ContentWithBackground>
     )
